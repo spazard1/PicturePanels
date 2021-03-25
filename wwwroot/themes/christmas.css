@@ -1,0 +1,91 @@
+﻿@font-face {
+    font-family: christmas;
+    src: url(/fonts/PWChristmasfont.ttf);
+}
+
+.tileNumber {
+    font-family: christmas;
+}
+
+.mostVotesTile {
+    box-shadow: 0 0 0 .25vw red;
+    outline: dashed .25vw white;
+}
+
+.activeTeam {
+    border: 4px dashed white;
+}
+
+.tile:nth-child(even) {
+    background: #BB0000;
+}
+
+.tile:nth-child(odd) {
+    background: #008000;
+}
+
+.tileButtonNumber {
+    color: black;
+}
+
+.tileButton:nth-child(even) {
+    background-color: #d3f8d3;
+}
+
+.tileButton:nth-child(odd) {
+    background-color: #ffe6ea;
+}
+
+.tileButtonSelected:nth-child(even) {
+    border: 4px dashed white;
+    background-color: green;
+}
+
+.tileButtonSelected:nth-child(odd) {
+    border: 4px dashed white;
+    background-color: red;
+}
+
+.teamOneBox {
+    border: 5px solid green;
+    background-color: darkgreen;
+}
+
+.teamTwoBox {
+    border: 5px solid red;
+    background-color: darkred;
+}
+
+.teamOneColor {
+    color: green;
+}
+
+.teamTwoColor {
+    color: red;
+}
+
+#teamOnePlayerNames div {
+    background-color: darkgreen;
+}
+
+#teamTwoPlayerNames div {
+    background-color: darkred;
+}
+
+#teamOnePlayerNames .teamPlayerNameCaptain {
+    outline: dashed 2px lightgreen;
+}
+
+#teamTwoPlayerNames .teamPlayerNameCaptain {
+    outline: dashed 2px pink;
+}
+
+@keyframes correct {
+    0% {
+        color: lightgreen;
+    }
+
+    100% {
+        color: pink;
+    }
+}
