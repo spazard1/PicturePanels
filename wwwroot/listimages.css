@@ -1,0 +1,30 @@
+﻿body {
+    font-size: 1.3em;
+}
+
+select {
+    font-size: 1em;
+}
+
+#imageContainer {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.imageInfo {
+    width: 18vw;
+    overflow: hidden;
+    margin: 5px;
+}
+
+.imageInfo img {
+    max-width: 100%;
+}
+
+.actionLink {
+    box-sizing: border-box;
+    border: 2px solid dodgerblue;
+    margin: 2px;
+    cursor: pointer;
+}

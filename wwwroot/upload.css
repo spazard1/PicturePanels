@@ -1,0 +1,162 @@
+﻿html, body {
+    overflow: auto !important;
+    height: 100% !important;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin-left: .5em;
+    margin-right: .5em;
+}
+
+a {
+    color: dodgerblue;
+}
+
+a:visited {
+    color: dodgerblue;
+}
+
+#mainDiv {
+    height: 100%;
+    width: 100%;
+}
+
+input {
+    font-size: 1.4em;
+}
+
+select {
+    font-size: 1.4em;
+}
+
+.inputPanel {
+    padding: 1em;
+    padding-top: 1vh;
+    width: 100%;
+    font-size: 1.3em;
+    box-sizing: border-box;
+}
+
+.imageContainer {
+    width: 100%;
+}
+
+.inputPanelElement {
+    margin-bottom: 2vh;
+}
+
+.imageInfo {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;
+    max-height: 10%;
+    width: 100%;
+    font-size: 1.4em;
+    margin-bottom: 1vh;
+}
+
+.invalidImage {
+    color: red;
+    border: 2px solid red;
+}
+
+.imageUrl {
+    width: 80%;
+    text-align: center;
+}
+
+.uploadButton {
+    padding: 3px;
+    background-color: deepskyblue;
+    border: 3px solid dodgerblue;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.imageFileDiv {
+    margin-top: 3vh;
+}
+
+.imageUrlDiv {
+    margin-bottom: 3vh;
+}
+
+.imagePreview {
+    object-fit: contain;
+    max-width: 100%;
+}
+
+.imageInfo div {
+    flex: 1;  
+    min-width: 50%;
+    margin-top: 1vh;
+}
+
+.loading {
+    text-align: center;
+    padding: 1em;
+    background-color: white;
+    border: 5px solid dodgerblue;
+    z-index: 100;
+    position: absolute;
+    width: 40vw;
+    top: 30vh;
+    left: 30vw;
+}
+
+.loadingMessage {
+    font-size: 3em;
+}
+
+.loading img {
+    max-height: 4em;
+    max-width: 4em;
+}
+
+.helpMessage {
+    font-size: 2em;
+}
+
+.helpImage {
+    object-fit: contain;
+    max-width: 40%;
+}
+
+@media only screen and (min-width: 1000px) {
+    #mainDiv {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .inputPanelElement {
+        margin-bottom: 2.5vh;
+    }
+
+    .imageFileDiv {
+        margin-top: 10vh;
+    }
+
+    .inputPanel {
+        padding-top: 5vh;
+        height: 100%;
+        flex: 3;
+    }
+
+    .imageContainer {
+        height: 80vh;
+        flex: 7;
+    }
+
+    .imageInfo {
+        position: absolute;
+        top: 0;
+        right: 5%;
+        width: 60%;
+    }
+
+    .imageUrlDiv {
+        margin-bottom: 5vh;
+    }
+}

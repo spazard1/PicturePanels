@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
+
+    <script src="index.js"></script>
+    <script src="gameboard.js"></script>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="stylesheet" type="text/css" href="gameboard.css" />
+    <link id="themeCssLink" rel="stylesheet" type="text/css" href="themes/default.css" />
+    <link rel="icon" href="favicon.ico" type="image/ico" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>Picture Game Gameboard</title>
+</head>
+<body draggable="false" ondragstart="return false;" ondrop="return false;">
+    <div id="blackcover">Loading gameboard...</div>
+    <div id="welcome" class="welcomeContainer hidden">
+        <div class="welcomeText">
+            Welcome to the Picture Game!<br />
+            To join in, scan this QR code, or go to <a href="https://picturegame.azurewebsites.net/" target="_blank">https://picturegame.azurewebsites.net/</a>.
+        </div>
+        <div class="welcomeQRCode">
+            <img src="img/qr-code.svg" alt="Welcome QR Code">
+        </div>
+    </div>
+
+    <div class="teamInfos">
+        <div id="teamOneCountdownDiv" class="teamInfo countdownDiv">
+            <canvas id="teamOneCountdownCanvas" class="countdownCanvas"></canvas>
+        </div>
+        <div id="teamOneStatus" class="teamInfo teamStatus">
+            Open Free Tile &rarr;
+        </div>
+        <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
+            <div id="teamOneName" class="teamName">Team 1</div>
+            <div class="tileCount"><div id="teamOneInnerTiles">5</div> / <div id="teamOneOuterTiles">8</div></div>
+            <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses">XXXXX</div>
+        </div>
+        <div id="teamOneScore" class="teamOneBox teamInfo score">0</div>
+        <div id="teamTwoScore" class="teamTwoBox teamInfo score">0</div>
+        <div id="teamTwoDiv" class="teamInfo teamNameBox">
+            <div id="teamTwoName" class="teamName">Team 2</div>
+            <div class="tileCount"><div id="teamTwoInnerTiles">5</div> / <div id="teamTwoOuterTiles">8</div></div>
+            <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses">XX</div>
+        </div>
+        <div id="teamTwoStatus" class="teamInfo teamStatus">
+            Round 0
+        </div>
+        <div id="teamTwoCountdownDiv" class="teamInfo countdownDiv">
+            <canvas id="teamTwoCountdownCanvas" class="countdownCanvas"></canvas>
+        </div>
+    </div>
+    <div id="roundNumberDiv" class="hidden">
+        Round<br />
+        <div id="roundNumber"></div>
+    </div>
+
+    <div id="imageContainer" class="imageContainer" draggable="false">
+        <img id="image" style="opacity: 0;" draggable="false" />
+    </div>
+
+    <div id="teamOnePlayerNames" class="teamPlayerNames"></div>
+    <div id="teamTwoPlayerNames" class="teamPlayerNames"></div>
+
+    <div id="uploadedBy" class="uploadedBy"></div>
+
+    <div id="tiles"></div>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+﻿.chats {
+    flex: 1;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: visible;
+    overflow-x: hidden;
+}
+
+.chat {
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    margin-left: 1vw;
+    margin-right: auto;
+    margin-bottom: 4px;
+    font-size: .5em;
+    max-width: 70%;
+    padding: 4px 10px 4px 10px;
+    border-radius: 15px;
+    text-align: left;
+}
+
+.systemChat {
+    background-color: rgb(60, 60, 60);
+    max-width: 90%;
+    font-style: italic;
+    color: skyblue;
+    border: 2px solid dodgerblue;
+}
+
+.othersChat {
+    background-color: rgb(60, 60, 60);
+}
+
+.selfChat {
+    margin-left: auto;
+    margin-right: 1vw;
+    background-color: rgb(63, 81, 181);
+    border-radius: 15px;
+}
+
+.adminPlayerName::after {
+    color: #ff3333;
+    font-style: italic;
+    content: " (admin)";
+}
+
+.chatInputContainer {
+    height: 1.3em;
+    flex-basis: 1.3em;
+    max-height: 1.3em;
+    min-height: 1.3em;
+    width: 100%;
+    display: flex;
+    padding: 2px 4px 4px 4px;
+    box-sizing: border-box;
+}
+
+.chatInput {
+    font-size: .7em;
+    flex-grow: 1;
+    text-align: left;
+    border-radius: 15px;
+    padding: 3px 10px 3px 10px;
+}
+
+.chatSend {
+    cursor: pointer;
+    max-height: 100%;
+    max-width: 10vw;
+    padding: 3px;
+}
+
+.chat img {
+    object-fit: contain;
+    max-width: 80vw;
+}
+
+.ellipsis {
+    position: relative;
+    animation: ellipsis 1s infinite;
+    font-weight: bold;
+}
+
+.ellipsis1 {
+    animation-delay: 0s;
+}
+
+.ellipsis2 {
+    animation-delay: .1s;
+}
+
+.ellipsis3 {
+    animation-delay: .2s;
+}
+
+@keyframes ellipsis {
+    0% {
+        top: 0;
+    }
+
+    20% {
+        top: -15%;
+    }
+
+    40% {
+        top: 0;
+    }
+
+    100% {
+        top: 0;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .chat {
+        font-size: .55em;
+    }
+}

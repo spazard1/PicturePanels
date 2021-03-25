@@ -1,0 +1,111 @@
+﻿@font-face {
+    font-family: valentines;
+    src: url(/fonts/VanessasValentine.ttf);
+}
+
+.tileNumber {
+    font-family: valentines;
+    letter-spacing: 6px;
+}
+
+.mostVotesTile {
+    box-shadow: 0 0 0 .25vw red;
+    outline: dashed .25vw white;
+}
+
+.activeTeam {
+    border: 4px dashed pink;
+}
+
+.tile:nth-child(3n) {
+    background: #FFB6C1;
+}
+
+.tile:nth-child(3n) .tileNumber {
+    color: black;
+}
+
+.tile:nth-child(3n + 1) {
+    background: #FF69B4;
+}
+
+.tile:nth-child(3n + 2) {
+    background: red;
+}
+
+.tileButtonNumber {
+    color: black;
+}
+
+.tileButtonSelected {
+    border: 4px solid white;
+}
+
+.tileButton:nth-child(3n) {
+    background: #FFB6C1;
+}
+
+.tileButton:nth-child(3n + 1) {
+    background: #FF69B4;
+    color: white;
+}
+
+.tileButton:nth-child(3n + 1) .tileButtonNumber {
+    color: white;
+}
+
+.tileButton:nth-child(3n + 2) {
+    background: red;
+}
+
+.tileButton:nth-child(3n + 2) .tileButtonNumber {
+    color: white;
+}
+
+.teamOneBox {
+    border: 5px solid #FF00FF;
+    background-color: #8B008B;
+}
+
+.teamTwoBox {
+    border: 5px solid red;
+    background-color: darkred;
+}
+
+.teamOneColor {
+    color: #FF00FF;
+}
+
+.teamTwoColor {
+    color: red;
+}
+
+#teamOnePlayerNames div {
+    background-color: #8B008B;
+}
+
+#teamTwoPlayerNames div {
+    background-color: darkred;
+}
+
+#teamOnePlayerNames .teamPlayerNameCaptain {
+    outline: dashed 2px pink;
+}
+
+#teamTwoPlayerNames .teamPlayerNameCaptain {
+    outline: dashed 2px pink;
+}
+
+@keyframes correct {
+    0% {
+        color: white;
+    }
+
+    50% {
+        color: #FFB6C1;
+    }
+
+    100% {
+        color: #FF69B4;
+    }
+}
