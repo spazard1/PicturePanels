@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
+
+    <script src="index.js"></script>
+    <script src="setup.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="stylesheet" type="text/css" href="admin.css" />
+    <link rel="icon" href="favicon.ico" type="image/ico" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <title>Picture Game Setup</title>
+</head>
+<body>
+
+    <div id="password" class="center">
+        <input type="password" id="passwordText" class="adminInputText" />
+        <input type="button" value="Login" class="adminButton" onclick="login()" />
+    </div>
+    <br />
+    <div class="center">
+        Blob Container: <select id="blobContainer" class="adminSelect"></select>
+        <br /><br />
+        Theme CSS: <select id="themeCss" class="adminSelect">
+            <option value="default">Default</option>
+            <option value="christmas">Christmas</option>
+            <option value="valentines">Valentines</option>
+        </select>
+        <br /><br />
+        Open/Guess Time:<br/>
+        <input type="text" id="openTileTime" class="adminInputText adminInputTextNumber" />
+        <input type="text" id="guessTime" class="adminInputText adminInputTextNumber" />
+        <br /><br />
+        Team Names: <br />
+        <input type="text" id="teamOneName" class="adminInputText" />
+        <input type="text" id="teamTwoName" class="adminInputText" />
+        <br /><br />
+        <input type="button" value="Save" class="adminButton" onclick="patchGameState()" />
+        <input type="button" id="putAdminButton" value="Loading" class="adminButton" onclick="putAdmin()" />
+        <br /><br />
+        <input type="button" id="newGameButton" value="New Game" class="adminButton" onclick="newGame()" />
+        <input type="button" id="captainsButton" value="Captains" class="adminButton" onclick="captains()" />
+        <input type="button" id="randomizeTeamsButton" value="Randomize Teams" class="adminButton" onclick="randomizeTeams()" />
+        <div id="results"></div>
+        <br />
+        <a href="admin.html">admin.html</a>
+    </div>
+</body>
+
+</html>

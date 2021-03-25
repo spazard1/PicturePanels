@@ -1,0 +1,31 @@
+﻿using Microsoft.Azure.Cosmos.Table;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CloudStorage.Models
+{
+    public class ChatTableEntity : TableEntity
+    {
+        public ChatTableEntity()
+        {
+
+        }
+
+        public string TeamNumber
+        {
+            get { return this.PartitionKey; }
+            set { this.PartitionKey = value; }
+        }
+
+        public DateTime CreatedTime {
+            get { return new DateTime(long.Parse(this.RowKey)); }
+            set { this.RowKey = value.Ticks.ToString(); }
+        }
+
+        public string Message { get; set; }
+
+        public string PlayerId { get; set; }
+        
+    }
+}
