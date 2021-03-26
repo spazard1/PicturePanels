@@ -148,6 +148,21 @@ namespace CloudStorage.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
+        [HttpGet("{blobContainer}/{imageId}/thumbnail")]
+        public async Task<IActionResult> GetThumbnailAsync(string blobContainer, string imageId)
+        {
+            var imageTableEntity = await this.imageTableStorage.GetAsync(blobContainer, imageId);
+
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+            }
+
+            Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
+            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
+        }
+
         private readonly Regex alphanumericRegex = new Regex(@"[^\w\s\-]g");
 
         [HttpPut]
@@ -248,6 +263,8 @@ namespace CloudStorage.Controllers
 
             imageTableEntity.UploadComplete = true;
             imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
+
+            await imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
 
             return Json(new ImageEntity(imageTableEntity));
         }

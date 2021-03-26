@@ -16,6 +16,8 @@ using Azure.Storage.Blobs.Specialized;
 using Azure.Storage;
 using Azure.Storage.Blobs.Models;
 using System.Reflection.Metadata.Ecma335;
+using System.Drawing.Drawing2D;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace CloudStorage.Services
 {
@@ -252,7 +254,7 @@ namespace CloudStorage.Services
             {
                 return $"Did not have access to that URL ({response.StatusCode}).";
             }
-            else if ((int)response.StatusCode > 400)
+            else if ((int)response.StatusCode >= 400)
             {
                 return $"Could not load from from that URL ({response.StatusCode}).";
             }
@@ -266,6 +268,77 @@ namespace CloudStorage.Services
             memoryStream.Seek(0, SeekOrigin.Begin);
             await blob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = response.Content.Headers.ContentType.MediaType });
             return GetDownloadUrl("scratch", imageId);
+        }
+
+        public async Task<string> GetThumbnailUrlAsync(ImageTableEntity entity)
+        {
+            if (!string.IsNullOrWhiteSpace(entity.ThumbnailId))
+            {
+                return this.GetDownloadUrl("thumbnails", entity.ThumbnailId);
+            }
+
+            var blobContainerThumbnail = blobServiceClient.GetBlobContainerClient("thumbnails");
+            var blobThumbnail = blobContainerThumbnail.GetBlobClient(entity.ThumbnailId);
+            if (await blobThumbnail.ExistsAsync())
+            {
+                return this.GetDownloadUrl("thumbnails", entity.ThumbnailId);
+            }
+
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(entity.BlobContainer);  
+            var blob = blobContainerClient.GetBlobClient(entity.BlobName);
+
+            var imageMemoryStream = new MemoryStream();
+            await blob.DownloadToAsync(imageMemoryStream);
+
+            var image = Image.FromStream(imageMemoryStream);
+
+            double scale = .2;
+
+            var resizedImage = ResizeImage(image, (int) Math.Ceiling(image.Width * scale), (int) Math.Ceiling(image.Height * scale));
+            var memoryStream = new MemoryStream();
+            resizedImage.Save(memoryStream, ImageFormat.Png);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            var thumbnailId = Guid.NewGuid().ToString();
+            var blobResized = blobContainerThumbnail.GetBlobClient(thumbnailId);
+            await blobResized.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
+
+            entity.ThumbnailId = thumbnailId;
+            await this.AddOrUpdateAsync(entity);
+
+            return this.GetDownloadUrl("thumbnails", entity.ThumbnailId);
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }
