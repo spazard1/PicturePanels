@@ -140,7 +140,7 @@ async function putImage() {
 
 async function uploadImage() {
     if (document.getElementById("imageName").value.length < 2) {
-        showMessage("The 'Movie/ TV Show Name' field must be longer.", true);
+        showMessage("The 'Movie/TV Show Name' field must be longer.", true);
         return;
     }
 
