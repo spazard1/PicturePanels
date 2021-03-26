@@ -58,6 +58,7 @@ namespace CloudStorage.Controllers
 
             var results = (await imageTableStorage.GetAllBlobContainersAsync())
                 .Select(blobContainer => new BlobContainerEntity() { Name = blobContainer }).ToList();
+
             results.Sort();
 
             return results;
@@ -97,9 +98,9 @@ namespace CloudStorage.Controllers
         [HttpGet("welcome")]
         public async Task<IActionResult> WelcomeAsync()
         {
-            var imageTableEntity = await this.imageTableStorage.GetAsync("welcome", "soundofmusic");
+            var imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, "soundofmusic");
 
-            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl("welcome", imageTableEntity);
+            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(ImageTableStorage.WelcomeBlobContainer, imageTableEntity);
             Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }

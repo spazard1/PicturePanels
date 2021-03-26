@@ -15,9 +15,7 @@ using Azure.Storage.Sas;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage;
 using Azure.Storage.Blobs.Models;
-using System.Reflection.Metadata.Ecma335;
 using System.Drawing.Drawing2D;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace CloudStorage.Services
 {
@@ -29,6 +27,9 @@ namespace CloudStorage.Services
         private BlobServiceClient blobServiceClient;
 
         public const string DefaultBlobContainer = "pending";
+        public const string ScratchBlobContainer = "scratch";
+        public const string ThumbnailsBlobContainer = "thumbnails";
+        public const string WelcomeBlobContainer = "welcome";
 
         public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider)
         {
@@ -222,6 +223,9 @@ namespace CloudStorage.Services
             {
                 blobContainers.Add(blobContainer.Name);
             }
+            blobContainers.Remove(ScratchBlobContainer);
+            blobContainers.Remove(ThumbnailsBlobContainer);
+            blobContainers.Remove(WelcomeBlobContainer);
 
             return blobContainers;
         }
@@ -239,7 +243,7 @@ namespace CloudStorage.Services
 
         public async Task<string> UploadTemporaryAsync(Uri url)
         {
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient("scratch");
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(ScratchBlobContainer);
             await blobContainerClient.CreateIfNotExistsAsync();
 
             var handler = new HttpClientHandler()
@@ -267,46 +271,66 @@ namespace CloudStorage.Services
             bitmap.Save(memoryStream, ImageFormat.Png);
             memoryStream.Seek(0, SeekOrigin.Begin);
             await blob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = response.Content.Headers.ContentType.MediaType });
-            return GetDownloadUrl("scratch", imageId);
+            return GetDownloadUrl(ScratchBlobContainer, imageId);
         }
 
         public async Task<string> GetThumbnailUrlAsync(ImageTableEntity entity)
         {
-            if (!string.IsNullOrWhiteSpace(entity.ThumbnailId))
+            if (entity.ThumbnailId?.StartsWith("skip") == true)
             {
-                return this.GetDownloadUrl("thumbnails", entity.ThumbnailId);
+                return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
             }
 
-            var blobContainerThumbnail = blobServiceClient.GetBlobContainerClient("thumbnails");
+            if (!string.IsNullOrWhiteSpace(entity.ThumbnailId))
+            {
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
+            }
+
+            var blobContainerThumbnail = blobServiceClient.GetBlobContainerClient(ThumbnailsBlobContainer);
             var blobThumbnail = blobContainerThumbnail.GetBlobClient(entity.ThumbnailId);
             if (await blobThumbnail.ExistsAsync())
             {
-                return this.GetDownloadUrl("thumbnails", entity.ThumbnailId);
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
             }
 
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(entity.BlobContainer);  
-            var blob = blobContainerClient.GetBlobClient(entity.BlobName);
+            try
+            {
+                var blobContainerClient = blobServiceClient.GetBlobContainerClient(entity.BlobContainer);
+                var blob = blobContainerClient.GetBlobClient(entity.BlobName);
 
-            var imageMemoryStream = new MemoryStream();
-            await blob.DownloadToAsync(imageMemoryStream);
+                var imageMemoryStream = new MemoryStream();
+                await blob.DownloadToAsync(imageMemoryStream);
 
-            var image = Image.FromStream(imageMemoryStream);
+                var image = Image.FromStream(imageMemoryStream);
 
-            double scale = .2;
+                if (image.Width < 500 || image.Height < 500)
+                {
+                    entity.ThumbnailId = "skip - too small";
+                    await this.AddOrUpdateAsync(entity);
+                    return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
+                }
 
-            var resizedImage = ResizeImage(image, (int) Math.Ceiling(image.Width * scale), (int) Math.Ceiling(image.Height * scale));
-            var memoryStream = new MemoryStream();
-            resizedImage.Save(memoryStream, ImageFormat.Png);
-            memoryStream.Seek(0, SeekOrigin.Begin);
+                double scale = .2;
+                var resizedImage = ResizeImage(image, (int)Math.Ceiling(image.Width * scale), (int)Math.Ceiling(image.Height * scale));
+                var memoryStream = new MemoryStream();
+                resizedImage.Save(memoryStream, ImageFormat.Png);
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
-            var thumbnailId = Guid.NewGuid().ToString();
-            var blobResized = blobContainerThumbnail.GetBlobClient(thumbnailId);
-            await blobResized.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
+                var thumbnailId = Guid.NewGuid().ToString();
+                var blobResized = blobContainerThumbnail.GetBlobClient(thumbnailId);
+                await blobResized.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
 
-            entity.ThumbnailId = thumbnailId;
-            await this.AddOrUpdateAsync(entity);
+                entity.ThumbnailId = thumbnailId;
+                await this.AddOrUpdateAsync(entity);
 
-            return this.GetDownloadUrl("thumbnails", entity.ThumbnailId);
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
+            }
+            catch
+            {
+                entity.ThumbnailId = "skip - failed";
+                await this.AddOrUpdateAsync(entity);
+                return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
+            }
         }
 
         /// <summary>
