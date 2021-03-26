@@ -21,7 +21,7 @@ function listImages() {
                 imageInfo.appendChild(nameInfoElement);
 
                 var img = document.createElement("img");
-                img.src = "api/images/" + imageEntity.blobContainer + "/" + imageEntity.id;
+                img.src = "api/images/" + imageEntity.blobContainer + "/" + imageEntity.id + "/thumbnail";
 
                 imageInfo.appendChild(img);
                 imageContainerElement.appendChild(imageInfo);

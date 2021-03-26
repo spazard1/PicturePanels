@@ -32,6 +32,8 @@ namespace CloudStorage.Models
 
         public DateTime? PlayedTime { get; set; }
 
+        public string ThumbnailId { get; set; }
+
         public ImageTableEntity Clone()
         {
             return (ImageTableEntity)this.MemberwiseClone();
