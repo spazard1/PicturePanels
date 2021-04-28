@@ -36,10 +36,10 @@ namespace PictureGame.Services
                     {
                         playerModel.ConnectionId = Context.ConnectionId;
                         playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+                        await this.AddPlayerToTeamGroupAsync(playerModel);
 
                         if (!playerModel.IsAdmin)
                         {
-                            await this.AddPlayerToTeamGroupAsync(playerModel);
                             await Clients.Group(GameBoardGroup).AddPlayer(new PlayerEntity(playerModel));
                         }
                     }
@@ -70,6 +70,10 @@ namespace PictureGame.Services
         public async Task Chat(PlayerEntity entity, string message)
         {
             var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
+            if (playerModel == null)
+            {
+                return;
+            }
 
             if (playerModel.IsAdmin)
             {
@@ -91,6 +95,10 @@ namespace PictureGame.Services
         public async Task Typing(PlayerEntity entity)
         {
             var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
+            if (playerModel == null)
+            {
+                return;
+            }
 
             if (playerModel.IsAdmin)
             {
@@ -114,6 +122,12 @@ namespace PictureGame.Services
             {
                 return;
             }
+
+            if (playerModel.IsAdmin)
+            {
+                return;
+            }
+
             playerModel.SelectedTiles = entity.SelectedTiles;
             playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
 

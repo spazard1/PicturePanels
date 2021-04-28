@@ -25,6 +25,20 @@ select {
 .actionLink {
     box-sizing: border-box;
     border: 2px solid dodgerblue;
+    padding: 1px;
     margin: 2px;
     cursor: pointer;
+}
+
+.editImageMenu {
+    left: 50%;
+    transform: translate(-50%, 0);
+    text-align: center;
+    background-color: white;
+    position: fixed;
+    z-index: 10;
+    margin: auto;
+    top: 30vh;
+    padding: 10px;
+    border: 3px solid dodgerblue;
 }

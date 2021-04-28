@@ -195,6 +195,27 @@ namespace CloudStorage.Services
             return imageTableEntity;
         }
 
+        public async Task<List<ImageTableEntity>> GetAllImagesAsync()
+        {
+            var imageTableResults = new List<ImageTableEntity>();
+
+            TableQuery<ImageTableEntity> tableQuery = new TableQuery<ImageTableEntity>();
+
+            TableContinuationToken continuationToken = null;
+
+            do
+            {
+                TableQuerySegment<ImageTableEntity> tableQueryResult =
+                    await imageTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
+
+                continuationToken = tableQueryResult.ContinuationToken;
+
+                imageTableResults.AddRange(tableQueryResult.Results.Where(result => result.UploadComplete));
+            } while (continuationToken != null);
+
+            return imageTableResults;
+        }
+
         public async Task<List<ImageTableEntity>> GetAllImagesAsync(string blobContainer)
         {
             var imageTableResults = new List<ImageTableEntity>();

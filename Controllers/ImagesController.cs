@@ -183,6 +183,22 @@ namespace CloudStorage.Controllers
             return Json(new ImageEntity(imageTableEntity));
         }
 
+        [HttpPut("{blobContainer}/{imageId}")]
+        public async Task<IActionResult> PutEditAsync(string blobContainer, string imageId, [FromBody] ImageEntity imageEntity)
+        {
+            var imageTableEntity = await imageTableStorage.GetAsync(blobContainer, imageId);
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified blobcontainer/id");
+            }
+
+            imageTableEntity.Name = imageEntity.Name;
+            imageTableEntity.UploadedBy = imageEntity.UploadedBy;
+            imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
+
+            return Json(new ImageEntity(imageTableEntity));
+        }
+
         [HttpPut("move")]
         [RequireAuthorization]
         public async Task<IActionResult> MoveAsync([FromBody] MoveImageEntity moveImageEntity)
@@ -263,6 +279,7 @@ namespace CloudStorage.Controllers
             await imageTableStorage.UploadFromStream(blobContainer, imageTableEntity.BlobName, this.Request.BodyReader.AsStream());
 
             imageTableEntity.UploadComplete = true;
+            imageTableEntity.UploadCompleteTime = DateTime.UtcNow;
             imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
 
             await imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);

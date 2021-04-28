@@ -20,6 +20,7 @@ namespace CloudStorage.Entities
             Name = tableEntity.Name;
             UploadedBy = tableEntity.UploadedBy;
             UploadComplete = tableEntity.UploadComplete;
+            UploadCompleteTime = tableEntity.UploadCompleteTime;
             if (tableEntity.PlayedTime.HasValue)
             {
                 PlayedTime = tableEntity.PlayedTime.Value.ToShortDateString();
@@ -49,6 +50,8 @@ namespace CloudStorage.Entities
 
         public bool UploadComplete { get; internal set; }
 
+        public DateTime? UploadCompleteTime { get; internal set; }
+
         public string PlayedTime { get; internal set; }
 
         public ImageTableEntity ToTableEntity()
@@ -61,6 +64,7 @@ namespace CloudStorage.Entities
                 Name = this.Name,
                 UploadedBy = this.UploadedBy,
                 UploadComplete = this.UploadComplete,
+                UploadCompleteTime = this.UploadCompleteTime,
                 PlayedTime = null
             };
         }

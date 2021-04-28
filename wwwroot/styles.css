@@ -83,6 +83,23 @@ input[type=button] {
     -webkit-tap-highlight-color: transparent;
 }
 */
+
+#adminMenu {
+    position: fixed;
+    height: 1em;
+    bottom: .5em;
+    text-align: center;
+    width: 50%;
+    left: 25%;
+}
+
+#adminMenu a {
+    padding: 3px;
+    margin: 2px;
+    background-color: black;
+    border: 2px solid dodgerblue;
+}
+
 .inputDefaultText {
     color: grey !important;
     font-style: italic;

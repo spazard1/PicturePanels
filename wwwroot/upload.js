@@ -288,6 +288,7 @@ function setupCroppie() {
 
 window.onload = async () => {
     if (await isAuthorized()) {
+        setupAdminMenu();
         await drawBlobContainers(await getBlobContainers(), "blobContainer");
     } else {
         document.getElementById("blobContainerDiv").classList.add("hidden");
