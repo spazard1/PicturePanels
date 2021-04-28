@@ -589,11 +589,6 @@ window.onload = async function () {
 
     var player = await getPlayer();
 
-    if (player.isAdmin) {
-        document.getElementById("mainDiv").innerHTML = "Player is admin. Revoke on the <a href='setup.html'>setup.html</a> page.";
-        return;
-    }
-
     var foundPlayer = false;
     if (player && player.playerId && localStorage.getItem("createdTime")) {
         var createdTime = new Date(localStorage.getItem("createdTime"));
@@ -604,6 +599,11 @@ window.onload = async function () {
         if (createdTime > yesterday) {
             choosePlayerName();
             await chooseTeam(player.teamNumber);
+
+            if (player.isAdmin) {
+                document.getElementById("playerName").classList.add("adminPlayerName");
+            }
+
             foundPlayer = true;
         }
     }

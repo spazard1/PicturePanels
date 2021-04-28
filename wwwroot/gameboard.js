@@ -745,10 +745,11 @@ async function handleGameState(gameState) {
         await resetTiles(gameState);
 
         var imageEntity = await getImageEntity(gameState.imageId);
-        if (imageEntity.uploadedBy) {
+        if (imageEntity.uploadedBy !== "admin") {
             document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
+            document.getElementById("uploadedBy").classList.remove("hidden");
         } else {
-            document.getElementById("uploadedBy").innerHTML = "";
+            document.getElementById("uploadedBy").classList.add("hidden");
         }
     }
 

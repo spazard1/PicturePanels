@@ -30,6 +30,8 @@ namespace CloudStorage.Models
 
         public bool UploadComplete { get; set; }
 
+        public DateTime? UploadCompleteTime { get; set; }
+
         public DateTime? PlayedTime { get; set; }
 
         public string ThumbnailId { get; set; }
