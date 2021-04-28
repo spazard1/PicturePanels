@@ -90,6 +90,8 @@ function drawIsAdminButton(player) {
 }
 
 window.onload = async () => {
+    setupAdminMenu();
+
     drawBlobContainers(await getBlobContainers(), "blobContainer");
 
     drawGameState(await getGameState());

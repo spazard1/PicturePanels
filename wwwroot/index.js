@@ -284,6 +284,30 @@ function setupInputDefaultText(elementId, defaultValue, currentValue) {
     }
 }
 
+function setupAdminMenu() {
+    var menuDiv = document.getElementById("adminMenu");
+
+    var adminLink = document.createElement("a");
+    adminLink.appendChild(document.createTextNode("Admin"));
+    adminLink.href = "admin.html";
+    menuDiv.appendChild(adminLink);
+
+    var uploadLink = document.createElement("a");
+    uploadLink.appendChild(document.createTextNode("Upload"));
+    uploadLink.href = "upload.html";
+    menuDiv.appendChild(uploadLink);
+
+    var listLink = document.createElement("a");
+    listLink.appendChild(document.createTextNode("List"));
+    listLink.href = "listimages.html";
+    menuDiv.appendChild(listLink);
+
+    var setupLink = document.createElement("a");
+    setupLink.appendChild(document.createTextNode("Setup"));
+    setupLink.href = "setup.html";
+    menuDiv.appendChild(setupLink);
+}
+
 var connection;
 function createSignalRConnection(playerIdSuffix) {
     connection = new signalR.HubConnectionBuilder()

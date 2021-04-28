@@ -16,6 +16,7 @@ function listImages() {
             responseJson.forEach(imageEntity => {
                 var imageInfo = document.createElement("div");
                 imageInfo.id = imageEntity.id;
+                imageInfo.imageEntity = imageEntity;
                 imageInfo.classList.add("imageInfo");
                 var nameInfoElement = document.createElement("div");
                 imageInfo.appendChild(nameInfoElement);
@@ -53,18 +54,30 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     }
 
     var imageName = document.createElement("div");
+    imageName.id = imageEntity.id + "_name";
     imageName.appendChild(document.createTextNode(imageEntity.name));
     nameInfoElement.appendChild(imageName);
 
     var imageUploadedBy = document.createElement("div");
+    imageUploadedBy.id = imageEntity.id + "_uploadedBy";
     imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
     nameInfoElement.appendChild(imageUploadedBy);
+    
 
     var imagePlayedTime = document.createElement("div");
     imagePlayedTime.appendChild(document.createTextNode(imageEntity.playedTime));
     nameInfoElement.appendChild(imagePlayedTime);
 
     var actionLinks = document.createElement("div");
+
+    var editLink = document.createElement("span");
+    editLink.classList = "actionLink";
+    editLink.onclick = function (event) {
+        editImage(imageEntity.id);
+    };
+    editLink.appendChild(document.createTextNode("Edit"));
+    actionLinks.appendChild(editLink);
+
     var moveLink = document.createElement("span");
     moveLink.classList = "actionLink";
     moveLink.onclick = function (event) {
@@ -90,6 +103,45 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     actionLinks.appendChild(deleteLink);
 
     nameInfoElement.appendChild(actionLinks);
+}
+
+async function editImage(imageId) {
+    var imageEntity = document.getElementById(imageId).imageEntity;
+
+    document.getElementById("editImageMenu").classList.remove("hidden");
+    document.getElementById("imageId").value = imageId;
+    document.getElementById("imageName").value = imageEntity.name;
+    document.getElementById("uploadedBy").value = imageEntity.uploadedBy;
+}
+
+async function saveImage() {
+    return await fetch("api/images/" + document.getElementById("sourceBlobContainer").value + "/" + document.getElementById("imageId").value,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("Authorization")
+            },
+            body: JSON.stringify({
+                name: document.getElementById("imageName").value,
+                uploadedBy: document.getElementById("uploadedBy").value
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("got bad response on edit image: " + response.text());
+            }
+            return response.json();
+        }).then(responseJson => {
+            document.getElementById("editImageMenu").classList.add("hidden");
+
+            document.getElementById(document.getElementById("imageId").value).imageEntity = responseJson;
+            document.getElementById(document.getElementById("imageId").value + "_name").innerHTML = document.getElementById("imageName").value;
+            document.getElementById(document.getElementById("imageId").value + "_uploadedBy").innerHTML = document.getElementById("uploadedBy").value;
+            return responseJson;
+        }).catch(error => {
+            alert(error);
+        });
 }
 
 async function moveImage(imageId) {
@@ -181,12 +233,20 @@ async function deleteImage(imageId) {
 }
 
 window.onload = async function () {
+    setupAdminMenu();
+
     var blobContainers = await getBlobContainers();
     drawBlobContainers(blobContainers, "sourceBlobContainer");
     drawBlobContainers(blobContainers, "targetBlobContainer");
 
     document.getElementById("sourceBlobContainer").value = localStorage.getItem("blobContainer");
     document.getElementById("sourceBlobContainer").onchange = listImages;
+
+    document.getElementById("cancelSaveButton").onclick = function (event) {
+        document.getElementById("editImageMenu").classList.add("hidden");
+    };
+    document.getElementById("saveButton").onclick = saveImage;
+
 
     listImages();
 };
