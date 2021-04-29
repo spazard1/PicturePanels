@@ -84,13 +84,14 @@ input[type=button] {
 }
 */
 
-#adminMenu {
+.adminMenu {
     position: fixed;
     height: 1em;
     bottom: .5em;
     text-align: center;
-    width: 50%;
-    left: 25%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 2.5vh;
 }
 
 #adminMenu a {
