@@ -97,4 +97,8 @@ window.onload = async () => {
     drawGameState(await getGameState());
 
     drawIsAdminButton(await getPlayer());
+
+    if (await isAuthorized()) {
+        document.getElementById("password").classList.add("hidden");
+    }
 }
