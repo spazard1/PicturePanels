@@ -336,6 +336,8 @@ window.onload = async function () {
         return;
     }
 
+    setupAdminMenu();
+
     var player = await getPlayer();
     if (!player) {
         document.getElementById("mainDiv").innerHTML = "Player not found. Go to player page first.";

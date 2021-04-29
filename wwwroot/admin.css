@@ -195,4 +195,8 @@ body {
         left: 50vw;
         flex-direction: column;
     }
+
+    .adminMenu {
+        left: 25%;
+    }
 }
