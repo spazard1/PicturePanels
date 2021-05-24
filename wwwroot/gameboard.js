@@ -745,7 +745,7 @@ async function handleGameState(gameState) {
         await resetTiles(gameState);
 
         var imageEntity = await getImageEntity(gameState.imageId);
-        if (imageEntity.uploadedBy !== "admin") {
+        if (imageEntity && imageEntity.uploadedBy !== "admin") {
             document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
             document.getElementById("uploadedBy").classList.remove("hidden");
         } else {

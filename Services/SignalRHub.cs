@@ -136,8 +136,6 @@ namespace PictureGame.Services
 
         public async Task AddPlayerToTeamGroupAsync(PlayerTableEntity playerModel)
         {
-            await Clients.Group(SignalRHub.GameBoardGroup).AddPlayer(new PlayerEntity(playerModel));
-
             if (string.IsNullOrWhiteSpace(playerModel.ConnectionId))
             {
                 return;
