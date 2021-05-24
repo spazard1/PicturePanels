@@ -43,7 +43,9 @@ async function getImageEntity(imageId) {
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
-        });
+        }).catch(error => {
+            return null;
+        });;
 }
 
 function mobileCheck() {

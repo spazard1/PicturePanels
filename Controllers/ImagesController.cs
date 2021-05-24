@@ -100,6 +100,11 @@ namespace CloudStorage.Controllers
         {
             var imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, "soundofmusic");
 
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+            }
+
             Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(ImageTableStorage.WelcomeBlobContainer, imageTableEntity);
             Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
@@ -112,6 +117,11 @@ namespace CloudStorage.Controllers
             var blobContainer = gameState.BlobContainer;
 
             var imageTableEntity = await this.imageTableStorage.GetAsync(blobContainer, imageId);
+
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+            }
 
             return Json(new ImageEntity(imageTableEntity));
         }

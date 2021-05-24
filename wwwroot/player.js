@@ -600,10 +600,6 @@ window.onload = async function () {
             choosePlayerName();
             await chooseTeam(player.teamNumber);
 
-            if (player.isAdmin) {
-                document.getElementById("playerName").classList.add("adminPlayerName");
-            }
-
             foundPlayer = true;
         }
     }
@@ -612,6 +608,10 @@ window.onload = async function () {
     }
     
     drawPlayer(player);
+
+    if (player.isAdmin) {
+        document.getElementById("playerName").classList.add("adminPlayerName");
+    }
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
