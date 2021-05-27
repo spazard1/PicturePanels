@@ -33,6 +33,10 @@ function setupChats(chatsElementId, teamNumber) {
         teamNumber = parseInt(localStorage.getItem("teamNumber"));
     }
 
+    if (!teamNumber) {
+        throw new Error("No team number set in setupChats");
+    }
+
     var chatsElement = document.getElementById(chatsElementId);
     chatsElement.classList.add("smoothScroll");
     chatsElement.onclick = function (event) {
