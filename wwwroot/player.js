@@ -218,6 +218,7 @@ var playerIsReadyToPlay = false;
 
 async function chooseTeam(teamNumber) {
     setupTeam(teamNumber);
+    setupChats("chats");
     
     var player = await putPlayer();
     document.getElementById("playerName").innerHTML = player.name;
@@ -570,8 +571,6 @@ window.onresize = function () {
 var connectionCount = 0;
 
 window.onload = async function () {
-    setupChats("chats");
-
     var captainGuessButton = document.getElementById("captainGuessButton");
     captainGuessButton.onclick = (event) => {
         putCaptainGuess();
