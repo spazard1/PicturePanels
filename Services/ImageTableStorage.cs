@@ -442,7 +442,7 @@ namespace CloudStorage.Services
                 }
                 else
                 {
-                    var brush = new SolidBrush(Color.Black);
+                    var brush = new SolidBrush(Color.Transparent);
                     graphics.FillRectangle(brush, destRect);
                 }
             }

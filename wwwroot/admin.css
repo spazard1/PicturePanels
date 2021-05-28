@@ -181,11 +181,6 @@ body {
         width: 48vw;
     }
 
-    .tileButton {
-        font-size: 1.4em;
-        height: 1.75em;
-    }
-
     .chatsContainer {
         display: flex;
         height: 100%;
