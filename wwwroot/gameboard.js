@@ -41,7 +41,7 @@ function createTiles() {
     }
 }
 
-async function resetTiles() {
+async function resetTiles(gameState) {
     var tiles = document.getElementsByClassName("tile");
     for (let tile of tiles) {
         tile.classList.remove("tileOpen");
@@ -54,7 +54,7 @@ async function resetTiles() {
     imageContainer.style.maxWidth = "";
 
     var img = document.getElementById('image');
-    await loadGameboardImage(img);
+    await loadGameboardImage(img, gameState.imageId);
     var imgRect = img.getBoundingClientRect();
 
     var imageContainerMaxWidth = 83;
@@ -69,7 +69,7 @@ async function resetTiles() {
         imageContainer.style.maxWidth = imageContainerMaxWidth + "vw";
         imgRect = img.getBoundingClientRect();
     }
-    await loadGameboardImage(img);
+    await loadGameboardImage(img, gameState.imageId);
     imgRect = img.getBoundingClientRect();
 
     var imgSizeInfo = getImgSizeInfo(img);
@@ -742,7 +742,7 @@ async function handleGameState(gameState) {
         var img = document.getElementById('image');
         img.style = "opacity: 0";
 
-        await resetTiles();
+        await resetTiles(gameState);
 
         var imageEntity = await getImageEntity(gameState.imageId);
         if (imageEntity && imageEntity.uploadedBy !== "admin") {

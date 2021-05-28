@@ -130,7 +130,7 @@ input[type=button] {
     text-align: center;
     justify-content: center;
     position: fixed;
-    top: 1em;
+    top: 1.1em;
     display: flex;
     flex-wrap: wrap;
     z-index: 100;

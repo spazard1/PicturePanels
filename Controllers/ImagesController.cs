@@ -124,12 +124,17 @@ namespace CloudStorage.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            if (!gameState.RevealedTiles.Contains(tileNumber.ToString()))
+            var imageUrl = "";
+            if (!gameState.RevealedTiles.Contains(tileNumber.ToString()) && tileNumber > 0)
             {
-                return StatusCode((int)HttpStatusCode.Forbidden, "That panel is not open");
+                imageUrl = "/api/images/tiles/0";
+            }
+            else
+            {
+                imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);
             }
 
-            Response.Headers["Location"] = await this.imageTableStorage.GetTileImageAsync(imageTableEntity, tileNumber);
+            Response.Headers["Location"] = imageUrl;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
