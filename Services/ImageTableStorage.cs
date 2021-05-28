@@ -26,9 +26,12 @@ namespace CloudStorage.Services
         private CloudTable imageTable;
         private BlobServiceClient blobServiceClient;
 
+        public const int Across = 5;
+        public const int Down = 4;
         public const string DefaultBlobContainer = "pending";
         public const string ScratchBlobContainer = "scratch";
         public const string ThumbnailsBlobContainer = "thumbnails";
+        public const string TilesBlobContainer = "tiles";
         public const string WelcomeBlobContainer = "welcome";
 
         public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider)
@@ -354,6 +357,33 @@ namespace CloudStorage.Services
             }
         }
 
+        public async Task<string> GetTileImageUrlAsync(ImageTableEntity entity, int tileNumber)
+        {
+            var tilesContainer = blobServiceClient.GetBlobContainerClient(TilesBlobContainer);
+            var tileBlob = tilesContainer.GetBlobClient(entity.Id + "_tile_" + tileNumber);
+
+            if (await tileBlob.ExistsAsync())
+            {
+                return this.GetDownloadUrl(TilesBlobContainer, entity.Id + "_tile_" + tileNumber);
+            }
+
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(entity.BlobContainer);
+            var blob = blobContainerClient.GetBlobClient(entity.BlobName);
+
+            var imageMemoryStream = new MemoryStream();
+            await blob.DownloadToAsync(imageMemoryStream);
+
+            var image = Image.FromStream(imageMemoryStream);
+
+            var tileImage = GetTileImage(image, tileNumber);
+            var memoryStream = new MemoryStream();
+            tileImage.Save(memoryStream, ImageFormat.Png);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            await tileBlob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
+            return this.GetDownloadUrl(TilesBlobContainer, entity.Id + "_tile_" + tileNumber);
+        }
+
         /// <summary>
         /// Resize the image to the specified width and height.
         /// </summary>
@@ -384,6 +414,45 @@ namespace CloudStorage.Services
             }
 
             return destImage;
+        }
+
+        /// <summary>
+        /// Get the image for a specified tile number
+        /// </summary>
+        /// <param name="image">The image to get the tile number</param>
+        /// <param name="tileNumber">The tileNumber to retrieve</param>
+        /// <returns>The image at that tile</returns>
+        public static Bitmap GetTileImage(Image image, int tileNumber)
+        {
+            var tileWidth = (int) Math.Ceiling((double)image.Width / Across);
+            var tileHeight = (int) Math.Ceiling((double)image.Height / Down);
+
+            var destRect = new Rectangle(0, 0, tileWidth, tileHeight);
+            var destImage = new Bitmap(tileWidth, tileHeight);
+
+            var startX = ((tileNumber - 1) % Across) * tileWidth;
+            var startY = ((tileNumber - 1) / Across) * tileHeight;
+
+            // Draw the cloned portion of the Bitmap object.
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.DrawImage(image, destRect, startX, startY, tileWidth, tileHeight, GraphicsUnit.Pixel);
+            }
+
+            return destImage;
+        }
+
+        public Task GenerateCacheAsync(ImageTableEntity entity)
+        {
+            var tasks = new List<Task>();
+            tasks.Add(this.GetThumbnailUrlAsync(entity));
+
+            for (var i = 1; i <= Across * Down; i++)
+            {
+                tasks.Add(this.GetTileImageUrlAsync(entity, i));
+            }
+
+            return Task.WhenAll(tasks);
         }
     }
 }

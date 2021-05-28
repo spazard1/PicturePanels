@@ -58,25 +58,9 @@ namespace CloudStorage.Controllers
 
             var results = (await imageTableStorage.GetAllBlobContainersAsync())
                 .Select(blobContainer => new BlobContainerEntity() { Name = blobContainer }).ToList();
-
             results.Sort();
 
             return results;
-        }
-
-        [HttpGet("missing")]
-        [RequireAuthorization]
-        public async Task<IActionResult> GetMissingAsync()
-        {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
-
-            var imageEntity = await this.imageTableStorage.GetMissingImageTableEntityAsync(gameState);
-            if (imageEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            return Json(imageEntity);
         }
 
         [HttpGet]
@@ -91,7 +75,6 @@ namespace CloudStorage.Controllers
             }
 
             Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(gameState.BlobContainer, imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -114,33 +97,39 @@ namespace CloudStorage.Controllers
         public async Task<IActionResult> GetEntityAsync(string imageId)
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
-            var blobContainer = gameState.BlobContainer;
 
-            var imageTableEntity = await this.imageTableStorage.GetAsync(blobContainer, imageId);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
 
             if (imageTableEntity == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            return Json(new ImageEntity(imageTableEntity));
+            var imageEntity = new ImageEntity
+            {
+                UploadedBy = imageTableEntity.UploadedBy
+            };
+
+            return Json(imageEntity);
         }
 
-        [HttpGet("{imageId}")]
-        public async Task<IActionResult> GetAsync(string imageId)
+        [HttpGet("tiles/{tileNumber:int}")]
+        public async Task<IActionResult> GetTileImageAsync(int tileNumber)
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
-            var blobContainer = gameState.BlobContainer;
-
-            var imageTableEntity = await this.imageTableStorage.GetAsync(blobContainer, imageId);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
 
             if (imageTableEntity == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(blobContainer, imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
+            if (!gameState.RevealedTiles.Contains(tileNumber.ToString()))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden, "That panel is not open");
+            }
+
+            Response.Headers["Location"] = await this.imageTableStorage.GetTileImageAsync(imageTableEntity, tileNumber);
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -292,7 +281,7 @@ namespace CloudStorage.Controllers
             imageTableEntity.UploadCompleteTime = DateTime.UtcNow;
             imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
 
-            await imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
+            await imageTableStorage.GenerateCacheAsync(imageTableEntity);
 
             return Json(new ImageEntity(imageTableEntity));
         }
