@@ -436,9 +436,16 @@ namespace CloudStorage.Services
             // Draw the cloned portion of the Bitmap object.
             using (var graphics = Graphics.FromImage(destImage))
             {
-                graphics.DrawImage(image, destRect, startX, startY, tileWidth, tileHeight, GraphicsUnit.Pixel);
+                if (tileNumber > 0)
+                {
+                    graphics.DrawImage(image, destRect, startX, startY, tileWidth, tileHeight, GraphicsUnit.Pixel);
+                }
+                else
+                {
+                    var brush = new SolidBrush(Color.Black);
+                    graphics.FillRectangle(brush, destRect);
+                }
             }
-
             return destImage;
         }
 
@@ -447,7 +454,7 @@ namespace CloudStorage.Services
             var tasks = new List<Task>();
             tasks.Add(this.GetThumbnailUrlAsync(entity));
 
-            for (var i = 1; i <= Across * Down; i++)
+            for (var i = 0; i <= Across * Down; i++)
             {
                 tasks.Add(this.GetTileImageUrlAsync(entity, i));
             }
