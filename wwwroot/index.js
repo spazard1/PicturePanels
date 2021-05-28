@@ -113,6 +113,39 @@ function drawGameState(gameState) {
     });
 }
 
+function drawTileButtons() {
+    var tileNumber = 1;
+
+    var tileButtonsElement = document.getElementById("tileButtons");
+    for (var i = 0; i < down; i++) {
+        for (var j = 0; j < across; j++) {
+            var tileButtonElement = document.createElement("div");
+            tileButtonElement.classList.add("tileButton");
+            tileButtonElement.classList.add("noHighlights");
+            tileButtonElement.classList.add("tileButtonDisabled");
+            tileButtonElement.onclick = tileButtonOnClick;
+            tileButtonElement.value = tileNumber + "";
+
+            var tileBackgroundElement = document.createElement("div");
+            tileBackgroundElement.classList.add("tileButtonBackground");
+            tileButtonElement.appendChild(tileBackgroundElement);
+
+            var tileNumberElement = document.createElement("div");
+            tileNumberElement.classList.add("tileButtonNumber");
+            tileNumberElement.appendChild(document.createTextNode(tileNumber));
+            tileBackgroundElement.appendChild(tileNumberElement);
+
+            var tileImageElement = document.createElement("img");
+            tileImageElement.classList.add("tileButtonImage");
+            tileButtonElement.appendChild(tileImageElement);
+
+            tileButtonsElement.appendChild(tileButtonElement);
+
+            tileNumber++;
+        }
+    }
+}
+
 function updateTileButtons(gameState, disabledTiles) {
     var tileButtons = document.getElementsByClassName("tileButton");
 
@@ -121,11 +154,19 @@ function updateTileButtons(gameState, disabledTiles) {
     }
 
     for (let tileButton of tileButtons) {
-        if (gameState.revealedTiles.includes(tileButton.value) || disabledTiles.includes(tileButton.value)) {
+        var tileButtonImage = tileButton.lastChild;
+
+        if (gameState.revealedTiles.includes(tileButton.value)) {
             tileButton.classList.add("tileButtonDisabled");
             tileButton.classList.remove("tileButtonSelected");
+            tileButtonImage.src = "/api/images/tiles/" + gameState.imageId + "/" + tileButton.value;
+        } else if (disabledTiles.includes(tileButton.value)) { 
+            tileButton.classList.add("tileButtonDisabled");
+            tileButton.classList.remove("tileButtonSelected");
+            tileButtonImage.src = "/api/images/tiles/" + gameState.imageId + "/0";
         } else {
             tileButton.classList.remove("tileButtonDisabled");
+            tileButtonImage.src = "/api/images/tiles/" + gameState.imageId + "/0";
         }
     }
 }
@@ -154,30 +195,6 @@ function uuidv4() {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
-}
-
-function drawTileButtons() {
-    var tileNumber = 1;
-
-    var tileButtonsElement = document.getElementById("tileButtons");
-    for (var i = 0; i < down; i++) {
-        for (var j = 0; j < across; j++) {
-
-            var tileButtonElement = document.createElement("div");
-            tileButtonElement.classList.add("tileButton");
-            tileButtonElement.classList.add("noHighlights");
-            tileButtonElement.classList.add("tileButtonDisabled");
-            tileButtonElement.onclick = tileButtonOnClick;
-            tileButtonElement.value = tileNumber + "";
-
-            var tileNumberElement = document.createElement("div");
-            tileNumberElement.classList.add("tileButtonNumber");
-            tileNumberElement.appendChild(document.createTextNode(tileNumber++));
-            tileButtonElement.appendChild(tileNumberElement);
-
-            tileButtonsElement.appendChild(tileButtonElement);
-        }
-    }
 }
 
 function clearTileButtonSelection() {
