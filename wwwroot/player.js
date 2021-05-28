@@ -380,7 +380,6 @@ function notifyTurn(gameState) {
         document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
         document.getElementById("tileButtons").classList.add("hidden");
         document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-        //document.getElementById("turnStatusMessage").innerHTML = "Welcome to the Picture Game!<br/>We'll be getting started soon.";
         return;
     }
 
@@ -432,7 +431,6 @@ function notifyTurn(gameState) {
 
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                //document.getElementById("turnStatusMessage").innerHTML = "";
                 document.getElementById("turnStatusMessage").innerHTML = "Your team wins this round!";
                 drawSystemChat("chats", "That's the correct answer!");
                 break;
@@ -443,15 +441,11 @@ function notifyTurn(gameState) {
                 document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                //document.getElementById("turnStatusMessage").innerHTML = "";
-                //document.getElementById("turnStatusMessage").innerHTML = "The other team won this round.";
                 break;
             default:
                 document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                //document.getElementById("turnStatusMessage").innerHTML = "";
-                //document.getElementById("turnStatusMessage").innerHTML = "The other team is taking their turn.";
                 break;
         }
     }
