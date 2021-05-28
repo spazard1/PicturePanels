@@ -238,6 +238,14 @@ async function chooseTeam(teamNumber) {
         }
         setupChoosePlayerName();
     }
+    document.getElementById("turnStatusContainer").onclick = (event) => {
+        var result = confirm("Do you want to change your player name, color, or team?");
+        if (!result) {
+            return;
+        }
+        setupChoosePlayerName();
+    }
+
     playerIsReadyToPlay = true;
 
     scrollChats("chats", true);
@@ -369,17 +377,15 @@ function notifyTurn(gameState) {
     document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerCorrect");
 
     if (gameState.turnType === "Welcome") {
-        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHidden");
-        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
         document.getElementById("tileButtons").classList.add("hidden");
         document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-        document.getElementById("turnStatusMessage").innerHTML = "Welcome to the Picture Game!<br/>We'll be getting started soon.";
+        //document.getElementById("turnStatusMessage").innerHTML = "Welcome to the Picture Game!<br/>We'll be getting started soon.";
         return;
     }
 
     if (gameState.turnType === "EndRound") {
-        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHidden");
-        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
         document.getElementById("tileButtons").classList.add("hidden");
         document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
         document.getElementById("turnStatusMessage").innerHTML = "This round is over.";
@@ -389,60 +395,73 @@ function notifyTurn(gameState) {
     if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
         switch (gameState.turnType) {
             case "OpenTile":
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHidden");
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHighlight");
+                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+                highlightTurnStatusContainer();
+
                 document.getElementById("tileButtons").classList.remove("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "It's your team's turn to vote for a tile.";
+                document.getElementById("turnStatusMessage").innerHTML = "Vote for a tile to open";
                 drawSystemChat("chats", "It's your team's turn to vote for tile(s) you want to open.");
                 break;
             case "OpenFreeTile":
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHidden");
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHighlight");
+                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+                highlightTurnStatusContainer();
+
                 document.getElementById("tileButtons").classList.remove("hidden");
                 document.getElementById("tileButtons").classList.add("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "It's your team's turn to vote for a tile.";
+                document.getElementById("turnStatusMessage").innerHTML = "Vote for a free tile to open";
                 drawSystemChat("chats", "The other team made an incorrect guess, so vote to open a FREE tile.");
                 break;
             case "MakeGuess":
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHidden");
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHighlight");
+                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+                highlightTurnStatusContainer();
+
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
                 if (isCaptain(gameState)) {
-                    document.getElementById("turnStatusMessage").innerHTML = "Does your team want to guess or pass?";
+                    document.getElementById("turnStatusMessage").innerHTML = "Does your team want to guess?";
                 } else {
-                    document.getElementById("turnStatusMessage").innerHTML = "It's your team's turn to guess or pass.";
+                    document.getElementById("turnStatusMessage").innerHTML = "Make a guess or pass";
                 }
                 drawSystemChat("chats", "It's your team's turn to guess or pass.");
                 break;
             case "Correct":
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHidden");
+                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerCorrect");
+
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "Correct!<br/>Your team wins this round!";
+                //document.getElementById("turnStatusMessage").innerHTML = "";
+                document.getElementById("turnStatusMessage").innerHTML = "Your team wins this round!";
                 drawSystemChat("chats", "That's the correct answer!");
                 break;
         }
     } else {
         switch (gameState.turnType) {
             case "Correct":
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHidden");
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "The other team won this round.";
+                //document.getElementById("turnStatusMessage").innerHTML = "";
+                //document.getElementById("turnStatusMessage").innerHTML = "The other team won this round.";
                 break;
             default:
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHidden");
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
                 document.getElementById("tileButtons").classList.add("hidden");
                 document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "The other team is taking their turn.";
+                //document.getElementById("turnStatusMessage").innerHTML = "";
+                //document.getElementById("turnStatusMessage").innerHTML = "The other team is taking their turn.";
                 break;
         }
     }
+}
+
+function highlightTurnStatusContainer() {
+    document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+    setTimeout(function () {
+        document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHighlight");
+    }, 0);
 }
 
 function handleGameState(gameState) {
@@ -561,6 +580,33 @@ function setupTeamSelectionButtons() {
     };
 }
 
+function drawTileImages() {
+    var tileImages = document.createElement("div");
+    tileImages.classList.add("tileImages");
+    tileImages.classList.add("center");
+
+    var tileNumber = 1;
+    for (var i = 0; i < down; i++) {
+        for (var j = 0; j < across; j++) {
+            var tileImageContainerElement = document.createElement("div");
+            tileImageContainerElement.classList.add("tileImage");
+            tileImageContainerElement.classList.add("tileButton");
+
+            var tileImageElement = document.createElement("img");
+            tileImageElement.src = "api/images/tiles/" + tileNumber++;
+            tileImageContainerElement.appendChild(tileImageElement);
+
+            var tileNumberElement = document.createElement("div");
+            tileNumberElement.classList.add("tileButtonNumber");
+            tileNumberElement.appendChild(document.createTextNode(tileNumber));
+            tileImageContainerElement.appendChild(tileNumberElement);
+
+            tileImages.appendChild(tileImageContainerElement);
+        }
+    }
+    document.getElementById("mainDiv").appendChild(tileImages);
+}
+
 window.onresize = function () {
     var chatsElement = document.getElementById("chats");
     chatsElement.classList.remove("smoothScroll");
@@ -615,6 +661,8 @@ window.onload = async function () {
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
     setInterval(putPlayerPing, 30000);
+
+    //drawTileImages();
 
     if (localStorage.getItem("debug")) {
         setInterval(function () {
