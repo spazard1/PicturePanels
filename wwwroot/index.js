@@ -54,11 +54,11 @@ function mobileCheck() {
     return check;
 };
 
-async function loadImage(img, src) {
+async function loadGameboardImage(img) {
     return new Promise((resolve, reject) => {
         img.onload = () => resolve();
         img.onerror = reject;
-        img.src = src;
+        img.src = "api/images";
     })
 }
 
