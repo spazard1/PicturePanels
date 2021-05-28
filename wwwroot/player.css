@@ -240,27 +240,6 @@ body {
     max-height: 1em;
 }
 
-.tileImages {
-    position: fixed;
-    width: 98vw;
-    margin-left: 1vw;
-    margin-right: 1vw;
-    top: 1.1em;
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.tileImages img {
-    width: 100%;
-    vertical-align: bottom;
-}
-
-.tileImages div {
-    padding: 0;
-    margin: 0;
-    width: 20%;
-}
-
 @keyframes highlightTurnStatus {
     0% {
         color: white;

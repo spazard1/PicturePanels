@@ -15,16 +15,12 @@
     background: #1F4699;
 }
 
-.tileButtonNumber {
-    color: black;
-}
-
-.tileButtonSelected:nth-child(even) {
+.tileButtonSelected:nth-child(even) .tileButtonBackground {
     border: 4px solid dodgerblue;
     background-color: skyblue;
 }
 
-.tileButtonSelected:nth-child(odd) {
+.tileButtonSelected:nth-child(odd) .tileButtonBackground {
     border: 4px solid dodgerblue;
     background-color: skyblue;
 }

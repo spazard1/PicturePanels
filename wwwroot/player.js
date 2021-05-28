@@ -582,17 +582,17 @@ function setupTeamSelectionButtons() {
 
 function drawTileImages() {
     var tileImages = document.createElement("div");
-    tileImages.classList.add("tileImages");
+    tileImages.classList.add("tileButtons");
     tileImages.classList.add("center");
 
     var tileNumber = 1;
     for (var i = 0; i < down; i++) {
         for (var j = 0; j < across; j++) {
             var tileImageContainerElement = document.createElement("div");
-            tileImageContainerElement.classList.add("tileImage");
             tileImageContainerElement.classList.add("tileButton");
 
             var tileImageElement = document.createElement("img");
+            tileImageElement.classList.add("tileImage");
             tileImageElement.src = "api/images/tiles/" + tileNumber++;
             tileImageContainerElement.appendChild(tileImageElement);
 
@@ -661,8 +661,6 @@ window.onload = async function () {
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
     setInterval(putPlayerPing, 30000);
-
-    //drawTileImages();
 
     if (localStorage.getItem("debug")) {
         setInterval(function () {

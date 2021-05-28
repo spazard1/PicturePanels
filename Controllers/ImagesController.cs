@@ -113,11 +113,11 @@ namespace CloudStorage.Controllers
             return Json(imageEntity);
         }
 
-        [HttpGet("tiles/{tileNumber:int}")]
-        public async Task<IActionResult> GetTileImageAsync(int tileNumber)
+        [HttpGet("tiles/{imageId}/{tileNumber:int}")]
+        public async Task<IActionResult> GetTileImageAsync(string imageId, int tileNumber)
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
-            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
 
             if (imageTableEntity == null)
             {
