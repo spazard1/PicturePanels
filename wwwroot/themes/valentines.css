@@ -17,7 +17,7 @@
     border: 4px dashed pink;
 }
 
-.tile:nth-child(3n) {
+.tile:nth-child(3n) .tileBackground {
     background: #FFB6C1;
 }
 
@@ -25,11 +25,11 @@
     color: black;
 }
 
-.tile:nth-child(3n + 1) {
+.tile:nth-child(3n + 1) .tileBackground {
     background: #FF69B4;
 }
 
-.tile:nth-child(3n + 2) {
+.tile:nth-child(3n + 2) .tileBackground {
     background: red;
 }
 
@@ -54,7 +54,7 @@
     color: white;
 }
 
-.tileButton:nth-child(3n + 2) {
+.tileButton:nth-child(3n + 2) .tileButtonNumber {
     background: red;
 }
 
