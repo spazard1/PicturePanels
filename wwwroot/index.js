@@ -54,11 +54,11 @@ function mobileCheck() {
     return check;
 };
 
-async function loadGameboardImage(img, imageId) {
+async function loadImageAsync(img, imgSrc) {
     return new Promise((resolve, reject) => {
         img.onload = () => resolve();
         img.onerror = reject;
-        img.src = "api/images?t=" + imageId;
+        img.src = imgSrc;
     })
 }
 
@@ -137,8 +137,8 @@ function drawTileButtons() {
 
             var tileImageElement = document.createElement("img");
             tileImageElement.classList.add("tileButtonImage");
-            tileButtonElement.appendChild(tileImageElement);
 
+            tileButtonElement.appendChild(tileImageElement);
             tileButtonsElement.appendChild(tileButtonElement);
 
             tileNumber++;
