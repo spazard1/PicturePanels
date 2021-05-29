@@ -1,17 +1,20 @@
 ﻿.mostVotesTile {
     box-shadow: 0 0 0 .25vw green;
     outline: dashed .25vw lightblue;
+    z-index: 100;
+    top: 0;
+    left: 0;
 }
 
 .activeTeam {
     border: 4px solid lightgreen;
 }
 
-.tile:nth-child(even) {
+.tile:nth-child(even) .tileBackground {
     background: #8D602D;
 }
 
-.tile:nth-child(odd) {
+.tile:nth-child(odd) .tileBackground {
     background: #1F4699;
 }
 

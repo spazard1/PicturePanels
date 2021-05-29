@@ -127,7 +127,7 @@ namespace CloudStorage.Controllers
             var imageUrl = "";
             if (!gameState.RevealedTiles.Contains(tileNumber.ToString()) && tileNumber > 0)
             {
-                imageUrl = "/api/images/tiles/0";
+                imageUrl = "/api/images/tiles/" + imageId + "/0";
             }
             else
             {

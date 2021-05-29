@@ -215,17 +215,54 @@ body::-webkit-scrollbar {
     opacity: 0;
 }
 
-.tile {
-    border: 2px #202020 solid;
-    box-sizing: border-box;
+.tiles {
+    text-align: center;
     position: absolute;
-    margin: 0;
-    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    margin-top: 1vh;
+    width: 83vw;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tile {
+    position: relative;
+    box-sizing: border-box;
+    width: 20%;
     display: flex;
     vertical-align: middle;
     text-align: center;
     align-items: center;
     justify-content: center;
+    z-index: 30;
+}
+
+.tile:hover {
+    z-index: 100;
+}
+
+.tile .tileBackground {
+    position: absolute;
+    border: 2px solid black;
+    font-size: 1em;
+    user-select: none;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 2s;
+    z-index: 20;
+}
+
+.tileOpen .tileBackground {
+    opacity: 0;
 }
 
 .tileWelcome {
@@ -234,25 +271,28 @@ body::-webkit-scrollbar {
 
 .tileNumber {
     position: relative;
-    z-index: 600;
     font-size: 10vh;
     user-select: none;
 }
 
-.tileOpen {
-    transition: opacity 2s;
-    opacity: 0;
+.tile .tileImage {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    vertical-align: bottom;
+    z-index: 10;
 }
 
 .mostVotesTile {
     position: absolute;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    z-index: 10;
     transition: opacity 1s, transform 1s;
+}
+
+.mostVotesTile .tileImage {
+    position: relative;
+    width: 100%;
+    vertical-align: bottom;
+    z-index: 10;
 }
 
 .playerDot {
