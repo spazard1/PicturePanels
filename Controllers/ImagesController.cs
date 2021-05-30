@@ -116,6 +116,11 @@ namespace CloudStorage.Controllers
         [HttpGet("tiles/{imageId}/{tileNumber:int}")]
         public async Task<IActionResult> GetTileImageAsync(string imageId, int tileNumber)
         {
+            if (tileNumber < 0 || tileNumber > ImageTableStorage.Across * ImageTableStorage.Down)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "tileNumber out of range");
+            }
+
             var gameState = await this.gameTableStorage.GetGameStateAsync();
             var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
 
