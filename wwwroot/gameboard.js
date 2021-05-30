@@ -603,7 +603,9 @@ function openAllTiles() {
     tilesArray.forEach(function (tile) {
         if (!tile.classList.contains("tileOpen")) {
             setTimeout(function () {
-                tile.classList.add("tileOpen");
+                loadImageAsync(tile.lastChild, "/api/images/tiles/" + currentGameState.imageId + "/" + tile.tileNumber).then(() => {
+                    tile.classList.add("tileOpen");
+                });
             }, tileCount++ * 150);
         }
     });
@@ -727,7 +729,9 @@ async function handleGameState(gameState, firstLoad) {
         }
     }
 
-    var isNewTurn = gameState.turnType !== currentGameState.turnType || gameState.teamTurn !== currentGameState.teamTurn;
+    var isNewTurn = gameState.turnType !== currentGameState.turnType ||
+        gameState.teamTurn !== currentGameState.teamTurn
+        || gameState.imageId !== currentGameState.imageId;
 
     currentGameState = gameState;
 
@@ -821,14 +825,6 @@ function disappearCursor() {
 window.onresize = function () {
     resizeTileContainer();
     return;
-
-    var blackcover = document.getElementById('blackcover');
-    blackcover.classList.remove("hidden");
-
-    clearTimeout(reloadTimeout);
-    reloadTimeout = setTimeout(function () {
-        location.reload();
-    }, 500);
 }
 
 window.onload = async function () {
@@ -851,7 +847,4 @@ window.onload = async function () {
     handlePlayers(await getPlayers());
 
     await handleGameState(currentGameState, true);
-
-    var blackcover = document.getElementById('blackcover');
-    blackcover.classList.add("hidden");
 }

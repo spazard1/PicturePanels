@@ -10,6 +10,7 @@ using PictureGame.Filters;
 using PictureGame.Entities;
 using System;
 using System.Text.RegularExpressions;
+using CloudStorage.Models;
 
 namespace CloudStorage.Controllers
 {
@@ -129,14 +130,17 @@ namespace CloudStorage.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            var imageUrl = "";
-            if (!gameState.RevealedTiles.Contains(tileNumber.ToString()) && tileNumber > 0)
+            string imageUrl;
+            if (tileNumber == 0 ||
+                gameState.RevealedTiles.Contains(tileNumber.ToString()) ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
             {
-                imageUrl = "/api/images/tiles/" + imageId + "/0";
+                imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);     
             }
             else
             {
-                imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);
+                imageUrl = "/api/images/tiles/" + imageId + "/0";
             }
 
             Response.Headers["Location"] = imageUrl;
