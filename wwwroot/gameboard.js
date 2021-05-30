@@ -1,20 +1,7 @@
 ﻿var maxMostVotesTiles = 3;
-var tilesCreated = false;
 
-async function drawTilesAsync(gameState) {
-    if (tilesCreated) {
-        var tiles = document.getElementsByClassName("tile");
-        for (let tile of tiles) {
-            tile.lastChild.src = "/api/images/tiles/" + gameState.imageId + "/" + tile.tileNumber;
-            tile.classList.remove("tileOpen");
-        }
-
-        return;
-    }
-
+function createTiles() {
     var tileNumber = 1;
-
-    var promises = [];
 
     var tilesElement = document.getElementById("tiles");
     for (var i = 0; i < down; i++) {
@@ -37,7 +24,6 @@ async function drawTilesAsync(gameState) {
 
             var tileImageElement = document.createElement("img");
             tileImageElement.classList.add("tileImage");
-            promises.push(loadImageAsync(tileImageElement, "/api/images/tiles/" + gameState.imageId + "/" + tileNumber));
             tileElement.appendChild(tileImageElement);
 
             tilesElement.appendChild(tileElement);
@@ -53,72 +39,45 @@ async function drawTilesAsync(gameState) {
 
         var mostVotesTileImageElement = document.createElement("img");
         mostVotesTileImageElement.classList.add("tileImage");
-        promises.push(loadImageAsync(mostVotesTileImageElement, "/api/images/tiles/" + gameState.imageId + "/0"));
         mostVotesTileElement.appendChild(mostVotesTileImageElement);
 
         mostVotesTilesElement.appendChild(mostVotesTileElement);
     }
-
-    await Promise.all(promises);
-
-    tilesCreated = true;
 }
 
-async function resetTiles(gameState) {
-    return;
+async function resizeTilesAsync(gameState) {
+    var imagePromises = [];
+    var tiles = document.getElementsByClassName("tile");
 
-    var widthOffset = 2;
-    var heightOffset = 0;
+    for (let tile of tiles) {
+        tile.classList.remove("tileOpen");
+        imagePromises.push(loadImageAsync(tile.lastChild, "/api/images/tiles/" + gameState.imageId + "/0"));
+    }
 
-    var imageContainer = document.getElementById('imageContainer');
-    imageContainer.style.maxWidth = "";
+    var mostVotesTileElements = document.getElementsByClassName("mostVotesTile");
+    for (let mostVotesTileElement of mostVotesTileElements) {
+        mostVotesTileElement.classList.add("opacity0");
+        imagePromises.push(loadImageAsync(mostVotesTileElement.lastChild, "/api/images/tiles/" + gameState.imageId + "/0"));
+    }
 
-    var img = document.getElementById('image');
-    await loadGameboardImage(img, gameState.imageId);
-    var imgRect = img.getBoundingClientRect();
+    await Promise.all(imagePromises);
 
-    var imageContainerMaxWidth = 83;
-    console.log("start imageContainerMaxWidth " + imageContainerMaxWidth);
-    while (imgRect.height + imgRect.y >= window.innerHeight - (heightOffset * 5)) {
-        imageContainerMaxWidth -= .5;
-        if (imageContainerMaxWidth < 10) {
+    var tilesContainer = document.getElementById('tiles');
+    tilesContainer.style.maxWidth = "";
+
+    var tilesContainerRect = tilesContainer.getBoundingClientRect();
+    var tilesContainerMaxWidth = 83;
+    console.log("start tilesContainerMaxWidth " + tilesContainerMaxWidth);
+    while (tilesContainerRect.height + tilesContainerRect.y >= window.innerHeight) {
+        tilesContainerMaxWidth -= .5;
+        if (tilesContainerMaxWidth < 10) {
             break;
         }
-        console.log("imageContainerMaxWidth " + imageContainerMaxWidth);
+        console.log("tilesContainerMaxWidth " + tilesContainerMaxWidth);
 
-        imageContainer.style.maxWidth = imageContainerMaxWidth + "vw";
-        imgRect = img.getBoundingClientRect();
+        tilesContainer.style.maxWidth = tilesContainerMaxWidth + "vw";
+        tilesContainerRect = tilesContainer.getBoundingClientRect();
     }
-    await loadGameboardImage(img, gameState.imageId);
-    imgRect = img.getBoundingClientRect();
-
-    var imgSizeInfo = getImgSizeInfo(img);
-
-    var imgContainerRect = imageContainer.getBoundingClientRect();
-    var width = Math.ceil(Math.ceil(imgSizeInfo.width) / across) + widthOffset;
-    var height = Math.ceil(Math.ceil(imgContainerRect.height) / down) + heightOffset;
-    var top = Math.floor(imgRect.y) - (heightOffset);
-
-    var tileNumber = 1;
-    for (var i = 0; i < down; i++) {
-        var left = Math.floor(imgRect.x) - widthOffset;
-
-        for (var j = 0; j < across; j++) {
-            var divWidth = "width: " + width + "px; ";
-            var divHeight = "height: " + height + "px; ";
-            var divX = "left: " + left + "px; ";
-            var divY = "top: " + top + "px; ";
-
-            left += width - (widthOffset / 2);
-            var tile = document.getElementById("tile_" + tileNumber++);
-            tile.style = divWidth + divHeight + divX + divY;
-        }
-        top += height - (heightOffset / 2);
-    }
-
-    img.style = "opacity: 1";
-
-    return true;
 }
 
 var playerSelectedTiles = {};
@@ -198,7 +157,13 @@ function setPlayerFuzzies(player) {
     }
 }
 
-function drawMostVotesTiles() {
+function drawMostVotesTiles(resetTiles) {
+    if (resetTiles) {
+        resetMaxVotesTiles();
+    }
+
+    var mostVotesTileElements = document.getElementsByClassName("mostVotesTile");
+
     if (currentGameState.turnType !== "OpenTile" &&
         currentGameState.turnType !== "OpenFreeTile") {
         for (let mostVotesTileElement of mostVotesTileElements) {
@@ -280,7 +245,7 @@ function drawTeamStatus(gameState, resetTimer) {
     }
 
     if (gameState.teamTurn === 1) {
-        displayRoundNumber(gameState, teamTwoStatus);
+        drawRoundNumber(gameState, teamTwoStatus);
         if (resetTimer) {
             stopCountdown("teamTwoCountdownCanvas");
         }
@@ -321,7 +286,7 @@ function drawTeamStatus(gameState, resetTimer) {
                 break;
         }
     } else {
-        displayRoundNumber(gameState, teamOneStatus);
+        drawRoundNumber(gameState, teamOneStatus);
         if (resetTimer) {
             stopCountdown("teamOneCountdownCanvas");
         }
@@ -432,7 +397,7 @@ function drawCountdown(canvasId, countdown, countdownMax) {
     ctx.stroke();
 }
 
-function displayRoundNumber(gameState, element) {
+function drawRoundNumber(gameState, element) {
     element.innerHTML = "Round " + gameState.roundNumber;
 }
 
@@ -479,7 +444,11 @@ function drawPlayerDots(player) {
     }
 }
 
-function drawAllPlayerDots(gameState) {
+function drawAllPlayerDots(gameState, resetDots) {
+    if (resetDots) {
+        resetPlayerDots();
+    }
+
     var playerDotDivs = document.getElementsByClassName("playerDot");
     var tiles = document.getElementsByClassName("tile");
 
@@ -493,9 +462,7 @@ function drawPlayerDot(tiles, playerDotDiv, gameState) {
         playerSelectedTiles[playerDotDiv.player.playerId].selectedTiles.includes(playerDotDiv.tileNumber + "") &&
         playerDotDiv.player.teamNumber === currentGameState.teamTurn &&
         !tiles[playerDotDiv.tileNumber - 1].classList.contains("tileOpen") &&
-        (gameState.turnType === "OpenTile" ||
-            gameState.turnType === "OpenFreeTile")) {
-
+        (gameState.turnType === "OpenTile" ||  gameState.turnType === "OpenFreeTile")) {
         movePlayerDotToTile(playerDotDiv);
     } else {
         movePlayerDotToPlayer(playerDotDiv);
@@ -558,7 +525,7 @@ function createPlayerDot(player, tileNumber) {
     playerDotDiv.appendChild(playerDotSvg);
     playerDotDiv.appendChild(playerDotInitials);
 
-    var zindex = Math.ceil(Math.random() * 500 + 1);
+    var zindex = Math.ceil(Math.random() * 500) + 100;
     playerDotDiv.style.zIndex = zindex;
 
     return playerDotDiv;
@@ -591,7 +558,7 @@ function movePlayerDotToPlayer(playerDotDiv) {
     var playerElementRect = playerElement.getBoundingClientRect();
 
     playerDotDiv.style.transform = "translate(" + playerElementRect.x + "px," + playerElementRect.y + "px)";
-    playerDotDiv.style.zIndex = Math.ceil(Math.random() * 500 + 1);
+    playerDotDiv.style.zIndex = Math.ceil(Math.random() * 500) + 100;
     playerDotDiv.classList.add("opacity0");
 }
 
@@ -599,26 +566,10 @@ function movePlayerDotToTile(playerDotDiv) {
     var playerDotDiv = document.getElementById("playerDot_" + playerDotDiv.player.playerId + "_" + playerDotDiv.tileNumber);
 
     var tileRect = document.getElementById("tile_" + playerDotDiv.tileNumber).getBoundingClientRect();
-    var tileNumberRect = document.getElementById("tileNumber_" + playerDotDiv.tileNumber).getBoundingClientRect();
     var playerDotDivRect = playerDotDiv.getBoundingClientRect();
-
 
     var x = (tileRect.right - tileRect.left - playerDotDivRect.width) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzX) + tileRect.left;
     var y = (tileRect.bottom - tileRect.top - playerDotDivRect.height) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzY) + tileRect.top;
-
-    /*
-    if (playerFuzzies[playerDotDiv.player.playerId].fuzzX < 0) {
-        var x = (tileNumberRect.left - tileRect.left - playerDotDivRect.width) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzX) + tileRect.left;
-    } else {
-        var x = tileRect.right - playerDotDivRect.width - (tileRect.right - tileNumberRect.right - playerDotDivRect.width) * playerFuzzies[playerDotDiv.player.playerId].fuzzX;
-    }
-
-    if (playerFuzzies[playerDotDiv.player.playerId].fuzzY < 0) {
-        var y = (tileNumberRect.top - tileRect.top - playerDotDivRect.height) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzY) + tileRect.top;
-    } else {
-        var y = tileRect.bottom - playerDotDivRect.height - (tileRect.bottom - tileNumberRect.bottom - playerDotDivRect.height) * playerFuzzies[playerDotDiv.player.playerId].fuzzY;
-    }
-    */
     
     playerDotDiv.style.transform = "translate(" + x + "px," + y + "px)";
     playerDotDiv.classList.remove("opacity0");
@@ -668,6 +619,8 @@ function drawCaptains() {
 }
 
 async function drawRevealedTilesAsync(gameState) {
+    var promises = [];
+
     if (gameState.turnType === "Correct" || gameState.turnType === "EndRound") {
         openAllTiles();
         return;
@@ -678,15 +631,17 @@ async function drawRevealedTilesAsync(gameState) {
         var tileImage = tile.lastChild;
 
         if (gameState.revealedTiles.includes(tile.tileNumber)) {
-            loadImageAsync(tileImage, "/api/images/tiles/" + gameState.imageId + "/" + tile.tileNumber).then(() => {
-                hidePlayerDots(tile.tileNumber);
+            promises.push(loadImageAsync(tileImage, "/api/images/tiles/" + gameState.imageId + "/" + tile.tileNumber).then(() => {
                 tile.classList.add("tileOpen");
-            });            
+                hidePlayerDots(tile.tileNumber);
+            }));
         } else {
             tile.classList.remove("tileOpen");
             tileImage.src = "/api/images/tiles/" + gameState.imageId + "/0";
         }
     }
+
+    await Promise.all(promises);
 }
 
 function drawIncorrectGuesses(gameState) {
@@ -740,8 +695,7 @@ function stopWelcomeAnimation() {
     }
 }
 
-var firstLoad = true;
-async function handleGameState(gameState) {
+async function handleGameState(gameState, firstLoad) {
     loadThemeCss(gameState);
 
     if (gameState.turnType === "Welcome") {
@@ -757,10 +711,9 @@ async function handleGameState(gameState) {
     }
 
     if (firstLoad || gameState.imageId !== currentGameState.imageId) {
-        var img = document.getElementById('image');
-        img.style = "opacity: 0";
+        await resizeTilesAsync(gameState);
 
-        var imageEntity = await getImageEntity(gameState.imageId);
+        var imageEntity = await getImageEntityAsync(gameState.imageId);
         if (imageEntity && imageEntity.uploadedBy !== "admin") {
             document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
             document.getElementById("uploadedBy").classList.remove("hidden");
@@ -769,28 +722,15 @@ async function handleGameState(gameState) {
         }
     }
 
-    await drawTilesAsync(gameState);
-
-    var resetTimer = false;
-    if (firstLoad ||
-        gameState.turnType !== currentGameState.turnType ||
-        gameState.teamTurn !== currentGameState.teamTurn) {
-        resetTimer = true;
-    }
-
-    if (!firstLoad &&
-        (gameState.turnType !== currentGameState.turnType ||
-        gameState.teamTurn !== currentGameState.teamTurn)) {
-        resetPlayerDots();
-        resetMaxVotesTiles();
-    }
+    var isNewTurn = gameState.turnType !== currentGameState.turnType || gameState.teamTurn !== currentGameState.teamTurn;
 
     currentGameState = gameState;
-    firstLoad = false;
+
+    await drawRevealedTilesAsync(gameState);
 
     drawGameState(gameState);
 
-    drawTeamStatus(gameState, resetTimer);
+    drawTeamStatus(gameState, isNewTurn);
 
     drawCaptains();
 
@@ -800,11 +740,9 @@ async function handleGameState(gameState) {
         return;
     }
 
-    await drawRevealedTilesAsync(gameState);
+    drawAllPlayerDots(gameState, isNewTurn);
 
-    drawAllPlayerDots(gameState);
-
-    drawMostVotesTiles();
+    drawMostVotesTiles(isNewTurn);
 }
 
 function handlePlayers(players) {
@@ -907,10 +845,10 @@ window.onload = async function () {
     await connection.invoke("RegisterGameBoard");
 
     currentGameState = await getGameState();
-    await drawTilesAsync(currentGameState);
+    createTiles();
     handlePlayers(await getPlayers());
 
-    await handleGameState(currentGameState);
+    await handleGameState(currentGameState, true);
 
     var blackcover = document.getElementById('blackcover');
     blackcover.classList.add("hidden");
