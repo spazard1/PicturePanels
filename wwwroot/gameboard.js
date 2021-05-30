@@ -45,7 +45,7 @@ function createTiles() {
     }
 }
 
-async function resizeTilesAsync(gameState) {
+async function resetTilesAsync(gameState) {
     var imagePromises = [];
     var tiles = document.getElementsByClassName("tile");
 
@@ -62,18 +62,23 @@ async function resizeTilesAsync(gameState) {
 
     await Promise.all(imagePromises);
 
+    resizeTileContainer();
+}
+
+function resizeTileContainer() {
     var tilesContainer = document.getElementById('tiles');
     tilesContainer.style.maxWidth = "";
 
     var tilesContainerRect = tilesContainer.getBoundingClientRect();
     var tilesContainerMaxWidth = 83;
-    console.log("start tilesContainerMaxWidth " + tilesContainerMaxWidth);
+
+    // console.log("start tilesContainerMaxWidth " + tilesContainerMaxWidth);
     while (tilesContainerRect.height + tilesContainerRect.y >= window.innerHeight) {
         tilesContainerMaxWidth -= .5;
         if (tilesContainerMaxWidth < 10) {
             break;
         }
-        console.log("tilesContainerMaxWidth " + tilesContainerMaxWidth);
+        // console.log("tilesContainerMaxWidth " + tilesContainerMaxWidth);
 
         tilesContainer.style.maxWidth = tilesContainerMaxWidth + "vw";
         tilesContainerRect = tilesContainer.getBoundingClientRect();
@@ -711,7 +716,7 @@ async function handleGameState(gameState, firstLoad) {
     }
 
     if (firstLoad || gameState.imageId !== currentGameState.imageId) {
-        await resizeTilesAsync(gameState);
+        await resetTilesAsync(gameState);
 
         var imageEntity = await getImageEntityAsync(gameState.imageId);
         if (imageEntity && imageEntity.uploadedBy !== "admin") {
@@ -814,14 +819,11 @@ function disappearCursor() {
 }
 
 window.onresize = function () {
+    resizeTileContainer();
+    return;
+
     var blackcover = document.getElementById('blackcover');
     blackcover.classList.remove("hidden");
-
-    var img = document.getElementById('image');
-    if (!img) {
-        return;
-    }
-    img.style = "opacity: 0";
 
     clearTimeout(reloadTimeout);
     reloadTimeout = setTimeout(function () {
