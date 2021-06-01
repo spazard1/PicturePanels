@@ -343,11 +343,10 @@ namespace CloudStorage.Services
                 resizedImage.Save(memoryStream, ImageFormat.Png);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                var thumbnailId = Guid.NewGuid().ToString();
-                var blobResized = blobContainerThumbnail.GetBlobClient(thumbnailId);
+                var blobResized = blobContainerThumbnail.GetBlobClient(entity.Id);
                 await blobResized.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
 
-                entity.ThumbnailId = thumbnailId;
+                entity.ThumbnailId = entity.Id;
                 await this.AddOrUpdateAsync(entity);
 
                 return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
