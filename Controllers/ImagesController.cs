@@ -306,7 +306,10 @@ namespace CloudStorage.Controllers
             imageTableEntity.UploadCompleteTime = DateTime.UtcNow;
             imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
 
-            await imageTableStorage.GenerateCacheAsync(imageTableEntity);
+            var generateTask = Task.Run(() =>
+            {
+                imageTableStorage.GenerateCacheAsync(imageTableEntity);
+            });
 
             return Json(new ImageEntity(imageTableEntity));
         }
