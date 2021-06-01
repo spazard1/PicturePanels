@@ -79,21 +79,6 @@ namespace CloudStorage.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
-        [HttpGet("welcome")]
-        public async Task<IActionResult> WelcomeAsync()
-        {
-            var imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, "soundofmusic");
-
-            if (imageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(ImageTableStorage.WelcomeBlobContainer, imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
-            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
-        }
-
         [HttpGet("entity/{imageId}")]
         public async Task<IActionResult> GetEntityAsync(string imageId)
         {
@@ -106,11 +91,24 @@ namespace CloudStorage.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            var imageEntity = new ImageEntity
-            {
-                UploadedBy = imageTableEntity.UploadedBy
-            };
+            ImageEntity imageEntity;
 
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
+            {
+                imageEntity = new ImageEntity
+                {
+                    Name = imageTableEntity.Name,
+                    UploadedBy = imageTableEntity.UploadedBy
+                };
+            }
+            else
+            {
+                imageEntity = new ImageEntity
+                {
+                    UploadedBy = imageTableEntity.UploadedBy
+                };
+            }
             return Json(imageEntity);
         }
 
@@ -123,27 +121,40 @@ namespace CloudStorage.Controllers
             }
 
             var gameState = await this.gameTableStorage.GetGameStateAsync();
-            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
-
-            if (imageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
+            ImageTableEntity imageTableEntity;
             string imageUrl;
-            if (tileNumber == 0 ||
-                gameState.RevealedTiles.Contains(tileNumber.ToString()) ||
-                gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
-                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
+
+            if (imageId == ImageTableStorage.WelcomeBlobContainer)
             {
-                imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);     
+                imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, ImageTableStorage.WelcomeImageId);
+
+                imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);
             }
             else
             {
-                imageUrl = "/api/images/tiles/" + imageId + "/0";
+                imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
+
+                if (imageTableEntity == null)
+                {
+                    return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+                }
+
+                
+                if (tileNumber == 0 ||
+                    gameState.RevealedTiles.Contains(tileNumber.ToString()) ||
+                    gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
+                    gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
+                {
+                    imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);
+                }
+                else
+                {
+                    imageUrl = "/api/images/tiles/" + imageId + "/0";
+                }
             }
 
             Response.Headers["Location"] = imageUrl;
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -158,7 +169,7 @@ namespace CloudStorage.Controllers
             }
 
             Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(blobContainer, imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -173,7 +184,7 @@ namespace CloudStorage.Controllers
             }
 
             Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 7;
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 

@@ -36,6 +36,7 @@ function createTiles() {
     for (var i = 0; i < maxMostVotesTiles; i++) {
         var mostVotesTileElement = document.createElement("div");
         mostVotesTileElement.classList.add("mostVotesTile");
+        mostVotesTileElement.classList.add("opacity0");
 
         var mostVotesTileImageElement = document.createElement("img");
         mostVotesTileImageElement.classList.add("tileImage");
@@ -247,6 +248,10 @@ function drawTeamStatus(gameState, resetTimer) {
         stopCountdown("teamOneCountdownCanvas");
         stopCountdown("teamTwoCountdownCanvas");
         return;
+    } else if (gameState.turnType === "Correct" ||
+        gameState.turnType === "EndRound") {
+        stopCountdown("teamOneCountdownCanvas");
+        stopCountdown("teamTwoCountdownCanvas");
     }
 
     if (gameState.teamTurn === 1) {
@@ -664,6 +669,19 @@ function drawIncorrectGuesses(gameState) {
     }
 }
 
+function setupWelcomeAnimationAsync() {
+    var promises = [];
+    var tiles = document.getElementsByClassName("tile");
+
+    for (let tile of tiles) {
+        tile.classList.add("tileWelcome");
+        tile.classList.remove("tileOpen");
+        promises.push(loadImageAsync(tile.lastChild, "/api/images/tiles/welcome/" + tile.tileNumber));
+    }
+
+    return Promise.all(promises);
+}
+
 var welcomeAnimationTimeout;
 var previousRandomIndex = -1;
 function drawWelcomeAnimation() {
@@ -674,7 +692,6 @@ function drawWelcomeAnimation() {
 
     var tilesArray = [];
     for (let tile of tiles) {
-        tile.classList.add("tileWelcome");
         tilesArray.push(tile);
     }
 
@@ -693,6 +710,8 @@ function drawWelcomeAnimation() {
 }
 
 function stopWelcomeAnimation() {
+    document.getElementById("welcome").classList.add("hidden");
+
     clearInterval(welcomeAnimationTimeout);
     welcomeAnimationTimeout = null;
 
@@ -706,28 +725,25 @@ async function handleGameState(gameState, firstLoad) {
     loadThemeCss(gameState);
 
     if (gameState.turnType === "Welcome") {
+        await setupWelcomeAnimationAsync();
+
         if (!welcomeAnimationTimeout) {
             welcomeAnimationTimeout = setInterval(drawWelcomeAnimation, 1500);
         }
 
         document.getElementById("welcome").classList.remove("hidden");
         gameState.imageId = "welcome";
-    } else {
-        stopWelcomeAnimation();
-        document.getElementById("welcome").classList.add("hidden");
+        drawGameState(gameState);
+        resizeTileContainer();
+
+        return;
     }
 
     if (firstLoad || gameState.imageId !== currentGameState.imageId) {
         await resetTilesAsync(gameState);
-
-        var imageEntity = await getImageEntityAsync(gameState.imageId);
-        if (imageEntity && imageEntity.uploadedBy !== "admin") {
-            document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
-            document.getElementById("uploadedBy").classList.remove("hidden");
-        } else {
-            document.getElementById("uploadedBy").classList.add("hidden");
-        }
     }
+
+    stopWelcomeAnimation();
 
     var isNewTurn = gameState.turnType !== currentGameState.turnType ||
         gameState.teamTurn !== currentGameState.teamTurn
@@ -737,21 +753,37 @@ async function handleGameState(gameState, firstLoad) {
 
     await drawRevealedTilesAsync(gameState);
 
+    drawImageEntityAsync(gameState);
+
     drawGameState(gameState);
 
-    drawTeamStatus(gameState, isNewTurn);
+    drawTeamStatus(gameState, firstLoad || isNewTurn);
 
     drawCaptains();
 
     drawIncorrectGuesses(gameState);
 
-    if (gameState.turnType === "Welcome") {
-        return;
-    }
-
     drawAllPlayerDots(gameState, isNewTurn);
 
     drawMostVotesTiles(isNewTurn);
+}
+
+function drawImageEntityAsync(gameState) {
+    getImageEntityAsync(gameState.imageId).then(imageEntity => {
+        if (imageEntity && imageEntity.uploadedBy !== "admin") {
+            document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
+            document.getElementById("uploadedBy").classList.remove("hidden");
+        } else {
+            document.getElementById("uploadedBy").classList.add("hidden");
+        }
+
+        if (imageEntity && imageEntity.name) {
+            document.getElementById("answerTitle").innerHTML = imageEntity.name;
+            document.getElementById("answerTitle").classList.add("opacity1Fade");
+        } else {
+            document.getElementById("answerTitle").classList.remove("opacity1Fade");
+        }
+    });
 }
 
 function handlePlayers(players) {
@@ -844,7 +876,7 @@ window.onload = async function () {
 
     currentGameState = await getGameState();
     createTiles();
-    handlePlayers(await getPlayers());
+    handlePlayers(await getPlayersAsync());
 
     await handleGameState(currentGameState, true);
 }
