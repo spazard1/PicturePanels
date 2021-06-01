@@ -226,8 +226,6 @@ async function sendSelectedTiles() {
     });
 }
 
-var reloadTimeout;
-
 function pixelRatio() {
     let deviceWidth = window.screen.width;
     let deviceHeight = window.screen.height;
