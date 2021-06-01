@@ -7,25 +7,24 @@
     font-family: christmas;
 }
 
-.mostVotesTile {
-    box-shadow: 0 0 0 .25vw red;
-    outline: dashed .25vw white;
-}
-
 .activeTeam {
     border: 4px dashed white;
 }
 
 .tile:nth-child(even) .tileBackground {
-    background: #BB0000;
+    background: #008000;
 }
 
 .tile:nth-child(odd) .tileBackground {
-    background: #008000;
+    background: #BB0000;
 }
 
 .tileButtonNumber {
     color: black;
+}
+
+.tileButton .tileButtonBackground {
+    border: 3px solid black;
 }
 
 .tileButton:nth-child(even) .tileButtonBackground {
@@ -37,13 +36,18 @@
 }
 
 .tileButtonSelected:nth-child(even) .tileButtonBackground {
-    border: 4px dashed white;
+    border: 3px dashed white;
     background-color: green;
 }
 
 .tileButtonSelected:nth-child(odd) .tileButtonBackground {
-    border: 4px dashed white;
+    border: 3px dashed white;
     background-color: red;
+}
+
+.mostVotesTile {
+    box-shadow: 0 0 0 .25vw red;
+    outline: dashed .25vw white;
 }
 
 .teamOneBox {

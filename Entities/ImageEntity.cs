@@ -40,7 +40,7 @@ namespace CloudStorage.Entities
 
         [Required]
         [MinLength(2)]
-        [MaxLength(30)]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         [Required]

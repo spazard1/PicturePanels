@@ -8,11 +8,6 @@
     letter-spacing: 6px;
 }
 
-.mostVotesTile {
-    box-shadow: 0 0 0 .25vw red;
-    outline: dashed .25vw white;
-}
-
 .activeTeam {
     border: 4px dashed pink;
 }
@@ -37,29 +32,38 @@
     color: black;
 }
 
-.tileButtonSelected {
-    border: 4px solid white;
+.tileButton .tileButtonBackground {
+    border: 3px solid black;
 }
 
-.tileButton:nth-child(3n) {
+.tileButtonSelected .tileButtonBackground {
+    border: 3px solid white;
+}
+
+.tileButton:nth-child(3n) .tileButtonBackground {
     background: #FFB6C1;
 }
 
-.tileButton:nth-child(3n + 1) {
+.tileButton:nth-child(3n + 1) .tileButtonBackground {
     background: #FF69B4;
     color: white;
 }
 
-.tileButton:nth-child(3n + 1) .tileButtonNumber {
+.tileButton:nth-child(3n + 1) .tileButtonBackground {
     color: white;
 }
 
-.tileButton:nth-child(3n + 2) .tileButtonNumber {
+.tileButton:nth-child(3n + 2) .tileButtonBackground {
     background: red;
 }
 
-.tileButton:nth-child(3n + 2) .tileButtonNumber {
+.tileButton:nth-child(3n + 2) .tileButtonBackground {
     color: white;
+}
+
+.mostVotesTile {
+    box-shadow: 0 0 0 .25vw red;
+    outline: dashed .25vw white;
 }
 
 .teamOneBox {
