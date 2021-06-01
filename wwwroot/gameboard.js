@@ -72,14 +72,13 @@ function resizeTileContainer() {
 
     var tilesContainerRect = tilesContainer.getBoundingClientRect();
     var tilesContainerMaxWidth = 83;
+    var paddingBottom = 5;
 
-    // console.log("start tilesContainerMaxWidth " + tilesContainerMaxWidth);
-    while (tilesContainerRect.height + tilesContainerRect.y >= window.innerHeight) {
+    while (tilesContainerRect.height + tilesContainerRect.y >= (window.innerHeight - paddingBottom)) {
         tilesContainerMaxWidth -= .5;
         if (tilesContainerMaxWidth < 10) {
             break;
         }
-        // console.log("tilesContainerMaxWidth " + tilesContainerMaxWidth);
 
         tilesContainer.style.maxWidth = tilesContainerMaxWidth + "vw";
         tilesContainerRect = tilesContainer.getBoundingClientRect();
@@ -854,9 +853,12 @@ function disappearCursor() {
     cursorVisible = false;
 }
 
+var reloadTimeout;
 window.onresize = function () {
-    resizeTileContainer();
-    return;
+    clearTimeout(reloadTimeout);
+    reloadTimeout = setTimeout(function () {
+        location.reload();
+    }, 250);
 }
 
 window.onload = async function () {
