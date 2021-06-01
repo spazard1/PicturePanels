@@ -30,7 +30,7 @@ async function getPlayer() {
         });
 }
 
-async function getPlayers() {
+async function getPlayersAsync() {
     return await fetch("/api/players")
         .then(response => response.json())
         .then(responseJson => {
@@ -39,7 +39,7 @@ async function getPlayers() {
 }
 
 async function getImageEntityAsync(imageId) {
-    return await fetch("/api/images/entity/" + imageId)
+    return fetch("/api/images/entity/" + imageId)
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;

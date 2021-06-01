@@ -1,12 +1,4 @@
-﻿.mostVotesTile {
-    box-shadow: 0 0 0 .25vw green;
-    outline: dashed .25vw lightblue;
-    z-index: 100;
-    top: 0;
-    left: 0;
-}
-
-.activeTeam {
+﻿.activeTeam {
     border: 4px solid lightgreen;
 }
 
@@ -18,14 +10,31 @@
     background: #1F4699;
 }
 
+.tileButton .tileButtonBackground {
+    border: 3px solid black;
+}
+
+.tileButton:nth-child(even) .tileButtonBackground {
+    background-color: #f3e6d8;
+}
+
+.tileButton:nth-child(odd) .tileButtonBackground {
+    background-color: #d5dff6;
+}
+
 .tileButtonSelected:nth-child(even) .tileButtonBackground {
-    border: 4px solid dodgerblue;
-    background-color: skyblue;
+    border: 3px solid white;
+    background-color: dodgerblue;
 }
 
 .tileButtonSelected:nth-child(odd) .tileButtonBackground {
-    border: 4px solid dodgerblue;
-    background-color: skyblue;
+    border: 3px solid white;
+    background-color: dodgerblue;
+}
+
+.mostVotesTile {
+    box-shadow: 0 0 0 .25vw green;
+    outline: dashed .25vw lightblue;
 }
 
 .teamOneBox {

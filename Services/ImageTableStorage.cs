@@ -33,6 +33,8 @@ namespace CloudStorage.Services
         public const string ThumbnailsBlobContainer = "thumbnails";
         public const string TilesBlobContainer = "tiles";
         public const string WelcomeBlobContainer = "welcome";
+        public const string WelcomeImageId = "soundofmusic";
+
 
         public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider)
         {
@@ -153,7 +155,7 @@ namespace CloudStorage.Services
                 Resource = "b",
             };
             sasBuilderBlob.StartsOn = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(15));
-            sasBuilderBlob.ExpiresOn = DateTimeOffset.UtcNow.AddHours(24);
+            sasBuilderBlob.ExpiresOn = DateTimeOffset.UtcNow.AddYears(10);
             sasBuilderBlob.SetPermissions(BlobSasPermissions.Read);
 
             // Use the key to get the SAS token.
@@ -249,6 +251,7 @@ namespace CloudStorage.Services
             }
             blobContainers.Remove(ScratchBlobContainer);
             blobContainers.Remove(ThumbnailsBlobContainer);
+            blobContainers.Remove(TilesBlobContainer);
             blobContainers.Remove(WelcomeBlobContainer);
 
             return blobContainers;
@@ -438,6 +441,7 @@ namespace CloudStorage.Services
             {
                 if (tileNumber > 0)
                 {
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     graphics.DrawImage(image, destRect, startX, startY, tileWidth, tileHeight, GraphicsUnit.Pixel);
                 }
                 else

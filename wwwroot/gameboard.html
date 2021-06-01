@@ -34,22 +34,22 @@
             <canvas id="teamOneCountdownCanvas" class="countdownCanvas"></canvas>
         </div>
         <div id="teamOneStatus" class="teamInfo teamStatus">
-            Open Free Tile &rarr;
+
         </div>
         <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
             <div id="teamOneName" class="teamName">Team 1</div>
             <div class="tileCount"><div id="teamOneInnerTiles">5</div> / <div id="teamOneOuterTiles">8</div></div>
-            <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses">XXXXX</div>
+            <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
         </div>
         <div id="teamOneScore" class="teamOneBox teamInfo score">0</div>
         <div id="teamTwoScore" class="teamTwoBox teamInfo score">0</div>
         <div id="teamTwoDiv" class="teamInfo teamNameBox">
             <div id="teamTwoName" class="teamName">Team 2</div>
             <div class="tileCount"><div id="teamTwoInnerTiles">5</div> / <div id="teamTwoOuterTiles">8</div></div>
-            <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses">XX</div>
+            <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
         </div>
         <div id="teamTwoStatus" class="teamInfo teamStatus">
-            Round 0
+
         </div>
         <div id="teamTwoCountdownDiv" class="teamInfo countdownDiv">
             <canvas id="teamTwoCountdownCanvas" class="countdownCanvas"></canvas>
@@ -63,7 +63,9 @@
     <div id="teamOnePlayerNames" class="teamPlayerNames"></div>
     <div id="teamTwoPlayerNames" class="teamPlayerNames"></div>
 
-    <div id="uploadedBy" class="uploadedBy"></div>
+    <div id="uploadedBy" class="uploadedBy hidden"></div>
+
+    <div id="answerTitle" class="answerTitle opacity0"></div>
 
     <div id="tiles" class="tiles"></div>
 
