@@ -253,21 +253,6 @@ namespace CloudStorage.Controllers
             return Json(new ImageEntity(imageTableEntity));
         }
 
-        [HttpPut("fixId/{blobContainer}/{imageId}")]
-        [RequireAuthorization]
-        public async Task<IActionResult> FixIdAsync(string blobContainer, string imageId)
-        {
-            var imageTableEntity = await imageTableStorage.GetAsync(blobContainer, imageId);
-            if (imageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            imageTableEntity = await this.imageTableStorage.FixIdAsync(imageTableEntity);
-
-            return Json(new ImageEntity(imageTableEntity));
-        }
-
         [HttpDelete("{blobContainer}/{imageId}")]
         [RequireAuthorization]
         public async Task<IActionResult> DeleteAsync(string blobContainer, string imageId)
