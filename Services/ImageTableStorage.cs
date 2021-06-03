@@ -330,15 +330,15 @@ namespace CloudStorage.Services
 
                 var image = Image.FromStream(imageMemoryStream);
 
-                if (image.Width < 500 || image.Height < 500)
+                if (image.Width <= 400)
                 {
                     entity.ThumbnailId = "skip - too small";
                     await this.AddOrUpdateAsync(entity);
                     return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
                 }
 
-                double scale = .2;
-                var resizedImage = ResizeImage(image, (int)Math.Ceiling(image.Width * scale), (int)Math.Ceiling(image.Height * scale));
+                var ratio = 400.0 / image.Width;
+                var resizedImage = ResizeImage(image, 400, (int)Math.Ceiling(image.Height * ratio));
                 var memoryStream = new MemoryStream();
                 resizedImage.Save(memoryStream, ImageFormat.Png);
                 memoryStream.Seek(0, SeekOrigin.Begin);
