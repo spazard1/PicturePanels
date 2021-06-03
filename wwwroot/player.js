@@ -262,9 +262,9 @@ async function finalizePlayerAsync() {
     promises.push(startSignalRAsync("player"));
     promises.push(drawChatsAsync("chats"));
 
-    await Promise.all(promises);
+    var results = await Promise.all(promises);
 
-    drawPlayer(promises[0]); // first promise is the putPlayer
+    drawPlayer(results[0]); // first promise is the putPlayer
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
