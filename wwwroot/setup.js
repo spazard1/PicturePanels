@@ -94,7 +94,7 @@ window.onload = async () => {
 
     drawBlobContainers(await getBlobContainers(), "blobContainer");
 
-    drawGameState(await getGameState());
+    drawGameState(await getGameStateAsync());
 
     drawIsAdminButton(await getPlayer());
 

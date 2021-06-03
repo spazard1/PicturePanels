@@ -14,7 +14,7 @@ async function isAuthorized() {
         });
 }
 
-async function getGameState() {
+async function getGameStateAsync() {
     return await fetch("/api/gameState")
         .then(response => response.json())
         .then(responseJson => {
@@ -373,7 +373,7 @@ function reloadPage() {
 }
 
 var signalRTimeOut = false;
-async function startSignalR(playerIdSuffix) {
+async function startSignalRAsync(playerIdSuffix) {
     if (!document.getElementById("signalRConnectionState")) {
         var connectionStateElement = document.createElement("div");
         connectionStateElement.classList = "hidden";

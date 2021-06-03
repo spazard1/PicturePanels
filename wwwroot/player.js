@@ -10,7 +10,7 @@
     await sendSelectedTiles();
 }
 
-function setupPlayer() {
+function setupPlayerMenu() {
     var initialColor = "hsl(" + Math.ceil(Math.random() * 360) + ", 100%, 50%)";
 
     if (localStorage.getItem("playerColor")) {
@@ -54,9 +54,13 @@ function drawPlayer(player) {
             }
         }
     }
+
+    if (player.isAdmin) {
+        document.getElementById("playerName").classList.add("adminPlayerName");
+    }
 }
 
-async function putPlayer() {
+async function putPlayerAsync() {
     return await fetch("api/players/" + localStorage.getItem("playerId"),
     {
         method: "PUT",
@@ -76,7 +80,7 @@ async function putPlayer() {
     });
 }
 
-async function putPlayerPing() {
+async function putPlayerPingAsync() {
     if (!playerIsReadyToPlay) {
         return;
     }
@@ -175,6 +179,7 @@ function setupChoosePlayerName() {
     document.getElementById("playerBanner").classList.add("playerBannerChooseTeam");
     document.getElementById("playerBanner").classList.remove("playerBannerPlaying");
     document.getElementById("playerBanner").onclick = null;
+    document.getElementById("turnStatusContainer").onclick = null;
 
     document.getElementById("teamOneName").classList.remove("teamOneColor");
     document.getElementById("teamOneName").classList.add("teamOneBox");
@@ -183,53 +188,83 @@ function setupChoosePlayerName() {
     document.getElementById("teamTwoName").classList.add("teamTwoBox");
 }
 
-function choosePlayerName(isCreated) {
-    localStorage.setItem("playerName", document.getElementById("playerNameInput").value);
-    localStorage.setItem("playerColor", window.colorPicker.color.hslString);
-
-    if (isCreated) {
-        localStorage.setItem("createdTime", new Date());
-    }
-
+function choosePlayerNameButtonOnClick() {
     var playerNameInput = document.getElementById("playerNameInput");
-    if (playerNameInput.value.length <= 1 ||
-        playerNameInput.value === playerNameInput.defaultValue) {
-
+    if (playerNameInput.value.length <= 1 || playerNameInput.value === playerNameInput.defaultValue) {
         document.getElementById("playerNameInput").classList.add("playerNameInputDivInvalid");
         return;
     }
 
-    setupTeamSelectionButtons();
+    playerNameChosen({
+        name: document.getElementById("playerNameInput").value,
+        color: window.colorPicker.color.hslString
+    });
+}
+
+function playerNameChosen(player) {
+    localStorage.setItem("playerName", player.name);
+    localStorage.setItem("playerColor", player.color);
+    document.getElementById("playerName").innerHTML = player.name;
 
     document.getElementById("choosePlayerNameLabel").classList.add("hidden");
     document.getElementById("playerNameInputDiv").classList.add("hidden");
     document.getElementById("colorPicker").classList.add("hidden");
     document.getElementById("choosePlayerName").classList.add("hidden");
 
-    document.getElementById("playerName").innerHTML = document.getElementById("playerNameInput").value;
-
     document.getElementById("playerBanner").classList.remove("hidden");
     document.getElementById("chooseTeam").classList.remove("hidden");
     document.getElementById("teamOneName").classList.remove("hidden");
     document.getElementById("teamTwoName").classList.remove("hidden");
+
+    setupTeamSelectionButtons();
 }
 
 var playerIsReadyToPlay = false;
 
-async function chooseTeam(teamNumber) {
-    setupTeam(teamNumber);
+function teamChosen(teamNumber) {
+    localStorage.setItem("teamNumber", teamNumber);
+
+    drawTeam(teamNumber);
     setupChats("chats");
-    
-    var player = await putPlayer();
-    document.getElementById("playerName").innerHTML = player.name;
-    localStorage.setItem("playerName", player.name);
+}
 
-    await startSignalR("player");
-    await drawChats("chats");
+function shouldPlayerLoadFromCache() {
+    if (localStorage.getItem("createdTime")) {
+        var createdTime = new Date(localStorage.getItem("createdTime"));
+        var yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
 
-    notifyTurn(currentGameState);
-    updatePlayerTileButtons(currentGameState);
-    handleCaptainButtons(currentGameState);
+        if (createdTime > yesterday) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+async function setupPlayerAsync() {
+    if (shouldPlayerLoadFromCache() && localStorage.getItem("playerName") && localStorage.getItem("playerColor") && localStorage.getItem("teamNumber")) {
+        playerNameChosen({
+            name: localStorage.getItem("playerName"),
+            color: localStorage.getItem("playerColor")
+        });
+        teamChosen(parseInt(localStorage.getItem("teamNumber")));
+        return finalizePlayerAsync();
+    } else {
+        localStorage.setItem("createdTime", new Date());
+        setupChoosePlayerName();
+    }
+}
+
+async function finalizePlayerAsync() {
+    var promises = [];
+    promises.push(putPlayerAsync());
+    promises.push(startSignalRAsync("player"));
+    promises.push(drawChatsAsync("chats"));
+
+    await Promise.all(promises);
+
+    drawPlayer(promises[0]); // first promise is the putPlayer
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
@@ -237,18 +272,36 @@ async function chooseTeam(teamNumber) {
             return;
         }
         setupChoosePlayerName();
-    }
+    };
+
     document.getElementById("turnStatusContainer").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
         if (!result) {
             return;
         }
         setupChoosePlayerName();
-    }
-
-    playerIsReadyToPlay = true;
+    };
 
     scrollChats("chats", true);
+    playerIsReadyToPlay = true;
+}
+
+function setupTeamSelectionButtons() {
+    document.getElementById("teamOneName").onclick = async function () {
+        teamChosen(1);
+        await finalizePlayerAsync();
+        notifyTurn(currentGameState);
+    };
+    document.getElementById("teamTwoName").onclick = async function () {
+        teamChosen(2);
+        await finalizePlayerAsync();
+        notifyTurn(currentGameState);
+    };
+    document.getElementById("chooseSmallestTeam").onclick = async function () {
+        await chooseSmallestTeam();
+        await finalizePlayerAsync();
+        notifyTurn(currentGameState);
+    };
 }
 
 async function chooseSmallestTeam() {
@@ -271,22 +324,20 @@ async function chooseSmallestTeam() {
             }
 
             if (teamOneCount < teamTwoCount) {
-                chooseTeam(1);
+                teamChosen(1);
             } else if (teamOneCount > teamTwoCount) {
-                chooseTeam(2);
+                teamChosen(2);
             } else {
                 if (Math.random() < .5) {
-                    chooseTeam(1);
+                    teamChosen(1);
                 } else {
-                    chooseTeam(2);
+                    teamChosen(2);
                 }
             }
         });
 }
 
-function setupTeam(teamNumber) {
-    localStorage.setItem("teamNumber", teamNumber);
-
+function drawTeam(teamNumber) {
     updatePlayerTileButtons(currentGameState);
 
     document.getElementById("turnStatusContainer").classList.remove("hidden");
@@ -380,6 +431,7 @@ function notifyTurn(gameState) {
         document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
         document.getElementById("tileButtons").classList.add("hidden");
         document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+        drawSystemChat("chats", "Welcome to the Picture Panels game!");
         return;
     }
 
@@ -522,8 +574,8 @@ async function handleRandomizeTeam(player) {
     clearTileButtonSelection();
 
     if (parseInt(localStorage.getItem("teamNumber")) !== player.teamNumber) {
-        setupTeam(player.teamNumber);
-        await drawChats("chats");
+        drawTeam(player.teamNumber);
+        await drawChatsAsync("chats");
         drawSystemChat("chats", "The teams have been randomized; you are now on the other team.");
     } else {
         drawSystemChat("chats", "The teams have been randomized; you have not changed teams.");
@@ -558,47 +610,8 @@ function registerConnections() {
         if (localStorage.getItem("debug")) {
             drawSystemChat("chats", "SignalR closed.");
         }
-        await startSignalR("player");
+        await startSignalRAsync("player");
     });
-}
-
-function setupTeamSelectionButtons() {
-    document.getElementById("teamOneName").onclick = function () {
-        chooseTeam(1);
-    };
-    document.getElementById("teamTwoName").onclick = function () {
-        chooseTeam(2);
-    };
-    document.getElementById("chooseSmallestTeam").onclick = function () {
-        chooseSmallestTeam();
-    };
-}
-
-function drawTileImages() {
-    var tileImages = document.createElement("div");
-    tileImages.classList.add("tileButtons");
-    tileImages.classList.add("center");
-
-    var tileNumber = 1;
-    for (var i = 0; i < down; i++) {
-        for (var j = 0; j < across; j++) {
-            var tileImageContainerElement = document.createElement("div");
-            tileImageContainerElement.classList.add("tileButton");
-
-            var tileImageElement = document.createElement("img");
-            tileImageElement.classList.add("tileImage");
-            tileImageElement.src = "api/images/tiles/" + tileNumber++;
-            tileImageContainerElement.appendChild(tileImageElement);
-
-            var tileNumberElement = document.createElement("div");
-            tileNumberElement.classList.add("tileButtonNumber");
-            tileNumberElement.appendChild(document.createTextNode(tileNumber));
-            tileImageContainerElement.appendChild(tileNumberElement);
-
-            tileImages.appendChild(tileImageContainerElement);
-        }
-    }
-    document.getElementById("mainDiv").appendChild(tileImages);
 }
 
 window.onresize = function () {
@@ -621,62 +634,17 @@ window.onload = async function () {
     }
 
     drawTileButtons();
-    setupPlayer();
+    setupPlayerMenu();
 
-    var gameState = await getGameState();
-    handleGameState(gameState);
+    var promises = [];
+    promises.push(getGameStateAsync());
+    promises.push(setupPlayerAsync());
 
-    var player = await getPlayer();
-
-    var foundPlayer = false;
-    if (player && player.playerId && localStorage.getItem("createdTime")) {
-        var createdTime = new Date(localStorage.getItem("createdTime"));
-
-        var yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        if (createdTime > yesterday) {
-            choosePlayerName();
-            await chooseTeam(player.teamNumber);
-
-            foundPlayer = true;
-        }
-    }
-    if (!foundPlayer) {
-        setupChoosePlayerName();
-    }
-    
-    drawPlayer(player);
-
-    if (player.isAdmin) {
-        document.getElementById("playerName").classList.add("adminPlayerName");
-    }
+    Promise.all(promises).then((results) => {
+        handleGameState(results[0]);
+    });
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
-    setInterval(putPlayerPing, 30000);
-
-    if (localStorage.getItem("debug")) {
-        setInterval(function () {
-            document.getElementById("playerName").innerHTML = connection.state + " " + connectionCount++;
-        }, 1000);
-
-        window.onerror = function (msg, url, line, col, error) {
-            // Note that col & error are new to the HTML 5 spec and may not be 
-            // supported in every browser.  It worked for me in Chrome.
-            var extra = !col ? '' : '\ncolumn: ' + col;
-            extra += !error ? '' : '\nerror: ' + error;
-
-            // You can view the information in an alert to see things working like this:
-            drawSystemChat("chats", "Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
-
-            // TODO: Report this error via ajax so you can keep track
-            //       of what pages have JS issues
-
-            var suppressErrorAlert = true;
-            // If you return true, then error alerts (like in older versions of 
-            // Internet Explorer) will be suppressed.
-            return suppressErrorAlert;
-        };
-    }
+    setInterval(putPlayerPingAsync, 30000);
 }
