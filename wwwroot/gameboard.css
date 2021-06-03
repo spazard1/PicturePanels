@@ -265,10 +265,6 @@ body::-webkit-scrollbar {
     opacity: 0;
 }
 
-.tileWelcome {
-    transition: opacity 2s;
-}
-
 .tileNumber {
     position: relative;
     font-size: 10vh;

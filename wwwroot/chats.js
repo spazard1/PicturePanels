@@ -12,7 +12,7 @@ async function getChats(teamNumber) {
         });
 }
 
-async function drawChats(chatsElementId, teamNumber) {
+async function drawChatsAsync(chatsElementId, teamNumber) {
     var chatsElement = document.getElementById(chatsElementId);
 
     while (chatsElement.firstChild) {
@@ -144,7 +144,7 @@ function drawChat(chatsElementId, message, player, skipScroll) {
     }
 
     var typingIndicator = document.getElementById(chatsElementId + "_typingIndicator");
-    if (typingIndicator.nextElementSibling) {
+    if (typingIndicator && typingIndicator.nextElementSibling) {
         chatsElement.insertBefore(chatElement, typingIndicator.nextElementSibling);
     } else {
         chatsElement.appendChild(chatElement);
@@ -184,7 +184,7 @@ function drawSystemChat(chatsElementId, chatMessage, player) {
 
     var chatsElement = document.getElementById(chatsElementId);
     var typingIndicator = document.getElementById(chatsElementId + "_typingIndicator");
-    if (typingIndicator.nextElementSibling) {
+    if (typingIndicator && typingIndicator.nextElementSibling) {
         chatsElement.insertBefore(chatElement, typingIndicator.nextElementSibling);
     } else {
         chatsElement.appendChild(chatElement);
