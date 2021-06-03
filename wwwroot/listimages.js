@@ -34,6 +34,10 @@ function listImages() {
         });
 }
 
+var guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+
+
 function drawImageInfo(img, imageEntity, nameInfoElement) {
     if (!img.complete) {
         setTimeout(function () {
@@ -69,6 +73,16 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     nameInfoElement.appendChild(imagePlayedTime);
 
     var actionLinks = document.createElement("div");
+
+    if (!imageEntity.id.match(guidRegex)) {
+        var fixIdLink = document.createElement("span");
+        fixIdLink.classList = "actionLink";
+        fixIdLink.onclick = function (event) {
+            fixId(imageEntity.id);
+        };
+        fixIdLink.appendChild(document.createTextNode("FIX ID"));
+        actionLinks.appendChild(fixIdLink);
+    }
 
     var editLink = document.createElement("span");
     editLink.classList = "actionLink";
@@ -224,6 +238,25 @@ async function deleteImage(imageId) {
         .then(response => {
             if (!response.ok) {
                 throw new Error("got bad response on delete image: " + response.text());
+            }
+            document.getElementById(imageId).remove();
+            document.getElementById("imageCount").innerHTML = document.getElementById("imageContainer").children.length;
+        }).catch(error => {
+            alert(error);
+        });
+}
+
+async function fixId(imageId) {
+    return await fetch("api/images/fixId/" + document.getElementById("sourceBlobContainer").value + "/" + imageId,
+        {
+            method: "PUT",
+            headers: {
+                "Authorization": localStorage.getItem("Authorization")
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("got bad response on fix id: " + response.text());
             }
             document.getElementById(imageId).remove();
             document.getElementById("imageCount").innerHTML = document.getElementById("imageContainer").children.length;
