@@ -200,6 +200,18 @@ namespace CloudStorage.Services
             return imageTableEntity;
         }
 
+        public async Task<ImageTableEntity> FixIdAsync(ImageTableEntity imageTableEntity)
+        {
+            var sourceImageTableEntity = imageTableEntity.Clone();
+
+            imageTableEntity.Id = Guid.NewGuid().ToString();
+            await this.AddOrUpdateAsync(imageTableEntity);
+
+            await this.DeleteAsync(sourceImageTableEntity);
+
+            return imageTableEntity;
+        }
+
         public async Task<List<ImageTableEntity>> GetAllImagesAsync()
         {
             var imageTableResults = new List<ImageTableEntity>();
