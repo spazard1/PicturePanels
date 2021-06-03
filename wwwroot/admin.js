@@ -286,7 +286,7 @@ function registerConnections() {
         if (localStorage.getItem("debug")) {
             drawSystemChat("chatsTeam1", "SignalR closed.");
         }
-        await startSignalR("admin");
+        await startSignalRAsync("admin");
     });
 }
 
@@ -351,8 +351,8 @@ window.onload = async function () {
 
     setupChats("chatsTeam1", 1);
     setupChats("chatsTeam2", 2);
-    drawChats("chatsTeam1", 1);
-    drawChats("chatsTeam2", 2);
+    drawChatsAsync("chatsTeam1", 1);
+    drawChatsAsync("chatsTeam2", 2);
 
     drawPlusMinusButtons();
 
@@ -368,10 +368,10 @@ window.onload = async function () {
 
     drawTileButtons();
 
-    await startSignalR("admin");
+    await startSignalRAsync("admin");
     await loadImageIds();
 
-    var gameState = await getGameState();
+    var gameState = await getGameStateAsync();
     handleGameState(gameState);
 
     drawImageNumber();

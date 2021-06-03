@@ -673,7 +673,6 @@ function setupWelcomeAnimationAsync() {
     var tiles = document.getElementsByClassName("tile");
 
     for (let tile of tiles) {
-        tile.classList.add("tileWelcome");
         tile.classList.remove("tileOpen");
         promises.push(loadImageAsync(tile.lastChild, "/api/images/tiles/welcome/" + tile.tileNumber));
     }
@@ -713,11 +712,6 @@ function stopWelcomeAnimation() {
 
     clearInterval(welcomeAnimationTimeout);
     welcomeAnimationTimeout = null;
-
-    var tiles = document.getElementsByClassName("tile");
-    for (let tile of tiles) {
-        tile.classList.remove("tileWelcome");
-    }
 }
 
 async function handleGameState(gameState, firstLoad) {
@@ -842,7 +836,7 @@ function registerConnections() {
         if (localStorage.getItem("debug")) {
             drawSystemChat("chats", "SignalR closed.");
         }
-        await startSignalR("gameboard");
+        await startSignalRAsync("gameboard");
     });
 }
 
@@ -862,6 +856,9 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
+    createTiles();
+    setupCanvases();
+
     document.onmousemove = function () {
         clearTimeout(mouseTimer);
         if (!cursorVisible) {
@@ -871,14 +868,19 @@ window.onload = async function () {
         mouseTimer = window.setTimeout(disappearCursor, 3000);
     };
 
-    setupCanvases();
 
-    await startSignalR("gameboard");
-    await connection.invoke("RegisterGameBoard");
+    startSignalRAsync("gameboard").then(function () {
+        connection.invoke("RegisterGameBoard")
+    });
 
-    currentGameState = await getGameState();
-    createTiles();
-    handlePlayers(await getPlayersAsync());
+    var promises = [];
+    promises.push(getGameStateAsync());
+    promises.push(getPlayersAsync());
 
-    await handleGameState(currentGameState, true);
+    Promise.all(promises).then((results) => {
+        currentGameState = results[0];
+        handleGameState(currentGameState, true);
+
+        handlePlayers(results[1]);
+    });
 }
