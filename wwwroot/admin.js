@@ -127,7 +127,7 @@ function endRound() {
     });
 }
 
-function loadImageIds() {
+function loadImageIdsAsync() {
     var imageSelect = document.getElementById("imageId");
     while (imageSelect.firstChild) {
         imageSelect.removeChild(imageSelect.firstChild);
@@ -211,7 +211,7 @@ async function handleGameState(gameState) {
     updateTileButtons(gameState);
 
     if (currentGameState && currentGameState.blobContainer !== gameState.blobContainer) {
-        await loadImageIds();
+        await loadImageIdsAsync();
         drawImageNumber();
     }
 
@@ -253,6 +253,32 @@ async function handleGameState(gameState) {
             document.getElementById("endRoundButton").classList.add("hidden");
             document.getElementById("forceOpenTileButton").classList.add("hidden");
             break;
+    }
+
+    switch (gameState.captainStatus) {
+        case "Guess":
+            document.getElementById("passButton").classList.remove("buttonHighlight");
+            document.getElementById("incorrectButton").classList.add("buttonHighlight");
+            document.getElementById("correctButton").classList.add("buttonHighlight");
+            break;
+        case "Pass":
+            document.getElementById("passButton").classList.add("buttonHighlight");
+            document.getElementById("incorrectButton").classList.remove("buttonHighlight");
+            document.getElementById("correctButton").classList.remove("buttonHighlight");
+            break;
+        default:
+            document.getElementById("passButton").classList.remove("buttonHighlight");
+            document.getElementById("incorrectButton").classList.remove("buttonHighlight");
+            document.getElementById("correctButton").classList.remove("buttonHighlight");
+            break;
+    }
+
+    if (gameState.teamTurn === 1) {
+        document.getElementById("chatsTeam1").classList.add("chatsHighlight");
+        document.getElementById("chatsTeam2").classList.remove("chatsHighlight");
+    } else {
+        document.getElementById("chatsTeam1").classList.remove("chatsHighlight");
+        document.getElementById("chatsTeam2").classList.add("chatsHighlight");
     }
 }
 
@@ -336,8 +362,6 @@ window.onload = async function () {
         return;
     }
 
-    setupAdminMenu();
-
     var player = await getPlayer();
     if (!player) {
         document.getElementById("mainDiv").innerHTML = "Player not found. Go to player page first.";
@@ -354,26 +378,21 @@ window.onload = async function () {
     drawChatsAsync("chatsTeam1", 1);
     drawChatsAsync("chatsTeam2", 2);
 
-    drawPlusMinusButtons();
+    startSignalRAsync("admin");
+    loadImageIdsAsync().then(drawImageNumber);
+    getGameStateAsync().then(handleGameState);
 
-    document.getElementById("imageId").onchange = (event) => {
-        document.getElementById("goContainer").classList.remove("hidden");
-        drawImageNumber();
-    }
+    setupAdminMenu();
+    drawTileButtons();
+    drawPlusMinusButtons();
 
     var adminSelects = document.getElementsByClassName("adminSelect");
     for (let adminSelect of adminSelects) {
         adminSelect.onchange = (event) => { patchGameState(); };
     }
 
-    drawTileButtons();
-
-    await startSignalRAsync("admin");
-    await loadImageIds();
-
-    var gameState = await getGameStateAsync();
-    handleGameState(gameState);
-
-    drawImageNumber();
-
+    document.getElementById("imageId").onchange = (event) => {
+        document.getElementById("goContainer").classList.remove("hidden");
+        drawImageNumber();
+    }
 }
