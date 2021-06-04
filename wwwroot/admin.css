@@ -123,6 +123,7 @@ body {
     height: 2em;
     width: 5.5em;
     margin: 3px;
+    box-sizing: border-box;
 }
 
 .adminInputText {
@@ -135,6 +136,11 @@ body {
 
 .adminInputTextNumber {
     width: 4em;
+}
+
+.buttonHighlight {
+    border-color: lime;
+    border-width: 4px;
 }
 
 #imageNumber {
@@ -162,6 +168,7 @@ body {
 
 .chatsContainer {
     display:none;
+    overflow: hidden;
 }
 
 @media only screen and (min-width: 1000px) {
@@ -189,6 +196,7 @@ body {
         top: 0;
         left: 50vw;
         flex-direction: column;
+        overflow: hidden;
     }
 
     .adminMenu {

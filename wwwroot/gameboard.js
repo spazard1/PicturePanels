@@ -606,11 +606,9 @@ function openAllTiles() {
     shuffle(tilesArray);
     tilesArray.forEach(function (tile) {
         if (!tile.classList.contains("tileOpen")) {
-            setTimeout(function () {
-                loadImageAsync(tile.lastChild, "/api/images/tiles/" + currentGameState.imageId + "/" + tile.tileNumber).then(() => {
-                    tile.classList.add("tileOpen");
-                });
-            }, tileCount++ * 150);
+            loadImageAsync(tile.lastChild, "/api/images/tiles/" + currentGameState.imageId + "/" + tile.tileNumber).then(() => {
+                tile.classList.add("tileOpen");
+            });
         }
     });
 }
