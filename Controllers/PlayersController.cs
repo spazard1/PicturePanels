@@ -16,14 +16,19 @@ namespace PictureGame.Controllers
     public class PlayersController : Controller
     {
         private readonly PlayerTableStorage playerTableStorage;
-        private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
 
-        public PlayersController(PlayerTableStorage playerTableStorage, IHubContext<SignalRHub, ISignalRHub> hubContext, SignalRHelper signalRHelper)
+        public PlayersController(PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
-            this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
+        }
+
+        [Route("/")]
+        [Route("/player")]
+        public IActionResult Index()
+        {
+            return View();
         }
 
         [HttpGet]
