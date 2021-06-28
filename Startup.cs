@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using PictureGame.Filters;
 using PictureGame.Services;
 
@@ -30,7 +31,7 @@ namespace CloudStorage
             encoderSettings.AllowRange(UnicodeRanges.All);
             encoderSettings.AllowCharacters(':');
 
-            services.AddControllers(options =>
+            services.AddControllersWithViews(options =>
             {
                 options.Filters.Add(typeof(AuthorizationFilter));
             }).AddJsonOptions(options =>
@@ -69,10 +70,10 @@ namespace CloudStorage
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDefaultFiles(new DefaultFilesOptions()
-            {
-                DefaultFileNames = new List<string>() { "player.html" }
-            });
+            //app.UseDefaultFiles(new DefaultFilesOptions()
+            //{
+            //    DefaultFileNames = new List<string>() { "player.html" }
+            //});
 
             app.UseStaticFiles();
 
