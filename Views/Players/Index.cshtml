@@ -1,5 +1,63 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@section css {
+	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/player.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/chats.css" asp-append-version="true" />
 }
+
+@section head {
+    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+}
+
+@section scripts {
+    <script src="~/external/colorpicker.js"></script>
+
+    <script src="~/js/player.js" asp-append-version="true"></script>
+    <script src="~/js/chats.js" asp-append-version="true"></script>
+}
+
+<div id="mainDiv" class="center flexColumns">
+
+    <div id="choosePlayerNameLabel" class="center hidden">
+        Welcome to the Picture Panels Game!
+    </div>
+
+    <div id="playerNameInputDiv" class="center hidden">
+        <input id="playerNameInput" class="playerNameInput" type="text" maxlength="14" autocomplete="off" />
+    </div>
+
+    <div id="colorPicker" class="center hidden"></div>
+
+    <div id="choosePlayerName" class="center hidden">
+        <input id="choosePlayerNameButton" class="center" type="button" value="Play!" onclick="choosePlayerNameButtonOnClick()" />
+    </div>
+
+    <div id="chooseTeam" class="center hidden">
+        Choose your team
+    </div>
+
+    <div id="playerBanner" class="playerBanner playerBannerChooseTeam center hidden">
+        <div id="playerName" class="playerBannerItem playerName hidden"></div>
+        <div id="playerBannerTeamNames" class="playerBannerItem">
+            <div id="teamOneName" class="teamName chooseTeamName teamOneBox">Loading...</div>
+            <div id="teamTwoName" class="teamName chooseTeamName teamTwoBox">Loading...</div>
+            <div id="chooseSmallestTeam" class="teamName chooseTeamName chooseSmallestTeamBox">Loading...</div>
+        </div>
+    </div>
+    <div id="tileButtons" class="tileButtons center hidden"></div>
+    <div id="turnStatusContainer" class="turnStatusContainer center turnStatusContainerHidden">
+        <div id="turnStatusMessage"></div>
+    </div>
+    <div id="captainStatusButtons" class="captainStatusButtons center hidden">
+        <div id="captainGuessButton" class="captainButton">Yes!</div>
+        <div id="captainPassButton" class="captainButton">No</div>
+    </div>
+
+    <div id="chats" class="chats hidden"></div>
+
+    <div id="chats_input" class="chatInputContainer hidden">
+        <input id="chats_inputText" type="text" class="chatInput" autocomplete="off" maxlength="280" />
+
+        <img id="chats_send" class="chatSend" src="img/sendimage.png" />
+    </div>
+
+</div>

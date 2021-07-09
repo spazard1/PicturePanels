@@ -306,22 +306,22 @@ function setupAdminMenu() {
 
     var adminLink = document.createElement("a");
     adminLink.appendChild(document.createTextNode("Admin"));
-    adminLink.href = "admin.html";
+    adminLink.href = "admin";
     menuDiv.appendChild(adminLink);
 
     var uploadLink = document.createElement("a");
     uploadLink.appendChild(document.createTextNode("Upload"));
-    uploadLink.href = "upload.html";
+    uploadLink.href = "upload";
     menuDiv.appendChild(uploadLink);
 
     var listLink = document.createElement("a");
     listLink.appendChild(document.createTextNode("List"));
-    listLink.href = "listimages.html";
+    listLink.href = "listimages";
     menuDiv.appendChild(listLink);
 
     var setupLink = document.createElement("a");
     setupLink.appendChild(document.createTextNode("Setup"));
-    setupLink.href = "setup.html";
+    setupLink.href = "setup";
     menuDiv.appendChild(setupLink);
 }
 

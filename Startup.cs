@@ -70,11 +70,6 @@ namespace CloudStorage
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseDefaultFiles(new DefaultFilesOptions()
-            //{
-            //    DefaultFileNames = new List<string>() { "player.html" }
-            //});
-
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();
