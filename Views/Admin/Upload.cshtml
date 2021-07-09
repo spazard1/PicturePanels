@@ -1,0 +1,77 @@
+﻿@section css {
+    <link rel="stylesheet" href="~/external/croppie.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/upload.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/setup.js" asp-append-version="true"></script>
+    <script src="~/js/upload.js" asp-append-version="true"></script>
+}
+
+<div id="mainDiv" class="center">
+    <div class="inputPanel">
+        <div class="inputPanelElement">
+            Choose an image from your computer or paste an image or URL.
+            Images must be at least 1000px wide, so choose images that are large or high resolution.<br />
+            <a target="_blank" href="https://www.google.com/search?q=sound%20of%20music%20movie&tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731">Example 'Large' image search</a>
+        </div>
+        <div id="imageFileDiv" class="imageFileDiv inputPanelElement">
+            <input type="file" id="imageFile" class="imageFile hidden" accept="image/*" />
+            <label for="imageFile" class="uploadButton">Image from computer</label> or
+        </div>
+        <div id="imageUrlDiv" class="inputPanelElement imageUrlDiv">
+            <input type="text" id="imageUrl" class="imageUrl" autocomplete="off" />
+        </div>
+        <div id="blobContainerDiv" class="blobContainerDiv inputPanelElement hidden">
+            Blob Container:<br />
+            <select id="blobContainer"></select>
+        </div>
+        <div class="inputPanelElement">
+            Movie/TV Show Name:<br />
+            <input type="text" id="imageName" autocomplete="off" maxlength="100" />
+        </div>
+        <div class="inputPanelElement">
+            Uploaded By:<br />
+            <input type="text" id="uploadedBy" maxlength="14" /><br />
+        </div>
+        <div class="inputPanelElement">
+            <input type="button" id="saveButton" class="uploadButton" value="Save" onclick="uploadImage()" />
+        </div>
+
+        <div id="results" class="inputPanelElement"></div>
+    </div>
+
+    <div id="imageInfo" class="center hidden imageInfo">
+        <div id="imageSizeContainer">
+            Cropped Image Size: <span id="imageWidth" class="imageDimension imageWidth"></span> X
+            <span id="imageHeight" class=" imageDimension imageHeight"></span>
+        </div>
+        <div id="aspectRatioContainer">
+            Cropped Aspect Ratio: <span id="aspectRatio" class="imageDimension"></span>
+        </div>
+    </div>
+
+    <div id="croppieContainer" class="center hidden imageContainer" draggable="false"></div>
+    <div id="imagePreviewContainer" class="center hidden imageContainer" draggable="false"></div>
+    <div id="helpMessageContainer" class="center imageContainer" draggable="false">
+        <span class="helpMessage">Welcome to the Picture Panels upload page!</span><br />
+        <span class="helpMessage">Here are some example images to get you thinking.</span><br /><br />
+
+        <img class="helpImage" src="api/images/welcome/soundofmusic" />
+        <img class="helpImage" src="api/images/welcome/strangerthings" />
+
+        <br />
+        <img class="helpImage" src="api/images/welcome/upload" />
+        <img class="helpImage" src="api/images/welcome/thehelp" />
+        <br /><br />
+        <span>Sound of Music, Stranger Things, Upload, The Help</span>
+    </div>
+</div>
+
+<div id="loading" class="loading hidden">
+    <div id="loadingMessage" class="loadingMessage">Uploading image...</div>
+    <img id="loadingGif" src="img/loading.gif" />
+</div>
+
+<div id="adminMenu" class="adminMenu"></div>

@@ -1,0 +1,60 @@
+﻿@section css {
+	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/gameboard.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/gameboard.js" asp-append-version="true"></script>
+}
+
+<div id="welcome" class="welcomeContainer hidden">
+    <div class="welcomeText">
+        Welcome to the Picture Panels Game!<br />
+        To join in, scan this QR code, or go to <a href="https://picturegame.azurewebsites.net/" target="_blank">https://picturegame.azurewebsites.net/</a>.
+    </div>
+    <div class="welcomeQRCode">
+        <img src="img/qr-code.svg" alt="Welcome QR Code">
+    </div>
+</div>
+
+<div class="teamInfos">
+    <div id="teamOneCountdownDiv" class="teamInfo countdownDiv">
+        <canvas id="teamOneCountdownCanvas" class="countdownCanvas"></canvas>
+    </div>
+    <div id="teamOneStatus" class="teamInfo teamStatus">
+
+    </div>
+    <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
+        <div id="teamOneName" class="teamName">Team 1</div>
+        <div class="tileCount"><div id="teamOneInnerTiles">5</div> / <div id="teamOneOuterTiles">8</div></div>
+        <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
+    </div>
+    <div id="teamOneScore" class="teamOneBox teamInfo score">0</div>
+    <div id="teamTwoScore" class="teamTwoBox teamInfo score">0</div>
+    <div id="teamTwoDiv" class="teamInfo teamNameBox">
+        <div id="teamTwoName" class="teamName">Team 2</div>
+        <div class="tileCount"><div id="teamTwoInnerTiles">5</div> / <div id="teamTwoOuterTiles">8</div></div>
+        <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
+    </div>
+    <div id="teamTwoStatus" class="teamInfo teamStatus">
+
+    </div>
+    <div id="teamTwoCountdownDiv" class="teamInfo countdownDiv">
+        <canvas id="teamTwoCountdownCanvas" class="countdownCanvas"></canvas>
+    </div>
+</div>
+<div id="roundNumberDiv" class="hidden">
+    Round<br />
+    <div id="roundNumber"></div>
+</div>
+
+<div id="teamOnePlayerNames" class="teamPlayerNames"></div>
+<div id="teamTwoPlayerNames" class="teamPlayerNames"></div>
+
+<div id="uploadedBy" class="uploadedBy hidden"></div>
+
+<div id="answerTitle" class="answerTitle opacity0"></div>
+
+<div id="tiles" class="tiles"></div>
+
+<div id="mostVotesTiles" class="mostVotesTiles"></div>

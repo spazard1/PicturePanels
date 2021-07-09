@@ -369,7 +369,7 @@ window.onload = async function () {
     }
 
     if (!player.isAdmin) {
-        document.getElementById("mainDiv").innerHTML = "Player is not admin. Promote on the <a href='setup.html'>setup.html</a> page.";
+        document.getElementById("mainDiv").innerHTML = "Player is not admin. Promote on the <a href='setup'>setup</a> page.";
         return;
     }
 
@@ -379,8 +379,15 @@ window.onload = async function () {
     drawChatsAsync("chatsTeam2", 2);
 
     startSignalRAsync("admin");
-    loadImageIdsAsync().then(drawImageNumber);
-    getGameStateAsync().then(handleGameState);
+
+    var promises = [];
+    promises.push(getGameStateAsync());
+    promises.push(loadImageIdsAsync());
+
+    Promise.all(promises).then((results) => {
+        handleGameState(results[0]);
+        drawImageNumber();
+    });
 
     setupAdminMenu();
     drawTileButtons();
