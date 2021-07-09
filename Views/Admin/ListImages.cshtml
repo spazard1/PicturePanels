@@ -1,0 +1,26 @@
+﻿@section css {
+	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/listimages.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/listimages.js" asp-append-version="true"></script>
+}
+
+<div id="blobContainerDiv" class="center blobContainerDiv inputPanelElement">
+    Source: <select id="sourceBlobContainer"></select>
+    Target: <select id="targetBlobContainer"></select>
+    Count: <span id="imageCount"></span>
+</div>
+<div id="editImageMenu" class="editImageMenu hidden">
+    <input type="hidden" id="imageId" />
+    Name: <input type="text" id="imageName" /> <br />
+    Uploaded By:<input type="text" id="uploadedBy" /> <br /><br />
+
+    <input type="button" id="cancelSaveButton" value="Cancel" />
+    <input type="button" id="saveButton" value="Save" />
+</div>
+
+<div id="imageContainer"></div>
+
+<div id="adminMenu" class="adminMenu"></div>
