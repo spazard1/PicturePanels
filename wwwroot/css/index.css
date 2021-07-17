@@ -104,7 +104,7 @@ input:focus {
     height: 100%;
 }
 
-.tileButtons {
+.panelButtons {
     background-color: black;
     width: 98vw;
     margin-left: 1vw;
@@ -120,12 +120,12 @@ input:focus {
     z-index: 100;
 }
 
-.tileButtonsHighlight {
-    animation: highlightTileButtons 2s alternate infinite;
+.panelButtonsHighlight {
+    animation: highlightPanelButtons 2s alternate infinite;
     animation-fill-mode: both;
 }
 
-.tileButton {
+.panelButton {
     position: relative;
     cursor: pointer;
     width: 20%;
@@ -137,12 +137,12 @@ input:focus {
     justify-content: center;
 }
 
-.tileButtonNumber {
+.panelButtonNumber {
     color: black;
     font-size: 1em;
 }
 
-.tileButton .tileButtonBackground {
+.panelButton .panelButtonBackground {
     position: absolute;
     font-size: 1em;
     user-select: none;
@@ -156,25 +156,25 @@ input:focus {
     justify-content: center;
 }
 
-.tileButtonDisabled {
+.panelButtonDisabled {
     cursor: default !important;
 }
 
-.tileButtonDisabled .tileButtonBackground {
+.panelButtonDisabled .panelButtonBackground {
     background-color: rgb(45,45,45) !important;
 }
 
-.tileButtonDisabled .tileButtonBackground {
+.panelButtonDisabled .panelButtonBackground {
     color: black !important;
 }
 
-.tileButton .tileButtonImage {
+.panelButton .panelButtonImage {
     z-index: 100;
     width: 100%;
     vertical-align: bottom;
 }
 
-.mostVotesTile {
+.mostVotesPanel {
     z-index: 100;
     top: 0;
     left: 0;
@@ -202,7 +202,7 @@ input:focus {
     overflow: hidden;
 }
 
-@keyframes highlightTileButtons {
+@keyframes highlightPanelButtons {
     0% {
         border-color: black;
     }

@@ -1,12 +1,12 @@
 ﻿using CloudStorage.Models;
 using CloudStorage.Services;
 using Microsoft.Azure.Cosmos.Table;
-using PictureGame.Entities;
+using PicturePanels.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PictureGame.Services
+namespace PicturePanels.Services
 {
     public class ChatTableStorage
     {

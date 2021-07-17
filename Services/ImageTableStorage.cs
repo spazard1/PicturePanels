@@ -31,7 +31,7 @@ namespace CloudStorage.Services
         public const string DefaultBlobContainer = "pending";
         public const string ScratchBlobContainer = "scratch";
         public const string ThumbnailsBlobContainer = "thumbnails";
-        public const string TilesBlobContainer = "tiles";
+        public const string PanelsBlobContainer = "panels";
         public const string WelcomeBlobContainer = "welcome";
         public const string WelcomeImageId = "soundofmusic";
 
@@ -251,7 +251,7 @@ namespace CloudStorage.Services
             }
             blobContainers.Remove(ScratchBlobContainer);
             blobContainers.Remove(ThumbnailsBlobContainer);
-            blobContainers.Remove(TilesBlobContainer);
+            blobContainers.Remove(PanelsBlobContainer);
             blobContainers.Remove(WelcomeBlobContainer);
 
             return blobContainers;
@@ -359,14 +359,14 @@ namespace CloudStorage.Services
             }
         }
 
-        public async Task<string> GetTileImageUrlAsync(ImageTableEntity entity, int tileNumber)
+        public async Task<string> GetPanelImageUrlAsync(ImageTableEntity entity, int panelNumber)
         {
-            var tilesContainer = blobServiceClient.GetBlobContainerClient(TilesBlobContainer);
-            var tileBlob = tilesContainer.GetBlobClient(entity.Id + "_tile_" + tileNumber);
+            var panelsContainer = blobServiceClient.GetBlobContainerClient(PanelsBlobContainer);
+            var panelBlob = panelsContainer.GetBlobClient(entity.Id + "_panel_" + panelNumber);
 
-            if (await tileBlob.ExistsAsync())
+            if (await panelBlob.ExistsAsync())
             {
-                return this.GetDownloadUrl(TilesBlobContainer, entity.Id + "_tile_" + tileNumber);
+                return this.GetDownloadUrl(PanelsBlobContainer, entity.Id + "_panel_" + panelNumber);
             }
 
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(entity.BlobContainer);
@@ -377,13 +377,13 @@ namespace CloudStorage.Services
 
             var image = Image.FromStream(imageMemoryStream);
 
-            var tileImage = GetTileImage(image, tileNumber);
+            var panelImage = GetPanelImage(image, panelNumber);
             var memoryStream = new MemoryStream();
-            tileImage.Save(memoryStream, ImageFormat.Png);
+            panelImage.Save(memoryStream, ImageFormat.Png);
             memoryStream.Seek(0, SeekOrigin.Begin);
 
-            await tileBlob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
-            return this.GetDownloadUrl(TilesBlobContainer, entity.Id + "_tile_" + tileNumber);
+            await panelBlob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
+            return this.GetDownloadUrl(PanelsBlobContainer, entity.Id + "_panel_" + panelNumber);
         }
 
         /// <summary>
@@ -419,29 +419,29 @@ namespace CloudStorage.Services
         }
 
         /// <summary>
-        /// Get the image for a specified tile number
+        /// Get the image for a specified panel number
         /// </summary>
-        /// <param name="image">The image to get the tile number</param>
-        /// <param name="tileNumber">The tileNumber to retrieve</param>
-        /// <returns>The image at that tile</returns>
-        public static Bitmap GetTileImage(Image image, int tileNumber)
+        /// <param name="image">The image to get the panel number</param>
+        /// <param name="panelNumber">The panelNumber to retrieve</param>
+        /// <returns>The image at that panel</returns>
+        public static Bitmap GetPanelImage(Image image, int panelNumber)
         {
-            var tileWidth = (int) Math.Ceiling((double)image.Width / Across);
-            var tileHeight = (int) Math.Ceiling((double)image.Height / Down);
+            var panelWidth = (int) Math.Ceiling((double)image.Width / Across);
+            var panelHeight = (int) Math.Ceiling((double)image.Height / Down);
 
-            var destRect = new Rectangle(0, 0, tileWidth, tileHeight);
-            var destImage = new Bitmap(tileWidth, tileHeight);
+            var destRect = new Rectangle(0, 0, panelWidth, panelHeight);
+            var destImage = new Bitmap(panelWidth, panelHeight);
 
-            var startX = ((tileNumber - 1) % Across) * tileWidth;
-            var startY = ((tileNumber - 1) / Across) * tileHeight;
+            var startX = ((panelNumber - 1) % Across) * panelWidth;
+            var startY = ((panelNumber - 1) / Across) * panelHeight;
 
             // Draw the cloned portion of the Bitmap object.
             using (var graphics = Graphics.FromImage(destImage))
             {
-                if (tileNumber > 0)
+                if (panelNumber > 0)
                 {
                     graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    graphics.DrawImage(image, destRect, startX, startY, tileWidth, tileHeight, GraphicsUnit.Pixel);
+                    graphics.DrawImage(image, destRect, startX, startY, panelWidth, panelHeight, GraphicsUnit.Pixel);
                 }
                 else
                 {
@@ -459,7 +459,7 @@ namespace CloudStorage.Services
 
             for (var i = 0; i <= Across * Down; i++)
             {
-                tasks.Add(this.GetTileImageUrlAsync(entity, i));
+                tasks.Add(this.GetPanelImageUrlAsync(entity, i));
             }
 
             return Task.WhenAll(tasks);

@@ -1,6 +1,6 @@
 using System;
 
-namespace PictureGame.Models
+namespace PicturePanels.Models
 {
     public class ErrorViewModel
     {

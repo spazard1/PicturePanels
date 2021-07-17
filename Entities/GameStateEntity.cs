@@ -1,7 +1,7 @@
 ﻿using CloudStorage.Models;
 using System.Collections.Generic;
 
-namespace PictureGame.Entities
+namespace PicturePanels.Entities
 {
     public class GameStateEntity
     {
@@ -15,7 +15,7 @@ namespace PictureGame.Entities
             this.Id = tableEntity.Id;
             this.BlobContainer = tableEntity.BlobContainer;
             this.ThemeCss = tableEntity.ThemeCss;
-            this.OpenTileTime = tableEntity.OpenTileTime;
+            this.OpenPanelTime = tableEntity.OpenPanelTime;
             this.GuessTime = tableEntity.GuessTime;
             this.RoundNumber = tableEntity.RoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
@@ -23,19 +23,19 @@ namespace PictureGame.Entities
             this.CaptainStatus = tableEntity.CaptainStatus;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.ImageId = tableEntity.ImageId;
-            this.RevealedTiles = tableEntity.RevealedTiles;
+            this.RevealedPanels = tableEntity.RevealedPanels;
             this.TeamOneName = tableEntity.TeamOneName;
             this.TeamOneCaptain = tableEntity.TeamOneCaptain;
             this.TeamOneScore = tableEntity.TeamOneScore;
             this.TeamOneIncorrectGuesses = tableEntity.TeamOneIncorrectGuesses;
-            this.TeamOneOuterTiles = tableEntity.TeamOneOuterTiles;
-            this.TeamOneInnerTiles = tableEntity.TeamOneInnerTiles;
+            this.TeamOneOuterPanels = tableEntity.TeamOneOuterPanels;
+            this.TeamOneInnerPanels = tableEntity.TeamOneInnerPanels;
             this.TeamTwoName = tableEntity.TeamTwoName;
             this.TeamTwoCaptain = tableEntity.TeamTwoCaptain;
             this.TeamTwoScore = tableEntity.TeamTwoScore;
             this.TeamTwoIncorrectGuesses = tableEntity.TeamTwoIncorrectGuesses;
-            this.TeamTwoOuterTiles = tableEntity.TeamTwoOuterTiles;
-            this.TeamTwoInnerTiles = tableEntity.TeamTwoInnerTiles;
+            this.TeamTwoOuterPanels = tableEntity.TeamTwoOuterPanels;
+            this.TeamTwoInnerPanels = tableEntity.TeamTwoInnerPanels;
         }
 
         public string Id { get; set; }
@@ -44,7 +44,7 @@ namespace PictureGame.Entities
 
         public string ThemeCss { get; set; }
 
-        public int? OpenTileTime { get; set; }
+        public int? OpenPanelTime { get; set; }
 
         public int? GuessTime { get; set; }
 
@@ -60,7 +60,7 @@ namespace PictureGame.Entities
 
         public string ImageId { get; set; }
 
-        public IList<string> RevealedTiles { get; set; }
+        public IList<string> RevealedPanels { get; set; }
 
         public string TeamOneName { get; set; }
 
@@ -70,9 +70,9 @@ namespace PictureGame.Entities
 
         public int? TeamOneIncorrectGuesses { get; set; }
 
-        public int? TeamOneOuterTiles { get; set; }
+        public int? TeamOneOuterPanels { get; set; }
 
-        public int? TeamOneInnerTiles { get; set; }
+        public int? TeamOneInnerPanels { get; set; }
 
         public string TeamTwoName { get; set; }
 
@@ -82,18 +82,18 @@ namespace PictureGame.Entities
 
         public int? TeamTwoIncorrectGuesses { get; set; }
 
-        public int? TeamTwoOuterTiles { get; set; }
+        public int? TeamTwoOuterPanels { get; set; }
 
-        public int? TeamTwoInnerTiles { get; set; }
+        public int? TeamTwoInnerPanels { get; set; }
 
         public GameStateTableEntity ToModel(GameStateTableEntity currentModel)
         {
             return new GameStateTableEntity
             {
-                RevealedTiles = currentModel.RevealedTiles,
+                RevealedPanels = currentModel.RevealedPanels,
                 BlobContainer = this.BlobContainer ?? currentModel.BlobContainer,
                 ThemeCss = this.ThemeCss ?? currentModel.ThemeCss,
-                OpenTileTime = this.OpenTileTime ?? currentModel.OpenTileTime,
+                OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime,
                 GuessTime = this.GuessTime ?? currentModel.GuessTime,
                 RoundNumber = this.RoundNumber ?? currentModel.RoundNumber,
                 TeamTurn = this.TeamTurn ?? currentModel.TeamTurn,
@@ -105,14 +105,14 @@ namespace PictureGame.Entities
                 TeamOneCaptain = this.TeamOneCaptain ?? currentModel.TeamOneCaptain,
                 TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore,
                 TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses,
-                TeamOneInnerTiles = this.TeamOneInnerTiles ?? currentModel.TeamOneInnerTiles,
-                TeamOneOuterTiles = this.TeamOneOuterTiles ?? currentModel.TeamOneOuterTiles,
+                TeamOneInnerPanels = this.TeamOneInnerPanels ?? currentModel.TeamOneInnerPanels,
+                TeamOneOuterPanels = this.TeamOneOuterPanels ?? currentModel.TeamOneOuterPanels,
                 TeamTwoName = this.TeamTwoName ?? currentModel.TeamTwoName,
                 TeamTwoCaptain = this.TeamTwoCaptain ?? currentModel.TeamTwoCaptain,
                 TeamTwoScore = this.TeamTwoScore ?? currentModel.TeamTwoScore,
                 TeamTwoIncorrectGuesses = this.TeamTwoIncorrectGuesses ?? currentModel.TeamTwoIncorrectGuesses,
-                TeamTwoInnerTiles = this.TeamTwoInnerTiles ?? currentModel.TeamTwoInnerTiles,
-                TeamTwoOuterTiles = this.TeamTwoOuterTiles ?? currentModel.TeamTwoOuterTiles
+                TeamTwoInnerPanels = this.TeamTwoInnerPanels ?? currentModel.TeamTwoInnerPanels,
+                TeamTwoOuterPanels = this.TeamTwoOuterPanels ?? currentModel.TeamTwoOuterPanels
             };
         }
     }

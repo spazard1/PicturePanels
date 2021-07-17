@@ -1,13 +1,13 @@
-﻿async function tileButtonOnClick(event) {
-    if (event.currentTarget.classList.contains("tileButtonDisabled")) {
-        event.currentTarget.classList.remove("tileButtonSelected");
+﻿async function panelButtonOnClick(event) {
+    if (event.currentTarget.classList.contains("panelButtonDisabled")) {
+        event.currentTarget.classList.remove("panelButtonSelected");
         return;
     }
 
-    event.currentTarget.classList.toggle("tileButtonSelected");
+    event.currentTarget.classList.toggle("panelButtonSelected");
     event.currentTarget.blur();
 
-    await sendSelectedTiles();
+    await sendSelectedPanels();
 }
 
 function setupPlayerMenu() {
@@ -46,11 +46,11 @@ function setupPlayerMenu() {
 var playerLoaded = false;
 
 function drawPlayer(player) {
-    if (player.selectedTiles) {
-        var tileButtons = document.getElementsByClassName("tileButton");
-        for (let tileButton of tileButtons) {
-            if (player.selectedTiles.includes(tileButton.value)) {
-                tileButton.classList.add("tileButtonSelected");
+    if (player.selectedPanels) {
+        var panelButtons = document.getElementsByClassName("panelButton");
+        for (let panelButton of panelButtons) {
+            if (player.selectedPanels.includes(panelButton.value)) {
+                panelButton.classList.add("panelButtonSelected");
             }
         }
     }
@@ -170,7 +170,7 @@ function setupChoosePlayerName() {
     document.getElementById("teamTwoName").classList.add("chooseTeamName");
     document.getElementById("chooseSmallestTeam").classList.remove("hidden");
 
-    document.getElementById("tileButtons").classList.add("hidden");
+    document.getElementById("panelButtons").classList.add("hidden");
 
     document.getElementById("chats").classList.add("hidden");
     document.getElementById("chats_input").classList.add("hidden");
@@ -338,7 +338,7 @@ async function chooseSmallestTeam() {
 }
 
 function drawTeam(teamNumber) {
-    updatePlayerTileButtons(currentGameState);
+    updatePlayerPanelButtons(currentGameState);
 
     document.getElementById("turnStatusContainer").classList.remove("hidden");
 
@@ -429,46 +429,46 @@ function notifyTurn(gameState) {
 
     if (gameState.turnType === "Welcome") {
         document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-        document.getElementById("tileButtons").classList.add("hidden");
-        document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+        document.getElementById("panelButtons").classList.add("hidden");
+        document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
         drawSystemChat("chats", "Welcome to the Picture Panels game!");
         return;
     }
 
     if (gameState.turnType === "EndRound") {
         document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-        document.getElementById("tileButtons").classList.add("hidden");
-        document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+        document.getElementById("panelButtons").classList.add("hidden");
+        document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
         document.getElementById("turnStatusMessage").innerHTML = "This round is over.";
         return;
     }
 
     if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
         switch (gameState.turnType) {
-            case "OpenTile":
+            case "OpenPanel":
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 highlightTurnStatusContainer();
 
-                document.getElementById("tileButtons").classList.remove("hidden");
-                document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "Vote for a tile to open";
-                drawSystemChat("chats", "It's your team's turn to vote for tile(s) you want to open.");
+                document.getElementById("panelButtons").classList.remove("hidden");
+                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
+                document.getElementById("turnStatusMessage").innerHTML = "Vote for a panel to open";
+                drawSystemChat("chats", "It's your team's turn to vote for panel(s) you want to open.");
                 break;
-            case "OpenFreeTile":
+            case "OpenFreePanel":
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 highlightTurnStatusContainer();
 
-                document.getElementById("tileButtons").classList.remove("hidden");
-                document.getElementById("tileButtons").classList.add("tileButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "Vote for a free tile to open";
-                drawSystemChat("chats", "The other team made an incorrect guess, so vote to open a FREE tile.");
+                document.getElementById("panelButtons").classList.remove("hidden");
+                document.getElementById("panelButtons").classList.add("panelButtonsHighlight");
+                document.getElementById("turnStatusMessage").innerHTML = "Vote for a free panel to open";
+                drawSystemChat("chats", "The other team made an incorrect guess, so vote to open a FREE panel.");
                 break;
             case "MakeGuess":
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 highlightTurnStatusContainer();
 
-                document.getElementById("tileButtons").classList.add("hidden");
-                document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+                document.getElementById("panelButtons").classList.add("hidden");
+                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 if (isCaptain(gameState)) {
                     document.getElementById("turnStatusMessage").innerHTML = "Does your team want to guess?";
                 } else {
@@ -481,8 +481,8 @@ function notifyTurn(gameState) {
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerCorrect");
 
-                document.getElementById("tileButtons").classList.add("hidden");
-                document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+                document.getElementById("panelButtons").classList.add("hidden");
+                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 document.getElementById("turnStatusMessage").innerHTML = "Your team wins this round!";
                 drawSystemChat("chats", "That's the correct answer!");
                 break;
@@ -491,13 +491,13 @@ function notifyTurn(gameState) {
         switch (gameState.turnType) {
             case "Correct":
                 document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-                document.getElementById("tileButtons").classList.add("hidden");
-                document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+                document.getElementById("panelButtons").classList.add("hidden");
+                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 break;
             default:
                 document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-                document.getElementById("tileButtons").classList.add("hidden");
-                document.getElementById("tileButtons").classList.remove("tileButtonsHighlight");
+                document.getElementById("panelButtons").classList.add("hidden");
+                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 break;
         }
     }
@@ -515,9 +515,9 @@ function handleGameState(gameState) {
 
     if (playerIsReadyToPlay && (!currentGameState || currentGameState.turnType !== gameState.turnType || currentGameState.teamTurn !== gameState.teamTurn)) {
         notifyTurn(gameState);
-        clearTileButtonSelection();
+        clearPanelButtonSelection();
     } else if (currentGameState && currentGameState.imageId !== gameState.imageId) {
-        clearTileButtonSelection();
+        clearPanelButtonSelection();
     }
 
     if (currentGameState &&
@@ -531,47 +531,47 @@ function handleGameState(gameState) {
 
     drawGameState(gameState);
 
-    updatePlayerTileButtons(gameState);
+    updatePlayerPanelButtons(gameState);
 
     handleCaptainButtons(gameState);
 }
 
-const innerTiles = ["7", "8", "9", "12", "13", "14"];
-const outerTiles = ["1", "2", "3", "4", "5", "6", "10", "11", "15", "16", "17", "18", "19", "20"];
+const innerPanels = ["7", "8", "9", "12", "13", "14"];
+const outerPanels = ["1", "2", "3", "4", "5", "6", "10", "11", "15", "16", "17", "18", "19", "20"];
 
-function updatePlayerTileButtons(gameState) {
+function updatePlayerPanelButtons(gameState) {
     if (!gameState) {
         return;
     }
 
-    var disabledTiles = [];
+    var disabledPanels = [];
 
     var teamNumber = localStorage.getItem("teamNumber");
     if (teamNumber === "1") {
-        if (gameState.teamOneOuterTiles <= 0) {
-            disabledTiles = disabledTiles.concat(outerTiles);
+        if (gameState.teamOneOuterPanels <= 0) {
+            disabledPanels = disabledPanels.concat(outerPanels);
         }
-        if (gameState.teamOneInnerTiles <= 0) {
-            disabledTiles = disabledTiles.concat(innerTiles);
+        if (gameState.teamOneInnerPanels <= 0) {
+            disabledPanels = disabledPanels.concat(innerPanels);
         }
     } else {
-        if (gameState.teamTwoOuterTiles <= 0) {
-            disabledTiles = disabledTiles.concat(outerTiles);
+        if (gameState.teamTwoOuterPanels <= 0) {
+            disabledPanels = disabledPanels.concat(outerPanels);
         }
-        if (gameState.teamTwoInnerTiles <= 0) {
-            disabledTiles = disabledTiles.concat(innerTiles);
+        if (gameState.teamTwoInnerPanels <= 0) {
+            disabledPanels = disabledPanels.concat(innerPanels);
         }
     }
 
-    if (gameState.turnType === "OpenFreeTile") {
-        disabledTiles = innerTiles;
+    if (gameState.turnType === "OpenFreePanel") {
+        disabledPanels = innerPanels;
     }
 
-    updateTileButtons(currentGameState, disabledTiles);
+    updatePanelButtons(currentGameState, disabledPanels);
 }
 
 async function handleRandomizeTeam(player) {
-    clearTileButtonSelection();
+    clearPanelButtonSelection();
 
     if (parseInt(localStorage.getItem("teamNumber")) !== player.teamNumber) {
         drawTeam(player.teamNumber);
@@ -633,7 +633,7 @@ window.onload = async function () {
         putCaptainPass();
     }
 
-    drawTileButtons();
+    drawPanelButtons();
     setupPlayerMenu();
 
     var promises = [];

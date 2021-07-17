@@ -11,15 +11,15 @@ namespace CloudStorage.Models
         public const string GameStateDefaultId = "Default";
 
         public const string ActionNewRound = "NewRound";
-        public const string ActionOpenTile = "OpenTile";
+        public const string ActionOpenPanel = "OpenPanel";
         public const string ActionPass = "Pass";
         public const string ActionIncorrect = "Incorrect";
         public const string ActionCorrect = "Correct";
         public const string ActionEndRound = "EndRound";
 
         public const string TurnTypeWelcome = "Welcome";
-        public const string TurnTypeOpenTile = "OpenTile";
-        public const string TurnTypeOpenFreeTile = "OpenFreeTile";
+        public const string TurnTypeOpenPanel = "OpenPanel";
+        public const string TurnTypeOpenFreePanel = "OpenFreePanel";
         public const string TurnTypeMakeGuess = "MakeGuess";
         public const string TurnTypeCorrect = "Correct";
         public const string TurnTypeEndRound = "EndRound";
@@ -40,7 +40,7 @@ namespace CloudStorage.Models
 
         public string ThemeCss { get; set; }
 
-        public int OpenTileTime { get; set; }
+        public int OpenPanelTime { get; set; }
 
         public int GuessTime { get; set; }
 
@@ -56,7 +56,7 @@ namespace CloudStorage.Models
 
         public string ImageId { get; set; }
 
-        public IList<string> RevealedTiles { get; set; }
+        public IList<string> RevealedPanels { get; set; }
 
         public string TeamOneName { get; set; }
 
@@ -66,9 +66,9 @@ namespace CloudStorage.Models
 
         public int TeamOneIncorrectGuesses { get; set; }
 
-        public int TeamOneOuterTiles { get; set; }
+        public int TeamOneOuterPanels { get; set; }
 
-        public int TeamOneInnerTiles { get; set; }
+        public int TeamOneInnerPanels { get; set; }
 
         public string TeamTwoName { get; set; }
 
@@ -78,16 +78,16 @@ namespace CloudStorage.Models
 
         public int TeamTwoIncorrectGuesses { get; set; }
 
-        public int TeamTwoOuterTiles { get; set; }
+        public int TeamTwoOuterPanels { get; set; }
 
-        public int TeamTwoInnerTiles { get; set; }
+        public int TeamTwoInnerPanels { get; set; }
 
         public void SetTurnType(string action)
         {
             switch (action)
             {
                 case ActionNewRound:
-                    TurnType = OpenTileOrMakeGuess();
+                    TurnType = OpenPanelOrMakeGuess();
                     break;
                 case ActionEndRound:
                     TurnType = TurnTypeEndRound;
@@ -96,12 +96,12 @@ namespace CloudStorage.Models
                     TurnType = TurnTypeCorrect;
                     break;
                 case ActionIncorrect:
-                    TurnType = TurnTypeOpenFreeTile;
+                    TurnType = TurnTypeOpenFreePanel;
                     break;
-                case ActionOpenTile:
-                    if (TurnType == TurnTypeOpenFreeTile)
+                case ActionOpenPanel:
+                    if (TurnType == TurnTypeOpenFreePanel)
                     {
-                        TurnType = OpenTileOrMakeGuess();
+                        TurnType = OpenPanelOrMakeGuess();
                     }
                     else
                     {
@@ -109,33 +109,33 @@ namespace CloudStorage.Models
                     }
                     break;
                 case ActionPass:
-                    TurnType = OpenTileOrMakeGuess();
+                    TurnType = OpenPanelOrMakeGuess();
                     break;
             }
         }
 
-        public void UpdateTileCount(string tileId)
+        public void UpdatePanelCount(string panelId)
         {     
-            if (GameStateTableEntity.IsInnerTile(tileId))
+            if (GameStateTableEntity.IsInnerPanel(panelId))
             {
                 if (TeamTurn == 1)
                 {
-                    TeamOneInnerTiles = Math.Max(0, TeamOneInnerTiles - 1);
+                    TeamOneInnerPanels = Math.Max(0, TeamOneInnerPanels - 1);
                 }
                 else
                 {
-                    TeamTwoInnerTiles = Math.Max(0, TeamTwoInnerTiles - 1);
+                    TeamTwoInnerPanels = Math.Max(0, TeamTwoInnerPanels - 1);
                 }
             }
             else
             {
                 if (TeamTurn == 1)
                 {
-                    TeamOneOuterTiles = Math.Max(0, TeamOneOuterTiles - 1);
+                    TeamOneOuterPanels = Math.Max(0, TeamOneOuterPanels - 1);
                 }
                 else
                 {
-                    TeamTwoOuterTiles = Math.Max(0, TeamTwoOuterTiles - 1);
+                    TeamTwoOuterPanels = Math.Max(0, TeamTwoOuterPanels - 1);
                 }
             }   
         }
@@ -188,28 +188,28 @@ namespace CloudStorage.Models
             }
         }
 
-        private string OpenTileOrMakeGuess()
+        private string OpenPanelOrMakeGuess()
         {
             if (TeamTurn == 1)
             {
-                if (TeamOneOuterTiles == 0 && TeamOneInnerTiles == 0)
+                if (TeamOneOuterPanels == 0 && TeamOneInnerPanels == 0)
                 {
                     return TurnTypeMakeGuess;
                 }
                 else
                 {
-                    return TurnTypeOpenTile;
+                    return TurnTypeOpenPanel;
                 }
             }
             else
             {
-                if (TeamTwoOuterTiles == 0 && TeamTwoInnerTiles == 0)
+                if (TeamTwoOuterPanels == 0 && TeamTwoInnerPanels == 0)
                 {
                     return TurnTypeMakeGuess;
                 }
                 else
                 {
-                    return TurnTypeOpenTile;
+                    return TurnTypeOpenPanel;
                 }
             }
         }
@@ -218,9 +218,9 @@ namespace CloudStorage.Models
         {
             base.ReadEntity(properties, operationContext);
 
-            if (properties.ContainsKey(nameof(this.RevealedTiles)))
+            if (properties.ContainsKey(nameof(this.RevealedPanels)))
             {
-                this.RevealedTiles = properties[nameof(this.RevealedTiles)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.RevealedPanels = properties[nameof(this.RevealedPanels)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
         }
 
@@ -228,21 +228,21 @@ namespace CloudStorage.Models
         {
             var result = base.WriteEntity(operationContext);
 
-            if (this.RevealedTiles == null)
+            if (this.RevealedPanels == null)
             {
-                this.RevealedTiles = new List<string>();
+                this.RevealedPanels = new List<string>();
             }
 
-            result[nameof(this.RevealedTiles)] = new EntityProperty(string.Join(",", this.RevealedTiles));
+            result[nameof(this.RevealedPanels)] = new EntityProperty(string.Join(",", this.RevealedPanels));
 
             return result;
         }
 
-        private static readonly List<string> innerTiles = new List<string>() { "7", "8", "9", "12", "13", "14" };
+        private static readonly List<string> innerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
 
-        public static bool IsInnerTile(string tileId)
+        public static bool IsInnerPanel(string panelId)
         {
-            return innerTiles.Contains(tileId);
+            return innerPanels.Contains(panelId);
         }
     }
 }

@@ -8,7 +8,7 @@
         body: JSON.stringify({
             BlobContainer: document.getElementById("blobContainer").value,
             ThemeCss: document.getElementById("themeCss").value,
-            OpenTileTime: parseInt(document.getElementById("openTileTime").value),
+            OpenPanelTime: parseInt(document.getElementById("openPanelTime").value),
             GuessTime: parseInt(document.getElementById("guessTime").value),
             TeamOneName: document.getElementById("teamOneName").value,
             TeamTwoName: document.getElementById("teamTwoName").value,

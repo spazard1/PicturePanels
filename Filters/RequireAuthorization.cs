@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace PictureGame.Filters
+namespace PicturePanels.Filters
 {
     public class RequireAuthorization : Attribute, IFilterMetadata
     {

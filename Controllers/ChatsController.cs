@@ -1,13 +1,13 @@
 ﻿using CloudStorage.Models;
 using Microsoft.AspNetCore.Mvc;
-using PictureGame.Entities;
-using PictureGame.Services;
+using PicturePanels.Entities;
+using PicturePanels.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureGame.Controllers
+namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

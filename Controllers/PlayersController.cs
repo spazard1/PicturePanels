@@ -1,15 +1,15 @@
 ﻿using CloudStorage.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PictureGame.Entities;
-using PictureGame.Filters;
-using PictureGame.Services;
+using PicturePanels.Entities;
+using PicturePanels.Filters;
+using PicturePanels.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureGame.Controllers
+namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -62,7 +62,7 @@ namespace PictureGame.Controllers
                 playerModel = new PlayerTableEntity()
                 {
                     PlayerId = playerId,
-                    SelectedTiles = new List<string>()
+                    SelectedPanels = new List<string>()
                 };
             }
             else if (playerModel.TeamNumber != entity.TeamNumber)
