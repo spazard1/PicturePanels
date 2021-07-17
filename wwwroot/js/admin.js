@@ -14,13 +14,13 @@
             TeamOneName: document.getElementById("teamOneName").value,
             TeamOneScore: parseInt(document.getElementById("teamOneScore").value),
             TeamOneIncorrectGuesses: parseInt(document.getElementById("teamOneIncorrectGuesses").value),
-            TeamOneOuterTiles: parseInt(document.getElementById("teamOneOuterTiles").value),
-            TeamOneInnerTiles: parseInt(document.getElementById("teamOneInnerTiles").value),
+            TeamOneOuterPanels: parseInt(document.getElementById("teamOneOuterPanels").value),
+            TeamOneInnerPanels: parseInt(document.getElementById("teamOneInnerPanels").value),
             TeamTwoName: document.getElementById("teamTwoName").value,
             TeamTwoScore: parseInt(document.getElementById("teamTwoScore").value),
             TeamTwoIncorrectGuesses: parseInt(document.getElementById("teamTwoIncorrectGuesses").value),
-            TeamTwoOuterTiles: parseInt(document.getElementById("teamTwoOuterTiles").value),
-            TeamTwoInnerTiles: parseInt(document.getElementById("teamTwoInnerTiles").value),
+            TeamTwoOuterPanels: parseInt(document.getElementById("teamTwoOuterPanels").value),
+            TeamTwoInnerPanels: parseInt(document.getElementById("teamTwoInnerPanels").value),
         })
     });
 }
@@ -55,25 +55,25 @@ function incorrect() {
     });
 }
 
-function getSelectedTile() {
-    var selectedTileElements = document.getElementsByClassName("tileButtonSelected");
+function getSelectedPanel() {
+    var selectedPanelElements = document.getElementsByClassName("panelButtonSelected");
 
-    for (let selectedTile of selectedTileElements) {
-        if (selectedTile.classList.contains("tileButtonDisabled")) {
+    for (let selectedPanel of selectedPanelElements) {
+        if (selectedPanel.classList.contains("panelButtonDisabled")) {
             continue;
         }
 
-        return selectedTile;
+        return selectedPanel;
     }
 }
 
-function openTile() {
-    var selectedTile = getSelectedTile();
-    if (!selectedTile) {
+function openPanel() {
+    var selectedPanel = getSelectedPanel();
+    if (!selectedPanel) {
         return;
     }
 
-    fetch("/api/gameState/openTile/" + selectedTile.value, {
+    fetch("/api/gameState/openPanel/" + selectedPanel.value, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -82,13 +82,13 @@ function openTile() {
     });
 }
 
-function forceOpenTile() {
-    var selectedTile = getSelectedTile();
-    if (!selectedTile) {
+function forceOpenPanel() {
+    var selectedPanel = getSelectedPanel();
+    if (!selectedPanel) {
         return;
     }
 
-    fetch("/api/gameState/openTile/" + selectedTile.value + "/force", {
+    fetch("/api/gameState/openPanel/" + selectedPanel.value + "/force", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -97,13 +97,13 @@ function forceOpenTile() {
     });
 }
 
-function closeTile() {
-    var selectedTile = getSelectedTile();
-    if (!selectedTile) {
+function closePanel() {
+    var selectedPanel = getSelectedPanel();
+    if (!selectedPanel) {
         return;
     }
 
-    fetch("/api/gameState/closeTile/" + selectedTile.value, {
+    fetch("/api/gameState/closePanel/" + selectedPanel.value, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -178,15 +178,15 @@ function cancelGo() {
     drawImageNumber();
 }
 
-function tileButtonOnClick(event) {
-    if (event.currentTarget.classList.contains("tileButtonDisabled")) {
-        event.currentTarget.classList.remove("tileButtonSelected");
+function panelButtonOnClick(event) {
+    if (event.currentTarget.classList.contains("panelButtonDisabled")) {
+        event.currentTarget.classList.remove("panelButtonSelected");
         return;
     }
 
-    clearTileButtonSelection();
+    clearPanelButtonSelection();
 
-    event.currentTarget.classList.add("tileButtonSelected");
+    event.currentTarget.classList.add("panelButtonSelected");
 
     event.currentTarget.blur();
 }
@@ -208,7 +208,7 @@ function editTeamTwo() {
 async function handleGameState(gameState) {
     loadThemeCss(gameState);
 
-    updateTileButtons(gameState);
+    updatePanelButtons(gameState);
 
     if (currentGameState && currentGameState.blobContainer !== gameState.blobContainer) {
         await loadImageIdsAsync();
@@ -226,32 +226,32 @@ async function handleGameState(gameState) {
     document.getElementById("goContainer").classList.add("hidden");
 
     switch (gameState.turnType) {
-        case "OpenTile":
-        case "OpenFreeTile":
-            document.getElementById("openTileButton").classList.remove("hidden");
+        case "OpenPanel":
+        case "OpenFreePanel":
+            document.getElementById("openPanelButton").classList.remove("hidden");
             document.getElementById("passButton").classList.add("hidden");
             document.getElementById("incorrectButton").classList.add("hidden");
             document.getElementById("correctButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.remove("hidden");
-            document.getElementById("forceOpenTileButton").classList.remove("hidden");
+            document.getElementById("forceOpenPanelButton").classList.remove("hidden");
             break;
         case "MakeGuess":
-            document.getElementById("openTileButton").classList.add("hidden");
+            document.getElementById("openPanelButton").classList.add("hidden");
             document.getElementById("passButton").classList.remove("hidden");
             document.getElementById("incorrectButton").classList.remove("hidden");
             document.getElementById("correctButton").classList.remove("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
-            document.getElementById("forceOpenTileButton").classList.add("hidden");
+            document.getElementById("forceOpenPanelButton").classList.add("hidden");
             break;
         case "Welcome":
         case "Correct":
         case "EndRound":
-            document.getElementById("openTileButton").classList.add("hidden");
+            document.getElementById("openPanelButton").classList.add("hidden");
             document.getElementById("passButton").classList.add("hidden");
             document.getElementById("incorrectButton").classList.add("hidden");
             document.getElementById("correctButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
-            document.getElementById("forceOpenTileButton").classList.add("hidden");
+            document.getElementById("forceOpenPanelButton").classList.add("hidden");
             break;
     }
 
@@ -390,7 +390,7 @@ window.onload = async function () {
     });
 
     setupAdminMenu();
-    drawTileButtons();
+    drawPanelButtons();
     drawPlusMinusButtons();
 
     var adminSelects = document.getElementsByClassName("adminSelect");

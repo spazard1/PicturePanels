@@ -29,20 +29,20 @@
         </select>
         <select id="turnType" class="adminSelect">
             <option value="Welcome">Welcome</option>
-            <option value="OpenTile">OpenTile</option>
-            <option value="OpenFreeTile">OpenFreeTile</option>
+            <option value="OpenPanel">OpenPanel</option>
+            <option value="OpenFreePanel">OpenFreePanel</option>
             <option value="MakeGuess">MakeGuess</option>
             <option value="Correct">Correct</option>
             <option value="EndRound">EndRound</option>
         </select>
     </div>
 
-    <div id="tileButtons" class="tileButtons center"></div>
+    <div id="panelButtons" class="panelButtons center"></div>
 
     <div class="buttonsFlex turnButtons center">
-        <input type="button" id="openTileButton" value="Open" class="adminButton" onclick="openTile()" />
+        <input type="button" id="openPanelButton" value="Open" class="adminButton" onclick="openPanel()" />
         <input type="button" id="endRoundButton" value="End Round" class="adminButton" onclick="endRound()" />
-        <input type="button" id="forceOpenTileButton" value="Force" class="adminButton" onclick="forceOpenTile()" />
+        <input type="button" id="forceOpenPanelButton" value="Force" class="adminButton" onclick="forceOpenPanel()" />
         <input type="button" id="passButton" value="Pass" class="adminButton" onclick="passTurn()" />
         <input type="button" id="incorrectButton" value="Incorrect" class="adminButton" onclick="incorrect()" />
         <input type="button" id="correctButton" value="Correct" class="adminButton" onclick="correct()" />
@@ -66,8 +66,8 @@
         </div>
         Inner/Outer
         <div class="buttonsFlex">
-            <div name="teamOneInnerTiles" class="plusMinus"></div>
-            <div name="teamOneOuterTiles" class="plusMinus"></div>
+            <div name="teamOneInnerPanels" class="plusMinus"></div>
+            <div name="teamOneOuterPanels" class="plusMinus"></div>
         </div>
     </div>
 
@@ -79,8 +79,8 @@
         </div>
         Inner/Outer
         <div class="buttonsFlex">
-            <div name="teamTwoInnerTiles" class="plusMinus"></div>
-            <div name="teamTwoOuterTiles" class="plusMinus"></div>
+            <div name="teamTwoInnerPanels" class="plusMinus"></div>
+            <div name="teamTwoOuterPanels" class="plusMinus"></div>
         </div>
     </div>
 

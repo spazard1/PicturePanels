@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net;
 using CloudStorage.Services;
 using CloudStorage.Entities;
-using PictureGame.Services;
-using PictureGame.Filters;
-using PictureGame.Entities;
+using PicturePanels.Services;
+using PicturePanels.Filters;
+using PicturePanels.Entities;
 using System;
 using System.Text.RegularExpressions;
 using CloudStorage.Models;
@@ -112,12 +112,12 @@ namespace CloudStorage.Controllers
             return Json(imageEntity);
         }
 
-        [HttpGet("tiles/{imageId}/{tileNumber:int}")]
-        public async Task<IActionResult> GetTileImageAsync(string imageId, int tileNumber)
+        [HttpGet("panels/{imageId}/{panelNumber:int}")]
+        public async Task<IActionResult> GetPanelImageAsync(string imageId, int panelNumber)
         {
-            if (tileNumber < 0 || tileNumber > ImageTableStorage.Across * ImageTableStorage.Down)
+            if (panelNumber < 0 || panelNumber > ImageTableStorage.Across * ImageTableStorage.Down)
             {
-                return StatusCode((int)HttpStatusCode.NotFound, "tileNumber out of range");
+                return StatusCode((int)HttpStatusCode.NotFound, "panelNumber out of range");
             }
 
             var gameState = await this.gameTableStorage.GetGameStateAsync();
@@ -128,7 +128,7 @@ namespace CloudStorage.Controllers
             {
                 imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, ImageTableStorage.WelcomeImageId);
 
-                imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);
+                imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
             }
             else
             {
@@ -140,16 +140,16 @@ namespace CloudStorage.Controllers
                 }
 
                 
-                if (tileNumber == 0 ||
-                    gameState.RevealedTiles.Contains(tileNumber.ToString()) ||
+                if (panelNumber == 0 ||
+                    gameState.RevealedPanels.Contains(panelNumber.ToString()) ||
                     gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
                     gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
                 {
-                    imageUrl = await this.imageTableStorage.GetTileImageUrlAsync(imageTableEntity, tileNumber);
+                    imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
                 }
                 else
                 {
-                    imageUrl = "/api/images/tiles/" + imageId + "/0";
+                    imageUrl = "/api/images/panels/" + imageId + "/0";
                 }
             }
 

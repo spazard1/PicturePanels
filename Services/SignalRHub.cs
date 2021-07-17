@@ -1,12 +1,12 @@
 ﻿using CloudStorage.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Primitives;
-using PictureGame.Entities;
+using PicturePanels.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PictureGame.Services
+namespace PicturePanels.Services
 {
     public class SignalRHub : Hub<ISignalRHub>
     {
@@ -115,7 +115,7 @@ namespace PictureGame.Services
             }
         }
 
-        public async Task SelectTiles(PlayerEntity entity)
+        public async Task SelectPanels(PlayerEntity entity)
         {
             var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
             if (playerModel == null)
@@ -128,10 +128,10 @@ namespace PictureGame.Services
                 return;
             }
 
-            playerModel.SelectedTiles = entity.SelectedTiles;
+            playerModel.SelectedPanels = entity.SelectedPanels;
             playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
 
-            await Clients.Group(GameBoardGroup).SelectTiles(new PlayerEntity(playerModel));
+            await Clients.Group(GameBoardGroup).SelectPanels(new PlayerEntity(playerModel));
         }
 
         public async Task AddPlayerToTeamGroupAsync(PlayerTableEntity playerModel)

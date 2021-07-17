@@ -137,12 +137,12 @@ body::-webkit-scrollbar {
     line-height: 6vh;
 }
 
-.tileCount {
+.panelCount {
     font-size: 2.5vh;
     line-height: .9em;
 }
 
-.tileCount div {
+.panelCount div {
     display: inline;
 }
 
@@ -215,7 +215,7 @@ body::-webkit-scrollbar {
     opacity: 0;
 }
 
-.tiles {
+.panels {
     text-align: center;
     position: absolute;
     margin-left: auto;
@@ -228,7 +228,7 @@ body::-webkit-scrollbar {
     flex-wrap: wrap;
 }
 
-.tile {
+.panel {
     position: relative;
     box-sizing: border-box;
     width: 20%;
@@ -240,11 +240,11 @@ body::-webkit-scrollbar {
     z-index: 30;
 }
 
-.tile:hover {
+.panel:hover {
     z-index: 100;
 }
 
-.tile .tileBackground {
+.panel .panelBackground {
     position: absolute;
     border: 2px solid black;
     font-size: 1em;
@@ -261,17 +261,17 @@ body::-webkit-scrollbar {
     z-index: 20;
 }
 
-.tileOpen .tileBackground {
+.panelOpen .panelBackground {
     opacity: 0;
 }
 
-.tileNumber {
+.panelNumber {
     position: relative;
     font-size: 10vh;
     user-select: none;
 }
 
-.tile .tileImage {
+.panel .panelImage {
     position: relative;
     z-index: 10;
     width: 100%;
@@ -279,12 +279,12 @@ body::-webkit-scrollbar {
     z-index: 10;
 }
 
-.mostVotesTile {
+.mostVotesPanel {
     position: absolute;
     transition: opacity 1s, transform 1s;
 }
 
-.mostVotesTile .tileImage {
+.mostVotesPanel .panelImage {
     position: relative;
     width: 100%;
     vertical-align: bottom;

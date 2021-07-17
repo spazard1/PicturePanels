@@ -1,9 +1,9 @@
 ﻿using CloudStorage.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PictureGame.Entities;
-using PictureGame.Filters;
-namespace PictureGame.Controllers
+using PicturePanels.Entities;
+using PicturePanels.Filters;
+namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

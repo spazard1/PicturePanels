@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using System.Linq;
 
-namespace PictureGame.Filters
+namespace PicturePanels.Filters
 {
     public class AuthorizationFilter : IAuthorizationFilter
     {

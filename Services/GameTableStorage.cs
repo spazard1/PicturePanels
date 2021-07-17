@@ -3,7 +3,7 @@ using CloudStorage.Services;
 using Microsoft.Azure.Cosmos.Table;
 using System.Threading.Tasks;
 
-namespace PictureGame.Services
+namespace PicturePanels.Services
 {
     public class GameTableStorage
     {

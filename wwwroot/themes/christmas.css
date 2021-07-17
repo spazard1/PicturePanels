@@ -3,7 +3,7 @@
     src: url(/fonts/PWChristmasfont.ttf);
 }
 
-.tileNumber {
+.panelNumber {
     font-family: christmas;
 }
 
@@ -11,41 +11,41 @@
     border: 4px dashed white;
 }
 
-.tile:nth-child(even) .tileBackground {
+.panel:nth-child(even) .panelBackground {
     background: #008000;
 }
 
-.tile:nth-child(odd) .tileBackground {
+.panel:nth-child(odd) .panelBackground {
     background: #BB0000;
 }
 
-.tileButtonNumber {
+.panelButtonNumber {
     color: black;
 }
 
-.tileButton .tileButtonBackground {
+.panelButton .panelButtonBackground {
     border: 3px solid black;
 }
 
-.tileButton:nth-child(even) .tileButtonBackground {
+.panelButton:nth-child(even) .panelButtonBackground {
     background-color: #d3f8d3;
 }
 
-.tileButton:nth-child(odd) .tileButtonBackground {
+.panelButton:nth-child(odd) .panelButtonBackground {
     background-color: #ffe6ea;
 }
 
-.tileButtonSelected:nth-child(even) .tileButtonBackground {
+.panelButtonSelected:nth-child(even) .panelButtonBackground {
     border: 3px dashed white;
     background-color: green;
 }
 
-.tileButtonSelected:nth-child(odd) .tileButtonBackground {
+.panelButtonSelected:nth-child(odd) .panelButtonBackground {
     border: 3px dashed white;
     background-color: red;
 }
 
-.mostVotesTile {
+.mostVotesPanel {
     box-shadow: 0 0 0 .25vw red;
     outline: dashed .25vw white;
 }

@@ -3,7 +3,7 @@
     src: url(/fonts/VanessasValentine.ttf);
 }
 
-.tileNumber {
+.panelNumber {
     font-family: valentines;
     letter-spacing: 6px;
 }
@@ -12,56 +12,56 @@
     border: 4px dashed pink;
 }
 
-.tile:nth-child(3n) .tileBackground {
+.panel:nth-child(3n) .panelBackground {
     background: #FFB6C1;
 }
 
-.tile:nth-child(3n) .tileNumber {
+.panel:nth-child(3n) .panelNumber {
     color: black;
 }
 
-.tile:nth-child(3n + 1) .tileBackground {
+.panel:nth-child(3n + 1) .panelBackground {
     background: #FF69B4;
 }
 
-.tile:nth-child(3n + 2) .tileBackground {
+.panel:nth-child(3n + 2) .panelBackground {
     background: red;
 }
 
-.tileButtonNumber {
+.panelButtonNumber {
     color: black;
 }
 
-.tileButton .tileButtonBackground {
+.panelButton .panelButtonBackground {
     border: 3px solid black;
 }
 
-.tileButtonSelected .tileButtonBackground {
+.panelButtonSelected .panelButtonBackground {
     border: 3px solid white;
 }
 
-.tileButton:nth-child(3n) .tileButtonBackground {
+.panelButton:nth-child(3n) .panelButtonBackground {
     background: #FFB6C1;
 }
 
-.tileButton:nth-child(3n + 1) .tileButtonBackground {
+.panelButton:nth-child(3n + 1) .panelButtonBackground {
     background: #FF69B4;
     color: white;
 }
 
-.tileButton:nth-child(3n + 1) .tileButtonBackground {
+.panelButton:nth-child(3n + 1) .panelButtonBackground {
     color: white;
 }
 
-.tileButton:nth-child(3n + 2) .tileButtonBackground {
+.panelButton:nth-child(3n + 2) .panelButtonBackground {
     background: red;
 }
 
-.tileButton:nth-child(3n + 2) .tileButtonBackground {
+.panelButton:nth-child(3n + 2) .panelButtonBackground {
     color: white;
 }
 
-.mostVotesTile {
+.mostVotesPanel {
     box-shadow: 0 0 0 .25vw red;
     outline: dashed .25vw white;
 }

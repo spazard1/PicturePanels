@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
-using PictureGame.Filters;
-using PictureGame.Services;
+using PicturePanels.Filters;
+using PicturePanels.Services;
 
 namespace CloudStorage
 {

@@ -1,9 +1,9 @@
 ﻿using CloudStorage.Models;
-using PictureGame.Entities;
+using PicturePanels.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PictureGame.Services
+namespace PicturePanels.Services
 {
     public interface ISignalRHub
     {
@@ -15,7 +15,7 @@ namespace PictureGame.Services
 
         Task AddPlayer(PlayerEntity entity);
 
-        Task SelectTiles(PlayerEntity entity);
+        Task SelectPanels(PlayerEntity entity);
 
         Task Chat(PlayerEntity entity, string message);
 

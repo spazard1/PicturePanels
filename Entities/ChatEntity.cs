@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureGame.Entities
+namespace PicturePanels.Entities
 {
     public class ChatEntity
     {

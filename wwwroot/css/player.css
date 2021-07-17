@@ -263,15 +263,15 @@ body {
         max-width: 40vw;
     }
 
-    .tileButtons {
+    .panelButtons {
         width: 48vw;
     }
 
-    .tileButton {
+    .panelButton {
         font-size: 1.1em;
     }
 
-    .tileImages {
+    .panelImages {
         width: 48vw;
     }
 }

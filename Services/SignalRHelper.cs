@@ -1,13 +1,13 @@
 ﻿using CloudStorage.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.Cosmos.Table;
-using PictureGame.Entities;
+using PicturePanels.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureGame.Services
+namespace PicturePanels.Services
 {
     public class SignalRHelper
     {
@@ -80,7 +80,7 @@ namespace PictureGame.Services
                 var playerModel = playerModelIteration;
                 var changedTeams = playerModel.TeamNumber != teamNumber;
                 playerModel.TeamNumber = teamNumber;
-                playerModel.SelectedTiles = new List<string>();
+                playerModel.SelectedPanels = new List<string>();
                 teamNumber = teamNumber == 1 ? 2 : 1;
 
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
