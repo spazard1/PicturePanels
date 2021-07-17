@@ -23,7 +23,7 @@ namespace CloudStorage.Models
 
         public int TeamNumber { get; set; }
 
-        public List<string> SelectedTiles { get; set; }
+        public List<string> SelectedPanels { get; set; }
 
         public string Color { get; set; }
 
@@ -37,9 +37,9 @@ namespace CloudStorage.Models
         {
             base.ReadEntity(properties, operationContext);
 
-            if (properties.ContainsKey(nameof(this.SelectedTiles)))
+            if (properties.ContainsKey(nameof(this.SelectedPanels)))
             {
-                this.SelectedTiles = properties[nameof(this.SelectedTiles)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.SelectedPanels = properties[nameof(this.SelectedPanels)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
         }
 
@@ -47,9 +47,9 @@ namespace CloudStorage.Models
         {
             var result = base.WriteEntity(operationContext);
 
-            if (this.SelectedTiles != null)
+            if (this.SelectedPanels != null)
             {
-                result[nameof(this.SelectedTiles)] = new EntityProperty(string.Join(",", this.SelectedTiles));
+                result[nameof(this.SelectedPanels)] = new EntityProperty(string.Join(",", this.SelectedPanels));
             }
 
             return result;

@@ -1,13 +1,13 @@
 ﻿using CloudStorage.Models;
 using System.Collections.Generic;
 
-namespace PictureGame.Entities
+namespace PicturePanels.Entities
 {
     public class PlayerEntity
     {
         public PlayerEntity()
         {
-            this.SelectedTiles = new List<string>();
+            this.SelectedPanels = new List<string>();
         }
 
         public PlayerEntity(PlayerTableEntity tableEntity)
@@ -15,7 +15,7 @@ namespace PictureGame.Entities
             this.PlayerId = tableEntity.PlayerId;
             this.Name = tableEntity.Name;
             this.TeamNumber = tableEntity.TeamNumber;
-            this.SelectedTiles = tableEntity.SelectedTiles ?? new List<string>();
+            this.SelectedPanels = tableEntity.SelectedPanels ?? new List<string>();
             this.Color = tableEntity.Color;
             this.IsAdmin = tableEntity.IsAdmin;
         }
@@ -26,7 +26,7 @@ namespace PictureGame.Entities
 
         public int TeamNumber { get; set; }
 
-        public List<string> SelectedTiles { get; set; }
+        public List<string> SelectedPanels { get; set; }
 
         public string Color { get; set; }
 
@@ -39,7 +39,7 @@ namespace PictureGame.Entities
                 PlayerId = this.PlayerId,
                 Name = this.Name,
                 TeamNumber = this.TeamNumber,
-                SelectedTiles = this.SelectedTiles,
+                SelectedPanels = this.SelectedPanels,
                 Color = this.Color
             };
         }

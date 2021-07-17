@@ -1,91 +1,91 @@
-﻿var maxMostVotesTiles = 3;
+﻿var maxMostVotesPanels = 3;
 
-function createTiles() {
-    var tileNumber = 1;
+function createPanels() {
+    var panelNumber = 1;
 
-    var tilesElement = document.getElementById("tiles");
+    var panelsElement = document.getElementById("panels");
     for (var i = 0; i < down; i++) {
         for (var j = 0; j < across; j++) {
-            var tileElement = document.createElement("div");
-            tileElement.classList.add("tile");
-            tileElement.id = "tile_" + tileNumber;
-            tileElement.tileNumber = "" + tileNumber;
-            tileElement.value = tileNumber + "";
+            var panelElement = document.createElement("div");
+            panelElement.classList.add("panel");
+            panelElement.id = "panel_" + panelNumber;
+            panelElement.panelNumber = "" + panelNumber;
+            panelElement.value = panelNumber + "";
 
-            var tileBackgroundElement = document.createElement("div");
-            tileBackgroundElement.classList.add("tileBackground");
-            tileElement.appendChild(tileBackgroundElement);
+            var panelBackgroundElement = document.createElement("div");
+            panelBackgroundElement.classList.add("panelBackground");
+            panelElement.appendChild(panelBackgroundElement);
 
-            var tileNumberElement = document.createElement("div");
-            tileNumberElement.id = "tileNumber_" + tileNumber;
-            tileNumberElement.classList.add("tileNumber");
-            tileNumberElement.appendChild(document.createTextNode(tileNumber));
-            tileBackgroundElement.appendChild(tileNumberElement);
+            var panelNumberElement = document.createElement("div");
+            panelNumberElement.id = "panelNumber_" + panelNumber;
+            panelNumberElement.classList.add("panelNumber");
+            panelNumberElement.appendChild(document.createTextNode(panelNumber));
+            panelBackgroundElement.appendChild(panelNumberElement);
 
-            var tileImageElement = document.createElement("img");
-            tileImageElement.classList.add("tileImage");
-            tileElement.appendChild(tileImageElement);
+            var panelImageElement = document.createElement("img");
+            panelImageElement.classList.add("panelImage");
+            panelElement.appendChild(panelImageElement);
 
-            tilesElement.appendChild(tileElement);
-            tileNumber++;
+            panelsElement.appendChild(panelElement);
+            panelNumber++;
         }
     }
 
-    var mostVotesTilesElement = document.getElementById("mostVotesTiles");
+    var mostVotesPanelsElement = document.getElementById("mostVotesPanels");
 
-    for (var i = 0; i < maxMostVotesTiles; i++) {
-        var mostVotesTileElement = document.createElement("div");
-        mostVotesTileElement.classList.add("mostVotesTile");
-        mostVotesTileElement.classList.add("opacity0");
+    for (var i = 0; i < maxMostVotesPanels; i++) {
+        var mostVotesPanelElement = document.createElement("div");
+        mostVotesPanelElement.classList.add("mostVotesPanel");
+        mostVotesPanelElement.classList.add("opacity0");
 
-        var mostVotesTileImageElement = document.createElement("img");
-        mostVotesTileImageElement.classList.add("tileImage");
-        mostVotesTileElement.appendChild(mostVotesTileImageElement);
+        var mostVotesPanelImageElement = document.createElement("img");
+        mostVotesPanelImageElement.classList.add("panelImage");
+        mostVotesPanelElement.appendChild(mostVotesPanelImageElement);
 
-        mostVotesTilesElement.appendChild(mostVotesTileElement);
+        mostVotesPanelsElement.appendChild(mostVotesPanelElement);
     }
 }
 
-async function resetTilesAsync(gameState) {
+async function resetPanelsAsync(gameState) {
     var imagePromises = [];
-    var tiles = document.getElementsByClassName("tile");
+    var panels = document.getElementsByClassName("panel");
 
-    for (let tile of tiles) {
-        tile.classList.remove("tileOpen");
-        imagePromises.push(loadImageAsync(tile.lastChild, "/api/images/tiles/" + gameState.imageId + "/0"));
+    for (let panel of panels) {
+        panel.classList.remove("panelOpen");
+        imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
     }
 
-    var mostVotesTileElements = document.getElementsByClassName("mostVotesTile");
-    for (let mostVotesTileElement of mostVotesTileElements) {
-        mostVotesTileElement.classList.add("opacity0");
-        imagePromises.push(loadImageAsync(mostVotesTileElement.lastChild, "/api/images/tiles/" + gameState.imageId + "/0"));
+    var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
+    for (let mostVotesPanelElement of mostVotesPanelElements) {
+        mostVotesPanelElement.classList.add("opacity0");
+        imagePromises.push(loadImageAsync(mostVotesPanelElement.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
     }
 
     await Promise.all(imagePromises);
 
-    resizeTileContainer();
+    resizePanelContainer();
 }
 
-function resizeTileContainer() {
-    var tilesContainer = document.getElementById('tiles');
-    tilesContainer.style.maxWidth = "";
+function resizePanelContainer() {
+    var panelsContainer = document.getElementById('panels');
+    panelsContainer.style.maxWidth = "";
 
-    var tilesContainerRect = tilesContainer.getBoundingClientRect();
-    var tilesContainerMaxWidth = 83;
+    var panelsContainerRect = panelsContainer.getBoundingClientRect();
+    var panelsContainerMaxWidth = 83;
     var paddingBottom = 5;
 
-    while (tilesContainerRect.height + tilesContainerRect.y >= (window.innerHeight - paddingBottom)) {
-        tilesContainerMaxWidth -= .5;
-        if (tilesContainerMaxWidth < 10) {
+    while (panelsContainerRect.height + panelsContainerRect.y >= (window.innerHeight - paddingBottom)) {
+        panelsContainerMaxWidth -= .5;
+        if (panelsContainerMaxWidth < 10) {
             break;
         }
 
-        tilesContainer.style.maxWidth = tilesContainerMaxWidth + "vw";
-        tilesContainerRect = tilesContainer.getBoundingClientRect();
+        panelsContainer.style.maxWidth = panelsContainerMaxWidth + "vw";
+        panelsContainerRect = panelsContainer.getBoundingClientRect();
     }
 }
 
-var playerSelectedTiles = {};
+var playerSelectedPanels = {};
 
 function updatePlayer(player) {
     var playerElement = document.getElementById("player_" + player.playerId);
@@ -107,7 +107,7 @@ function updatePlayer(player) {
 
     var parent = null;
     
-    playerSelectedTiles[player.playerId] = player;
+    playerSelectedPanels[player.playerId] = player;
 
     if (player.teamNumber === 1) {
         parent = document.getElementById("teamOnePlayerNames");
@@ -139,10 +139,10 @@ function setPlayerFuzzies(player) {
 
         // check if this number falls inside the middle range
         if (playerFuzzies[player.playerId].fuzzX < (.5 + middleXOffset) && playerFuzzies[player.playerId].fuzzX > (.5 - middleXOffset)) {
-            // generate a random number on the first-half (.5) of the tile, but use the entire valid range of the tile (offset is only half of the offset, so multiply by 2).
+            // generate a random number on the first-half (.5) of the panel, but use the entire valid range of the panel (offset is only half of the offset, so multiply by 2).
             playerFuzzies[player.playerId].fuzzY = .5 * Math.random() * (1 - middleYOffset * 2);
             if (Math.random() < .5) {
-                // half of the time, choose the other side of the tile instead (.5), + the offset to get to the end of the tile
+                // half of the time, choose the other side of the panel instead (.5), + the offset to get to the end of the panel
                 playerFuzzies[player.playerId].fuzzY = .5 + middleYOffset + playerFuzzies[player.playerId].fuzzY;
             }
         } else {
@@ -162,68 +162,68 @@ function setPlayerFuzzies(player) {
     }
 }
 
-function drawMostVotesTiles(resetTiles) {
-    if (resetTiles) {
-        resetMaxVotesTiles();
+function drawMostVotesPanels(resetPanels) {
+    if (resetPanels) {
+        resetMaxVotesPanels();
     }
 
-    var mostVotesTileElements = document.getElementsByClassName("mostVotesTile");
+    var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
 
-    if (currentGameState.turnType !== "OpenTile" &&
-        currentGameState.turnType !== "OpenFreeTile") {
-        for (let mostVotesTileElement of mostVotesTileElements) {
-            mostVotesTileElement.classList.add("opacity0");
+    if (currentGameState.turnType !== "OpenPanel" &&
+        currentGameState.turnType !== "OpenFreePanel") {
+        for (let mostVotesPanelElement of mostVotesPanelElements) {
+            mostVotesPanelElement.classList.add("opacity0");
         }
         return;
     }
 
-    var tileVotes = {};
+    var panelVotes = {};
     for (var i = 1; i <= across * down; i++) {
-        tileVotes[i + ""] = 0;
+        panelVotes[i + ""] = 0;
     }
 
-    for (const playerId in playerSelectedTiles) {
-        if (playerSelectedTiles[playerId].teamNumber !== currentGameState.teamTurn) {
+    for (const playerId in playerSelectedPanels) {
+        if (playerSelectedPanels[playerId].teamNumber !== currentGameState.teamTurn) {
             continue;
         }
-        playerSelectedTiles[playerId].selectedTiles.forEach(tile => {
-            tileVotes[tile]++;
+        playerSelectedPanels[playerId].selectedPanels.forEach(panel => {
+            panelVotes[panel]++;
         });
     }
 
     var mostVotes = 0;
-    var mostVotesTiles = [];
+    var mostVotesPanels = [];
 
-    for (const tile in tileVotes) {
-        var tileElement = document.getElementById("tile_" + tile);
-        if (tileElement.classList.contains("tileOpen")) {
+    for (const panel in panelVotes) {
+        var panelElement = document.getElementById("panel_" + panel);
+        if (panelElement.classList.contains("panelOpen")) {
             continue;
         }
 
-        if (tileVotes[tile] > mostVotes) {
-            mostVotes = tileVotes[tile];
-            mostVotesTiles = [tile];
-        } else if (tileVotes[tile] === mostVotes) {
-            mostVotesTiles.push(tile);
+        if (panelVotes[panel] > mostVotes) {
+            mostVotes = panelVotes[panel];
+            mostVotesPanels = [panel];
+        } else if (panelVotes[panel] === mostVotes) {
+            mostVotesPanels.push(panel);
         }
     }
 
-    var mostVotesTileElements = document.getElementsByClassName("mostVotesTile");
-    if (mostVotes === 0 || mostVotesTiles.length > maxMostVotesTiles) {
-        for (let mostVotesTileElement of mostVotesTileElements) {
-            mostVotesTileElement.classList.add("opacity0");
+    var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
+    if (mostVotes === 0 || mostVotesPanels.length > maxMostVotesPanels) {
+        for (let mostVotesPanelElement of mostVotesPanelElements) {
+            mostVotesPanelElement.classList.add("opacity0");
         }
     } else {
-        for (let i = 0; i < maxMostVotesTiles; i++) {
-            if (mostVotesTiles.length > i) {
-                var tileElement = document.getElementById("tile_" + mostVotesTiles[i]);
-                var tileElementRect = tileElement.getBoundingClientRect();
-                mostVotesTileElements[i].classList.remove("opacity0");
-                mostVotesTileElements[i].style.transform = "translate(" + tileElementRect.x + "px," + tileElementRect.y + "px)";
-                mostVotesTileElements[i].style.width = tileElementRect.width + "px";
-                mostVotesTileElements[i].style.height = tileElementRect.height + "px";
+        for (let i = 0; i < maxMostVotesPanels; i++) {
+            if (mostVotesPanels.length > i) {
+                var panelElement = document.getElementById("panel_" + mostVotesPanels[i]);
+                var panelElementRect = panelElement.getBoundingClientRect();
+                mostVotesPanelElements[i].classList.remove("opacity0");
+                mostVotesPanelElements[i].style.transform = "translate(" + panelElementRect.x + "px," + panelElementRect.y + "px)";
+                mostVotesPanelElements[i].style.width = panelElementRect.width + "px";
+                mostVotesPanelElements[i].style.height = panelElementRect.height + "px";
             } else {
-                mostVotesTileElements[i].classList.add("opacity0");
+                mostVotesPanelElements[i].classList.add("opacity0");
             }
         }
     }
@@ -260,16 +260,16 @@ function drawTeamStatus(gameState, resetTimer) {
         }
 
         switch (gameState.turnType) {
-            case "OpenTile":
-                teamOneStatus.innerHTML = "Open Tile &rarr;";
+            case "OpenPanel":
+                teamOneStatus.innerHTML = "Open Panel &rarr;";
                 if (resetTimer) {
-                    startCountdown("teamOneCountdownCanvas", gameState.openTileTime);
+                    startCountdown("teamOneCountdownCanvas", gameState.openPanelTime);
                 }
                 break;
-            case "OpenFreeTile":
-                teamOneStatus.innerHTML = "Open Free Tile &rarr;";
+            case "OpenFreePanel":
+                teamOneStatus.innerHTML = "Open Free Panel &rarr;";
                 if (resetTimer) {
-                    startCountdown("teamOneCountdownCanvas", gameState.openTileTime);
+                    startCountdown("teamOneCountdownCanvas", gameState.openPanelTime);
                 }
                 break;
             case "MakeGuess":
@@ -301,16 +301,16 @@ function drawTeamStatus(gameState, resetTimer) {
         }
 
         switch (gameState.turnType) {
-            case "OpenTile":
-                teamTwoStatus.innerHTML = "&larr; Open Tile";
+            case "OpenPanel":
+                teamTwoStatus.innerHTML = "&larr; Open Panel";
                 if (resetTimer) {
-                    startCountdown("teamTwoCountdownCanvas", gameState.openTileTime);
+                    startCountdown("teamTwoCountdownCanvas", gameState.openPanelTime);
                 }
                 break;
-            case "OpenFreeTile":
-                teamTwoStatus.innerHTML = "&larr; Open Free Tile";
+            case "OpenFreePanel":
+                teamTwoStatus.innerHTML = "&larr; Open Free Panel";
                 if (resetTimer) {
-                    startCountdown("teamTwoCountdownCanvas", gameState.openTileTime);
+                    startCountdown("teamTwoCountdownCanvas", gameState.openPanelTime);
                 }
                 break;
             case "MakeGuess":
@@ -423,15 +423,15 @@ function setClassStyle(className, styleFunc) {
     }
 }
 
-function hideMostVotesTiles() {
-    setClassStyle(".mostVotesTile", (element) => {
+function hideMostVotesPanels() {
+    setClassStyle(".mostVotesPanel", (element) => {
         element.style.opacity = 0;
     });
 }
 
-function hidePlayerDots(tileNumber) {
-    if (tileNumber) {
-        var playerDotDivs = document.getElementsByClassName("playerDot_tileNumber_" + tileNumber);
+function hidePlayerDots(panelNumber) {
+    if (panelNumber) {
+        var playerDotDivs = document.getElementsByClassName("playerDot_panelNumber_" + panelNumber);
         for (let playerDotDiv of playerDotDivs) {
             playerDotDiv.classList.add("opacity0");
         }
@@ -443,12 +443,12 @@ function hidePlayerDots(tileNumber) {
 }
 
 function drawPlayerDots(player) {
-    var tiles = document.getElementsByClassName("tile");
+    var panels = document.getElementsByClassName("panel");
 
     for (var i = 1; i <= across * down; i++) {
         var playerDotDiv = document.getElementById("playerDot_" + player.playerId + "_" + i);
         if (playerDotDiv) {
-            drawPlayerDot(tiles, playerDotDiv, currentGameState);
+            drawPlayerDot(panels, playerDotDiv, currentGameState);
         }
     }
 }
@@ -459,20 +459,20 @@ function drawAllPlayerDots(gameState, resetDots) {
     }
 
     var playerDotDivs = document.getElementsByClassName("playerDot");
-    var tiles = document.getElementsByClassName("tile");
+    var panels = document.getElementsByClassName("panel");
 
     for (let playerDotDiv of playerDotDivs) {
-        drawPlayerDot(tiles, playerDotDiv, gameState);
+        drawPlayerDot(panels, playerDotDiv, gameState);
     }
 }
 
-function drawPlayerDot(tiles, playerDotDiv, gameState) {
-    if (playerSelectedTiles[playerDotDiv.player.playerId] &&
-        playerSelectedTiles[playerDotDiv.player.playerId].selectedTiles.includes(playerDotDiv.tileNumber + "") &&
+function drawPlayerDot(panels, playerDotDiv, gameState) {
+    if (playerSelectedPanels[playerDotDiv.player.playerId] &&
+        playerSelectedPanels[playerDotDiv.player.playerId].selectedPanels.includes(playerDotDiv.panelNumber + "") &&
         playerDotDiv.player.teamNumber === currentGameState.teamTurn &&
-        !tiles[playerDotDiv.tileNumber - 1].classList.contains("tileOpen") &&
-        (gameState.turnType === "OpenTile" ||  gameState.turnType === "OpenFreeTile")) {
-        movePlayerDotToTile(playerDotDiv);
+        !panels[playerDotDiv.panelNumber - 1].classList.contains("panelOpen") &&
+        (gameState.turnType === "OpenPanel" ||  gameState.turnType === "OpenFreePanel")) {
+        movePlayerDotToPanel(playerDotDiv);
     } else {
         movePlayerDotToPlayer(playerDotDiv);
     }
@@ -499,7 +499,7 @@ function updatePlayerDots(player) {
     }
 }
 
-function createPlayerDot(player, tileNumber) {
+function createPlayerDot(player, panelNumber) {
     var playerElement = document.getElementById("player_" + player.playerId);
     playerElementRect = playerElement.getBoundingClientRect();
 
@@ -507,13 +507,13 @@ function createPlayerDot(player, tileNumber) {
     var circleSize = Math.ceil(playerElementRect.height * scale);
 
     var playerDotDiv = document.createElement("div");
-    playerDotDiv.id = "playerDot_" + player.playerId + "_" + tileNumber;
+    playerDotDiv.id = "playerDot_" + player.playerId + "_" + panelNumber;
     playerDotDiv.player = player;
-    playerDotDiv.tileNumber = tileNumber;
+    playerDotDiv.panelNumber = panelNumber;
     playerDotDiv.style.width = circleSize + "px";
     playerDotDiv.style.height = circleSize + "px";
 
-    playerDotDiv.classList.add("playerDot_tileNumber_" + tileNumber);
+    playerDotDiv.classList.add("playerDot_panelNumber_" + panelNumber);
     playerDotDiv.classList.add("playerDot");
     playerDotDiv.classList.add("opacity0");
     playerDotDiv.classList.add("playerDot_" + player.playerId);
@@ -521,7 +521,7 @@ function createPlayerDot(player, tileNumber) {
 
     var playerDotSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     var playerDotInitials = document.createElement("div");
-    playerDotInitials.id = "playerDotInitials_" + player.playerId + "_" + tileNumber;
+    playerDotInitials.id = "playerDotInitials_" + player.playerId + "_" + panelNumber;
 
     var playerDotCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     playerDotCircle.setAttribute("r", Math.max(1, circleSize / 2 - 2));
@@ -548,7 +548,7 @@ function resetPlayerDots() {
     var playerDotDivs = document.getElementsByClassName("playerDot");
 
     for (let playerDotDiv of playerDotDivs) {
-        playerDotDiv.player.selectedTiles = [];
+        playerDotDiv.player.selectedPanels = [];
         playerDotDiv.classList.add("opacity0");
         movePlayerDotToPlayer(playerDotDiv);
     }
@@ -571,43 +571,43 @@ function movePlayerDotToPlayer(playerDotDiv) {
     playerDotDiv.classList.add("opacity0");
 }
 
-function movePlayerDotToTile(playerDotDiv) {
-    var playerDotDiv = document.getElementById("playerDot_" + playerDotDiv.player.playerId + "_" + playerDotDiv.tileNumber);
+function movePlayerDotToPanel(playerDotDiv) {
+    var playerDotDiv = document.getElementById("playerDot_" + playerDotDiv.player.playerId + "_" + playerDotDiv.panelNumber);
 
-    var tileRect = document.getElementById("tile_" + playerDotDiv.tileNumber).getBoundingClientRect();
+    var panelRect = document.getElementById("panel_" + playerDotDiv.panelNumber).getBoundingClientRect();
     var playerDotDivRect = playerDotDiv.getBoundingClientRect();
 
-    var x = (tileRect.right - tileRect.left - playerDotDivRect.width) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzX) + tileRect.left;
-    var y = (tileRect.bottom - tileRect.top - playerDotDivRect.height) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzY) + tileRect.top;
+    var x = (panelRect.right - panelRect.left - playerDotDivRect.width) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzX) + panelRect.left;
+    var y = (panelRect.bottom - panelRect.top - playerDotDivRect.height) * Math.abs(playerFuzzies[playerDotDiv.player.playerId].fuzzY) + panelRect.top;
     
     playerDotDiv.style.transform = "translate(" + x + "px," + y + "px)";
     playerDotDiv.classList.remove("opacity0");
 }
 
-function resetMaxVotesTiles() {
-    playerSelectedTiles = {};
+function resetMaxVotesPanels() {
+    playerSelectedPanels = {};
 
-    setClassStyle(".mostVotesTile", (element) => {
+    setClassStyle(".mostVotesPanel", (element) => {
         element.style.removeProperty("opacity");
     });
 }
 
-function openAllTiles() {
+function openAllPanels() {
     hidePlayerDots();
-    hideMostVotesTiles();
+    hideMostVotesPanels();
 
-    var tiles = document.getElementsByClassName("tile");
-    var tileCount = 1;
+    var panels = document.getElementsByClassName("panel");
+    var panelCount = 1;
 
-    var tilesArray = [];
-    for (let tile of tiles) {
-        tilesArray.push(tile);
+    var panelsArray = [];
+    for (let panel of panels) {
+        panelsArray.push(panel);
     }
-    shuffle(tilesArray);
-    tilesArray.forEach(function (tile) {
-        if (!tile.classList.contains("tileOpen")) {
-            loadImageAsync(tile.lastChild, "/api/images/tiles/" + currentGameState.imageId + "/" + tile.tileNumber).then(() => {
-                tile.classList.add("tileOpen");
+    shuffle(panelsArray);
+    panelsArray.forEach(function (panel) {
+        if (!panel.classList.contains("panelOpen")) {
+            loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.imageId + "/" + panel.panelNumber).then(() => {
+                panel.classList.add("panelOpen");
             });
         }
     });
@@ -627,26 +627,26 @@ function drawCaptains() {
     }
 }
 
-async function drawRevealedTilesAsync(gameState) {
+async function drawRevealedPanelsAsync(gameState) {
     var promises = [];
 
     if (gameState.turnType === "Correct" || gameState.turnType === "EndRound") {
-        openAllTiles();
+        openAllPanels();
         return;
     }
 
-    var tiles = document.getElementsByClassName("tile");
-    for (let tile of tiles) {
-        var tileImage = tile.lastChild;
+    var panels = document.getElementsByClassName("panel");
+    for (let panel of panels) {
+        var panelImage = panel.lastChild;
 
-        if (gameState.revealedTiles.includes(tile.tileNumber)) {
-            promises.push(loadImageAsync(tileImage, "/api/images/tiles/" + gameState.imageId + "/" + tile.tileNumber).then(() => {
-                tile.classList.add("tileOpen");
-                hidePlayerDots(tile.tileNumber);
+        if (gameState.revealedPanels.includes(panel.panelNumber)) {
+            promises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then(() => {
+                panel.classList.add("panelOpen");
+                hidePlayerDots(panel.panelNumber);
             }));
         } else {
-            tile.classList.remove("tileOpen");
-            tileImage.src = "/api/images/tiles/" + gameState.imageId + "/0";
+            panel.classList.remove("panelOpen");
+            panelImage.src = "/api/images/panels/" + gameState.imageId + "/0";
         }
     }
 
@@ -668,11 +668,11 @@ function drawIncorrectGuesses(gameState) {
 
 function setupWelcomeAnimationAsync() {
     var promises = [];
-    var tiles = document.getElementsByClassName("tile");
+    var panels = document.getElementsByClassName("panel");
 
-    for (let tile of tiles) {
-        tile.classList.remove("tileOpen");
-        promises.push(loadImageAsync(tile.lastChild, "/api/images/tiles/welcome/" + tile.tileNumber));
+    for (let panel of panels) {
+        panel.classList.remove("panelOpen");
+        promises.push(loadImageAsync(panel.lastChild, "/api/images/panels/welcome/" + panel.panelNumber));
     }
 
     return Promise.all(promises);
@@ -682,26 +682,26 @@ var welcomeAnimationTimeout;
 var previousRandomIndex = -1;
 function drawWelcomeAnimation() {
     hidePlayerDots();
-    hideMostVotesTiles();
+    hideMostVotesPanels();
 
-    var tiles = document.getElementsByClassName("tile");
+    var panels = document.getElementsByClassName("panel");
 
-    var tilesArray = [];
-    for (let tile of tiles) {
-        tilesArray.push(tile);
+    var panelsArray = [];
+    for (let panel of panels) {
+        panelsArray.push(panel);
     }
 
     do {
-        var randomIndex = Math.floor(Math.random() * tilesArray.length);
+        var randomIndex = Math.floor(Math.random() * panelsArray.length);
     } while (randomIndex === previousRandomIndex)
     previousRandomIndex = randomIndex;
 
-    var tile = tilesArray[randomIndex];
+    var panel = panelsArray[randomIndex];
 
-    if (tile.classList.contains("tileOpen")) {
-        tile.classList.remove("tileOpen");
+    if (panel.classList.contains("panelOpen")) {
+        panel.classList.remove("panelOpen");
     } else {
-        tile.classList.add("tileOpen");
+        panel.classList.add("panelOpen");
     }
 }
 
@@ -725,13 +725,13 @@ async function handleGameState(gameState, firstLoad) {
         document.getElementById("welcome").classList.remove("hidden");
         gameState.imageId = "welcome";
         drawGameState(gameState);
-        resizeTileContainer();
+        resizePanelContainer();
 
         return;
     }
 
     if (firstLoad || gameState.imageId !== currentGameState.imageId) {
-        await resetTilesAsync(gameState);
+        await resetPanelsAsync(gameState);
     }
 
     stopWelcomeAnimation();
@@ -742,7 +742,7 @@ async function handleGameState(gameState, firstLoad) {
 
     currentGameState = gameState;
 
-    await drawRevealedTilesAsync(gameState);
+    await drawRevealedPanelsAsync(gameState);
 
     drawImageEntityAsync(gameState);
 
@@ -756,7 +756,7 @@ async function handleGameState(gameState, firstLoad) {
 
     drawAllPlayerDots(gameState, isNewTurn);
 
-    drawMostVotesTiles(isNewTurn);
+    drawMostVotesPanels(isNewTurn);
 }
 
 function drawImageEntityAsync(gameState) {
@@ -800,18 +800,18 @@ function handlePlayers(players) {
 }
 
 function handleAddPlayer(player) {
-    playerSelectedTiles[player.playerId] = player;
+    playerSelectedPanels[player.playerId] = player;
 
     updatePlayer(player);
     drawPlayerDots(player);
-    drawMostVotesTiles();
+    drawMostVotesPanels();
 }
 
-function handleSelectTiles(player) {
-    playerSelectedTiles[player.playerId] = player;
+function handleSelectPanels(player) {
+    playerSelectedPanels[player.playerId] = player;
 
     drawPlayerDots(player);
-    drawMostVotesTiles();
+    drawMostVotesPanels();
 }
 
 function drawSystemChat(chatsElementId, message) {
@@ -821,7 +821,7 @@ function drawSystemChat(chatsElementId, message) {
 function registerConnections() {
     connection.on("Players", handlePlayers);
     connection.on("AddPlayer", handleAddPlayer);
-    connection.on("SelectTiles", handleSelectTiles);
+    connection.on("SelectPanels", handleSelectPanels);
     connection.on("GameState", handleGameState);
 
     connection.onreconnected = function () {
@@ -854,7 +854,7 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
-    createTiles();
+    createPanels();
     setupCanvases();
 
     document.onmousemove = function () {

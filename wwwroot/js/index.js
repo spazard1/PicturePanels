@@ -113,60 +113,60 @@ function drawGameState(gameState) {
     });
 }
 
-function drawTileButtons() {
-    var tileNumber = 1;
+function drawPanelButtons() {
+    var panelNumber = 1;
 
-    var tileButtonsElement = document.getElementById("tileButtons");
+    var panelButtonsElement = document.getElementById("panelButtons");
     for (var i = 0; i < down; i++) {
         for (var j = 0; j < across; j++) {
-            var tileButtonElement = document.createElement("div");
-            tileButtonElement.classList.add("tileButton");
-            tileButtonElement.classList.add("noHighlights");
-            tileButtonElement.classList.add("tileButtonDisabled");
-            tileButtonElement.onclick = tileButtonOnClick;
-            tileButtonElement.value = tileNumber + "";
+            var panelButtonElement = document.createElement("div");
+            panelButtonElement.classList.add("panelButton");
+            panelButtonElement.classList.add("noHighlights");
+            panelButtonElement.classList.add("panelButtonDisabled");
+            panelButtonElement.onclick = panelButtonOnClick;
+            panelButtonElement.value = panelNumber + "";
 
-            var tileBackgroundElement = document.createElement("div");
-            tileBackgroundElement.classList.add("tileButtonBackground");
-            tileButtonElement.appendChild(tileBackgroundElement);
+            var panelBackgroundElement = document.createElement("div");
+            panelBackgroundElement.classList.add("panelButtonBackground");
+            panelButtonElement.appendChild(panelBackgroundElement);
 
-            var tileNumberElement = document.createElement("div");
-            tileNumberElement.classList.add("tileButtonNumber");
-            tileNumberElement.appendChild(document.createTextNode(tileNumber));
-            tileBackgroundElement.appendChild(tileNumberElement);
+            var panelNumberElement = document.createElement("div");
+            panelNumberElement.classList.add("panelButtonNumber");
+            panelNumberElement.appendChild(document.createTextNode(panelNumber));
+            panelBackgroundElement.appendChild(panelNumberElement);
 
-            var tileImageElement = document.createElement("img");
-            tileImageElement.classList.add("tileButtonImage");
+            var panelImageElement = document.createElement("img");
+            panelImageElement.classList.add("panelButtonImage");
 
-            tileButtonElement.appendChild(tileImageElement);
-            tileButtonsElement.appendChild(tileButtonElement);
+            panelButtonElement.appendChild(panelImageElement);
+            panelButtonsElement.appendChild(panelButtonElement);
 
-            tileNumber++;
+            panelNumber++;
         }
     }
 }
 
-function updateTileButtons(gameState, disabledTiles) {
-    var tileButtons = document.getElementsByClassName("tileButton");
+function updatePanelButtons(gameState, disabledPanels) {
+    var panelButtons = document.getElementsByClassName("panelButton");
 
-    if (!disabledTiles) {
-        disabledTiles = [];
+    if (!disabledPanels) {
+        disabledPanels = [];
     }
 
-    for (let tileButton of tileButtons) {
-        var tileButtonImage = tileButton.lastChild;
+    for (let panelButton of panelButtons) {
+        var panelButtonImage = panelButton.lastChild;
 
-        if (gameState.revealedTiles.includes(tileButton.value)) {
-            tileButton.classList.add("tileButtonDisabled");
-            tileButton.classList.remove("tileButtonSelected");
-            tileButtonImage.src = "/api/images/tiles/" + gameState.imageId + "/" + tileButton.value;
-        } else if (disabledTiles.includes(tileButton.value)) { 
-            tileButton.classList.add("tileButtonDisabled");
-            tileButton.classList.remove("tileButtonSelected");
-            tileButtonImage.src = "/api/images/tiles/" + gameState.imageId + "/0";
+        if (gameState.revealedPanels.includes(panelButton.value)) {
+            panelButton.classList.add("panelButtonDisabled");
+            panelButton.classList.remove("panelButtonSelected");
+            panelButtonImage.src = "/api/images/panels/" + gameState.imageId + "/" + panelButton.value;
+        } else if (disabledPanels.includes(panelButton.value)) { 
+            panelButton.classList.add("panelButtonDisabled");
+            panelButton.classList.remove("panelButtonSelected");
+            panelButtonImage.src = "/api/images/panels/" + gameState.imageId + "/0";
         } else {
-            tileButton.classList.remove("tileButtonDisabled");
-            tileButtonImage.src = "/api/images/tiles/" + gameState.imageId + "/0";
+            panelButton.classList.remove("panelButtonDisabled");
+            panelButtonImage.src = "/api/images/panels/" + gameState.imageId + "/0";
         }
     }
 }
@@ -197,32 +197,32 @@ function uuidv4() {
     });
 }
 
-function clearTileButtonSelection() {
-    var tileButtons = document.getElementsByClassName("tileButton");
-    for (let tileButton of tileButtons) {
-        tileButton.classList.remove("tileButtonSelected");
+function clearPanelButtonSelection() {
+    var panelButtons = document.getElementsByClassName("panelButton");
+    for (let panelButton of panelButtons) {
+        panelButton.classList.remove("panelButtonSelected");
     }
 }
 
-async function sendSelectedTiles() {
+async function sendSelectedPanels() {
     if (!localStorage.getItem("playerName")) {
         return;
     }
 
-    var selectedTiles = [];
-    var selectedTileElements = document.getElementsByClassName("tileButtonSelected");
-    for (let selectedTile of selectedTileElements) {
-        if (selectedTile.classList.contains("tileButtonDisabled")) {
+    var selectedPanels = [];
+    var selectedPanelElements = document.getElementsByClassName("panelButtonSelected");
+    for (let selectedPanel of selectedPanelElements) {
+        if (selectedPanel.classList.contains("panelButtonDisabled")) {
             continue;
         }
-        selectedTiles.push(selectedTile.value);
+        selectedPanels.push(selectedPanel.value);
     }
 
-    await connection.invoke("SelectTiles", {
+    await connection.invoke("SelectPanels", {
         PlayerId: localStorage.getItem("playerId"),
         Name: localStorage.getItem("playerName"),
         TeamNumber: parseInt(localStorage.getItem("teamNumber")),
-        SelectedTiles: selectedTiles
+        SelectedPanels: selectedPanels
     });
 }
 

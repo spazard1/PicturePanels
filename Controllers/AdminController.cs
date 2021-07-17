@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace PictureGame.Controllers
+namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -3,16 +3,16 @@ using CloudStorage.Models;
 using CloudStorage.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PictureGame.Entities;
-using PictureGame.Filters;
-using PictureGame.Services;
+using PicturePanels.Entities;
+using PicturePanels.Filters;
+using PicturePanels.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace PictureGame.Controllers
+namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -69,7 +69,7 @@ namespace PictureGame.Controllers
                 gameState.RoundNumber++;
                 gameState.SetTurnType(GameStateTableEntity.ActionNewRound);
                 gameState.CaptainStatus = null;
-                gameState.RevealedTiles = new List<string>();
+                gameState.RevealedPanels = new List<string>();
             }
 
             if (newTurnType || newRound || newBlobContainer)
@@ -168,13 +168,13 @@ namespace PictureGame.Controllers
             gameState.TeamTwoScore = 0;
             gameState.TeamOneIncorrectGuesses = 0;
             gameState.TeamTwoIncorrectGuesses = 0;
-            gameState.TeamOneInnerTiles = 5;
-            gameState.TeamTwoInnerTiles = 5;
-            gameState.TeamOneOuterTiles = 8;
-            gameState.TeamTwoOuterTiles = 8;
-            gameState.TurnType = GameStateTableEntity.TurnTypeOpenTile;
+            gameState.TeamOneInnerPanels = 5;
+            gameState.TeamTwoInnerPanels = 5;
+            gameState.TeamOneOuterPanels = 8;
+            gameState.TeamTwoOuterPanels = 8;
+            gameState.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
             gameState.CaptainStatus = null;
-            gameState.RevealedTiles = new List<string>();
+            gameState.RevealedPanels = new List<string>();
 
             await CheckTeamCaptainsAsync(gameState);
             await this.playerTableStorage.ResetPlayersAsync();
@@ -290,18 +290,18 @@ namespace PictureGame.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost("openTile/{tileId}")]
+        [HttpPost("openPanel/{panelId}")]
         [RequireAuthorization]
-        public async Task<IActionResult> PostOpenTileAsync(string tileId)
+        public async Task<IActionResult> PostOpenPanelAsync(string panelId)
         {
-            await OpenTileAsync(tileId);
+            await OpenPanelAsync(panelId);
 
             var gameState = await this.gameTableStorage.GetGameStateAsync();
-            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenFreeTile)
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenFreePanel)
             {
-                gameState.UpdateTileCount(tileId);
+                gameState.UpdatePanelCount(panelId);
             }
-            gameState.SetTurnType(GameStateTableEntity.ActionOpenTile);
+            gameState.SetTurnType(GameStateTableEntity.ActionOpenPanel);
 
             await this.playerTableStorage.ResetPlayersAsync();
 
@@ -311,19 +311,19 @@ namespace PictureGame.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost("openTile/{tileId}/force")]
+        [HttpPost("openPanel/{panelId}/force")]
         [RequireAuthorization]
-        public async Task<IActionResult> PostOpenTileForceAsync(string tileId)
+        public async Task<IActionResult> PostOpenPanelForceAsync(string panelId)
         {
-            await OpenTileAsync(tileId);
+            await OpenPanelAsync(panelId);
             return StatusCode(200);
         }
 
-        private async Task OpenTileAsync(string tileId)
+        private async Task OpenPanelAsync(string panelId)
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
 
-            gameState.RevealedTiles.Add(tileId);
+            gameState.RevealedPanels.Add(panelId);
 
             await this.playerTableStorage.ResetPlayersAsync();
 
@@ -331,18 +331,18 @@ namespace PictureGame.Controllers
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
         }
 
-        [HttpPost("closeTile/{tileId}")]
+        [HttpPost("closePanel/{panelId}")]
         [RequireAuthorization]
-        public async Task<IActionResult> CloseTileAsync(string tileId)
+        public async Task<IActionResult> ClosePanelAsync(string panelId)
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
 
-            if (!gameState.RevealedTiles.Contains(tileId))
+            if (!gameState.RevealedPanels.Contains(panelId))
             {
                 return StatusCode(400);
             }
 
-            gameState.RevealedTiles.Remove(tileId);
+            gameState.RevealedPanels.Remove(panelId);
 
             await this.playerTableStorage.ResetPlayersAsync();
 

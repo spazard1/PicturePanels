@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PictureGame.Entities
+namespace PicturePanels.Entities
 {
     public class BlobContainerEntity : IComparable<BlobContainerEntity>
     {

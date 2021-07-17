@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PictureGame.Services
+namespace PicturePanels.Services
 {
     public class PlayerTableStorage
     {
@@ -82,7 +82,7 @@ namespace PictureGame.Services
                     batchOperation = new TableBatchOperation();
                 }
 
-                playerModel.SelectedTiles = new List<string>();
+                playerModel.SelectedPanels = new List<string>();
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
             }
 

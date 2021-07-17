@@ -21,7 +21,7 @@ body {
     flex: 1;
 }
 
-.tileButtons {
+.panelButtons {
     position: inherit;
 }
 
@@ -184,7 +184,7 @@ body {
         max-width: 40vw;
     }
 
-    .tileButtons {
+    .panelButtons {
         width: 48vw;
     }
 

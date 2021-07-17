@@ -2,37 +2,37 @@
     border: 4px solid lightgreen;
 }
 
-.tile:nth-child(even) .tileBackground {
+.panel:nth-child(even) .panelBackground {
     background: #8D602D;
 }
 
-.tile:nth-child(odd) .tileBackground {
+.panel:nth-child(odd) .panelBackground {
     background: #1F4699;
 }
 
-.tileButton .tileButtonBackground {
+.panelButton .panelButtonBackground {
     border: 3px solid black;
 }
 
-.tileButton:nth-child(even) .tileButtonBackground {
+.panelButton:nth-child(even) .panelButtonBackground {
     background-color: #f3e6d8;
 }
 
-.tileButton:nth-child(odd) .tileButtonBackground {
+.panelButton:nth-child(odd) .panelButtonBackground {
     background-color: #d5dff6;
 }
 
-.tileButtonSelected:nth-child(even) .tileButtonBackground {
+.panelButtonSelected:nth-child(even) .panelButtonBackground {
     border: 3px solid white;
     background-color: dodgerblue;
 }
 
-.tileButtonSelected:nth-child(odd) .tileButtonBackground {
+.panelButtonSelected:nth-child(odd) .panelButtonBackground {
     border: 3px solid white;
     background-color: dodgerblue;
 }
 
-.mostVotesTile {
+.mostVotesPanel {
     box-shadow: 0 0 0 .25vw green;
     outline: dashed .25vw lightblue;
 }
