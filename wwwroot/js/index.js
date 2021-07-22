@@ -422,3 +422,7 @@ if (debugParam === "true") {
 } else if (debugParam === "false") {
     localStorage.removeItem("debug");
 }
+
+if (window.location.href.indexOf("azurewebsites") >= 0) {
+    window.location.href = "https://picturepanels.net";
+}
