@@ -57,7 +57,7 @@ namespace CloudStorage
                     {
                         options.AccessTokenLifetime = TimeSpan.FromDays(1);
                         options.ClaimsProvider = context => context.User.Claims;
-                        options.ConnectionString = "Endpoint=https://picturegame.service.signalr.net;AccessKey=fNOKa6i5nAL7Vjcz+UsP2QoMDJT77Ml7zFVmbpA6Nj0=;Version=1.0;";
+                        options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AccessKey=k0wYaSi/4PvB9kK4G4z7KVzn+QwjsMLmBcTZtFh/PkU=;Version=1.0;";
                     });
             
         }

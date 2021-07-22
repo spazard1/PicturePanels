@@ -17,6 +17,8 @@ function setupPlayerMenu() {
         initialColor = localStorage.getItem("playerColor");
     }
 
+  
+
     window.colorPicker = new iro.ColorPicker("#colorPicker", {
         layout: [
             {
@@ -24,7 +26,8 @@ function setupPlayerMenu() {
                 options: {}
             },
         ],
-        color: initialColor
+        color: initialColor,
+        width: Math.ceil(Math.min(300, window.screen.width * .65))
     });
 
     if (localStorage.getItem("playerName")) {
