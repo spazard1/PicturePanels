@@ -294,7 +294,7 @@ function setupInputDefaultText(elementId, defaultValue, currentValue) {
     }
 
     inputElement.onchange = (event) => {
-        if (!event.target.value || event.target.value === event.target.defaultValue) {
+        if (!event || !event.target.value || event.target.value === event.target.defaultValue) {
             event.target.value = event.target.defaultValue;
             event.target.classList.add("inputDefaultText");
         }

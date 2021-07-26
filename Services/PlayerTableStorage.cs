@@ -1,5 +1,5 @@
-﻿using CloudStorage.Models;
-using CloudStorage.Services;
+﻿using PicturePanels.Models;
+using PicturePanels.Services;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.OData;
 using System;
@@ -12,13 +12,13 @@ namespace PicturePanels.Services
     {
         public const int PlayerTimeoutInMinutes = 5;
 
-        private CloudStorageAccount cloudStorageAccount;
+        private CloudStorageAccount CloudStorageAccount;
         private CloudTable playerTable;
 
         public PlayerTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider)
         {
-            cloudStorageAccount = cloudStorageAccountProvider.CloudStorageAccount;
-            var tableClient = cloudStorageAccount.CreateCloudTableClient();
+            CloudStorageAccount = cloudStorageAccountProvider.CloudStorageAccount;
+            var tableClient = CloudStorageAccount.CreateCloudTableClient();
             playerTable = tableClient.GetTableReference("players");
         }
 

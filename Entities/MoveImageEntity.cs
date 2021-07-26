@@ -1,4 +1,4 @@
-﻿namespace CloudStorage.Entities
+﻿namespace PicturePanels.Entities
 {
     public class MoveImageEntity
     {

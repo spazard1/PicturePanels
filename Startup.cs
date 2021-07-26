@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using CloudStorage.Services;
+using PicturePanels.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using PicturePanels.Filters;
-using PicturePanels.Services;
 
-namespace CloudStorage
+namespace PicturePanels
 {
     public class Startup
     {

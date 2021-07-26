@@ -1,4 +1,4 @@
-﻿using CloudStorage.Models;
+﻿using PicturePanels.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Primitives;
 using PicturePanels.Entities;
@@ -82,14 +82,7 @@ namespace PicturePanels.Services
 
             await this.chatTableStorage.AddOrUpdateChatAsync(playerModel, message);
 
-            if (playerModel.TeamNumber == 1)
-            {
-                await Clients.GroupExcept(TeamOneGroup, new List<string>() { Context.ConnectionId }).Chat(new PlayerEntity(playerModel), message);
-            }
-            else
-            {
-                await Clients.GroupExcept(TeamTwoGroup, new List<string>() { Context.ConnectionId }).Chat(new PlayerEntity(playerModel), message);
-            }
+            await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Chat(new PlayerEntity(playerModel), message);
         }
 
         public async Task Typing(PlayerEntity entity)
@@ -105,14 +98,7 @@ namespace PicturePanels.Services
                 playerModel.TeamNumber = entity.TeamNumber;
             }
 
-            if (playerModel.TeamNumber == 1)
-            {
-                await Clients.GroupExcept(TeamOneGroup, new List<string>() { Context.ConnectionId }).Typing(new PlayerEntity(playerModel));
-            }
-            else
-            {
-                await Clients.GroupExcept(TeamTwoGroup, new List<string>() { Context.ConnectionId }).Typing(new PlayerEntity(playerModel));
-            }
+            await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Typing(new PlayerEntity(playerModel));
         }
 
         public async Task SelectPanels(PlayerEntity entity)
