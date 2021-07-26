@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CloudStorage.Models
+namespace PicturePanels.Models
 {
     public class ChatTableEntity : TableEntity
     {

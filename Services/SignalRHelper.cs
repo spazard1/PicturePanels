@@ -1,4 +1,4 @@
-﻿using CloudStorage.Models;
+﻿using PicturePanels.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.Cosmos.Table;
 using PicturePanels.Entities;

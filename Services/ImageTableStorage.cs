@@ -7,8 +7,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CloudStorage.Entities;
-using CloudStorage.Models;
+using PicturePanels.Entities;
+using PicturePanels.Models;
 using Microsoft.Azure.Cosmos.Table;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
@@ -17,7 +17,7 @@ using Azure.Storage;
 using Azure.Storage.Blobs.Models;
 using System.Drawing.Drawing2D;
 
-namespace CloudStorage.Services
+namespace PicturePanels.Services
 {
     public class ImageTableStorage
     {

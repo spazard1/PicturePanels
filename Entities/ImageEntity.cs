@@ -1,9 +1,9 @@
-﻿using CloudStorage.Models;
+﻿using PicturePanels.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CloudStorage.Entities
+namespace PicturePanels.Entities
 {
     public class ImageEntity : IComparable<ImageEntity>
     {

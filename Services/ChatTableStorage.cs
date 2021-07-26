@@ -1,5 +1,5 @@
-﻿using CloudStorage.Models;
-using CloudStorage.Services;
+﻿using PicturePanels.Models;
+using PicturePanels.Services;
 using Microsoft.Azure.Cosmos.Table;
 using PicturePanels.Entities;
 using System;

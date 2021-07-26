@@ -1,4 +1,4 @@
-﻿using CloudStorage.Models;
+﻿using PicturePanels.Models;
 using System.Collections.Generic;
 
 namespace PicturePanels.Entities
@@ -20,7 +20,6 @@ namespace PicturePanels.Entities
             this.RoundNumber = tableEntity.RoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
-            this.CaptainStatus = tableEntity.CaptainStatus;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;
@@ -28,14 +27,27 @@ namespace PicturePanels.Entities
             this.TeamOneCaptain = tableEntity.TeamOneCaptain;
             this.TeamOneScore = tableEntity.TeamOneScore;
             this.TeamOneIncorrectGuesses = tableEntity.TeamOneIncorrectGuesses;
-            this.TeamOneOuterPanels = tableEntity.TeamOneOuterPanels;
             this.TeamOneInnerPanels = tableEntity.TeamOneInnerPanels;
+            this.TeamOneCorrect = tableEntity.TeamOneCorrect;
             this.TeamTwoName = tableEntity.TeamTwoName;
             this.TeamTwoCaptain = tableEntity.TeamTwoCaptain;
             this.TeamTwoScore = tableEntity.TeamTwoScore;
             this.TeamTwoIncorrectGuesses = tableEntity.TeamTwoIncorrectGuesses;
-            this.TeamTwoOuterPanels = tableEntity.TeamTwoOuterPanels;
             this.TeamTwoInnerPanels = tableEntity.TeamTwoInnerPanels;
+            this.TeamTwoCorrect = tableEntity.TeamTwoCorrect;
+
+            if (tableEntity.ShouldShowGuesses())
+            {
+                this.TeamOneCaptainStatus = tableEntity.TeamOneCaptainStatus;
+                this.TeamTwoCaptainStatus = tableEntity.TeamTwoCaptainStatus;
+                this.TeamOneGuess = tableEntity.TeamOneGuess;
+                this.TeamTwoGuess = tableEntity.TeamTwoGuess;
+            }
+            else
+            {
+                this.TeamOneCaptainStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamOneCaptainStatus) ? "Ready" : string.Empty;
+                this.TeamTwoCaptainStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamTwoCaptainStatus) ? "Ready" : string.Empty;
+            }
         }
 
         public string Id { get; set; }
@@ -54,8 +66,6 @@ namespace PicturePanels.Entities
 
         public string TurnType { get; set; }
 
-        public string CaptainStatus { get; set; }
-
         public int? TeamFirstTurn { get; set; }
 
         public string ImageId { get; set; }
@@ -70,9 +80,13 @@ namespace PicturePanels.Entities
 
         public int? TeamOneIncorrectGuesses { get; set; }
 
-        public int? TeamOneOuterPanels { get; set; }
-
         public int? TeamOneInnerPanels { get; set; }
+
+        public string TeamOneGuess { get; set; }
+
+        public bool TeamOneCorrect { get; set; }
+
+        public string TeamOneCaptainStatus { get; set; }
 
         public string TeamTwoName { get; set; }
 
@@ -82,9 +96,13 @@ namespace PicturePanels.Entities
 
         public int? TeamTwoIncorrectGuesses { get; set; }
 
-        public int? TeamTwoOuterPanels { get; set; }
-
         public int? TeamTwoInnerPanels { get; set; }
+
+        public string TeamTwoGuess { get; set; }
+
+        public bool TeamTwoCorrect { get; set; }
+
+        public string TeamTwoCaptainStatus { get; set; }
 
         public GameStateTableEntity ToModel(GameStateTableEntity currentModel)
         {
@@ -98,7 +116,6 @@ namespace PicturePanels.Entities
                 RoundNumber = this.RoundNumber ?? currentModel.RoundNumber,
                 TeamTurn = this.TeamTurn ?? currentModel.TeamTurn,
                 TurnType = this.TurnType ?? currentModel.TurnType,
-                CaptainStatus = this.CaptainStatus ?? currentModel.CaptainStatus,
                 TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn,
                 ImageId = this.ImageId ?? currentModel.ImageId,
                 TeamOneName = this.TeamOneName ?? currentModel.TeamOneName,
@@ -106,13 +123,11 @@ namespace PicturePanels.Entities
                 TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore,
                 TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses,
                 TeamOneInnerPanels = this.TeamOneInnerPanels ?? currentModel.TeamOneInnerPanels,
-                TeamOneOuterPanels = this.TeamOneOuterPanels ?? currentModel.TeamOneOuterPanels,
                 TeamTwoName = this.TeamTwoName ?? currentModel.TeamTwoName,
                 TeamTwoCaptain = this.TeamTwoCaptain ?? currentModel.TeamTwoCaptain,
                 TeamTwoScore = this.TeamTwoScore ?? currentModel.TeamTwoScore,
                 TeamTwoIncorrectGuesses = this.TeamTwoIncorrectGuesses ?? currentModel.TeamTwoIncorrectGuesses,
                 TeamTwoInnerPanels = this.TeamTwoInnerPanels ?? currentModel.TeamTwoInnerPanels,
-                TeamTwoOuterPanels = this.TeamTwoOuterPanels ?? currentModel.TeamTwoOuterPanels
             };
         }
     }

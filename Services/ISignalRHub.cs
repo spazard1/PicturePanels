@@ -1,4 +1,4 @@
-﻿using CloudStorage.Models;
+﻿using PicturePanels.Models;
 using PicturePanels.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ namespace PicturePanels.Services
         Task Players(List<PlayerEntity> entities);
 
         Task GameState(GameStateEntity entity);
+
+        Task CaptainStatus(CaptainStatusEntity entity);
 
         Task AddPlayer(PlayerEntity entity);
 

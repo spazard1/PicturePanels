@@ -230,6 +230,24 @@ function drawMostVotesPanels(resetPanels) {
 }
 
 function drawTeamStatus(gameState, resetTimer) {
+    var activeTeamStatus, passiveTeamStatus;
+    var teamOneStatus = document.getElementById("teamOneStatus");
+    var teamOneCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
+    var teamTwoStatus = document.getElementById("teamTwoStatus");
+    var teamTwoCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
+
+    if (gameState.teamTurn === 1) {
+        activeTeamStatus = document.getElementById("teamOneStatus");
+        activeTeamCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
+        passiveTeamStatus = document.getElementById("teamTwoStatus");
+        passiveTeamCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
+    } else {
+        passiveTeamStatus = document.getElementById("teamOneStatus");
+        passiveTeamCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
+        activeTeamStatus = document.getElementById("teamTwoStatus");
+        activeTeamCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
+    }
+
     if (gameState.teamTurn === 1) {
         document.getElementById("teamOneDiv").classList.add("activeTeam");
         document.getElementById("teamTwoDiv").classList.remove("activeTeam");
@@ -238,103 +256,76 @@ function drawTeamStatus(gameState, resetTimer) {
         document.getElementById("teamTwoDiv").classList.add("activeTeam");
     }
 
-    var teamOneStatus = document.getElementById("teamOneStatus");
-    var teamTwoStatus = document.getElementById("teamTwoStatus");
-
     if (gameState.turnType === "Welcome") {
-        teamOneStatus.innerHTML = "";
-        teamTwoStatus.innerHTML = "";
-        stopCountdown("teamOneCountdownCanvas");
-        stopCountdown("teamTwoCountdownCanvas");
+        activeTeamStatus.innerHTML = "";
+        passiveTeamStatus.innerHTML = "";
+        stopCountdown(activeTeamCountdownCanvas);
+        stopCountdown(passiveTeamCountdownCanvas);
         return;
-    } else if (gameState.turnType === "Correct" ||
+    } else if (gameState.turnType === "GuessesMade" ||
         gameState.turnType === "EndRound") {
-        stopCountdown("teamOneCountdownCanvas");
-        stopCountdown("teamTwoCountdownCanvas");
+        stopCountdown(activeTeamCountdownCanvas);
+        stopCountdown(passiveTeamCountdownCanvas);
     }
 
-    if (gameState.teamTurn === 1) {
-        drawRoundNumber(gameState, teamTwoStatus);
-        if (resetTimer) {
-            stopCountdown("teamTwoCountdownCanvas");
-        }
+    if (resetTimer) {
+        stopCountdown(activeTeamCountdownCanvas);
+        stopCountdown(passiveTeamCountdownCanvas);
+    }
 
-        switch (gameState.turnType) {
-            case "OpenPanel":
-                teamOneStatus.innerHTML = "Open Panel &rarr;";
-                if (resetTimer) {
-                    startCountdown("teamOneCountdownCanvas", gameState.openPanelTime);
-                }
-                break;
-            case "OpenFreePanel":
-                teamOneStatus.innerHTML = "Open Free Panel &rarr;";
-                if (resetTimer) {
-                    startCountdown("teamOneCountdownCanvas", gameState.openPanelTime);
-                }
-                break;
-            case "MakeGuess":
-                if (gameState.captainStatus === "Guess") {
-                    teamOneStatus.innerHTML = "Ready to Guess!";
-                } else if (gameState.captainStatus === "Pass") {
-                    teamOneStatus.innerHTML = "Team has passed.";
-                } else {
-                    teamOneStatus.innerHTML = "Guess or Pass &rarr;";
-                }
-                if (resetTimer) {
-                    startCountdown("teamOneCountdownCanvas", gameState.guessTime);
-                }
-                break;
-            case "Correct":
-                teamOneStatus.innerHTML = "Correct! &rarr;";
-                break;
-            case "EndRound":
-                teamOneStatus.innerHTML = "End of Round";
-                break;
-            default:
-                teamOneStatus.innerHTML = gameState.turnType;
-                break;
-        }
-    } else {
-        drawRoundNumber(gameState, teamOneStatus);
-        if (resetTimer) {
-            stopCountdown("teamOneCountdownCanvas");
-        }
+    switch (gameState.turnType) {
+        case "OpenPanel":
+            drawRoundNumber(gameState, passiveTeamStatus);
+            activeTeamStatus.innerHTML = "Open a Panel";
+            if (resetTimer) {
+                startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime);
+            }
+            break;
+        case "MakeGuess":
+            if (resetTimer) {
+                startCountdown(activeTeamCountdownCanvas, gameState.guessTime);
+                startCountdown(passiveTeamCountdownCanvas, gameState.guessTime);
+            }
+            if (gameState.teamOneCaptainStatus) {
+                teamOneStatus.innerHTML = "Ready!";
+                stopCountdown(teamOneCountdownCanvas);
+            } else {
+                teamOneStatus.innerHTML = "Guess or Pass";
+            }
+            if (gameState.teamTwoCaptainStatus) {
+                teamTwoStatus.innerHTML = "Ready!";
+                stopCountdown(teamTwoCountdownCanvas);
+            } else {
+                teamTwoStatus.innerHTML = "Guess or Pass";
+            }
+            break;
+        case "GuessesMade":
+            if (gameState.teamOneCorrect) {
+                teamOneStatus.innerHTML = "Correct!";
+            } else if (gameState.teamOneCaptainStatus === "Pass") {
+                teamOneStatus.innerHTML = "Team Passed";
+            } else if (gameState.teamOneGuess) {
+                teamOneStatus.innerHTML = "\"" + gameState.teamOneGuess + "\"";
+            } else {
+                teamOneStatus.innerHTML = "Didn't guess or pass";
+            }
 
-        switch (gameState.turnType) {
-            case "OpenPanel":
-                teamTwoStatus.innerHTML = "&larr; Open Panel";
-                if (resetTimer) {
-                    startCountdown("teamTwoCountdownCanvas", gameState.openPanelTime);
-                }
-                break;
-            case "OpenFreePanel":
-                teamTwoStatus.innerHTML = "&larr; Open Free Panel";
-                if (resetTimer) {
-                    startCountdown("teamTwoCountdownCanvas", gameState.openPanelTime);
-                }
-                break;
-            case "MakeGuess":
-                if (gameState.captainStatus === "Guess") {
-                    teamTwoStatus.innerHTML = "Ready to Guess!";
-                } else if (gameState.captainStatus === "Pass") {
-                    teamTwoStatus.innerHTML = "Team has passed.";
-                } else {
-                    teamTwoStatus.innerHTML = "&larr; Guess or Pass";
-                }
-                if (resetTimer) {
-                    startCountdown("teamTwoCountdownCanvas", gameState.guessTime);
-                }
-                break;
-            case "Correct":
-                teamTwoStatus.innerHTML = "&larr; Correct!";
-                break;
-            case "EndRound":
-                teamTwoStatus.innerHTML = "End of Round";
-                break;
-            default:
-                teamTwoStatus.innerHTML = gameState.turnType;
-                break;
-        }
+            if (gameState.teamTwoCorrect) {
+                teamTwoStatus.innerHTML = "Correct!";
+            } else if (gameState.teamTwoCaptainStatus === "Pass") {
+                teamTwoStatus.innerHTML = "Team Passed";
+            } else if (gameState.teamTwoGuess) {
+                teamTwoStatus.innerHTML = "\"" + gameState.teamTwoGuess + "\"";
+            } else {
+                teamTwoStatus.innerHTML = "Didn't guess or pass";
+            }
+            break;
+        case "EndRound":
+            teamOneStatus.innerHTML = "End of Round";
+            break;
+        default:
+            activeTeamStatus.innerHTML = gameState.turnType;
+            break;
     }
 }
 
@@ -358,49 +349,48 @@ function setupCanvases() {
     }
 }
 
-var countdownInterval;
 var framerate = 20;
 
-function startCountdown(canvasId, countdownMax) {
+function startCountdown(canvas, countdownMax) {
     if (countdownMax <= 0) {
         return;
     }
 
-    countdown = countdownMax;
-    clearInterval(countdownInterval);
+    canvas.currentCountdown = countdownMax;
+    canvas.countdownMax = countdownMax;
+    clearInterval(canvas.countdownInterval);
 
-    countdownInterval = setInterval(function () {
-        countdown -= 1 / framerate; 
-        drawCountdown(canvasId, countdown, countdownMax);
+    canvas.countdownInterval = setInterval(function () {
+        canvas.currentCountdown -= 1 / framerate;
+        drawCountdown(canvas);
 
-        if (countdown <= 0) {
-            clearInterval(countdownInterval);
+        if (canvas.currentCountdown <= 0) {
+            clearInterval(canvas.countdownInterval);
         }
 
     }, 1000 / framerate);
 }
 
-function stopCountdown(canvasId) {
-    clearInterval(countdownInterval);
-    drawCountdown(canvasId, 0);
+function stopCountdown(canvas) {
+    canvas.currentCountdown = 0;
 }
 
-function drawCountdown(canvasId, countdown, countdownMax) {
-    var canvas = document.getElementById(canvasId);
+function drawCountdown(canvas) {
     var ctx = canvas.getContext("2d");
 
-    var scale = .5;
+    var scale = .55;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (countdown <= 0) {
+    if (canvas.currentCountdown <= 0) {
         return;
     }
 
-    var strokeWidth = Math.ceil(canvas.height / 20);
-    var circleSize = (canvas.height / 2) * scale;
+    //var strokeWidth = Math.ceil(canvas.height);
+    var circleSize = canvas.height / 2 * scale;
     var circlePosition = canvas.height / 2;
+    var strokeWidth = canvas.height / 2 * scale;
 
     ctx.beginPath();
-    ctx.arc(circlePosition, circlePosition, circleSize, 0, (countdown / countdownMax) * 2 * Math.PI);
+    ctx.arc(circlePosition, circlePosition, circleSize, 0, (canvas.currentCountdown / canvas.countdownMax) * 2 * Math.PI);
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
@@ -597,7 +587,6 @@ function openAllPanels() {
     hideMostVotesPanels();
 
     var panels = document.getElementsByClassName("panel");
-    var panelCount = 1;
 
     var panelsArray = [];
     for (let panel of panels) {
@@ -630,7 +619,7 @@ function drawCaptains() {
 async function drawRevealedPanelsAsync(gameState) {
     var promises = [];
 
-    if (gameState.turnType === "Correct" || gameState.turnType === "EndRound") {
+    if (gameState.turnType === "EndRound" || gameState.teamOneCorrect || gameState.teamTwoCorrect) {
         openAllPanels();
         return;
     }

@@ -192,9 +192,18 @@ body {
     margin-top: 1em;
 }
 
+.captainGuessInput {
+    color: black;
+    background-color: white;
+    font-size: 1em;
+    width: 100%;
+    padding: 3px;
+}
+
 .captainButton {
     width: 3.5em;
-    margin: .5em;
+    margin: auto;
+    margin-top: .75em;
     padding: 4px;
     color: black;
     font-size: 3vh;
@@ -213,15 +222,6 @@ body {
 .captainButtonDisabled {
     background-color: rgb(70,70,70);
     border: 3px solid black;
-}
-
-.captainButtonSelected {
-    /* border: 3px solid lightgreen; */
-    border: 3px inset rgb(118, 118, 118);
-}
-
-.captainStatusButtons {
-    display: flex;
 }
 
 .imageButton {

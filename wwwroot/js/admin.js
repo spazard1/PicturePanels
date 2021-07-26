@@ -14,39 +14,17 @@
             TeamOneName: document.getElementById("teamOneName").value,
             TeamOneScore: parseInt(document.getElementById("teamOneScore").value),
             TeamOneIncorrectGuesses: parseInt(document.getElementById("teamOneIncorrectGuesses").value),
-            TeamOneOuterPanels: parseInt(document.getElementById("teamOneOuterPanels").value),
             TeamOneInnerPanels: parseInt(document.getElementById("teamOneInnerPanels").value),
             TeamTwoName: document.getElementById("teamTwoName").value,
             TeamTwoScore: parseInt(document.getElementById("teamTwoScore").value),
             TeamTwoIncorrectGuesses: parseInt(document.getElementById("teamTwoIncorrectGuesses").value),
-            TeamTwoOuterPanels: parseInt(document.getElementById("teamTwoOuterPanels").value),
             TeamTwoInnerPanels: parseInt(document.getElementById("teamTwoInnerPanels").value),
         })
     });
 }
 
-function passTurn() {
-    fetch("/api/gameState/pass", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": localStorage.getItem("Authorization")
-        }
-    });
-}
-
-function correct() {
-    fetch("/api/gameState/correct", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": localStorage.getItem("Authorization")
-        }
-    });
-}
-
-function incorrect() {
-    fetch("/api/gameState/incorrect", {
+function nextTurn() {
+    fetch("/api/gameState/nextTurn", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -227,19 +205,20 @@ async function handleGameState(gameState) {
 
     switch (gameState.turnType) {
         case "OpenPanel":
-        case "OpenFreePanel":
             document.getElementById("openPanelButton").classList.remove("hidden");
-            document.getElementById("passButton").classList.add("hidden");
-            document.getElementById("incorrectButton").classList.add("hidden");
-            document.getElementById("correctButton").classList.add("hidden");
+            document.getElementById("nextTurnButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.remove("hidden");
             document.getElementById("forceOpenPanelButton").classList.remove("hidden");
             break;
         case "MakeGuess":
             document.getElementById("openPanelButton").classList.add("hidden");
-            document.getElementById("passButton").classList.remove("hidden");
-            document.getElementById("incorrectButton").classList.remove("hidden");
-            document.getElementById("correctButton").classList.remove("hidden");
+            document.getElementById("nextTurnButton").classList.add("hidden");
+            document.getElementById("endRoundButton").classList.add("hidden");
+            document.getElementById("forceOpenPanelButton").classList.add("hidden");
+            break;
+        case "GuessesMade":
+            document.getElementById("openPanelButton").classList.add("hidden");
+            document.getElementById("nextTurnButton").classList.remove("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
             document.getElementById("forceOpenPanelButton").classList.add("hidden");
             break;
@@ -247,29 +226,9 @@ async function handleGameState(gameState) {
         case "Correct":
         case "EndRound":
             document.getElementById("openPanelButton").classList.add("hidden");
-            document.getElementById("passButton").classList.add("hidden");
-            document.getElementById("incorrectButton").classList.add("hidden");
-            document.getElementById("correctButton").classList.add("hidden");
+            document.getElementById("nextTurnButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
             document.getElementById("forceOpenPanelButton").classList.add("hidden");
-            break;
-    }
-
-    switch (gameState.captainStatus) {
-        case "Guess":
-            document.getElementById("passButton").classList.remove("buttonHighlight");
-            document.getElementById("incorrectButton").classList.add("buttonHighlight");
-            document.getElementById("correctButton").classList.add("buttonHighlight");
-            break;
-        case "Pass":
-            document.getElementById("passButton").classList.add("buttonHighlight");
-            document.getElementById("incorrectButton").classList.remove("buttonHighlight");
-            document.getElementById("correctButton").classList.remove("buttonHighlight");
-            break;
-        default:
-            document.getElementById("passButton").classList.remove("buttonHighlight");
-            document.getElementById("incorrectButton").classList.remove("buttonHighlight");
-            document.getElementById("correctButton").classList.remove("buttonHighlight");
             break;
     }
 

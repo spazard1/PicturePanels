@@ -1,9 +1,10 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
+using PicturePanels.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CloudStorage.Models
+namespace PicturePanels.Models
 {
     public class PlayerTableEntity : TableEntity
     {
@@ -32,6 +33,13 @@ namespace CloudStorage.Models
         public bool IsAdmin { get; set; }
 
         public string ConnectionId { get; set; }
+
+        public string SignalRGroup {
+           get
+           {
+                return TeamNumber == 1 ? SignalRHub.TeamOneGroup : SignalRHub.TeamTwoGroup;
+           }
+        }
 
         public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
         {

@@ -1,6 +1,6 @@
-﻿using CloudStorage.Services;
+﻿using PicturePanels.Services;
 
-namespace CloudStorage.Services
+namespace PicturePanels.Services
 {
     public class ConnectionStringProvider : IConnectionStringProvider
     {

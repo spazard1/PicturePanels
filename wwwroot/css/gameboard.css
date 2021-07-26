@@ -65,10 +65,17 @@ body::-webkit-scrollbar {
 .teamInfoIncorrectGuesses {
     position: absolute;
     bottom: 0;
-    right: 4px;
     color: red;
     font-size: 2.5vh;
     font-weight: bold;
+}
+
+#teamOneDiv .teamInfoIncorrectGuesses {
+    left: 4px;
+}
+
+#teamTwoDiv .teamInfoIncorrectGuesses {
+    right: 4px;
 }
 
 .teamInfoPanelCounts {
@@ -105,12 +112,12 @@ body::-webkit-scrollbar {
 
 .teamNameBox {
     overflow: hidden;
-    flex: 3;
+    flex: 2.5;
 }
 
 .teamStatus {
     position: relative;
-    flex: 2;
+    flex: 3;
     white-space: nowrap;
     overflow: hidden;
     font-size: 3.5vh;
@@ -119,12 +126,6 @@ body::-webkit-scrollbar {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.countdownDiv {
-    flex: .5;
-    height: 100%;
-    margin: 0;
 }
 
 .teamOneStatusText {
@@ -141,10 +142,13 @@ body::-webkit-scrollbar {
     font-size: 3.5vh;
     height: 1em;
     line-height: 1em;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .score {
-    flex: 1;
+    flex: .6;
     vertical-align: middle;
     font-size: 6vh;
     height: 7vh;
@@ -364,6 +368,21 @@ body::-webkit-scrollbar {
     border: 2px solid rgb(50, 50, 50);
     left: 50%;
     transform: translate(-50%, 0);
+}
+
+.countdownDiv {
+    position: absolute;
+    height: 100%;
+    margin: 0;
+    top: 0;
+}
+
+#teamOneDiv .countdownDiv {
+    right: 0;
+}
+
+#teamTwoDiv .countdownDiv {
+    left: 0;
 }
 
 .countdownDiv canvas {

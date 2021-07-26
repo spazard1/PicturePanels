@@ -30,9 +30,8 @@
         <select id="turnType" class="adminSelect">
             <option value="Welcome">Welcome</option>
             <option value="OpenPanel">OpenPanel</option>
-            <option value="OpenFreePanel">OpenFreePanel</option>
             <option value="MakeGuess">MakeGuess</option>
-            <option value="Correct">Correct</option>
+            <option value="GuessesMade">GuessesMade</option>
             <option value="EndRound">EndRound</option>
         </select>
     </div>
@@ -43,9 +42,7 @@
         <input type="button" id="openPanelButton" value="Open" class="adminButton" onclick="openPanel()" />
         <input type="button" id="endRoundButton" value="End Round" class="adminButton" onclick="endRound()" />
         <input type="button" id="forceOpenPanelButton" value="Force" class="adminButton" onclick="forceOpenPanel()" />
-        <input type="button" id="passButton" value="Pass" class="adminButton" onclick="passTurn()" />
-        <input type="button" id="incorrectButton" value="Incorrect" class="adminButton" onclick="incorrect()" />
-        <input type="button" id="correctButton" value="Correct" class="adminButton" onclick="correct()" />
+        <input type="button" id="nextTurnButton" value="Next" class="adminButton" onclick="nextTurn()" />
     </div>
 
     <div class="buttonsFlex">
@@ -64,10 +61,9 @@
             <div name="teamOneScore" class="plusMinus"></div>
             <div name="teamOneIncorrectGuesses" class="plusMinus"></div>
         </div>
-        Inner/Outer
+        Inner
         <div class="buttonsFlex">
             <div name="teamOneInnerPanels" class="plusMinus"></div>
-            <div name="teamOneOuterPanels" class="plusMinus"></div>
         </div>
     </div>
 
@@ -77,10 +73,9 @@
             <div name="teamTwoScore" class="plusMinus"></div>
             <div name="teamTwoIncorrectGuesses" class="plusMinus"></div>
         </div>
-        Inner/Outer
+        Inner
         <div class="buttonsFlex">
             <div name="teamTwoInnerPanels" class="plusMinus"></div>
-            <div name="teamTwoOuterPanels" class="plusMinus"></div>
         </div>
     </div>
 
