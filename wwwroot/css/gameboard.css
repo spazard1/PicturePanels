@@ -65,17 +65,31 @@ body::-webkit-scrollbar {
 .teamInfoIncorrectGuesses {
     position: absolute;
     bottom: 0;
+    right: 4px;
     color: red;
     font-size: 2.5vh;
     font-weight: bold;
 }
 
-#teamOneDiv .teamInfoIncorrectGuesses {
-    right: 2px;
+.teamInfoPanelCounts {
+    position: absolute;
+    width: 50%;
+    height: 35%;
+    bottom: 4px;
+    left: 25%;
+    font-size: 2.5vh;
+    font-weight: bold;
+    text-align: center;
 }
 
-#teamTwoDiv .teamInfoIncorrectGuesses {
-    left: 2px;
+.teamInfoPanelCounts div {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 18%;
+    height: 100%;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-width: 3px;
 }
 
 #roundNumberDiv {
