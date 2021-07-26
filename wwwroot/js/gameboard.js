@@ -654,15 +654,36 @@ async function drawRevealedPanelsAsync(gameState) {
 }
 
 function drawIncorrectGuesses(gameState) {
-    if (gameState.teamOneIncorrectGuesses <= 5) {
+    if (gameState.teamOneIncorrectGuesses <= 3) {
         document.getElementById("teamOneIncorrectGuessesDiv").innerHTML = "&olcross;".repeat(gameState.teamOneIncorrectGuesses);
     } else {
         document.getElementById("teamOneIncorrectGuessesDiv").innerHTML = gameState.teamOneIncorrectGuesses + " &olcross;";
     }
-    if (gameState.teamTwoIncorrectGuesses <= 5) {
+    if (gameState.teamTwoIncorrectGuesses <= 3) {
         document.getElementById("teamTwoIncorrectGuessesDiv").innerHTML = "&olcross;".repeat(gameState.teamTwoIncorrectGuesses);
     } else {
         document.getElementById("teamTwoIncorrectGuessesDiv").innerHTML = gameState.teamTwoIncorrectGuesses + " &olcross;";
+    }
+}
+
+function drawPanelCounts(gameState) {
+    var teamOneInnerPanelsCountDiv = document.getElementById("teamOneInnerPanelsCount");
+    var teamTwoInnerPanelsCountDiv = document.getElementById("teamTwoInnerPanelsCount");
+
+    teamOneInnerPanelsCountDiv.innerHTML = "";
+    teamTwoInnerPanelsCountDiv.innerHTML = "";
+
+    for (var i = 0; i < gameState.teamOneInnerPanels; i++)
+    {
+        var panelElement = document.createElement("div");
+        panelElement.className = "teamOneBox";
+        teamOneInnerPanelsCountDiv.appendChild(panelElement);
+    }
+
+    for (i = 0; i < gameState.teamTwoInnerPanels; i++) {
+        panelElement = document.createElement("div");
+        panelElement.className = "teamTwoBox";
+        teamTwoInnerPanelsCountDiv.appendChild(panelElement);
     }
 }
 
@@ -753,6 +774,8 @@ async function handleGameState(gameState, firstLoad) {
     drawCaptains();
 
     drawIncorrectGuesses(gameState);
+
+    drawPanelCounts(gameState);
 
     drawAllPlayerDots(gameState, isNewTurn);
 

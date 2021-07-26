@@ -10,7 +10,7 @@
 <div id="welcome" class="welcomeContainer hidden">
     <div class="welcomeText">
         Welcome to the Picture Panels Game!<br />
-        To join in, scan this QR code, or go to <a href="https://picturepanels.azurewebsites.net/" target="_blank">https://picturepanels.azurewebsites.net/</a>.
+        To join in, scan this QR code, or go to <a href="https://picturepanels.net/" target="_blank">https://picturepanels.net/</a>.
     </div>
     <div class="welcomeQRCode">
         <img src="~/img/qrcode.svg" alt="Welcome QR Code" asp-append-version="true">
@@ -26,14 +26,14 @@
     </div>
     <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
         <div id="teamOneName" class="teamName">Team 1</div>
-        <div class="panelCount"><div id="teamOneInnerPanels">5</div> / <div id="teamOneOuterPanels">8</div></div>
+        <div id="teamOneInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
     </div>
     <div id="teamOneScore" class="teamOneBox teamInfo score">0</div>
     <div id="teamTwoScore" class="teamTwoBox teamInfo score">0</div>
     <div id="teamTwoDiv" class="teamInfo teamNameBox">
         <div id="teamTwoName" class="teamName">Team 2</div>
-        <div class="panelCount"><div id="teamTwoInnerPanels">5</div> / <div id="teamTwoOuterPanels">8</div></div>
+        <div id="teamTwoInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
     </div>
     <div id="teamTwoStatus" class="teamInfo teamStatus">
