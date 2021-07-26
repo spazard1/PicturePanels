@@ -90,53 +90,15 @@ namespace PicturePanels.Controllers
             return new GameStateEntity(gameState);
         }
 
-        [HttpPut("pass")]
+        [HttpPut("nextTurn")]
         [RequireAuthorization]
-        public async Task<GameStateEntity> PutPassAsync()
+        public async Task<GameStateEntity> PutNextTurnAsync()
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
-            //gameState.CaptainStatus = null;
             gameState.SwitchTeamTurn();
-            //gameState.SetTurnType(GameStateTableEntity.ActionPass);
+            gameState.SetTurnType(GameStateTableEntity.ActionNextTurn);
 
             await CheckTeamCaptainsAsync(gameState);
-
-            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
-
-            return new GameStateEntity(gameState);
-        }
-
-        [HttpPut("incorrect")]
-        [RequireAuthorization]
-        public async Task<GameStateEntity> PutIncorrectAsync()
-        {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
-            //gameState.CaptainStatus = null;
-            gameState.Incorrect();
-            gameState.SwitchTeamTurn();
-            //gameState.SetTurnType(GameStateTableEntity.ActionIncorrect);
-
-            await CheckTeamCaptainsAsync(gameState);
-
-            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
-
-            return new GameStateEntity(gameState);
-        }
-
-        [HttpPut("correct")]
-        [RequireAuthorization]
-        public async Task<GameStateEntity> PutCorrectAsync()
-        {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
-            //gameState.CaptainStatus = null;
-            gameState.Correct();
-            //gameState.SetTurnType(GameStateTableEntity.ActionCorrect);
-
-            await CheckTeamCaptainsAsync(gameState);
-
-            await this.imageTableStorage.SetPlayedTimeAsync(gameState.BlobContainer, gameState.ImageId);
 
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
