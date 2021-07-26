@@ -3,16 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Net;
-using CloudStorage.Services;
-using CloudStorage.Entities;
 using PicturePanels.Services;
-using PicturePanels.Filters;
 using PicturePanels.Entities;
+using PicturePanels.Filters;
 using System;
 using System.Text.RegularExpressions;
-using CloudStorage.Models;
+using PicturePanels.Models;
 
-namespace CloudStorage.Controllers
+namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -93,8 +91,7 @@ namespace CloudStorage.Controllers
 
             ImageEntity imageEntity;
 
-            if (gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
-                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
+            if (gameState.IsRoundOver())
             {
                 imageEntity = new ImageEntity
                 {
@@ -127,7 +124,6 @@ namespace CloudStorage.Controllers
             if (imageId == ImageTableStorage.WelcomeBlobContainer)
             {
                 imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, ImageTableStorage.WelcomeImageId);
-
                 imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
             }
             else
@@ -138,12 +134,10 @@ namespace CloudStorage.Controllers
                 {
                     return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
                 }
-
                 
                 if (panelNumber == 0 ||
                     gameState.RevealedPanels.Contains(panelNumber.ToString()) ||
-                    gameState.TurnType == GameStateTableEntity.TurnTypeCorrect ||
-                    gameState.TurnType == GameStateTableEntity.TurnTypeEndRound)
+                    gameState.IsRoundOver())
                 {
                     imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
                 }

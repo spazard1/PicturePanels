@@ -1,4 +1,4 @@
-﻿using CloudStorage.Models;
+﻿using PicturePanels.Models;
 using System.Collections.Generic;
 
 namespace PicturePanels.Entities

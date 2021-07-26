@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace CloudStorage.Models
+namespace PicturePanels.Models
 {
     public class ImageTableEntity : TableEntity
     {
@@ -25,6 +26,8 @@ namespace CloudStorage.Models
         public string BlobName { get; set; }
 
         public string Name { get; set; }
+
+        public List<string> AlternativeNames { get; set; }
 
         public string UploadedBy { get; set; }
 

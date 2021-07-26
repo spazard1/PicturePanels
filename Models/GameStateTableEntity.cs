@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace CloudStorage.Models
+namespace PicturePanels.Models
 {
     public class GameStateTableEntity : TableEntity
     {
@@ -12,17 +12,17 @@ namespace CloudStorage.Models
 
         public const string ActionNewRound = "NewRound";
         public const string ActionOpenPanel = "OpenPanel";
-        public const string ActionPass = "Pass";
-        public const string ActionIncorrect = "Incorrect";
-        public const string ActionCorrect = "Correct";
+        public const string ActionGuessesMade = "GuessesMade";
         public const string ActionEndRound = "EndRound";
 
         public const string TurnTypeWelcome = "Welcome";
         public const string TurnTypeOpenPanel = "OpenPanel";
-        public const string TurnTypeOpenFreePanel = "OpenFreePanel";
         public const string TurnTypeMakeGuess = "MakeGuess";
-        public const string TurnTypeCorrect = "Correct";
+        public const string TurnTypeGuessesMade = "GuessesMade";
         public const string TurnTypeEndRound = "EndRound";
+
+        public const string CaptainStatusPass = "Pass";
+        public const string CaptainStatusGuess = "Guess";
 
         public GameStateTableEntity()
         {
@@ -50,8 +50,6 @@ namespace CloudStorage.Models
 
         public string TurnType { get; set; }
 
-        public string CaptainStatus { get; set; }
-
         public int TeamFirstTurn { get; set; }
 
         public string ImageId { get; set; }
@@ -66,9 +64,13 @@ namespace CloudStorage.Models
 
         public int TeamOneIncorrectGuesses { get; set; }
 
-        public int TeamOneOuterPanels { get; set; }
-
         public int TeamOneInnerPanels { get; set; }
+
+        public string TeamOneGuess { get; set; }
+
+        public bool TeamOneCorrect { get; set; }
+
+        public string TeamOneCaptainStatus { get; set; }
 
         public string TeamTwoName { get; set; }
 
@@ -78,45 +80,39 @@ namespace CloudStorage.Models
 
         public int TeamTwoIncorrectGuesses { get; set; }
 
-        public int TeamTwoOuterPanels { get; set; }
-
         public int TeamTwoInnerPanels { get; set; }
+
+        public string TeamTwoGuess { get; set; }
+
+        public bool TeamTwoCorrect { get; set; }
+
+        public string TeamTwoCaptainStatus { get; set; }
+
 
         public void SetTurnType(string action)
         {
             switch (action)
             {
                 case ActionNewRound:
-                    TurnType = OpenPanelOrMakeGuess();
+                    TurnType = TurnTypeOpenPanel;
                     break;
                 case ActionEndRound:
                     TurnType = TurnTypeEndRound;
                     break;
-                case ActionCorrect:
-                    TurnType = TurnTypeCorrect;
-                    break;
-                case ActionIncorrect:
-                    TurnType = TurnTypeOpenFreePanel;
+                case ActionGuessesMade:
+                    TurnType = TurnTypeGuessesMade;
                     break;
                 case ActionOpenPanel:
-                    if (TurnType == TurnTypeOpenFreePanel)
-                    {
-                        TurnType = OpenPanelOrMakeGuess();
-                    }
-                    else
-                    {
-                        TurnType = TurnTypeMakeGuess;
-                    }
-                    break;
-                case ActionPass:
-                    TurnType = OpenPanelOrMakeGuess();
+                    TurnType = TurnTypeMakeGuess;
                     break;
             }
         }
 
-        public void UpdatePanelCount(string panelId)
-        {     
-            if (GameStateTableEntity.IsInnerPanel(panelId))
+        public void OpenPanel(string panelId, bool force = false)
+        {
+            RevealedPanels.Add(panelId);
+
+            if (!force && IsInnerPanel(panelId))
             {
                 if (TeamTurn == 1)
                 {
@@ -127,17 +123,6 @@ namespace CloudStorage.Models
                     TeamTwoInnerPanels = Math.Max(0, TeamTwoInnerPanels - 1);
                 }
             }
-            else
-            {
-                if (TeamTurn == 1)
-                {
-                    TeamOneOuterPanels = Math.Max(0, TeamOneOuterPanels - 1);
-                }
-                else
-                {
-                    TeamTwoOuterPanels = Math.Max(0, TeamTwoOuterPanels - 1);
-                }
-            }   
         }
 
         public void SwitchTeamTurn()
@@ -188,29 +173,48 @@ namespace CloudStorage.Models
             }
         }
 
-        private string OpenPanelOrMakeGuess()
+        public bool IsRoundOver()
         {
-            if (TeamTurn == 1)
+            return TurnType == GameStateTableEntity.TurnTypeEndRound ||
+                   (TurnType == GameStateTableEntity.TurnTypeGuessesMade && (TeamOneCorrect || TeamTwoCorrect));
+        }
+
+        public bool ShouldShowGuesses()
+        {
+            return TurnType == GameStateTableEntity.TurnTypeEndRound || TurnType == GameStateTableEntity.TurnTypeGuessesMade;
+        }
+
+        public void IncrementScores()
+        {
+            if (TeamOneCorrect && TeamTwoCorrect)
             {
-                if (TeamOneOuterPanels == 0 && TeamOneInnerPanels == 0)
+                if (TeamTurn == 1)
                 {
-                    return TurnTypeMakeGuess;
+                    TeamOneScore += 2;
+                    TeamTwoScore += 1;
                 }
-                else
+                else 
                 {
-                    return TurnTypeOpenPanel;
+                    TeamOneScore += 1;
+                    TeamTwoScore += 2;
                 }
             }
-            else
+            else if (TeamOneCorrect)
             {
-                if (TeamTwoOuterPanels == 0 && TeamTwoInnerPanels == 0)
-                {
-                    return TurnTypeMakeGuess;
-                }
-                else
-                {
-                    return TurnTypeOpenPanel;
-                }
+                TeamOneScore += 2;
+            }
+            else if (TeamTwoCorrect)
+            {
+                TeamTwoScore += 2;
+            }
+            
+            if (!TeamOneCorrect && TeamOneCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
+            {
+                TeamOneIncorrectGuesses += 1;
+            }
+            if (!TeamTwoCorrect && TeamTwoCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
+            {
+                TeamTwoIncorrectGuesses += 1;
             }
         }
 

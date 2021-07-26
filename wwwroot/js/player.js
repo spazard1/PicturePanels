@@ -17,8 +17,6 @@ function setupPlayerMenu() {
         initialColor = localStorage.getItem("playerColor");
     }
 
-  
-
     window.colorPicker = new iro.ColorPicker("#colorPicker", {
         layout: [
             {
@@ -133,7 +131,10 @@ async function putCaptainGuess() {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
-            }
+            },
+            body: JSON.stringify({
+                Guess: document.getElementById("captainGuessInput").value
+            })
         });
 }
 
@@ -386,7 +387,9 @@ function isCaptain(gameState) {
 }
 
 function handleCaptainButtons(gameState) {
-    if (gameState.turnType === "MakeGuess" && isCaptain(gameState) && gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
+    if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
+        parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus) && 
+        gameState.turnType === "MakeGuess" && isCaptain(gameState)) {
         if (gameState.captainStatus === "Guess") {
             document.getElementById("captainGuessButton").classList.remove("captainButtonDisabled");
             document.getElementById("captainGuessButton").classList.add("captainButtonSelected");
@@ -423,7 +426,7 @@ function notifyTeamCaptain(gameState) {
     }
 }
 
-function notifyTurn(gameState) {
+function drawTurnType(gameState) {
     if (!gameState) {
         return;
     }
@@ -434,7 +437,6 @@ function notifyTurn(gameState) {
         document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
         document.getElementById("panelButtons").classList.add("hidden");
         document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-        drawSystemChat("chats", "Welcome to the Picture Panels game!");
         return;
     }
 
@@ -446,28 +448,40 @@ function notifyTurn(gameState) {
         return;
     }
 
-    if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
-        switch (gameState.turnType) {
-            case "OpenPanel":
+    if (gameState.turnType !== "MakeGuess") {
+        var captainGuessElement = document.getElementById("captainGuessInput");
+        captainGuessElement.value = "";
+
+        if ("createEvent" in document) {
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("change", false, true);
+            captainGuessElement.dispatchEvent(evt);
+        }
+        else {
+            captainGuessElement.fireEvent("onchange");
+        }
+    }
+
+    switch (gameState.turnType) {
+        case "OpenPanel":
+            if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 highlightTurnStatusContainer();
 
                 document.getElementById("panelButtons").classList.remove("hidden");
                 document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 document.getElementById("turnStatusMessage").innerHTML = "Vote for a panel to open";
-                drawSystemChat("chats", "It's your team's turn to vote for panel(s) you want to open.");
-                break;
-            case "OpenFreePanel":
+            } else {
+                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
+                document.getElementById("panelButtons").classList.add("hidden");
+                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
+            }
+            break;
+        case "MakeGuess":
+            if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
+                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus)) {
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
-                highlightTurnStatusContainer();
 
-                document.getElementById("panelButtons").classList.remove("hidden");
-                document.getElementById("panelButtons").classList.add("panelButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "Vote for a free panel to open";
-                drawSystemChat("chats", "The other team made an incorrect guess, so vote to open a FREE panel.");
-                break;
-            case "MakeGuess":
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 highlightTurnStatusContainer();
 
                 document.getElementById("panelButtons").classList.add("hidden");
@@ -477,32 +491,57 @@ function notifyTurn(gameState) {
                 } else {
                     document.getElementById("turnStatusMessage").innerHTML = "Make a guess or pass";
                 }
-                drawSystemChat("chats", "It's your team's turn to guess or pass.");
-                break;
-            case "Correct":
+            }
+            break;
+        case "GuessesMade":
+            if (parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCorrect ||
+                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCorrect) {
                 document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
                 document.getElementById("turnStatusContainer").classList.add("turnStatusContainerCorrect");
 
                 document.getElementById("panelButtons").classList.add("hidden");
                 document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "Your team wins this round!";
+                document.getElementById("turnStatusMessage").innerHTML = "Correct Answer!";
+            } else {
+                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
+            }
+            break;
+    }
+}
+
+function notifyTurn(gameState) {
+    if (!gameState) {
+        return;
+    }
+
+    if (gameState.turnType === "Welcome") {
+        drawSystemChat("chats", "Welcome to the Picture Panels game!");
+        return;
+    }
+
+    switch (gameState.turnType) {
+        case "OpenPanel":
+            if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
+                drawSystemChat("chats", "It's your team's turn to vote for panel(s) you want to open.");
+            }
+            break;
+        case "MakeGuess":
+            if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
+                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus)) {
+                drawSystemChat("chats", "It's time to guess or pass.");
+            }
+            break;
+        case "GuessesMade":
+            if (parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCorrect ||
+                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCorrect) {
                 drawSystemChat("chats", "That's the correct answer!");
-                break;
-        }
-    } else {
-        switch (gameState.turnType) {
-            case "Correct":
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-                document.getElementById("panelButtons").classList.add("hidden");
-                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-                break;
-            default:
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-                document.getElementById("panelButtons").classList.add("hidden");
-                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-                break;
-        }
+            } else if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+                drawSystemChat("chats", "The other team's answer was correct.");
+            } else {
+                drawSystemChat("chats", "Both teams were incorrect or passed.");
+            }
+            break;
     }
 }
 
@@ -534,9 +573,23 @@ function handleGameState(gameState) {
 
     drawGameState(gameState);
 
+    drawTurnType(gameState);
+
     updatePlayerPanelButtons(gameState);
 
     handleCaptainButtons(gameState);
+}
+
+function handleCaptainStatus(captainStatus) {
+    if (currentGameState.turnType === "MakeGuess") {
+        document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+
+        if (captainStatus.status === "Pass") {
+            document.getElementById("turnStatusMessage").innerHTML = "Your Team has passed.";
+        } else {
+            document.getElementById("turnStatusMessage").innerHTML = "Your Guess: " + captainStatus.guess;
+        }
+    }
 }
 
 const innerPanels = ["7", "8", "9", "12", "13", "14"];
@@ -551,23 +604,13 @@ function updatePlayerPanelButtons(gameState) {
 
     var teamNumber = localStorage.getItem("teamNumber");
     if (teamNumber === "1") {
-        if (gameState.teamOneOuterPanels <= 0) {
-            disabledPanels = disabledPanels.concat(outerPanels);
-        }
         if (gameState.teamOneInnerPanels <= 0) {
             disabledPanels = disabledPanels.concat(innerPanels);
         }
     } else {
-        if (gameState.teamTwoOuterPanels <= 0) {
-            disabledPanels = disabledPanels.concat(outerPanels);
-        }
         if (gameState.teamTwoInnerPanels <= 0) {
             disabledPanels = disabledPanels.concat(innerPanels);
         }
-    }
-
-    if (gameState.turnType === "OpenFreePanel") {
-        disabledPanels = innerPanels;
     }
 
     updatePanelButtons(currentGameState, disabledPanels);
@@ -601,6 +644,7 @@ function registerConnections() {
     });
 
     connection.on("GameState", handleGameState);
+    connection.on("CaptainStatus", handleCaptainStatus);
     connection.on("RandomizeTeam", handleRandomizeTeam);
 
     connection.onreconnected = function () {
@@ -648,6 +692,8 @@ window.onload = async function () {
     });
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
+
+    setupInputDefaultText("captainGuessInput", "your team's guess");
 
     setInterval(putPlayerPingAsync, 30000);
 }

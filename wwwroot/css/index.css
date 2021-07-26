@@ -86,8 +86,7 @@ input:focus {
 }
 
 .inputDefaultText {
-    color: grey !important;
-    font-style: italic;
+    color: lightgrey !important;
 }
 
 .flexColumns {
