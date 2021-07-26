@@ -11,6 +11,7 @@ namespace PicturePanels.Models
         public const string GameStateDefaultId = "Default";
 
         public const string ActionNewRound = "NewRound";
+        public const string ActionNextTurn = "NextTurn";
         public const string ActionOpenPanel = "OpenPanel";
         public const string ActionGuessesMade = "GuessesMade";
         public const string ActionEndRound = "EndRound";
@@ -104,6 +105,9 @@ namespace PicturePanels.Models
                     break;
                 case ActionOpenPanel:
                     TurnType = TurnTypeMakeGuess;
+                    break;
+                case ActionNextTurn:
+                    TurnType = TurnTypeOpenPanel;
                     break;
             }
         }
