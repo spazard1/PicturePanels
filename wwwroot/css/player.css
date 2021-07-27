@@ -72,6 +72,7 @@ body {
 }
 
 .teamName {
+    overflow: hidden;
     font-size: .7em;
     user-select: none;
 }

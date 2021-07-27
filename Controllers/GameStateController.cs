@@ -100,6 +100,86 @@ namespace PicturePanels.Controllers
             return new GameStateEntity(gameState);
         }
 
+        [HttpPut("teamPass/{teamNumber:int}")]
+        [RequireAuthorization]
+        public async Task<GameStateEntity> PutTeamPassAsync(int teamNumber)
+        {
+            var gameState = await this.gameTableStorage.GetGameStateAsync();
+
+            if (teamNumber == 1)
+            {
+                gameState.TeamOneCaptainStatus = GameStateTableEntity.CaptainStatusPass;
+            }
+            else
+            {
+                gameState.TeamTwoCaptainStatus = GameStateTableEntity.CaptainStatusPass;
+            }
+
+            await CheckTeamCaptainsAsync(gameState);
+            await this.HandleBothTeamsGuessReadyAsync(gameState);
+
+            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).CaptainStatus(new CaptainStatusEntity(gameState, teamNumber));
+
+            return new GameStateEntity(gameState);
+        }
+
+        [HttpPut("teamCorrect/{teamNumber:int}")]
+        [RequireAuthorization]
+        public async Task<GameStateEntity> PutTeamCorrectAsync(int teamNumber)
+        {
+            var gameState = await this.gameTableStorage.GetGameStateAsync();
+            var imageEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
+
+            if (teamNumber == 1)
+            {
+                gameState.TeamOneCaptainStatus = GameStateTableEntity.CaptainStatusGuess;
+                gameState.TeamOneGuess = imageEntity.Name;
+            }
+            else
+            {
+                gameState.TeamTwoCaptainStatus = GameStateTableEntity.CaptainStatusGuess;
+                gameState.TeamTwoGuess = imageEntity.Name;
+            }
+
+            await CheckTeamCaptainsAsync(gameState);
+            await this.HandleBothTeamsGuessReadyAsync(gameState);
+
+            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).CaptainStatus(new CaptainStatusEntity(gameState, teamNumber));
+
+            return new GameStateEntity(gameState);
+        }
+
+        [HttpPut("teamIncorrect/{teamNumber:int}")]
+        [RequireAuthorization]
+        public async Task<GameStateEntity> PutTeamIncorrectAsync(int teamNumber)
+        {
+            var gameState = await this.gameTableStorage.GetGameStateAsync();
+
+            if (teamNumber == 1)
+            {
+                gameState.TeamOneCaptainStatus = GameStateTableEntity.CaptainStatusGuess;
+                gameState.TeamOneGuess = "wrong guess";
+            }
+            else
+            {
+                gameState.TeamTwoCaptainStatus = GameStateTableEntity.CaptainStatusGuess;
+                gameState.TeamTwoGuess = "wrong guess";
+            }
+
+            await CheckTeamCaptainsAsync(gameState);
+            await this.HandleBothTeamsGuessReadyAsync(gameState);
+
+            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).CaptainStatus(new CaptainStatusEntity(gameState, teamNumber));
+
+            return new GameStateEntity(gameState);
+        }
+
         [HttpPut("endRound")]
         [RequireAuthorization]
         public async Task<GameStateEntity> PutEndRoundAsync()
