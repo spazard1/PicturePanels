@@ -230,21 +230,15 @@ function drawMostVotesPanels(resetPanels) {
 }
 
 function drawTeamStatus(gameState, resetTimer) {
-    var activeTeamStatus, passiveTeamStatus;
-    var teamOneStatus = document.getElementById("teamOneStatus");
+    var teamStatus = document.getElementById("teamStatus");
     var teamOneCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
-    var teamTwoStatus = document.getElementById("teamTwoStatus");
     var teamTwoCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
 
     if (gameState.teamTurn === 1) {
-        activeTeamStatus = document.getElementById("teamOneStatus");
         activeTeamCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
-        passiveTeamStatus = document.getElementById("teamTwoStatus");
         passiveTeamCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
     } else {
-        passiveTeamStatus = document.getElementById("teamOneStatus");
         passiveTeamCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
-        activeTeamStatus = document.getElementById("teamTwoStatus");
         activeTeamCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
     }
 
@@ -257,8 +251,7 @@ function drawTeamStatus(gameState, resetTimer) {
     }
 
     if (gameState.turnType === "Welcome") {
-        activeTeamStatus.innerHTML = "";
-        passiveTeamStatus.innerHTML = "";
+        teamStatus.innerHTML = "";
         stopCountdown(activeTeamCountdownCanvas);
         stopCountdown(passiveTeamCountdownCanvas);
         return;
@@ -275,31 +268,32 @@ function drawTeamStatus(gameState, resetTimer) {
 
     switch (gameState.turnType) {
         case "OpenPanel":
-            drawRoundNumber(gameState, passiveTeamStatus);
-            activeTeamStatus.innerHTML = "Open a Panel";
+            if (gameState.teamTurn === 1) {
+                teamStatus.innerHTML = "&larr; Open a Panel";
+            } else {
+                teamStatus.innerHTML = "Open a Panel &rarr;";
+            }
             if (resetTimer) {
-                startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime);
+                startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 4);
             }
             break;
         case "MakeGuess":
+            teamStatus.innerHTML = "Guess or Pass";
+
             if (resetTimer) {
-                startCountdown(activeTeamCountdownCanvas, gameState.guessTime);
-                startCountdown(passiveTeamCountdownCanvas, gameState.guessTime);
+                startCountdown(activeTeamCountdownCanvas, gameState.guessTime, 2);
+                startCountdown(passiveTeamCountdownCanvas, gameState.guessTime, 2);
             }
             if (gameState.teamOneCaptainStatus) {
-                teamOneStatus.innerHTML = "Ready!";
                 stopCountdown(teamOneCountdownCanvas);
-            } else {
-                teamOneStatus.innerHTML = "Guess or Pass";
             }
             if (gameState.teamTwoCaptainStatus) {
-                teamTwoStatus.innerHTML = "Ready!";
                 stopCountdown(teamTwoCountdownCanvas);
-            } else {
-                teamTwoStatus.innerHTML = "Guess or Pass";
             }
             break;
         case "GuessesMade":
+            teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
+            /*
             if (gameState.teamOneCaptainStatus === "Pass") {
                 teamOneStatus.innerHTML = "Team Passed";
             } else if (gameState.teamOneGuess) {
@@ -315,25 +309,79 @@ function drawTeamStatus(gameState, resetTimer) {
             } else {
                 teamTwoStatus.innerHTML = "Didn't guess or pass";
             }
+            */
+
+            var textWrapper = document.getElementById("teamOneGuess");
+            textWrapper.innerHTML = textWrapper.textContent.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (0.5 + index / 10) + "s'>" + x + "</span>" }).join("");
+
+            /*
+            anime.timeline()
+                .add({
+                    targets: '.teamOneGuess .letter',
+                    translateY: ["1.1em", 0],
+                    translateZ: 0,
+                    duration: 750,
+                    delay: (el, i) => 200 * i
+                });
+                */
+
+            textWrapper = document.getElementById("teamTwoGuess");
+            textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+            /*
+            anime.timeline()
+                .add({
+                    targets: '.teamTwoGuess .letter',
+                    translateY: ["1.1em", 0],
+                    translateZ: 0,
+                    duration: 750,
+                    delay: (el, i) => 200 * i
+                });
+                */
             break;
         case "EndRound":
-            teamOneStatus.innerHTML = "End of Round";
+            teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
             break;
         default:
-            activeTeamStatus.innerHTML = gameState.turnType;
+            teamStatus.innerHTML = gameState.turnType;
             break;
     }
+}
 
-    if (isOverflown(teamOneStatus)) {
-        teamOneStatus.classList.add("teamStatusLong");
-    } else {
-        teamOneStatus.classList.remove("teamStatusLong");
-    }
+function drawTeamScoreChange(gameState) {
+    if (gameState.turnType === "GuessesMade") {
+        document.getElementById("teamOneScoreChange").classList.remove("teamScoreChangeHidden");
+        document.getElementById("teamTwoScoreChange").classList.remove("teamScoreChangeHidden");
 
-    if (isOverflown(teamTwoStatus)) {
-        teamTwoStatus.classList.add("teamStatusLong");
+        if (gameState.teamOneCorrect && gameState.teamTwoCorrect) {
+            if (gameState.teamTurn === 1) {
+                document.getElementById("teamOneScoreChange").innerHTML = "+2";
+                document.getElementById("teamTwoScoreChange").innerHTML = "+1";
+            } else {
+                document.getElementById("teamOneScoreChange").innerHTML = "+1";
+                document.getElementById("teamTwoScoreChange").innerHTML = "+2";
+            }
+        } else if (gameState.teamOneCorrect) {
+            document.getElementById("teamOneScoreChange").innerHTML = "+2";
+        } else if (gameState.teamTwoCorrect) {
+            document.getElementById("teamTwoScoreChange").innerHTML = "+2";
+        }
+
+        if (!gameState.teamOneCorrect && gameState.teamOneCaptainStatus === "Guess") {
+            document.getElementById("teamOneScoreChange").innerHTML = "&olcross;";
+        }
+        if (gameState.teamOneCaptainStatus === "Pass") {
+            document.getElementById("teamOneScoreChange").classList.add("teamScoreChangeHidden");
+        }
+        if (!gameState.teamTwoCorrect && gameState.teamTwoCaptainStatus === "Guess") {
+            document.getElementById("teamTwoScoreChange").innerHTML = "&olcross;";
+        }
+        if (gameState.teamTwoCaptainStatus === "Pass") {
+            document.getElementById("teamTwoScoreChange").classList.add("teamScoreChangeHidden");
+        }
     } else {
-        teamTwoStatus.classList.remove("teamStatusLong");
+        document.getElementById("teamOneScoreChange").classList.add("teamScoreChangeHidden");
+        document.getElementById("teamTwoScoreChange").classList.add("teamScoreChangeHidden");
     }
 }
 
@@ -363,12 +411,12 @@ function setupCanvases() {
 
 var framerate = 20;
 
-function startCountdown(canvas, countdownMax) {
+function startCountdown(canvas, countdownMax, countdownDelay = 0) {
     if (countdownMax <= 0) {
         return;
     }
 
-    canvas.currentCountdown = countdownMax;
+    canvas.currentCountdown = countdownMax + countdownDelay;
     canvas.countdownMax = countdownMax;
     clearInterval(canvas.countdownInterval);
 
@@ -396,13 +444,12 @@ function drawCountdown(canvas) {
         return;
     }
 
-    //var strokeWidth = Math.ceil(canvas.height);
     var circleSize = canvas.height / 2 * scale;
     var circlePosition = canvas.height / 2;
     var strokeWidth = canvas.height / 2 * scale;
 
     ctx.beginPath();
-    ctx.arc(circlePosition, circlePosition, circleSize, 0, (canvas.currentCountdown / canvas.countdownMax) * 2 * Math.PI);
+    ctx.arc(circlePosition, circlePosition, circleSize, 0, (Math.min(canvas.currentCountdown, canvas.countdownMax) / canvas.countdownMax) * 2 * Math.PI);
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
@@ -778,6 +825,8 @@ async function handleGameState(gameState, firstLoad) {
 
     drawPanelCounts(gameState);
 
+    drawTeamScoreChange(gameState);
+
     drawAllPlayerDots(gameState, isNewTurn);
 
     drawMostVotesPanels(isNewTurn);
@@ -794,9 +843,9 @@ function drawImageEntityAsync(gameState) {
 
         if (imageEntity && imageEntity.name) {
             document.getElementById("answerTitleText").innerHTML = imageEntity.name;
-            document.getElementById("answerTitle").classList.add("opacity1Fade");
+            document.getElementById("answerTitle").classList.add("answerTitleVisible");
         } else {
-            document.getElementById("answerTitle").classList.remove("opacity1Fade");
+            document.getElementById("answerTitle").classList.remove("answerTitleVisible");
         }
     });
 }

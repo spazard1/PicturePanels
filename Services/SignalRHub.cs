@@ -23,6 +23,18 @@ namespace PicturePanels.Services
             this.chatTableStorage = chatTableStorage;
         }
 
+        public static string TeamGroup(int teamNumber)
+        {
+            if (teamNumber == 1)
+            {
+                return TeamOneGroup;
+            }
+            else
+            {
+                return TeamTwoGroup;
+            }
+        }
+
         public override async Task OnConnectedAsync()
         {
             if (Context.GetHttpContext().Request.Query.TryGetValue("user", out StringValues userValue))

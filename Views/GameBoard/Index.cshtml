@@ -5,6 +5,7 @@
 
 @section scripts {
     <script src="~/js/gameboard.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
 }
 
 <div id="welcome" class="welcomeContainer hidden">
@@ -18,7 +19,7 @@
 </div>
 
 <div class="teamInfos">
-    <div id="teamOneStatus" class="teamInfo teamStatus"></div>
+    
     <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
         <div id="teamOneCountdownDiv" class="teamInfo countdownDiv">
             <canvas id="teamOneCountdownCanvas" class="countdownCanvas"></canvas>
@@ -26,9 +27,21 @@
         <div id="teamOneName" class="teamName">Team 1</div>
         <div id="teamOneInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
+        <div class="teamGuessTest teamOneGuess">
+            <span class="text-wrapper">
+                <span id="teamOneGuess" class="letters"></span>
+            </span>
+        </div>
     </div>
-    <div id="teamOneScore" class="teamOneBox teamInfo score">0</div>
-    <div id="teamTwoScore" class="teamTwoBox teamInfo score">0</div>
+    <div class="teamBox teamOneBox teamInfo teamScore">
+        <div id="teamOneScore">0</div>
+        <div id="teamOneScoreChange" class="teamOneBox teamScoreChange teamScoreChangeHidden"></div>
+    </div>
+    <div id="teamStatus" class="teamInfo teamStatus"></div>
+    <div class="teamBox teamTwoBox teamInfo teamScore">
+        <div id="teamTwoScore">+2</div>
+        <div id="teamTwoScoreChange" class="teamTwoBox teamScoreChange teamScoreChangeHidden"></div>
+    </div>
     <div id="teamTwoDiv" class="teamInfo teamNameBox">
         <div id="teamTwoCountdownDiv" class="teamInfo countdownDiv">
             <canvas id="teamTwoCountdownCanvas" class="countdownCanvas"></canvas>
@@ -36,8 +49,12 @@
         <div id="teamTwoName" class="teamName">Team 2</div>
         <div id="teamTwoInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
+        <div class="teamGuess teamTwoGuess">
+            <span class="text-wrapper">
+                <span id="teamTwoGuess" class="letters"></span>
+            </span>
+        </div>
     </div>
-    <div id="teamTwoStatus" class="teamInfo teamStatus"></div>
 
 </div>
 <div id="roundNumberDiv" class="hidden">

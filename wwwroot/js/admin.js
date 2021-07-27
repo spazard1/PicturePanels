@@ -33,6 +33,36 @@ function nextTurn() {
     });
 }
 
+function teamPass(teamNumber) {
+    fetch("/api/gameState/teamPass/" + teamNumber, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem("Authorization")
+        }
+    });
+}
+
+function teamCorrect(teamNumber) {
+    fetch("/api/gameState/teamCorrect/" + teamNumber, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem("Authorization")
+        }
+    });
+}
+
+function teamIncorrect(teamNumber) {
+    fetch("/api/gameState/teamIncorrect/" + teamNumber, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem("Authorization")
+        }
+    });
+}
+
 function getSelectedPanel() {
     var selectedPanelElements = document.getElementsByClassName("panelButtonSelected");
 
@@ -206,18 +236,36 @@ async function handleGameState(gameState) {
     switch (gameState.turnType) {
         case "OpenPanel":
             document.getElementById("openPanelButton").classList.remove("hidden");
+            document.getElementById("teamOnePassButton").classList.add("hidden");
+            document.getElementById("teamTwoPassButton").classList.add("hidden");
+            document.getElementById("teamOneCorrectButton").classList.add("hidden");
+            document.getElementById("teamTwoCorrectButton").classList.add("hidden");
+            document.getElementById("teamOneIncorrectButton").classList.add("hidden");
+            document.getElementById("teamTwoIncorrectButton").classList.add("hidden");
             document.getElementById("nextTurnButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.remove("hidden");
             document.getElementById("forceOpenPanelButton").classList.remove("hidden");
             break;
         case "MakeGuess":
             document.getElementById("openPanelButton").classList.add("hidden");
+            document.getElementById("teamOnePassButton").classList.remove("hidden");
+            document.getElementById("teamTwoPassButton").classList.remove("hidden");
+            document.getElementById("teamOneCorrectButton").classList.remove("hidden");
+            document.getElementById("teamTwoCorrectButton").classList.remove("hidden");
+            document.getElementById("teamOneIncorrectButton").classList.remove("hidden");
+            document.getElementById("teamTwoIncorrectButton").classList.remove("hidden");
             document.getElementById("nextTurnButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
             document.getElementById("forceOpenPanelButton").classList.remove("hidden");
             break;
         case "GuessesMade":
             document.getElementById("openPanelButton").classList.add("hidden");
+            document.getElementById("teamOnePassButton").classList.add("hidden");
+            document.getElementById("teamTwoPassButton").classList.add("hidden");
+            document.getElementById("teamOneCorrectButton").classList.add("hidden");
+            document.getElementById("teamTwoCorrectButton").classList.add("hidden");
+            document.getElementById("teamOneIncorrectButton").classList.add("hidden");
+            document.getElementById("teamTwoIncorrectButton").classList.add("hidden");
             if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
                 document.getElementById("nextTurnButton").classList.add("hidden");
             } else {
@@ -230,6 +278,12 @@ async function handleGameState(gameState) {
         case "Correct":
         case "EndRound":
             document.getElementById("openPanelButton").classList.add("hidden");
+            document.getElementById("teamOnePassButton").classList.add("hidden");
+            document.getElementById("teamTwoPassButton").classList.add("hidden");
+            document.getElementById("teamOneCorrectButton").classList.add("hidden");
+            document.getElementById("teamTwoCorrectButton").classList.add("hidden");
+            document.getElementById("teamOneIncorrectButton").classList.add("hidden");
+            document.getElementById("teamTwoIncorrectButton").classList.add("hidden");
             document.getElementById("nextTurnButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
             document.getElementById("forceOpenPanelButton").classList.add("hidden");

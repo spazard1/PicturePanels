@@ -41,8 +41,8 @@
     <div class="buttonsFlex turnButtons center">
         <input type="button" id="openPanelButton" value="Open" class="adminButton" onclick="openPanel()" />
         <input type="button" id="endRoundButton" value="End Round" class="adminButton" onclick="endRound()" />
-        <input type="button" id="forceOpenPanelButton" value="Force" class="adminButton" onclick="forceOpenPanel()" />
         <input type="button" id="nextTurnButton" value="Next" class="adminButton" onclick="nextTurn()" />
+        <input type="button" id="forceOpenPanelButton" value="Force" class="adminButton" onclick="forceOpenPanel()" />
     </div>
 
     <div class="buttonsFlex">
@@ -61,8 +61,11 @@
             <div name="teamOneScore" class="plusMinus"></div>
             <div name="teamOneIncorrectGuesses" class="plusMinus"></div>
         </div>
-        Inner
+        Guesses/Panels
         <div class="buttonsFlex">
+            <input type="button" id="teamOnePassButton" value="Pass" class="adminButton" onclick="teamPass(1)" />
+            <input type="button" id="teamOneCorrectButton" value="Correct" class="adminButton" onclick="teamCorrect(1)" />
+            <input type="button" id="teamOneIncorrectButton" value="Incorrect" class="adminButton" onclick="teamIncorrect(1)" />
             <div name="teamOneInnerPanels" class="plusMinus"></div>
         </div>
     </div>
@@ -73,8 +76,11 @@
             <div name="teamTwoScore" class="plusMinus"></div>
             <div name="teamTwoIncorrectGuesses" class="plusMinus"></div>
         </div>
-        Inner
+        Guesses/Panels
         <div class="buttonsFlex">
+            <input type="button" id="teamTwoPassButton" value="Pass" class="adminButton" onclick="teamPass(2)" />
+            <input type="button" id="teamTwoCorrectButton" value="Correct" class="adminButton" onclick="teamCorrect(2)" />
+            <input type="button" id="teamTwoIncorrectButton" value="Incorrect" class="adminButton" onclick="teamIncorrect(2)" />
             <div name="teamTwoInnerPanels" class="plusMinus"></div>
         </div>
     </div>
