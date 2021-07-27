@@ -104,31 +104,27 @@ namespace PicturePanels.Entities
 
         public string TeamTwoCaptainStatus { get; set; }
 
-        public GameStateTableEntity ToModel(GameStateTableEntity currentModel)
+        public void CopyProperties(GameStateTableEntity currentModel)
         {
-            return new GameStateTableEntity
-            {
-                RevealedPanels = currentModel.RevealedPanels,
-                BlobContainer = this.BlobContainer ?? currentModel.BlobContainer,
-                ThemeCss = this.ThemeCss ?? currentModel.ThemeCss,
-                OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime,
-                GuessTime = this.GuessTime ?? currentModel.GuessTime,
-                RoundNumber = this.RoundNumber ?? currentModel.RoundNumber,
-                TeamTurn = this.TeamTurn ?? currentModel.TeamTurn,
-                TurnType = this.TurnType ?? currentModel.TurnType,
-                TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn,
-                ImageId = this.ImageId ?? currentModel.ImageId,
-                TeamOneName = this.TeamOneName ?? currentModel.TeamOneName,
-                TeamOneCaptain = this.TeamOneCaptain ?? currentModel.TeamOneCaptain,
-                TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore,
-                TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses,
-                TeamOneInnerPanels = this.TeamOneInnerPanels ?? currentModel.TeamOneInnerPanels,
-                TeamTwoName = this.TeamTwoName ?? currentModel.TeamTwoName,
-                TeamTwoCaptain = this.TeamTwoCaptain ?? currentModel.TeamTwoCaptain,
-                TeamTwoScore = this.TeamTwoScore ?? currentModel.TeamTwoScore,
-                TeamTwoIncorrectGuesses = this.TeamTwoIncorrectGuesses ?? currentModel.TeamTwoIncorrectGuesses,
-                TeamTwoInnerPanels = this.TeamTwoInnerPanels ?? currentModel.TeamTwoInnerPanels,
-            };
+            currentModel.BlobContainer = this.BlobContainer ?? currentModel.BlobContainer;
+            currentModel.ThemeCss = this.ThemeCss ?? currentModel.ThemeCss;
+            currentModel.OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime;
+            currentModel.GuessTime = this.GuessTime ?? currentModel.GuessTime;
+            currentModel.RoundNumber = this.RoundNumber ?? currentModel.RoundNumber;
+            currentModel.TeamTurn = this.TeamTurn ?? currentModel.TeamTurn;
+            currentModel.TurnType = this.TurnType ?? currentModel.TurnType;
+            currentModel.TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn;
+            currentModel.ImageId = this.ImageId ?? currentModel.ImageId;
+            currentModel.TeamOneName = this.TeamOneName ?? currentModel.TeamOneName;
+            currentModel.TeamOneCaptain = this.TeamOneCaptain ?? currentModel.TeamOneCaptain;
+            currentModel.TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore;
+            currentModel.TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses;
+            currentModel.TeamOneInnerPanels = this.TeamOneInnerPanels ?? currentModel.TeamOneInnerPanels;
+            currentModel.TeamTwoName = this.TeamTwoName ?? currentModel.TeamTwoName;
+            currentModel.TeamTwoCaptain = this.TeamTwoCaptain ?? currentModel.TeamTwoCaptain;
+            currentModel.TeamTwoScore = this.TeamTwoScore ?? currentModel.TeamTwoScore;
+            currentModel.TeamTwoIncorrectGuesses = this.TeamTwoIncorrectGuesses ?? currentModel.TeamTwoIncorrectGuesses;
+            currentModel.TeamTwoInnerPanels = this.TeamTwoInnerPanels ?? currentModel.TeamTwoInnerPanels;
         }
     }
 }

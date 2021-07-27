@@ -1,7 +1,6 @@
 ﻿using PicturePanels.Entities;
 using PicturePanels.Models;
 using PicturePanels.Services;
-using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PicturePanels.Filters;
@@ -51,7 +50,7 @@ namespace PicturePanels.Controllers
             var newBlobContainer = !string.IsNullOrWhiteSpace(entity.BlobContainer) && entity.BlobContainer != gameState.BlobContainer;
             var newTurnType = (!string.IsNullOrWhiteSpace(entity.TurnType) && entity.TurnType != gameState.TurnType) || (entity.TeamTurn > 0 && entity.TeamTurn != gameState.TeamTurn);
 
-            gameState = entity.ToModel(gameState);
+            entity.CopyProperties(gameState);
 
             if (newBlobContainer)
             {
@@ -67,19 +66,13 @@ namespace PicturePanels.Controllers
                 gameState.TeamTurn = gameState.TeamFirstTurn;
                 gameState.RoundNumber++;
                 gameState.SetTurnType(GameStateTableEntity.ActionNewRound);
-                gameState.TeamOneGuess = string.Empty;
-                gameState.TeamOneCaptainStatus = string.Empty;
-                gameState.TeamOneCorrect = false;
-                gameState.TeamTwoGuess = string.Empty;
-                gameState.TeamTwoCaptainStatus = string.Empty;
-                gameState.TeamTwoCorrect = false;
-
                 gameState.RevealedPanels = new List<string>();
             }
 
             if (newTurnType || newRound || newBlobContainer)
             {
                 await this.playerTableStorage.ResetPlayersAsync();
+                gameState.ClearGuesses();
             }
 
             await CheckTeamCaptainsAsync(gameState);
@@ -97,6 +90,7 @@ namespace PicturePanels.Controllers
             var gameState = await this.gameTableStorage.GetGameStateAsync();
             gameState.SwitchTeamTurn();
             gameState.SetTurnType(GameStateTableEntity.ActionNextTurn);
+            gameState.ClearGuesses();
 
             await CheckTeamCaptainsAsync(gameState);
 
@@ -112,6 +106,7 @@ namespace PicturePanels.Controllers
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
             gameState.SetTurnType(GameStateTableEntity.ActionEndRound);
+            gameState.ClearGuesses();
 
             await CheckTeamCaptainsAsync(gameState);
 
@@ -137,13 +132,8 @@ namespace PicturePanels.Controllers
             gameState.TeamOneInnerPanels = 5;
             gameState.TeamTwoInnerPanels = 5;
             gameState.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
-            gameState.TeamOneGuess = string.Empty;
-            gameState.TeamOneCaptainStatus = string.Empty;
-            gameState.TeamOneCorrect = false;
-            gameState.TeamTwoGuess = string.Empty;
-            gameState.TeamTwoCaptainStatus = string.Empty;
-            gameState.TeamTwoCorrect = false;
             gameState.RevealedPanels = new List<string>();
+            gameState.ClearGuesses();
 
             await CheckTeamCaptainsAsync(gameState);
             await this.playerTableStorage.ResetPlayersAsync();
@@ -201,6 +191,7 @@ namespace PicturePanels.Controllers
             {
                 gameState.TeamTwoCaptain = playerId;
             }
+
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
@@ -230,7 +221,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            await this.HandleBothTeamsGuessReady(gameState);
+            await this.HandleBothTeamsGuessReadyAsync(gameState);
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
@@ -264,7 +255,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            await this.HandleBothTeamsGuessReady(gameState);
+            await this.HandleBothTeamsGuessReadyAsync(gameState);
 
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
@@ -280,12 +271,13 @@ namespace PicturePanels.Controllers
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
             gameState.OpenPanel(panelId);
+            gameState.ClearGuesses();
 
             await this.playerTableStorage.ResetPlayersAsync();
 
             gameState.SetTurnType(GameStateTableEntity.ActionOpenPanel);
 
-            await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
+            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             return StatusCode(200);
@@ -297,8 +289,9 @@ namespace PicturePanels.Controllers
         {
             var gameState = await this.gameTableStorage.GetGameStateAsync();
             gameState.OpenPanel(panelId, false);
+            gameState.ClearGuesses();
 
-            await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
+            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             return StatusCode(200);
@@ -319,36 +312,25 @@ namespace PicturePanels.Controllers
 
             await this.playerTableStorage.ResetPlayersAsync();
 
-            await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
+            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             return StatusCode(200);
         }
 
-        private async Task HandleBothTeamsGuessReady(GameStateTableEntity gameState)
+        private async Task HandleBothTeamsGuessReadyAsync(GameStateTableEntity gameState)
         {
             if (!string.IsNullOrWhiteSpace(gameState.TeamOneCaptainStatus) && !string.IsNullOrWhiteSpace(gameState.TeamTwoCaptainStatus))
             {
                 var imageEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
-                Levenshtein lev = new Levenshtein(imageEntity.Name);
-
-                if (gameState.TeamOneCaptainStatus == GameStateTableEntity.CaptainStatusGuess && lev.DistanceFrom(gameState.TeamOneGuess) < Math.Ceiling(imageEntity.Name.Length / 5.0))
+                if (imageEntity.Answers == null || !imageEntity.Answers.Any())
                 {
-                    gameState.TeamOneCorrect = true;
-                }
-                else
-                {
-                    gameState.TeamOneCorrect = false;
+                    imageEntity.Answers = new List<string>() { GuessChecker.Prepare(imageEntity.Name) };
+                    imageEntity = await this.imageTableStorage.AddOrUpdateAsync(imageEntity);
                 }
 
-                if (gameState.TeamTwoCaptainStatus == GameStateTableEntity.CaptainStatusGuess && lev.DistanceFrom(gameState.TeamTwoGuess) < Math.Ceiling(imageEntity.Name.Length / 5.0))
-                {
-                    gameState.TeamTwoCorrect = true;
-                }
-                else
-                {
-                    gameState.TeamTwoCorrect = false;
-                }
+                gameState.TeamOneCorrect = gameState.TeamOneCaptainStatus == GameStateTableEntity.CaptainStatusGuess && GuessChecker.IsCorrect(gameState.TeamOneGuess, imageEntity.Answers);
+                gameState.TeamTwoCorrect = gameState.TeamTwoCaptainStatus == GameStateTableEntity.CaptainStatusGuess && GuessChecker.IsCorrect(gameState.TeamTwoGuess, imageEntity.Answers);
 
                 gameState.IncrementScores();
                 gameState.SetTurnType(GameStateTableEntity.ActionGuessesMade);
@@ -405,16 +387,6 @@ namespace PicturePanels.Controllers
                     gameState.TeamTwoCaptain = player.PlayerId;
                     teamTwoNeedsNewCaptain = false;
                 }
-            }
-
-            if (teamOneNeedsNewCaptain)
-            {
-                gameState.TeamOneCaptain = string.Empty;
-            }
-
-            if (teamTwoNeedsNewCaptain)
-            {
-                gameState.TeamTwoCaptain = string.Empty;
             }
         }
     }
