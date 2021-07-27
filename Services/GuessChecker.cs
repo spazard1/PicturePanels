@@ -1,0 +1,58 @@
+﻿using Fastenshtein;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace PicturePanels.Services
+{
+    public class GuessChecker
+    {
+
+        private static readonly string[] WordList = { "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now" };
+
+        private static readonly Dictionary<string, string> NumberDict = new Dictionary<string, string>() { { "0", "zero" }, { "1", "one" }, { "2", "two" }, { "3", "three" }, { "4", "four" }, { "5", "five" }, { "6", "six" }, { "7", "seven" }, { "8", "eight" }, { "9", "nine" } };
+
+
+        private static readonly Regex LettersOnly = new(@"[^\w\s]");
+
+        private static readonly Regex MultipleSpaces = new(@"\s+");
+
+        private const double CorrectRatio = .95;
+
+        public static bool IsCorrect(string guess, List<string> answers)
+        {
+            guess = Prepare(guess);
+            Levenshtein lev = new Levenshtein(guess);
+
+            foreach (var answer in answers)
+            {
+                double totalLength = answer.Length + guess.Length;
+                Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+                if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static string Prepare(string s)
+        {
+            s = s.Trim();
+            s = s.ToLower();
+            s = LettersOnly.Replace(s, "");
+            s = MultipleSpaces.Replace(s, " ");
+            s = s.Split(' ').Where(x => !WordList.Contains(x)).DefaultIfEmpty().Select(next =>
+            {
+                if (NumberDict.ContainsKey(next))
+                {
+                    next = NumberDict[next];
+                }
+                return next;
+            }).Aggregate((current, next) => current + " " + next);
+
+            return s ?? String.Empty;
+        }
+    }
+}

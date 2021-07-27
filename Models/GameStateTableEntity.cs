@@ -153,28 +153,14 @@ namespace PicturePanels.Models
             }
         }
 
-        public void Incorrect()
+        public void ClearGuesses()
         {
-            if (TeamTurn == 1)
-            {
-                TeamOneIncorrectGuesses++;
-            }
-            else
-            {
-                TeamTwoIncorrectGuesses++;
-            }
-        }
-
-        public void Correct()
-        {
-            if (TeamTurn == 1)
-            {
-                TeamOneScore++;
-            }
-            else
-            {
-                TeamTwoScore++;
-            }
+            TeamOneGuess = string.Empty;
+            TeamOneCaptainStatus = string.Empty;
+            TeamOneCorrect = false;
+            TeamTwoGuess = string.Empty;
+            TeamTwoCaptainStatus = string.Empty;
+            TeamTwoCorrect = false;
         }
 
         public bool IsRoundOver()

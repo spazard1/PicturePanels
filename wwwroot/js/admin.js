@@ -214,13 +214,17 @@ async function handleGameState(gameState) {
             document.getElementById("openPanelButton").classList.add("hidden");
             document.getElementById("nextTurnButton").classList.add("hidden");
             document.getElementById("endRoundButton").classList.add("hidden");
-            document.getElementById("forceOpenPanelButton").classList.add("hidden");
+            document.getElementById("forceOpenPanelButton").classList.remove("hidden");
             break;
         case "GuessesMade":
             document.getElementById("openPanelButton").classList.add("hidden");
-            document.getElementById("nextTurnButton").classList.remove("hidden");
+            if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+                document.getElementById("nextTurnButton").classList.add("hidden");
+            } else {
+                document.getElementById("nextTurnButton").classList.remove("hidden");
+            }
             document.getElementById("endRoundButton").classList.add("hidden");
-            document.getElementById("forceOpenPanelButton").classList.add("hidden");
+            document.getElementById("forceOpenPanelButton").classList.remove("hidden");
             break;
         case "Welcome":
         case "Correct":

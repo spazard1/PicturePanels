@@ -300,9 +300,7 @@ function drawTeamStatus(gameState, resetTimer) {
             }
             break;
         case "GuessesMade":
-            if (gameState.teamOneCorrect) {
-                teamOneStatus.innerHTML = "Correct!";
-            } else if (gameState.teamOneCaptainStatus === "Pass") {
+            if (gameState.teamOneCaptainStatus === "Pass") {
                 teamOneStatus.innerHTML = "Team Passed";
             } else if (gameState.teamOneGuess) {
                 teamOneStatus.innerHTML = "\"" + gameState.teamOneGuess + "\"";
@@ -310,9 +308,7 @@ function drawTeamStatus(gameState, resetTimer) {
                 teamOneStatus.innerHTML = "Didn't guess or pass";
             }
 
-            if (gameState.teamTwoCorrect) {
-                teamTwoStatus.innerHTML = "Correct!";
-            } else if (gameState.teamTwoCaptainStatus === "Pass") {
+            if (gameState.teamTwoCaptainStatus === "Pass") {
                 teamTwoStatus.innerHTML = "Team Passed";
             } else if (gameState.teamTwoGuess) {
                 teamTwoStatus.innerHTML = "\"" + gameState.teamTwoGuess + "\"";
@@ -327,6 +323,22 @@ function drawTeamStatus(gameState, resetTimer) {
             activeTeamStatus.innerHTML = gameState.turnType;
             break;
     }
+
+    if (isOverflown(teamOneStatus)) {
+        teamOneStatus.classList.add("teamStatusLong");
+    } else {
+        teamOneStatus.classList.remove("teamStatusLong");
+    }
+
+    if (isOverflown(teamTwoStatus)) {
+        teamTwoStatus.classList.add("teamStatusLong");
+    } else {
+        teamTwoStatus.classList.remove("teamStatusLong");
+    }
+}
+
+function isOverflown(element) {
+    return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
 }
 
 function setupCanvases() {
@@ -781,7 +793,7 @@ function drawImageEntityAsync(gameState) {
         }
 
         if (imageEntity && imageEntity.name) {
-            document.getElementById("answerTitle").innerHTML = imageEntity.name;
+            document.getElementById("answerTitleText").innerHTML = imageEntity.name;
             document.getElementById("answerTitle").classList.add("opacity1Fade");
         } else {
             document.getElementById("answerTitle").classList.remove("opacity1Fade");
