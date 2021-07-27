@@ -42,11 +42,6 @@ input:focus {
     opacity: 0;
 }
 
-.opacity1Fade {
-    opacity: 1;
-    transition: opacity ease-in 4s;
-}
-
 .fade {
     opacity: .7;
 }
@@ -179,15 +174,8 @@ input:focus {
     left: 0;
 }
 
-.teamOneBox {
+.teamBox {
     white-space: nowrap;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-.teamTwoBox {
-    white-space: nowrap;
-    overflow: hidden;
     box-sizing: border-box;
 }
 

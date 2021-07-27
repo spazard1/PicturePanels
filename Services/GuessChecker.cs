@@ -14,8 +14,7 @@ namespace PicturePanels.Services
 
         private static readonly Dictionary<string, string> NumberDict = new Dictionary<string, string>() { { "0", "zero" }, { "1", "one" }, { "2", "two" }, { "3", "three" }, { "4", "four" }, { "5", "five" }, { "6", "six" }, { "7", "seven" }, { "8", "eight" }, { "9", "nine" } };
 
-
-        private static readonly Regex LettersOnly = new(@"[^\w\s]");
+        private static readonly Regex LettersNumbersOnly = new(@"[^\w\s]");
 
         private static readonly Regex MultipleSpaces = new(@"\s+");
 
@@ -41,7 +40,7 @@ namespace PicturePanels.Services
         {
             s = s.Trim();
             s = s.ToLower();
-            s = LettersOnly.Replace(s, "");
+            s = LettersNumbersOnly.Replace(s, "");
             s = MultipleSpaces.Replace(s, " ");
             s = s.Split(' ').Where(x => !WordList.Contains(x)).DefaultIfEmpty().Select(next =>
             {
