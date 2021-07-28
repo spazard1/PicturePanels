@@ -103,13 +103,12 @@ body::-webkit-scrollbar {
 
 #roundNumberDiv {
     position: fixed;
-    right: 0;
-    top: 0;
+    white-space: nowrap;
+    right: 2vw;
+    top: 2vh;
     text-align: center;
     vertical-align: middle;
-    font-size: 3em;
-    width: 3em;
-    height: 3em;
+    font-size: 3vh;
 }
 
 .teamNameBox {
@@ -150,39 +149,45 @@ body::-webkit-scrollbar {
     width: 100%;
 }
 
+.dropDownBox {
+
+}
+
 .teamScoreChange {
     position: absolute;
     box-sizing: border-box;
     width: 100%;
     top: 7vh;
     z-index: 100;
-    font-size: .9em;
+    font-size: 4vh;
+    line-height: normal;
     transition: top 2s;
     transition-delay: 2s;
 }
 
+.teamScoreChangeHidden {
+    top: -7vh;
+    transition-delay: 0s;
+}
+
 .teamGuess {
-    position: relative;
-    font-weight: 900;
-    font-size: 3.3em;
+    position: absolute;
+    box-sizing: border-box;
+    padding: 3px;
+    width: 100%;
+    top: 7vh;
+    font-weight: 700;
+    font-size: 4vh;
+    line-height: normal;
     z-index: 100;
+    text-align: center;
 }
 
-.teamGuess .text-wrapper {
-    position: relative;
-    display: inline-block;
-    padding-top: 0.2em;
-    padding-right: 0.05em;
-    padding-bottom: 0.1em;
-    overflow: hidden;
+.teamGuessLong {
+    font-size: 3vh;
 }
 
-.teamGuess .letter {
-    display: inline-block;
-    line-height: 1em;
-}
-
-.teamGuessTest span span {
+.teamGuess span {
     position: relative;
     opacity: 0;
     animation: move-text 0.75s forwards;
@@ -190,12 +195,12 @@ body::-webkit-scrollbar {
 
 @keyframes move-text {
     0% {
-        bottom: -0.2em;
-        opacity: .5;
+        bottom: -0.1em;
+        opacity: .25;
     }
 
     50% {
-        bottom: 0.2em;
+        bottom: 0.1em;
         opacity: 1;
     }
 
@@ -203,10 +208,6 @@ body::-webkit-scrollbar {
         bottom: 0;
         opacity: 1;
     }
-}
-
-.teamScoreChangeHidden {
-    top: -7vh;
 }
 
 .panelCount {
