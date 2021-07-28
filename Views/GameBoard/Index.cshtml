@@ -28,18 +28,16 @@
         <div id="teamOneName" class="teamName">Team 1</div>
         <div id="teamOneInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
-        <div class="teamGuess teamOneBox teamOneGuess animate__animated">
-            <div id="teamOneGuessText"></div>
-        </div>
+        <div id="teamOneGuessText" class="teamGuess teamOneBox teamOneGuess hideIfEmpty animate__animated"></div>
     </div>
     <div class="teamBox teamOneBox teamInfo teamScore">
         <div id="teamOneScoreText"></div>
-        <div id="teamOneScoreChange" class="teamOneBox teamScoreChange animate__animated"></div>
+        <div id="teamOneScoreChange" class="teamOneBox teamScoreChange hideIfEmpty animate__animated"></div>
     </div>
     <div id="teamStatus" class="teamInfo teamStatus"></div>
     <div class="teamBox teamTwoBox teamInfo teamScore">
         <div id="teamTwoScoreText"></div>
-        <div id="teamTwoScoreChange" class="teamTwoBox teamScoreChange animate__animated"></div>
+        <div id="teamTwoScoreChange" class="teamTwoBox teamScoreChange hideIfEmpty animate__animated"></div>
     </div>
     <div id="teamTwoDiv" class="teamInfo teamNameBox">
         <div id="teamTwoCountdownDiv" class="teamInfo countdownDiv">
@@ -48,9 +46,7 @@
         <div id="teamTwoName" class="teamName">Team 2</div>
         <div id="teamTwoInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
-        <div class="teamGuess teamTwoBox teamTwoGuess animate__animated">
-            <div id="teamTwoGuessText"></div>
-        </div>
+        <div id="teamTwoGuessText" class="teamGuess teamTwoBox teamTwoGuess hideIfEmpty animate__animated"></div>
     </div>
 
 </div>
@@ -67,7 +63,7 @@
 <div id="teamOnePlayerNames" class="teamPlayerNames"></div>
 <div id="teamTwoPlayerNames" class="teamPlayerNames"></div>
 
-<div id="uploadedBy" class="uploadedBy hidden"></div>
+<div id="uploadedBy" class="uploadedBy animate__animated"></div>
 
 <div class="answerTitle">
     <div id="answerTitle" class="answerTitleBackground animate__animated">
