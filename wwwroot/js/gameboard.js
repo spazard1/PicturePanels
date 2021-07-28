@@ -274,15 +274,19 @@ function drawTeamStatus(gameState, resetTimer) {
                 teamStatus.innerHTML = "Open a Panel &rarr;";
             }
             if (resetTimer) {
-                startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 4);
+                if (gameState.revealedPanels.length === 0) {
+                    startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 7);
+                } else {
+                    startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 3);
+                }
             }
             break;
         case "MakeGuess":
             teamStatus.innerHTML = "Guess or Pass";
 
             if (resetTimer) {
-                startCountdown(activeTeamCountdownCanvas, gameState.guessTime, 2);
-                startCountdown(passiveTeamCountdownCanvas, gameState.guessTime, 2);
+                startCountdown(activeTeamCountdownCanvas, gameState.guessTime, 3);
+                startCountdown(passiveTeamCountdownCanvas, gameState.guessTime, 3);
             }
             if (gameState.teamOneCaptainStatus) {
                 stopCountdown(teamOneCountdownCanvas);
@@ -307,70 +311,99 @@ function drawTeamStatus(gameState, resetTimer) {
 }
 
 function drawTeamGuesses(gameState) {
-    var teamOneGuessElement = document.getElementById("teamOneGuess");
-    var teamTwoGuessElement = document.getElementById("teamTwoGuess");
+    var teamOneGuessElement = document.getElementById("teamOneGuessText");
+    var teamTwoGuessElement = document.getElementById("teamTwoGuessText");
 
     if (gameState.turnType !== "GuessesMade" || gameState.teamOneCaptainStatus !== "Guess") {
-        teamOneGuessElement.parentElement.classList.add("hidden");
+        teamOneGuessElement.parentElement.classList.remove("animate__bounceInDown");
+        teamOneGuessElement.parentElement.classList.remove("animate__slow");
+        teamOneGuessElement.parentElement.classList.add("animate__bounceOutUp");
     }
 
     if (gameState.turnType !== "GuessesMade" || gameState.teamTwoCaptainStatus !== "Guess") {
-        teamTwoGuessElement.parentElement.classList.add("hidden");
+        teamTwoGuessElement.parentElement.classList.remove("animate__bounceInDown");
+        teamTwoGuessElement.parentElement.classList.remove("animate__slow");
+        teamTwoGuessElement.parentElement.classList.add("animate__bounceOutUp");
     }
 
     if (gameState.teamOneCaptainStatus === "Guess") {
-        drawTeamGuess(teamOneGuessElement)
+        drawTeamGuess(gameState.teamOneGuess, teamOneGuessElement)
     }
 
     if (gameState.teamTwoCaptainStatus === "Guess") {
-        drawTeamGuess(teamTwoGuessElement)
+        drawTeamGuess(gameState.teamTwoGuess, teamTwoGuessElement)
     }
 }
 
-function drawTeamGuess(teamGuessElement) {
+function drawTeamGuess(teamGuessText, teamGuessElement) {
     if (teamGuessElement.textContent.length > 20) {
         teamGuessElement.classList.add("teamGuessLong");
     } else {
         teamGuessElement.classList.remove("teamGuessLong");
     }
-    teamGuessElement.innerHTML = teamGuessElement.textContent.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (0.1 + index / Math.max(10, teamGuessElement.textContent.length)) + "s'>" + x + "</span>" }).join("");
-    teamGuessElement.parentElement.classList.remove("hidden");
+    teamGuessElement.innerHTML = teamGuessText.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (2 + index / Math.max(10, teamGuessElement.textContent.length)) + "s'>" + x + "</span>" }).join("");
+    teamGuessElement.parentElement.classList.remove("animate__bounceOutUp");
+    teamGuessElement.parentElement.classList.add("animate__bounceInDown");
+    teamGuessElement.parentElement.classList.add("animate__slow");
 }
 
 function drawTeamScoreChange(gameState) {
     if (gameState.turnType === "GuessesMade") {
-        document.getElementById("teamOneScoreChange").classList.remove("teamScoreChangeHidden");
-        document.getElementById("teamTwoScoreChange").classList.remove("teamScoreChangeHidden");
-
         if (gameState.teamOneCorrect && gameState.teamTwoCorrect) {
             if (gameState.teamTurn === 1) {
-                document.getElementById("teamOneScoreChange").innerHTML = "+2";
-                document.getElementById("teamTwoScoreChange").innerHTML = "+1";
-            } else {
-                document.getElementById("teamOneScoreChange").innerHTML = "+1";
+                document.getElementById("teamOneScoreChange").innerHTML = "+5";
                 document.getElementById("teamTwoScoreChange").innerHTML = "+2";
+            } else {
+                document.getElementById("teamOneScoreChange").innerHTML = "+2";
+                document.getElementById("teamTwoScoreChange").innerHTML = "+5";
             }
         } else if (gameState.teamOneCorrect) {
-            document.getElementById("teamOneScoreChange").innerHTML = "+2";
+            document.getElementById("teamOneScoreChange").innerHTML = "+5";
         } else if (gameState.teamTwoCorrect) {
-            document.getElementById("teamTwoScoreChange").innerHTML = "+2";
+            document.getElementById("teamTwoScoreChange").innerHTML = "+5";
         }
 
         if (!gameState.teamOneCorrect && gameState.teamOneCaptainStatus === "Guess") {
-            document.getElementById("teamOneScoreChange").innerHTML = "&olcross;";
+            document.getElementById("teamOneScoreChange").innerHTML = "-1";
         }
         if (gameState.teamOneCaptainStatus === "Pass") {
-            document.getElementById("teamOneScoreChange").classList.add("teamScoreChangeHidden");
+            document.getElementById("teamOneScoreChange").innerHTML = "pass";
         }
         if (!gameState.teamTwoCorrect && gameState.teamTwoCaptainStatus === "Guess") {
-            document.getElementById("teamTwoScoreChange").innerHTML = "&olcross;";
+            document.getElementById("teamTwoScoreChange").innerHTML = "-1";
         }
         if (gameState.teamTwoCaptainStatus === "Pass") {
-            document.getElementById("teamTwoScoreChange").classList.add("teamScoreChangeHidden");
+            document.getElementById("teamTwoScoreChange").innerHTML = "pass";
         }
+
+        setTimeout(function () {
+            document.getElementById("teamOneScoreText").innerHTML = gameState.teamOneScore;
+            document.getElementById("teamTwoScoreText").innerHTML = gameState.teamTwoScore;
+        }, 8000);
+        
+        document.getElementById("teamOneScoreChange").classList.remove("animate__bounceOutUp");
+        document.getElementById("teamTwoScoreChange").classList.remove("animate__bounceOutUp");
+        document.getElementById("teamOneScoreChange").classList.add("animate__bounceInDown");
+        document.getElementById("teamTwoScoreChange").classList.add("animate__bounceInDown");
+        document.getElementById("teamOneScoreChange").classList.add("animate__slow");
+        document.getElementById("teamTwoScoreChange").classList.add("animate__slow");
+        document.getElementById("teamOneScoreChange").classList.add("animate__delay-5s");
+        document.getElementById("teamTwoScoreChange").classList.add("animate__delay-5s");
     } else {
-        document.getElementById("teamOneScoreChange").classList.add("teamScoreChangeHidden");
-        document.getElementById("teamTwoScoreChange").classList.add("teamScoreChangeHidden");
+        document.getElementById("teamOneScoreText").innerHTML = gameState.teamOneScore;
+        document.getElementById("teamTwoScoreText").innerHTML = gameState.teamTwoScore;
+
+        document.getElementById("teamOneScoreChange").classList.add("animate__bounceOutUp");
+        document.getElementById("teamTwoScoreChange").classList.add("animate__bounceOutUp");
+        document.getElementById("teamOneScoreChange").classList.remove("animate__slow");
+        document.getElementById("teamTwoScoreChange").classList.remove("animate__slow");
+        document.getElementById("teamOneScoreChange").classList.remove("animate__delay-5s");
+        document.getElementById("teamTwoScoreChange").classList.remove("animate__delay-5s");
+    }
+
+    if (!document.getElementById("teamOneScoreText").innerHTML) {
+        document.getElementById("teamOneScoreText").innerHTML = gameState.teamOneScore;
+        document.getElementById("teamTwoScoreText").innerHTML = gameState.teamTwoScore;
     }
 }
 
@@ -442,10 +475,6 @@ function drawCountdown(canvas) {
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
-}
-
-function drawRoundNumber(gameState, element) {
-    element.innerHTML = "Round " + gameState.roundNumber;
 }
 
 function setClassStyle(className, styleFunc) {
@@ -652,6 +681,53 @@ function openAllPanels() {
 
 var allPlayers = [];
 
+function drawRoundNumber(gameState) {
+    if (gameState.revealedPanels.length === 0 && gameState.turnType === "OpenPanel") {
+        document.getElementById("roundNumberAnimateText").innerHTML = "Round " + gameState.roundNumber;
+
+        new Promise((resolve) => {
+            setTimeout(resolve, 2000);
+        }).then(() => {
+            document.getElementById("roundNumberAnimate").classList.add("animate__backInLeft");
+
+            return new Promise((resolve) => { setTimeout(resolve, 4000); });
+        }).then(() => {
+            document.getElementById("roundNumberAnimate").classList.add("animate__backOutRight");
+
+            return new Promise((resolve) => { setTimeout(resolve, 4000); });
+        }).then(() => {
+            document.getElementById("roundNumberAnimate").classList.remove("animate__backInLeft");
+            document.getElementById("roundNumberAnimate").classList.remove("animate__backOutRight");
+        });
+    }
+}
+
+
+function drawImageEntityAsync(gameState) {
+    getImageEntityAsync(gameState.imageId).then(imageEntity => {
+        if (imageEntity && imageEntity.uploadedBy !== "admin") {
+            document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
+            document.getElementById("uploadedBy").classList.remove("hidden");
+        } else {
+            document.getElementById("uploadedBy").classList.add("hidden");
+        }
+
+        if (imageEntity && imageEntity.name) {
+            document.getElementById("answerTitleText").innerHTML = imageEntity.name;
+
+            document.getElementById("answerTitle").classList.add("animate__bounceInDown");
+            document.getElementById("answerTitle").classList.add("animate__slow");
+            document.getElementById("answerTitle").classList.add("animate__delay-5s");
+            document.getElementById("answerTitle").classList.remove("animate__bounceOutUp");
+        } else {
+            document.getElementById("answerTitle").classList.remove("animate__bounceInDown");
+            document.getElementById("answerTitle").classList.remove("animate__slow");
+            document.getElementById("answerTitle").classList.remove("animate__delay-5s");
+            document.getElementById("answerTitle").classList.add("animate__bounceOutUp");
+        }
+    });
+}
+
 function drawCaptains() {
     var playerNameElements = document.getElementsByClassName("teamPlayerName");
     for (let playerNameElement of playerNameElements) {
@@ -806,6 +882,8 @@ async function handleGameState(gameState, firstLoad) {
 
     drawGameState(gameState);
 
+    drawRoundNumber(gameState);
+
     drawTeamStatus(gameState, firstLoad || isNewTurn);
 
     drawCaptains();
@@ -821,24 +899,6 @@ async function handleGameState(gameState, firstLoad) {
     drawAllPlayerDots(gameState, isNewTurn);
 
     drawMostVotesPanels(isNewTurn);
-}
-
-function drawImageEntityAsync(gameState) {
-    getImageEntityAsync(gameState.imageId).then(imageEntity => {
-        if (imageEntity && imageEntity.uploadedBy !== "admin") {
-            document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
-            document.getElementById("uploadedBy").classList.remove("hidden");
-        } else {
-            document.getElementById("uploadedBy").classList.add("hidden");
-        }
-
-        if (imageEntity && imageEntity.name) {
-            document.getElementById("answerTitleText").innerHTML = imageEntity.name;
-            document.getElementById("answerTitle").classList.add("answerTitleVisible");
-        } else {
-            document.getElementById("answerTitle").classList.remove("answerTitleVisible");
-        }
-    });
 }
 
 function handlePlayers(players) {
