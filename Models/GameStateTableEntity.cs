@@ -180,31 +180,33 @@ namespace PicturePanels.Models
             {
                 if (TeamTurn == 1)
                 {
-                    TeamOneScore += 2;
-                    TeamTwoScore += 1;
+                    TeamOneScore += 5;
+                    TeamTwoScore += 2;
                 }
                 else 
                 {
-                    TeamOneScore += 1;
-                    TeamTwoScore += 2;
+                    TeamOneScore += 2;
+                    TeamTwoScore += 5;
                 }
             }
             else if (TeamOneCorrect)
             {
-                TeamOneScore += 2;
+                TeamOneScore += 5;
             }
             else if (TeamTwoCorrect)
             {
-                TeamTwoScore += 2;
+                TeamTwoScore += 5;
             }
             
             if (!TeamOneCorrect && TeamOneCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
             {
                 TeamOneIncorrectGuesses += 1;
+                TeamOneScore -= 1;
             }
             if (!TeamTwoCorrect && TeamTwoCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
             {
                 TeamTwoIncorrectGuesses += 1;
+                TeamTwoScore -= 1;
             }
         }
 

@@ -101,7 +101,31 @@ body::-webkit-scrollbar {
     border-width: 3px;
 }
 
-#roundNumberDiv {
+.roundNumberAnimate {
+    font-size: 5em;
+    position: absolute;
+    top: 45vh;
+    width: 100%;
+    z-index: 1000;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.roundNumberAnimateBackground {
+    opacity: 0;
+    animation-fill-mode: forwards;
+    display: inline-block;
+    height: 100%;
+    background-color: rgb(0, 0, 0, .7);
+    border: 3px solid rgb(50, 50, 50, 1);
+    padding: .1em .2em .1em .2em;
+}
+
+.roundNumberAnimateText {
+    opacity: 1;
+}
+
+.roundNumberCorner {
     position: fixed;
     white-space: nowrap;
     right: 2vw;
@@ -149,10 +173,6 @@ body::-webkit-scrollbar {
     width: 100%;
 }
 
-.dropDownBox {
-
-}
-
 .teamScoreChange {
     position: absolute;
     box-sizing: border-box;
@@ -161,13 +181,6 @@ body::-webkit-scrollbar {
     z-index: 100;
     font-size: 4vh;
     line-height: normal;
-    transition: top 2s;
-    transition-delay: 2s;
-}
-
-.teamScoreChangeHidden {
-    top: -7vh;
-    transition-delay: 0s;
 }
 
 .teamGuess {
@@ -403,32 +416,25 @@ body::-webkit-scrollbar {
 }
 
 .answerTitle {
-    font-size: 3em;
+    font-size: 6vh;
     position: absolute;
     top: 18vh;
     width: 100%;
     z-index: 1000;
     white-space: nowrap;
     text-align: center;
-    opacity: 0;
 }
 
 .answerTitleBackground {
     display: inline-block;
     height: 100%;
-    background-color: rgb(0, 0, 0, .4);
+    background-color: rgb(0, 0, 0, .6);
     border: 3px solid rgb(50, 50, 50, 1);
     padding: .1em .2em .1em .2em;
 }
 
 .answerTitleText {
     opacity: 1;
-}
-
-.answerTitleVisible {
-    opacity: 1;
-    transition: opacity ease-in 2s;
-    transition-delay: 2s;
 }
 
 .countdownDiv {

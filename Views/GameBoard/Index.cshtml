@@ -1,7 +1,8 @@
 ﻿@section css {
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
 	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/css/gameboard.css" asp-append-version="true" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 }
 
 @section scripts {
@@ -27,18 +28,18 @@
         <div id="teamOneName" class="teamName">Team 1</div>
         <div id="teamOneInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
-        <div class="teamGuess teamOneBox teamOneGuess">
-            <div id="teamOneGuess"></div>
+        <div class="teamGuess teamOneBox teamOneGuess animate__animated">
+            <div id="teamOneGuessText"></div>
         </div>
     </div>
     <div class="teamBox teamOneBox teamInfo teamScore">
-        <div id="teamOneScore">0</div>
-        <div id="teamOneScoreChange" class="teamOneBox teamScoreChange teamScoreChangeHidden"></div>
+        <div id="teamOneScoreText"></div>
+        <div id="teamOneScoreChange" class="teamOneBox teamScoreChange animate__animated"></div>
     </div>
     <div id="teamStatus" class="teamInfo teamStatus"></div>
     <div class="teamBox teamTwoBox teamInfo teamScore">
-        <div id="teamTwoScore">+2</div>
-        <div id="teamTwoScoreChange" class="teamTwoBox teamScoreChange teamScoreChangeHidden"></div>
+        <div id="teamTwoScoreText"></div>
+        <div id="teamTwoScoreChange" class="teamTwoBox teamScoreChange animate__animated"></div>
     </div>
     <div id="teamTwoDiv" class="teamInfo teamNameBox">
         <div id="teamTwoCountdownDiv" class="teamInfo countdownDiv">
@@ -47,14 +48,20 @@
         <div id="teamTwoName" class="teamName">Team 2</div>
         <div id="teamTwoInnerPanelsCount" class="teamInfoPanelCounts"></div>
         <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
-        <div class="teamGuess teamTwoBox teamTwoGuess">
-            <div id="teamTwoGuess"></div>
+        <div class="teamGuess teamTwoBox teamTwoGuess animate__animated">
+            <div id="teamTwoGuessText"></div>
         </div>
     </div>
 
 </div>
-<div id="roundNumberDiv">
+<div class="roundNumberCorner">
     Round <span id="roundNumber"></span>
+</div>
+
+<div class="roundNumberAnimate">
+    <div id="roundNumberAnimate" class="roundNumberAnimateBackground animate__animated">
+        <div id="roundNumberAnimateText" class="roundNumberAnimateText"></div>
+    </div>
 </div>
 
 <div id="teamOnePlayerNames" class="teamPlayerNames"></div>
@@ -62,8 +69,8 @@
 
 <div id="uploadedBy" class="uploadedBy hidden"></div>
 
-<div id="answerTitle" class="answerTitle opacity0">
-    <div class="answerTitleBackground">
+<div class="answerTitle">
+    <div id="answerTitle" class="answerTitleBackground animate__animated">
         <div id="answerTitleText" class="answerTitleText"></div>
     </div>
 </div>
