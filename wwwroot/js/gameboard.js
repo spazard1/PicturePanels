@@ -293,51 +293,9 @@ function drawTeamStatus(gameState, resetTimer) {
             break;
         case "GuessesMade":
             teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
-            /*
-            if (gameState.teamOneCaptainStatus === "Pass") {
-                teamOneStatus.innerHTML = "Team Passed";
-            } else if (gameState.teamOneGuess) {
-                teamOneStatus.innerHTML = "\"" + gameState.teamOneGuess + "\"";
-            } else {
-                teamOneStatus.innerHTML = "Didn't guess or pass";
-            }
 
-            if (gameState.teamTwoCaptainStatus === "Pass") {
-                teamTwoStatus.innerHTML = "Team Passed";
-            } else if (gameState.teamTwoGuess) {
-                teamTwoStatus.innerHTML = "\"" + gameState.teamTwoGuess + "\"";
-            } else {
-                teamTwoStatus.innerHTML = "Didn't guess or pass";
-            }
-            */
+            
 
-            var textWrapper = document.getElementById("teamOneGuess");
-            textWrapper.innerHTML = textWrapper.textContent.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (0.5 + index / 10) + "s'>" + x + "</span>" }).join("");
-
-            /*
-            anime.timeline()
-                .add({
-                    targets: '.teamOneGuess .letter',
-                    translateY: ["1.1em", 0],
-                    translateZ: 0,
-                    duration: 750,
-                    delay: (el, i) => 200 * i
-                });
-                */
-
-            textWrapper = document.getElementById("teamTwoGuess");
-            textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
-
-            /*
-            anime.timeline()
-                .add({
-                    targets: '.teamTwoGuess .letter',
-                    translateY: ["1.1em", 0],
-                    translateZ: 0,
-                    duration: 750,
-                    delay: (el, i) => 200 * i
-                });
-                */
             break;
         case "EndRound":
             teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
@@ -346,6 +304,37 @@ function drawTeamStatus(gameState, resetTimer) {
             teamStatus.innerHTML = gameState.turnType;
             break;
     }
+}
+
+function drawTeamGuesses(gameState) {
+    var teamOneGuessElement = document.getElementById("teamOneGuess");
+    var teamTwoGuessElement = document.getElementById("teamTwoGuess");
+
+    if (gameState.turnType !== "GuessesMade" || gameState.teamOneCaptainStatus !== "Guess") {
+        teamOneGuessElement.parentElement.classList.add("hidden");
+    }
+
+    if (gameState.turnType !== "GuessesMade" || gameState.teamTwoCaptainStatus !== "Guess") {
+        teamTwoGuessElement.parentElement.classList.add("hidden");
+    }
+
+    if (gameState.teamOneCaptainStatus === "Guess") {
+        drawTeamGuess(teamOneGuessElement)
+    }
+
+    if (gameState.teamTwoCaptainStatus === "Guess") {
+        drawTeamGuess(teamTwoGuessElement)
+    }
+}
+
+function drawTeamGuess(teamGuessElement) {
+    if (teamGuessElement.textContent.length > 20) {
+        teamGuessElement.classList.add("teamGuessLong");
+    } else {
+        teamGuessElement.classList.remove("teamGuessLong");
+    }
+    teamGuessElement.innerHTML = teamGuessElement.textContent.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (0.1 + index / Math.max(10, teamGuessElement.textContent.length)) + "s'>" + x + "</span>" }).join("");
+    teamGuessElement.parentElement.classList.remove("hidden");
 }
 
 function drawTeamScoreChange(gameState) {
@@ -822,6 +811,8 @@ async function handleGameState(gameState, firstLoad) {
     drawCaptains();
 
     drawIncorrectGuesses(gameState);
+
+    drawTeamGuesses(gameState);
 
     drawPanelCounts(gameState);
 
