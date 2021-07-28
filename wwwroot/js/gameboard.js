@@ -315,15 +315,15 @@ function drawTeamGuesses(gameState) {
     var teamTwoGuessElement = document.getElementById("teamTwoGuessText");
 
     if (gameState.turnType !== "GuessesMade" || gameState.teamOneCaptainStatus !== "Guess") {
-        teamOneGuessElement.parentElement.classList.remove("animate__bounceInDown");
-        teamOneGuessElement.parentElement.classList.remove("animate__slow");
-        teamOneGuessElement.parentElement.classList.add("animate__bounceOutUp");
+        teamOneGuessElement.classList.remove("animate__bounceInDown");
+        teamOneGuessElement.classList.remove("animate__slow");
+        teamOneGuessElement.classList.add("animate__bounceOutUp");
     }
 
     if (gameState.turnType !== "GuessesMade" || gameState.teamTwoCaptainStatus !== "Guess") {
-        teamTwoGuessElement.parentElement.classList.remove("animate__bounceInDown");
-        teamTwoGuessElement.parentElement.classList.remove("animate__slow");
-        teamTwoGuessElement.parentElement.classList.add("animate__bounceOutUp");
+        teamTwoGuessElement.classList.remove("animate__bounceInDown");
+        teamTwoGuessElement.classList.remove("animate__slow");
+        teamTwoGuessElement.classList.add("animate__bounceOutUp");
     }
 
     if (gameState.teamOneCaptainStatus === "Guess") {
@@ -342,9 +342,9 @@ function drawTeamGuess(teamGuessText, teamGuessElement) {
         teamGuessElement.classList.remove("teamGuessLong");
     }
     teamGuessElement.innerHTML = teamGuessText.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (2 + index / Math.max(10, teamGuessElement.textContent.length)) + "s'>" + x + "</span>" }).join("");
-    teamGuessElement.parentElement.classList.remove("animate__bounceOutUp");
-    teamGuessElement.parentElement.classList.add("animate__bounceInDown");
-    teamGuessElement.parentElement.classList.add("animate__slow");
+    teamGuessElement.classList.remove("animate__bounceOutUp");
+    teamGuessElement.classList.add("animate__bounceInDown");
+    teamGuessElement.classList.add("animate__slow");
 }
 
 function drawTeamScoreChange(gameState) {
@@ -659,7 +659,7 @@ function resetMaxVotesPanels() {
     });
 }
 
-function openAllPanels() {
+function openAllPanels(delay) {
     hidePlayerDots();
     hideMostVotesPanels();
 
@@ -670,11 +670,21 @@ function openAllPanels() {
         panelsArray.push(panel);
     }
     shuffle(panelsArray);
+
+    var delayTimeout = 7000;
     panelsArray.forEach(function (panel) {
         if (!panel.classList.contains("panelOpen")) {
-            loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.imageId + "/" + panel.panelNumber).then(() => {
-                panel.classList.add("panelOpen");
-            });
+            if (delay) {
+                loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.imageId + "/" + panel.panelNumber);
+                setTimeout(function () {
+                    panel.classList.add("panelOpen");
+                }, delayTimeout);
+                delayTimeout += 150;
+            } else {
+                loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.imageId + "/" + panel.panelNumber).then(() => {
+                    panel.classList.add("panelOpen");
+                });
+            }
         }
     });
 }
@@ -707,9 +717,13 @@ function drawImageEntityAsync(gameState) {
     getImageEntityAsync(gameState.imageId).then(imageEntity => {
         if (imageEntity && imageEntity.uploadedBy !== "admin") {
             document.getElementById("uploadedBy").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
-            document.getElementById("uploadedBy").classList.remove("hidden");
+            document.getElementById("uploadedBy").classList.add("animate__bounceInRight");
+            document.getElementById("uploadedBy").classList.remove("animate__bounceOutRight");
+            document.getElementById("uploadedBy").classList.add("animate__slow");
         } else {
-            document.getElementById("uploadedBy").classList.add("hidden");
+            document.getElementById("uploadedBy").classList.remove("animate__bounceInRight");
+            document.getElementById("uploadedBy").classList.add("animate__bounceOutRight");
+            document.getElementById("uploadedBy").classList.remove("animate__slow");
         }
 
         if (imageEntity && imageEntity.name) {
@@ -743,8 +757,10 @@ function drawCaptains() {
 async function drawRevealedPanelsAsync(gameState) {
     var promises = [];
 
-    if (gameState.turnType === "EndRound" || gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+    if (gameState.turnType === "EndRound") {
         openAllPanels();
+    } else if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+        openAllPanels(true);
         return;
     }
 
