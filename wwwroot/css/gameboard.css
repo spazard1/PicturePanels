@@ -102,7 +102,7 @@ body::-webkit-scrollbar {
 }
 
 .roundNumberAnimate {
-    font-size: 5em;
+    font-size: 10vh;
     position: absolute;
     top: 45vh;
     width: 100%;
@@ -136,13 +136,14 @@ body::-webkit-scrollbar {
 }
 
 .teamNameBox {
-    flex: 5;
+    flex: 6;
 }
 
 .teamStatus {
     position: relative;
     flex: 3;
     overflow: hidden;
+    white-space: nowrap;
     font-size: 3.25vh;
     vertical-align: middle;
     text-align: center;
