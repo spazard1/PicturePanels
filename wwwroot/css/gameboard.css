@@ -206,6 +206,13 @@ body::-webkit-scrollbar {
     animation: move-text 0.75s forwards;
 }
 
+.teamGuessIncorrect {
+    text-decoration-style: wavy;
+    text-decoration-color: red;
+    text-decoration-line: line-through;
+    text-decoration-thickness: 3px;
+}
+
 @keyframes move-text {
     0% {
         bottom: -0.1em;

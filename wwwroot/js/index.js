@@ -372,23 +372,24 @@ function reloadPage() {
     location.reload();
 }
 
-function animateCSS(element, animation, prefix = 'animate__') {
-    const node = document.querySelector(element);
+function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0, afterDelay = 0, prefix = 'animate__') {
+    var node;
+    if (typeof element !== "string") {
+        node = element;
+    } else {
+        node = document.querySelector(element);
+    }
     node.classList.add(prefix + "animated");
 
-    // We create a Promise and return it
-    new Promise((resolve) => {
-        const animationName = `${prefix}${animation}`;
-        node.classList.add(`${prefix}animated`, animationName);
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            animationsToAdd = animationsToAdd.map(animation => prefix + animation);
+            animationsToRemove = animationsToRemove.map(animation => prefix + animation);
 
-        // When the animation ends, we clean the classes and resolve the Promise
-        function handleAnimationEnd(event) {
-            event.stopPropagation();
-            node.classList.remove(`${prefix}animated`, animationName);
-            resolve('Animation ended');
-        }
-
-        node.addEventListener('animationend', handleAnimationEnd, { once: true });
+            node.classList.add(...animationsToAdd);
+            node.classList.remove(...animationsToRemove);
+            setTimeout(resolve, afterDelay);
+        }, startDelay);
     });
 }
 
