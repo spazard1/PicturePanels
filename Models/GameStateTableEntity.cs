@@ -89,7 +89,6 @@ namespace PicturePanels.Models
 
         public string TeamTwoCaptainStatus { get; set; }
 
-
         public void SetTurnType(string action)
         {
             switch (action)
