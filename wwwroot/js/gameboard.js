@@ -796,35 +796,35 @@ function drawCaptains() {
 }
 
 async function drawRevealedPanelsAsync(gameState) {
-    var promises = [];
-
     if (gameState.turnType === "EndRound") {
         return openAllPanelsAsync();
-    } else if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
-        animationPromise = animationPromise.then(() => {
-            return new Promise((resolve) => {
-                setTimeout(async () => {
-                    await openAllPanelsAsync();
-                    resolve();
-                }, 5000);
-            })
-        });
-        return;
-    } else {
-        // always wait to show if the guesses were wrong
-        animationPromise = animationPromise.then(() => {
-            return new Promise((resolve) => {
-                setTimeout(resolve, 5000);
-            })
-        });
+    } else if (gameState.turnType === "GuessesMade") {
+        if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+            animationPromise = animationPromise.then(() => {
+                return new Promise((resolve) => {
+                    setTimeout(async () => {
+                        await openAllPanelsAsync();
+                        resolve();
+                    }, 5000);
+                })
+            });
+        } else {
+            // always wait to show if the guesses were wrong
+            animationPromise = animationPromise.then(() => {
+                return new Promise((resolve) => {
+                    setTimeout(resolve, 5000);
+                })
+            });
+        }
     }
 
+    var loadImagePromises = [];
     var panels = document.getElementsByClassName("panel");
     for (let panel of panels) {
         var panelImage = panel.lastChild;
 
         if (gameState.revealedPanels.includes(panel.panelNumber)) {
-            promises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then(() => {
+            loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then(() => {
                 panel.classList.add("panelOpen");
                 hidePlayerDots(panel.panelNumber);
             }));
@@ -834,11 +834,11 @@ async function drawRevealedPanelsAsync(gameState) {
         }
     }
 
-    await Promise.all(promises);
+    await Promise.all(loadImagePromises);
 }
 
 function drawIncorrectGuesses(gameState) {
-    animationPromise = animationPromise.then(() => {
+    var incorrectGuessesFunction = () => {
         if (gameState.teamOneIncorrectGuesses <= 3) {
             document.getElementById("teamOneIncorrectGuessesDiv").innerHTML = "&olcross;".repeat(gameState.teamOneIncorrectGuesses);
         } else {
@@ -850,7 +850,13 @@ function drawIncorrectGuesses(gameState) {
             document.getElementById("teamTwoIncorrectGuessesDiv").innerHTML = gameState.teamTwoIncorrectGuesses + " &olcross;";
         }
         return Promise.resolve();
-    });
+    };
+
+    if (!document.getElementById("teamOneIncorrectGuessesDiv").innerHTML && !document.getElementById("teamTwoIncorrectGuessesDiv").innerHTML) {
+        incorrectGuessesFunction();
+    } else {
+        animationPromise = animationPromise.then(incorrectGuessesFunction);
+    }
 }
 
 function drawPanelCounts(gameState) {
@@ -976,29 +982,17 @@ async function handleGameState(gameState, firstLoad) {
     currentGameState = gameState;
 
     drawGameState(gameState);
-
     drawRoundNumber(gameState);
-
     drawTeamStatus(gameState, firstLoad || isNewTurn);
-
     drawCaptains();
-
     drawTeamGuesses(gameState);
-
     await drawRevealedPanelsAsync(gameState);
-
     await drawImageEntityAsync(gameState);
-
     drawTeamGuessHighlights(gameState);
-
     drawTeamScoreChange(gameState);
-
     drawIncorrectGuesses(gameState);
-
     drawPanelCounts(gameState);
-
     drawAllPlayerDots(gameState, isNewTurn);
-
     drawMostVotesPanels(isNewTurn);
 }
 
@@ -1076,7 +1070,7 @@ window.onresize = function () {
     reloadTimeout = setTimeout(function () {
         resizePanelContainer();
         setupCanvases();
-    }, 250);
+    }, 100);
 }
 
 window.onload = async function () {
