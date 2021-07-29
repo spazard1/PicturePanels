@@ -190,6 +190,8 @@ function setupChoosePlayerName() {
 
     document.getElementById("teamTwoName").classList.remove("teamTwoColor");
     document.getElementById("teamTwoName").classList.add("teamTwoBox");
+
+    document.getElementById("captainStatusButtons").classList.add("hidden");
 }
 
 function choosePlayerNameButtonOnClick() {
@@ -295,16 +297,19 @@ function setupTeamSelectionButtons() {
         teamChosen(1);
         await finalizePlayerAsync();
         notifyTurn(currentGameState);
+        handleCaptainButtons(currentGameState);
     };
     document.getElementById("teamTwoName").onclick = async function () {
         teamChosen(2);
         await finalizePlayerAsync();
         notifyTurn(currentGameState);
+        handleCaptainButtons(currentGameState);
     };
     document.getElementById("chooseSmallestTeam").onclick = async function () {
         await chooseSmallestTeam();
         await finalizePlayerAsync();
         notifyTurn(currentGameState);
+        handleCaptainButtons(currentGameState);
     };
 }
 
@@ -494,18 +499,7 @@ function drawTurnType(gameState) {
             }
             break;
         case "GuessesMade":
-            if (parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCorrect ||
-                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCorrect) {
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerCorrect");
-
-                document.getElementById("panelButtons").classList.add("hidden");
-                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-                document.getElementById("turnStatusMessage").innerHTML = "Correct Answer!";
-            } else {
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-            }
+            document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
             break;
     }
 }
@@ -523,23 +517,13 @@ function notifyTurn(gameState) {
     switch (gameState.turnType) {
         case "OpenPanel":
             if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
-                drawSystemChat("chats", "It's your team's turn to vote for panel(s) you want to open.");
+                drawSystemChat("chats", "It's your team's turn to vote for a panel to open.");
             }
             break;
         case "MakeGuess":
             if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
                 parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus)) {
                 drawSystemChat("chats", "It's time to guess or pass.");
-            }
-            break;
-        case "GuessesMade":
-            if (parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCorrect ||
-                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCorrect) {
-                drawSystemChat("chats", "That's the correct answer!");
-            } else if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
-                drawSystemChat("chats", "The other team's answer was correct.");
-            } else {
-                drawSystemChat("chats", "Both teams were incorrect or passed.");
             }
             break;
     }
@@ -572,6 +556,10 @@ function handleGameState(gameState) {
     currentGameState = gameState;
 
     drawGameState(gameState);
+
+    if (!playerIsReadyToPlay) {
+        return;
+    }
 
     drawTurnType(gameState);
 
