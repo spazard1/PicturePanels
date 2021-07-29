@@ -22,8 +22,8 @@ namespace PicturePanels.Models
         public const string TurnTypeGuessesMade = "GuessesMade";
         public const string TurnTypeEndRound = "EndRound";
 
-        public const string CaptainStatusPass = "Pass";
-        public const string CaptainStatusGuess = "Guess";
+        public const string TeamGuessStatusPass = "Pass";
+        public const string TeamGuessStatusGuess = "Guess";
 
         public GameStateTableEntity()
         {
@@ -59,8 +59,6 @@ namespace PicturePanels.Models
 
         public string TeamOneName { get; set; }
 
-        public string TeamOneCaptain { get; set; }
-
         public int TeamOneScore { get; set; }
 
         public int TeamOneIncorrectGuesses { get; set; }
@@ -71,11 +69,9 @@ namespace PicturePanels.Models
 
         public bool TeamOneCorrect { get; set; }
 
-        public string TeamOneCaptainStatus { get; set; }
+        public string TeamOneGuessStatus { get; set; }
 
         public string TeamTwoName { get; set; }
-
-        public string TeamTwoCaptain { get; set; }
 
         public int TeamTwoScore { get; set; }
 
@@ -87,7 +83,7 @@ namespace PicturePanels.Models
 
         public bool TeamTwoCorrect { get; set; }
 
-        public string TeamTwoCaptainStatus { get; set; }
+        public string TeamTwoGuessStatus { get; set; }
 
         public void SetTurnType(string action)
         {
@@ -155,10 +151,10 @@ namespace PicturePanels.Models
         public void ClearGuesses()
         {
             TeamOneGuess = string.Empty;
-            TeamOneCaptainStatus = string.Empty;
+            TeamOneGuessStatus = string.Empty;
             TeamOneCorrect = false;
             TeamTwoGuess = string.Empty;
-            TeamTwoCaptainStatus = string.Empty;
+            TeamTwoGuessStatus = string.Empty;
             TeamTwoCorrect = false;
         }
 
@@ -197,11 +193,11 @@ namespace PicturePanels.Models
                 TeamTwoScore += 5;
             }
             
-            if (!TeamOneCorrect && TeamOneCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
+            if (!TeamOneCorrect && TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
             {
                 TeamOneIncorrectGuesses += 1;
             }
-            if (!TeamTwoCorrect && TeamTwoCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
+            if (!TeamTwoCorrect && TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
             {
                 TeamTwoIncorrectGuesses += 1;
             }

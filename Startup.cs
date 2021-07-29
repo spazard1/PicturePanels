@@ -42,6 +42,7 @@ namespace PicturePanels
             services.AddSingleton<GameTableStorage>();
             services.AddSingleton<PlayerTableStorage>();
             services.AddSingleton<ChatTableStorage>();
+            services.AddSingleton<TeamGuessTableStorage>();
             services.AddSingleton<IUserNameProvider, UserNameProvider>();
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
@@ -91,6 +92,9 @@ namespace PicturePanels
 
             var chatTableStorage = app.ApplicationServices.GetRequiredService<ChatTableStorage>();
             await chatTableStorage.Startup();
+
+            var teamGuessTableStorage = app.ApplicationServices.GetRequiredService<TeamGuessTableStorage>();
+            await teamGuessTableStorage.Startup();
         }
     }
 }

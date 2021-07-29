@@ -15,8 +15,6 @@ namespace PicturePanels.Services
 
         Task TeamGuesses(List<TeamGuessEntity> entities);
 
-        Task CaptainStatus(CaptainStatusEntity entity);
-
         Task AddPlayer(PlayerEntity entity);
 
         Task SelectPanels(PlayerEntity entity);

@@ -55,7 +55,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            var guess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel());
+            var guess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel(teamNumber));
             allGuesses.Add(guess);
             await signalRHelper.SendTeamGuessesAsync(allGuesses.Select(guessModel => new TeamGuessEntity(guessModel)).ToList(), teamNumber);
 
