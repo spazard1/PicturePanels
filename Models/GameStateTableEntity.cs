@@ -201,12 +201,10 @@ namespace PicturePanels.Models
             if (!TeamOneCorrect && TeamOneCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
             {
                 TeamOneIncorrectGuesses += 1;
-                TeamOneScore -= 1;
             }
             if (!TeamTwoCorrect && TeamTwoCaptainStatus == GameStateTableEntity.CaptainStatusGuess)
             {
                 TeamTwoIncorrectGuesses += 1;
-                TeamTwoScore -= 1;
             }
         }
 
