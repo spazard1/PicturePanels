@@ -1,7 +1,7 @@
 ﻿body {
     color: white;
     background-color: black;
-    margin: 1px;
+    margin: 3px;
     overflow: hidden;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
@@ -136,7 +136,11 @@ body::-webkit-scrollbar {
 }
 
 .teamNameBox {
+    box-sizing: border-box;
     flex: 6;
+    background-color: rgb(40, 40, 40);
+    border: 4px solid rgb(40, 40, 40);
+    height: 100%;
 }
 
 .teamStatus {
@@ -281,10 +285,6 @@ body::-webkit-scrollbar {
     z-index: 1;
     box-sizing: border-box;
     transition: opacity .5s;
-}
-
-.teamNameBox {
-    border: 4px solid black;
 }
 
 .imageContainer {
