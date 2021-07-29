@@ -296,10 +296,7 @@ function drawTeamStatus(gameState, resetTimer) {
             }
             break;
         case "GuessesMade":
-            teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
-
-            
-
+            teamStatus.innerHTML = "Who was right?";
             break;
         case "EndRound":
             teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
@@ -313,19 +310,21 @@ function drawTeamStatus(gameState, resetTimer) {
 function drawTeamGuesses(gameState) {
     var teamOneGuessElement = document.getElementById("teamOneGuessText");
     var teamTwoGuessElement = document.getElementById("teamTwoGuessText");
+    teamOneGuessElement.classList.remove("teamGuessIncorrect");
+    teamTwoGuessElement.classList.remove("teamGuessIncorrect");
 
     if (gameState.turnType !== "GuessesMade") {
-        animationPromise = animationPromise.then(() => animateCSS(teamOneGuessElement, ["bounceOutUp"], ["slow", "bounceInDown"]));
-        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessElement, ["bounceOutUp"], ["slow", "bounceInDown"]));
+        animateCSS(teamOneGuessElement, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
+        animateCSS(teamTwoGuessElement, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
         return;
     }
 
-    var teamOneGuess = gameState.teamOneGuess;
+    var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
     if (gameState.teamOneCaptainStatus !== "Guess") {
         teamOneGuess = "(team passed)";
     }
 
-    var teamTwoGuess = gameState.teamTwoGuess;
+    var teamTwoGuess = "\"" + gameState.teamTwoGuess + "\"";
     if (gameState.teamTwoCaptainStatus !== "Guess") {
         teamTwoGuess = "(team passed)";
     }
@@ -340,7 +339,7 @@ function drawTeamGuesses(gameState) {
 }
 
 function drawTeamGuess(teamGuessText, teamGuessElement, delay) {
-    if (teamGuessElement.textContent.length > 20) {
+    if (teamGuessText.length > 20) {
         teamGuessElement.classList.add("teamGuessLong");
     } else {
         teamGuessElement.classList.remove("teamGuessLong");
@@ -351,6 +350,35 @@ function drawTeamGuess(teamGuessText, teamGuessElement, delay) {
             setTimeout(resolve, 3000);
         });
     });
+}
+
+function drawTeamGuessHighlights(gameState) {
+    if (gameState.turnType !== "GuessesMade") {
+        return;
+    }
+
+    var teamOneGuessElement = document.getElementById("teamOneGuessText");
+    var teamTwoGuessElement = document.getElementById("teamTwoGuessText");
+
+    if (gameState.teamOneCorrect) {
+        animationPromise = animationPromise.then(() => animateCSS(teamOneGuessElement, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
+    } else if (gameState.teamOneCaptainStatus === "Guess" && !gameState.teamOneCorrect) {
+        animationPromise = animationPromise.then(() => {
+            teamOneGuessElement.innerHTML = "\"" + gameState.teamOneGuess + "\"";
+            teamOneGuessElement.classList.add("teamGuessIncorrect");
+            return Promise.resolve();
+        });
+    }
+
+    if (gameState.teamTwoCorrect) {
+        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessElement, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
+    } else {
+        animationPromise = animationPromise.then(() => {
+            teamTwoGuessElement.innerHTML = "\"" + gameState.teamTwoGuess + "\"";
+            teamTwoGuessElement.classList.add("teamGuessIncorrect");
+            return Promise.resolve();
+        });
+    }
 }
 
 function drawTeamScoreChange(gameState) {
@@ -371,25 +399,27 @@ function drawTeamScoreChange(gameState) {
         }
 
         animationPromise = animationPromise.then(() => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    drawTeamScoreChangeText(gameState);
-                    resolve();
-                }, 3000);
-            });
-        });
-
-        animationPromise = animationPromise.then(() => {
-            teamOneScoreTextElement.innerHTML = gameState.teamOneScore;
-            teamTwoScoreTextElement.innerHTML = gameState.teamTwoScore;
+            drawTeamScoreChangeText(gameState);
             return Promise.resolve();
         });
+
+        if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+            animationPromise = animationPromise.then(() => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        teamOneScoreTextElement.innerHTML = gameState.teamOneScore;
+                        teamTwoScoreTextElement.innerHTML = gameState.teamTwoScore;
+                        resolve();
+                    }, 2000);
+                });
+            });
+        }
     } else {
         teamOneScoreTextElement.innerHTML = gameState.teamOneScore;
         teamTwoScoreTextElement.innerHTML = gameState.teamTwoScore;
 
-        animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["bounceOutUp"], ["slow", "bounceInDown"]));
-        animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["bounceOutUp"], ["slow", "bounceInDown"]));
+        animateCSS(teamOneScoreChangeElement, ["bounceOutUp"], ["slow", "bounceInDown"]);
+        animateCSS(teamTwoScoreChangeElement, ["bounceOutUp"], ["slow", "bounceInDown"]);
     }
 
     if (!teamOneScoreTextElement.innerHTML) {
@@ -412,15 +442,13 @@ function drawTeamScoreChangeText(gameState) {
         }
     } else if (gameState.teamOneCorrect) {
         teamOneScoreChangeElement.innerHTML = "+5";
+        teamTwoScoreChangeElement.innerHTML = "";
     } else if (gameState.teamTwoCorrect) {
+        teamOneScoreChangeElement.innerHTML = "";
         teamTwoScoreChangeElement.innerHTML = "+5";
-    }
-
-    if (!gameState.teamOneCorrect && gameState.teamOneCaptainStatus === "Guess") {
-        teamOneScoreChangeElement.innerHTML = "&olcross;";
-    }
-    if (!gameState.teamTwoCorrect && gameState.teamTwoCaptainStatus === "Guess") {
-        teamTwoScoreChangeElement.innerHTML = "&olcross;";
+    } else {
+        teamOneScoreChangeElement.innerHTML = "";
+        teamTwoScoreChangeElement.innerHTML = "";
     }
 }
 
@@ -432,9 +460,10 @@ function setupCanvases() {
     var canvases = document.getElementsByClassName("countdownCanvas");
 
     for (let canvas of canvases) {
+        canvas.style = "";
         var ctx = canvas.getContext("2d");
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        var canvasSize = Math.floor(canvas.scrollHeight);
+        var canvasSize = Math.floor(canvas.clientHeight);
         canvas.style.height = canvasSize + "px";
         canvas.style.width = canvasSize + "px";
         canvas.height = canvasSize * window.devicePixelRatio;
@@ -728,7 +757,6 @@ function drawRoundNumber(gameState) {
     }
 }
 
-
 async function drawImageEntityAsync(gameState) {
     var imageEntity = await getImageEntityAsync(gameState.imageId);
 
@@ -736,9 +764,9 @@ async function drawImageEntityAsync(gameState) {
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
         uploadedByElement.innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
 
-        animationPromise = animationPromise.then(() => animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"]));
+        animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"]);
     } else {
-        animationPromise = animationPromise.then(() => animateCSS(uploadedByElement, ["bounceOutRight"], ["slow", "bounceInRight"]));
+        animateCSS(uploadedByElement, ["bounceOutRight"], ["slow", "bounceInRight"]);
     }
 
     if (imageEntity && imageEntity.name) {
@@ -751,7 +779,7 @@ async function drawImageEntityAsync(gameState) {
             answerTitleElement.appendChild(answerTitleTextElement);
         });
     } else {
-        animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["bounceOutUp"], ["slow", "bounceInDown"]));
+        animateCSS("#answerTitle", ["bounceOutUp"], ["slow", "bounceInDown"]);
     }
 }
 
@@ -782,6 +810,13 @@ async function drawRevealedPanelsAsync(gameState) {
             })
         });
         return;
+    } else {
+        // always wait to show if the guesses were wrong
+        animationPromise = animationPromise.then(() => {
+            return new Promise((resolve) => {
+                setTimeout(resolve, 5000);
+            })
+        });
     }
 
     var panels = document.getElementsByClassName("panel");
@@ -831,7 +866,7 @@ function drawPanelCounts(gameState) {
             panelElement.className = "animate__animated animate__slow teamOneBox";
             teamOneInnerPanelsCountDiv.appendChild(panelElement);
             panelElement.addEventListener('animationend', () => {
-                panelElement.remove();
+                teamOneInnerPanelsCountDiv.lastChild.remove();
             });
         }
 
@@ -840,25 +875,24 @@ function drawPanelCounts(gameState) {
             panelElement.className = "animate__animated animate__slow teamTwoBox";
             teamTwoInnerPanelsCountDiv.appendChild(panelElement);
             panelElement.addEventListener('animationend', () => {
-                panelElement.remove();
+                teamTwoInnerPanelsCountDiv.lastChild.remove();
             });
         }
     } else {
         var children = teamOneInnerPanelsCountDiv.children;
         for (i = 0; i < children.length; i++) {
             if (gameState.teamOneInnerPanels <= i) {
-                children[i].classList.add("animate__rotateOut");
+                children[i].classList.add("animate__rollOut");
             }
         }
 
         children = teamTwoInnerPanelsCountDiv.children;
         for (i = 0; i < children.length; i++) {
             if (gameState.teamTwoInnerPanels <= i) {
-                children[i].classList.add("animate__rotateOut");
+                children[i].classList.add("animate__rollOut");
             }
         }
     }
-    
 }
 
 function setupWelcomeAnimationAsync() {
@@ -955,6 +989,8 @@ async function handleGameState(gameState, firstLoad) {
 
     await drawImageEntityAsync(gameState);
 
+    drawTeamGuessHighlights(gameState);
+
     drawTeamScoreChange(gameState);
 
     drawIncorrectGuesses(gameState);
@@ -1038,7 +1074,8 @@ var reloadTimeout;
 window.onresize = function () {
     clearTimeout(reloadTimeout);
     reloadTimeout = setTimeout(function () {
-        location.reload();
+        resizePanelContainer();
+        setupCanvases();
     }, 250);
 }
 
@@ -1054,7 +1091,6 @@ window.onload = async function () {
         }
         mouseTimer = window.setTimeout(disappearCursor, 3000);
     };
-
 
     startSignalRAsync("gameboard").then(function () {
         connection.invoke("RegisterGameBoard")
