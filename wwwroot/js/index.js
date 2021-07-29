@@ -372,7 +372,7 @@ function reloadPage() {
     location.reload();
 }
 
-function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0, afterDelay = 0, prefix = 'animate__') {
+function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0, prefix = 'animate__') {
     var node;
     if (typeof element !== "string") {
         node = element;
@@ -388,7 +388,7 @@ function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0
 
             node.classList.add(...animationsToAdd);
             node.classList.remove(...animationsToRemove);
-            setTimeout(resolve, afterDelay);
+            resolve();
         }, startDelay);
     });
 }
