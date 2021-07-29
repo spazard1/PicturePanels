@@ -66,21 +66,6 @@ function randomizeTeams() {
     });
 }
 
-function captains() {
-    var result = confirm("Set Captains?");
-    if (!result) {
-        return;
-    }
-
-    fetch("/api/gameState/captains", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": localStorage.getItem("Authorization")
-        }
-    });
-}
-
 function drawIsAdminButton(player) {
     if (player.isAdmin) {
         document.getElementById("putAdminButton").value = "Revoke Admin";

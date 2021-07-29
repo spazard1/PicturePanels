@@ -297,12 +297,6 @@ async function sendChat(chatsElementId, teamNumber) {
         chatInputText.focus();
     }
 
-    if (chatInputText.value.toLowerCase() === "/captain") {
-        putImTheCaptainNow();
-        chatInputText.value = "";
-        return;
-    }
-
     lastTypingTime = null;
 
     var player = {

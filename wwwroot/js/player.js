@@ -95,60 +95,22 @@ async function putPlayerPingAsync() {
         });
 }
 
-async function putCaptainPass() {
+async function postTeamGuess() {
     if (!playerIsReadyToPlay) {
         return;
     }
 
-    document.getElementById("captainGuessButton").classList.add("captainButtonDisabled");
-    document.getElementById("captainGuessButton").classList.remove("captainButtonSelected");
-
-    document.getElementById("captainPassButton").classList.remove("captainButtonDisabled");
-    document.getElementById("captainPassButton").classList.add("captainButtonSelected");
-
-    await fetch("api/gameState/captainPass/" + localStorage.getItem("playerId"),
+    await fetch("api/teamGuess/" + localStorage.getItem("teamNumber"),
         {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-}
-
-async function putCaptainGuess() {
-    if (!playerIsReadyToPlay) {
-        return;
-    }
-
-    document.getElementById("captainGuessButton").classList.remove("captainButtonDisabled");
-    document.getElementById("captainGuessButton").classList.add("captainButtonSelected");
-
-    document.getElementById("captainPassButton").classList.add("captainButtonDisabled");
-    document.getElementById("captainPassButton").classList.remove("captainButtonSelected");
-
-    await fetch("api/gameState/captainGuess/" + localStorage.getItem("playerId"),
-        {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                Guess: document.getElementById("captainGuessInput").value
+                Guess: document.getElementById("teamGuessInput").value
             })
-        });
-}
-
-async function putImTheCaptainNow() {
-    if (!playerIsReadyToPlay) {
-        return;
-    }
-
-    await fetch("api/gameState/captain/" + localStorage.getItem("playerId"),
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            }
+        }).then(() => {
+            document.getElementById("teamGuessInput").value = "";
         });
 }
 
@@ -191,7 +153,7 @@ function setupChoosePlayerName() {
     document.getElementById("teamTwoName").classList.remove("teamTwoColor");
     document.getElementById("teamTwoName").classList.add("teamTwoBox");
 
-    document.getElementById("captainStatusButtons").classList.add("hidden");
+    document.getElementById("teamGuessesContainer").classList.add("hidden");
 }
 
 function choosePlayerNameButtonOnClick() {
@@ -296,20 +258,14 @@ function setupTeamSelectionButtons() {
     document.getElementById("teamOneName").onclick = async function () {
         teamChosen(1);
         await finalizePlayerAsync();
-        notifyTurn(currentGameState);
-        handleCaptainButtons(currentGameState);
     };
     document.getElementById("teamTwoName").onclick = async function () {
         teamChosen(2);
         await finalizePlayerAsync();
-        notifyTurn(currentGameState);
-        handleCaptainButtons(currentGameState);
     };
     document.getElementById("chooseSmallestTeam").onclick = async function () {
         await chooseSmallestTeam();
         await finalizePlayerAsync();
-        notifyTurn(currentGameState);
-        handleCaptainButtons(currentGameState);
     };
 }
 
@@ -383,54 +339,6 @@ function drawTeam(teamNumber) {
     document.getElementById("teamTwoName").classList.remove("teamTwoBox");
 }
 
-function isCaptain(gameState) {
-    if (!gameState) {
-        return false;
-    }
-    return (gameState.teamOneCaptain === localStorage.getItem("playerId") && localStorage.getItem("teamNumber") === "1") ||
-        (gameState.teamTwoCaptain === localStorage.getItem("playerId") && localStorage.getItem("teamNumber") === "2");
-}
-
-function handleCaptainButtons(gameState) {
-    if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
-        parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus) && 
-        gameState.turnType === "MakeGuess" && isCaptain(gameState)) {
-        if (gameState.captainStatus === "Guess") {
-            document.getElementById("captainGuessButton").classList.remove("captainButtonDisabled");
-            document.getElementById("captainGuessButton").classList.add("captainButtonSelected");
-
-            document.getElementById("captainPassButton").classList.add("captainButtonDisabled");
-            document.getElementById("captainPassButton").classList.remove("captainButtonSelected");
-        } else if (gameState.captainStatus === "Pass") {
-            document.getElementById("captainGuessButton").classList.add("captainButtonDisabled");
-            document.getElementById("captainGuessButton").classList.remove("captainButtonSelected");
-
-            document.getElementById("captainPassButton").classList.remove("captainButtonDisabled");
-            document.getElementById("captainPassButton").classList.add("captainButtonSelected");
-        } else {
-            document.getElementById("captainGuessButton").classList.remove("captainButtonDisabled");
-            document.getElementById("captainGuessButton").classList.remove("captainButtonSelected");
-
-            document.getElementById("captainPassButton").classList.remove("captainButtonDisabled");
-            document.getElementById("captainPassButton").classList.remove("captainButtonSelected");
-        }
-        document.getElementById("captainStatusButtons").classList.remove("hidden");
-    } else {
-        document.getElementById("captainStatusButtons").classList.add("hidden");
-    }
-}
-
-function notifyTeamCaptain(gameState) {
-    if (!gameState) {
-        return;
-    }
-
-    if (localStorage.getItem("teamNumber") === "1" && gameState.teamOneCaptain === localStorage.getItem("playerId") ||
-        localStorage.getItem("teamNumber") === "2" && gameState.teamTwoCaptain === localStorage.getItem("playerId")) {
-        drawSystemChat("chats", "You are the captain now.");
-    }
-}
-
 function drawTurnType(gameState) {
     if (!gameState) {
         return;
@@ -454,16 +362,16 @@ function drawTurnType(gameState) {
     }
 
     if (gameState.turnType !== "MakeGuess") {
-        var captainGuessElement = document.getElementById("captainGuessInput");
-        captainGuessElement.value = "";
+        var teamGuessInputElement = document.getElementById("teamGuessInput");
+        teamGuessInputElement.value = "";
 
         if ("createEvent" in document) {
             var evt = document.createEvent("HTMLEvents");
             evt.initEvent("change", false, true);
-            captainGuessElement.dispatchEvent(evt);
+            teamGuessInputElement.dispatchEvent(evt);
         }
         else {
-            captainGuessElement.fireEvent("onchange");
+            teamGuessInputElement.fireEvent("onchange");
         }
     }
 
@@ -483,48 +391,18 @@ function drawTurnType(gameState) {
             }
             break;
         case "MakeGuess":
-            if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
-                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus)) {
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+            document.getElementById("teamGuessesContainer").classList.remove("hidden");
 
-                highlightTurnStatusContainer();
+            document.getElementById("panelButtons").classList.add("hidden");
+            document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
 
-                document.getElementById("panelButtons").classList.add("hidden");
-                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-                if (isCaptain(gameState)) {
-                    document.getElementById("turnStatusMessage").innerHTML = "Does your team want to guess?";
-                } else {
-                    document.getElementById("turnStatusMessage").innerHTML = "Make a guess or pass";
-                }
-            }
+            document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+            document.getElementById("turnStatusMessage").innerHTML = "Make your guess or pass";
+            highlightTurnStatusContainer();
+
             break;
         case "GuessesMade":
             document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
-            break;
-    }
-}
-
-function notifyTurn(gameState) {
-    if (!gameState) {
-        return;
-    }
-
-    if (gameState.turnType === "Welcome") {
-        drawSystemChat("chats", "Welcome to the Picture Panels game!");
-        return;
-    }
-
-    switch (gameState.turnType) {
-        case "OpenPanel":
-            if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
-                drawSystemChat("chats", "It's your team's turn to vote for a panel to open.");
-            }
-            break;
-        case "MakeGuess":
-            if (!(parseInt(localStorage.getItem("teamNumber")) === 1 && gameState.teamOneCaptainStatus ||
-                parseInt(localStorage.getItem("teamNumber")) === 2 && gameState.teamTwoCaptainStatus)) {
-                drawSystemChat("chats", "It's time to guess or pass.");
-            }
             break;
     }
 }
@@ -540,17 +418,9 @@ function handleGameState(gameState) {
     loadThemeCss(gameState);
 
     if (playerIsReadyToPlay && (!currentGameState || currentGameState.turnType !== gameState.turnType || currentGameState.teamTurn !== gameState.teamTurn)) {
-        notifyTurn(gameState);
         clearPanelButtonSelection();
     } else if (currentGameState && currentGameState.imageId !== gameState.imageId) {
         clearPanelButtonSelection();
-    }
-
-    if (currentGameState &&
-        (localStorage.getItem("teamNumber") === "1" && currentGameState.teamOneCaptain !== gameState.teamOneCaptain ||
-            localStorage.getItem("teamNumber") === "2" && currentGameState.teamTwoCaptain !== gameState.teamTwoCaptain)) {
-        notifyTurn(gameState);
-        notifyTeamCaptain(gameState);
     }
 
     currentGameState = gameState;
@@ -565,18 +435,20 @@ function handleGameState(gameState) {
 
     updatePlayerPanelButtons(gameState);
 
-    handleCaptainButtons(gameState);
+    if (gameState.turnType === "Welcome") {
+        drawSystemChat("chats", "Welcome to the Picture Panels game!");
+        return;
+    }
 }
 
-function handleCaptainStatus(captainStatus) {
+function handleTeamGuesses(teamGuesses) {
     if (currentGameState.turnType === "MakeGuess") {
-        document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
-
-        if (captainStatus.status === "Pass") {
-            document.getElementById("turnStatusMessage").innerHTML = "Your Team has passed.";
-        } else {
-            document.getElementById("turnStatusMessage").innerHTML = "Your Guess: " + captainStatus.guess;
-        }
+        document.getElementById("teamGuesses").innerHTML = "";
+        teamGuesses.forEach(teamGuess => {
+            var teamGuessElement = document.createElement("div");
+            teamGuessElement.appendChild(document.createTextNode(teamGuess.guess));
+            document.getElementById("teamGuesses").appendChild(teamGuessElement);
+        });
     }
 }
 
@@ -632,7 +504,7 @@ function registerConnections() {
     });
 
     connection.on("GameState", handleGameState);
-    connection.on("CaptainStatus", handleCaptainStatus);
+    connection.on("TeamGuesses", handleTeamGuesses);
     connection.on("RandomizeTeam", handleRandomizeTeam);
 
     connection.onreconnected = function () {
@@ -659,13 +531,9 @@ window.onresize = function () {
 var connectionCount = 0;
 
 window.onload = async function () {
-    var captainGuessButton = document.getElementById("captainGuessButton");
-    captainGuessButton.onclick = (event) => {
-        putCaptainGuess();
-    }
-    var captainPassButton = document.getElementById("captainPassButton");
-    captainPassButton.onclick = (event) => {
-        putCaptainPass();
+    var teamGuessButton = document.getElementById("teamGuessButton");
+    teamGuessButton.onclick = (event) => {
+        postTeamGuess();
     }
 
     drawPanelButtons();
@@ -681,7 +549,7 @@ window.onload = async function () {
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
-    setupInputDefaultText("captainGuessInput", "your team's guess");
+    setupInputDefaultText("teamGuessInput", "your guess");
 
     setInterval(putPlayerPingAsync, 30000);
 }

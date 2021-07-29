@@ -98,13 +98,6 @@ function updatePlayer(player) {
     playerElement.innerHTML = player.name;
     playerElement.style.borderColor = player.color;
 
-    if ((player.playerId === currentGameState.teamOneCaptain && player.teamNumber === 1) ||
-        (player.playerId === currentGameState.teamTwoCaptain && player.teamNumber === 2)) {
-        playerElement.classList.add("teamPlayerNameCaptain");
-    } else {
-        playerElement.classList.remove("teamPlayerNameCaptain");
-    }
-
     var parent = null;
     
     playerSelectedPanels[player.playerId] = player;
@@ -288,10 +281,10 @@ function drawTeamStatus(gameState, resetTimer) {
                 startCountdown(activeTeamCountdownCanvas, gameState.guessTime, 3);
                 startCountdown(passiveTeamCountdownCanvas, gameState.guessTime, 3);
             }
-            if (gameState.teamOneCaptainStatus) {
+            if (gameState.teamOneGuessStatus) {
                 stopCountdown(teamOneCountdownCanvas);
             }
-            if (gameState.teamTwoCaptainStatus) {
+            if (gameState.teamTwoGuessStatus) {
                 stopCountdown(teamTwoCountdownCanvas);
             }
             break;
@@ -320,12 +313,12 @@ function drawTeamGuesses(gameState) {
     }
 
     var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
-    if (gameState.teamOneCaptainStatus !== "Guess") {
+    if (gameState.teamOneGuessStatus !== "Guess") {
         teamOneGuess = "(team passed)";
     }
 
     var teamTwoGuess = "\"" + gameState.teamTwoGuess + "\"";
-    if (gameState.teamTwoCaptainStatus !== "Guess") {
+    if (gameState.teamTwoGuessStatus !== "Guess") {
         teamTwoGuess = "(team passed)";
     }
 
@@ -362,7 +355,7 @@ function drawTeamGuessHighlights(gameState) {
 
     if (gameState.teamOneCorrect) {
         animationPromise = animationPromise.then(() => animateCSS(teamOneGuessElement, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
-    } else if (gameState.teamOneCaptainStatus === "Guess" && !gameState.teamOneCorrect) {
+    } else if (gameState.teamOneGuessStatus === "Guess" && !gameState.teamOneCorrect) {
         animationPromise = animationPromise.then(() => {
             teamOneGuessElement.innerHTML = "\"" + gameState.teamOneGuess + "\"";
             teamOneGuessElement.classList.add("teamGuessIncorrect");
@@ -388,13 +381,13 @@ function drawTeamScoreChange(gameState) {
     var teamTwoScoreChangeElement = document.getElementById("teamTwoScoreChange");
 
     if (gameState.turnType === "GuessesMade") {
-        if (gameState.teamOneCaptainStatus === "Guess" && gameState.teamTwoCaptainStatus === "Guess") {
+        if (gameState.teamOneGuessStatus === "Guess" && gameState.teamTwoGuessStatus === "Guess") {
             animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
             animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"]));
             delay = 0;
-        } else if (gameState.teamOneCaptainStatus === "Guess") {
+        } else if (gameState.teamOneGuessStatus === "Guess") {
             animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
-        } else if (gameState.teamTwoCaptainStatus === "Guess") {
+        } else if (gameState.teamTwoGuessStatus === "Guess") {
             animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
         }
 
@@ -783,18 +776,6 @@ async function drawImageEntityAsync(gameState) {
     }
 }
 
-function drawCaptains() {
-    var playerNameElements = document.getElementsByClassName("teamPlayerName");
-    for (let playerNameElement of playerNameElements) {
-        if (playerNameElement.playerId === currentGameState.teamOneCaptain ||
-            playerNameElement.playerId === currentGameState.teamTwoCaptain) {
-            playerNameElement.classList.add("teamPlayerNameCaptain");
-        } else {
-            playerNameElement.classList.remove("teamPlayerNameCaptain");
-        }
-    }
-}
-
 async function drawRevealedPanelsAsync(gameState) {
     if (gameState.turnType === "EndRound") {
         return openAllPanelsAsync();
@@ -984,7 +965,6 @@ async function handleGameState(gameState, firstLoad) {
     drawGameState(gameState);
     drawRoundNumber(gameState);
     drawTeamStatus(gameState, firstLoad || isNewTurn);
-    drawCaptains();
     drawTeamGuesses(gameState);
     await drawRevealedPanelsAsync(gameState);
     await drawImageEntityAsync(gameState);
