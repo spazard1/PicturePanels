@@ -92,14 +92,6 @@
     background-color: darkred;
 }
 
-#teamOnePlayerNames .teamPlayerNameCaptain {
-    outline: dashed 2px pink;
-}
-
-#teamTwoPlayerNames .teamPlayerNameCaptain {
-    outline: dashed 2px pink;
-}
-
 @keyframes correct {
     0% {
         color: white;

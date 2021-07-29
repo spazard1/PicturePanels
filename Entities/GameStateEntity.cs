@@ -24,13 +24,11 @@ namespace PicturePanels.Entities
             this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;
             this.TeamOneName = tableEntity.TeamOneName;
-            this.TeamOneCaptain = tableEntity.TeamOneCaptain;
             this.TeamOneScore = tableEntity.TeamOneScore;
             this.TeamOneIncorrectGuesses = tableEntity.TeamOneIncorrectGuesses;
             this.TeamOneInnerPanels = tableEntity.TeamOneInnerPanels;
             this.TeamOneCorrect = tableEntity.TeamOneCorrect;
             this.TeamTwoName = tableEntity.TeamTwoName;
-            this.TeamTwoCaptain = tableEntity.TeamTwoCaptain;
             this.TeamTwoScore = tableEntity.TeamTwoScore;
             this.TeamTwoIncorrectGuesses = tableEntity.TeamTwoIncorrectGuesses;
             this.TeamTwoInnerPanels = tableEntity.TeamTwoInnerPanels;
@@ -38,15 +36,15 @@ namespace PicturePanels.Entities
 
             if (tableEntity.ShouldShowGuesses())
             {
-                this.TeamOneCaptainStatus = tableEntity.TeamOneCaptainStatus;
-                this.TeamTwoCaptainStatus = tableEntity.TeamTwoCaptainStatus;
+                this.TeamOneGuessStatus = tableEntity.TeamOneGuessStatus;
+                this.TeamTwoGuessStatus = tableEntity.TeamTwoGuessStatus;
                 this.TeamOneGuess = tableEntity.TeamOneGuess;
                 this.TeamTwoGuess = tableEntity.TeamTwoGuess;
             }
             else
             {
-                this.TeamOneCaptainStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamOneCaptainStatus) ? "Ready" : string.Empty;
-                this.TeamTwoCaptainStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamTwoCaptainStatus) ? "Ready" : string.Empty;
+                this.TeamOneGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamOneGuessStatus) ? "Ready" : string.Empty;
+                this.TeamTwoGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamTwoGuessStatus) ? "Ready" : string.Empty;
             }
         }
 
@@ -74,8 +72,6 @@ namespace PicturePanels.Entities
 
         public string TeamOneName { get; set; }
 
-        public string TeamOneCaptain { get; set; }
-
         public int? TeamOneScore { get; set; }
 
         public int? TeamOneIncorrectGuesses { get; set; }
@@ -86,11 +82,9 @@ namespace PicturePanels.Entities
 
         public bool TeamOneCorrect { get; set; }
 
-        public string TeamOneCaptainStatus { get; set; }
+        public string TeamOneGuessStatus { get; set; }
 
         public string TeamTwoName { get; set; }
-
-        public string TeamTwoCaptain { get; set; }
 
         public int? TeamTwoScore { get; set; }
 
@@ -102,7 +96,7 @@ namespace PicturePanels.Entities
 
         public bool TeamTwoCorrect { get; set; }
 
-        public string TeamTwoCaptainStatus { get; set; }
+        public string TeamTwoGuessStatus { get; set; }
 
         public void CopyProperties(GameStateTableEntity currentModel)
         {
@@ -116,12 +110,10 @@ namespace PicturePanels.Entities
             currentModel.TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn;
             currentModel.ImageId = this.ImageId ?? currentModel.ImageId;
             currentModel.TeamOneName = this.TeamOneName ?? currentModel.TeamOneName;
-            currentModel.TeamOneCaptain = this.TeamOneCaptain ?? currentModel.TeamOneCaptain;
             currentModel.TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore;
             currentModel.TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses;
             currentModel.TeamOneInnerPanels = this.TeamOneInnerPanels ?? currentModel.TeamOneInnerPanels;
             currentModel.TeamTwoName = this.TeamTwoName ?? currentModel.TeamTwoName;
-            currentModel.TeamTwoCaptain = this.TeamTwoCaptain ?? currentModel.TeamTwoCaptain;
             currentModel.TeamTwoScore = this.TeamTwoScore ?? currentModel.TeamTwoScore;
             currentModel.TeamTwoIncorrectGuesses = this.TeamTwoIncorrectGuesses ?? currentModel.TeamTwoIncorrectGuesses;
             currentModel.TeamTwoInnerPanels = this.TeamTwoInnerPanels ?? currentModel.TeamTwoInnerPanels;
