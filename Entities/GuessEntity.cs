@@ -28,7 +28,7 @@ namespace PicturePanels.Entities
             return new TeamGuessTableEntity()
             {
                 TeamNumber = teamNumber,
-                CreatedTime = DateTime.UtcNow,
+                Ticks = DateTime.UtcNow.Ticks.ToString(),
                 Guess = this.Guess
             };
         }

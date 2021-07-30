@@ -43,22 +43,26 @@
             <div id="chooseSmallestTeam" class="teamName chooseTeamName chooseSmallestTeamBox">Loading...</div>
         </div>
     </div>
+    <div id="turnStatusMessage" class="turnStatusMessage center turnStatusMessageHidden"></div>
     <div id="panelButtons" class="panelButtons center hidden"></div>
-    <div id="turnStatusContainer" class="turnStatusContainer center turnStatusContainerHidden">
-        <div id="turnStatusMessage"></div>
-    </div>
-    <div id="teamGuessesContainer" class="teamGuesses center hidden">
-        <div id="teamGuesses"></div>
-        <input id="teamGuessInput" class="teamGuessInput" type="text" autocomplete="off" />
-        <div id="teamGuessButton" class="teamGuessesButton">Guess</div>
+    <div id="teamGuessesContainer" class="teamGuessesContainer center hidden">
+        <div id="teamGuesses" class="teamGuesses center"></div>
+        <div id="teamGuessInputContainer">
+            <input id="teamGuessInput" class="teamGuessInput" type="text" autocomplete="off" />
+            <div id="teamGuessButton" class="teamGuessButton center">Guess</div>
+        </div>
+        <div id="teamGuessMessage"></div>
     </div>
 
     <div id="chats" class="chats hidden"></div>
 
     <div id="chats_input" class="chatInputContainer hidden">
-        <input id="chats_inputText" type="text" class="chatInput" autocomplete="off" maxlength="280" />
-
-        <img id="chats_send" class="chatSend" src="img/sendimage.png" />
+        <div id="chatInputTextContainer" class="chatInputTextContainer">
+            <input id="chats_inputText" type="text" class="chatInput" autocomplete="off" maxlength="280" />
+        </div>
+        <div id="chatSendContainer" class="chatSendContainer">
+            <img id="chats_send" class="chatSend" src="img/sendimage.png" />
+        </div>
     </div>
 
 </div>

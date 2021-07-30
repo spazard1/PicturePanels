@@ -68,6 +68,14 @@
     color: red;
 }
 
+.teamOneDarkColor {
+    color: darkgreen;
+}
+
+.teamTwoDarkColor {
+    color: darkred;
+}
+
 #teamOnePlayerNames div {
     background-color: darkgreen;
 }
