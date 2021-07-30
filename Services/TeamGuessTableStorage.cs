@@ -27,9 +27,9 @@ namespace PicturePanels.Services
             await teamGuessesTable.CreateIfNotExistsAsync();  
         }
 
-        public async Task<TeamGuessTableEntity> GetTeamGuessAsync(int teamNumber, long ticks)
+        public async Task<TeamGuessTableEntity> GetTeamGuessAsync(int teamNumber, string ticks)
         {
-            TableResult retrievedResult = await teamGuessesTable.ExecuteAsync(TableOperation.Retrieve<PlayerTableEntity>(TeamGuessTableEntity.PartitionKeyPrefix + teamNumber, ticks.ToString()));
+            TableResult retrievedResult = await teamGuessesTable.ExecuteAsync(TableOperation.Retrieve<TeamGuessTableEntity>(TeamGuessTableEntity.PartitionKeyPrefix + teamNumber, ticks));
             return (TeamGuessTableEntity)retrievedResult.Result;
         }
 

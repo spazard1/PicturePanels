@@ -28,11 +28,11 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> GetAllAsync(int teamNumber)
         {
             var allGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(teamNumber);
-            return Json(allGuesses.Select(guessModel => new GuessEntity(guessModel)).ToList());
+            return Json(allGuesses.Select(guessModel => new TeamGuessEntity(guessModel)).ToList());
         }
 
         [HttpDelete("{teamNumber}/{ticks}")]
-        public async Task<IActionResult> DeleteAsync(int teamNumber, long ticks)
+        public async Task<IActionResult> DeleteAsync(int teamNumber, string ticks)
         {
             var teamGuess = await this.teamGuessTableStorage.GetTeamGuessAsync(teamNumber, ticks);
             if (teamGuess == null)
@@ -41,6 +41,7 @@ namespace PicturePanels.Controllers
             }
 
             await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
+            await signalRHelper.DeleteTeamGuessesAsync(ticks, teamNumber);
 
             return StatusCode(204);
         }
@@ -55,11 +56,18 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            var guess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel(teamNumber));
-            allGuesses.Add(guess);
-            await signalRHelper.SendTeamGuessesAsync(allGuesses.Select(guessModel => new TeamGuessEntity(guessModel)).ToList(), teamNumber);
+            foreach (var guess in allGuesses)
+            {
+                if (GuessChecker.IsCorrect(entity.Guess, allGuesses.Select(guess => guess.Guess)))
+                {
+                    return StatusCode(405);
+                }
+            }
 
-            return Json(new GuessEntity(guess));
+            var teamGuess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel(teamNumber));
+            await signalRHelper.AddTeamGuessAsync(new TeamGuessEntity(teamGuess), teamNumber);
+
+            return Json(new TeamGuessEntity(teamGuess));
         }
     }
 }

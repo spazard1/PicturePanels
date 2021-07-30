@@ -26,17 +26,10 @@ namespace PicturePanels.Models
                 this.PartitionKey = PartitionKeyPrefix + value;
             }
         }
-
-        public long Ticks { get; set; }
-
-        public DateTime CreatedTime
+        public string Ticks
         {
-            get { return new DateTime(this.Ticks); }
-            set
-            {
-                this.Ticks = value.Ticks;
-                this.RowKey = value.Ticks.ToString();
-            }
+            get { return this.RowKey; }
+            set { this.RowKey = value; }
         }
 
         public string Guess { get; set; }

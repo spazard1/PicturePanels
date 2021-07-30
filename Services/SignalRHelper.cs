@@ -110,9 +110,14 @@ namespace PicturePanels.Services
             await Task.WhenAll(tasks);
         }
 
-        public async Task SendTeamGuessesAsync(List<TeamGuessEntity> teamGuessEntities, int teamNumber)
+        public async Task AddTeamGuessAsync(TeamGuessEntity teamGuessEntity, int teamNumber)
         {
-            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).TeamGuesses(teamGuessEntities);
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).AddTeamGuess(teamGuessEntity);
+        }
+
+        public async Task DeleteTeamGuessesAsync(string ticks, int teamNumber)
+        {
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).DeleteTeamGuess(ticks);
         }
     }
 }

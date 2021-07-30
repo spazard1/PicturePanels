@@ -84,6 +84,14 @@
     color: red;
 }
 
+.teamOneDarkColor {
+    color: #8B008B;
+}
+
+.teamTwoDarkColor {
+    color: darkred;
+}
+
 #teamOnePlayerNames div {
     background-color: #8B008B;
 }
