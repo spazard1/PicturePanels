@@ -95,7 +95,7 @@ async function putPlayerPingAsync() {
         });
 }
 
-async function postTeamGuess() {
+async function postTeamGuessAsync() {
     if (!playerIsReadyToPlay) {
         return;
     }
@@ -114,11 +114,30 @@ async function postTeamGuess() {
         });
 }
 
+async function getTeamGuessesAsync() {
+    return await fetch("/api/teamGuess/" + localStorage.getItem("teamNumber"))
+        .then(response => response.json())
+        .then(responseJson => {
+            return responseJson;
+        });
+}
+
+async function deleteTeamGuessAsync(ticks) {
+    if (!playerIsReadyToPlay) {
+        return;
+    }
+
+    await fetch("api/teamGuess/" + localStorage.getItem("teamNumber") + "/" + ticks,
+        {
+            method: "DELETE"
+        });
+}
+
 function setupChoosePlayerName() {
     playerIsReadyToPlay = false;
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
-    document.getElementById("turnStatusContainer").classList.add("hidden");
+    document.getElementById("turnStatusMessage").classList.add("hidden");
 
     document.getElementById("choosePlayerNameLabel").classList.remove("hidden");
     document.getElementById("playerNameInputDiv").classList.remove("hidden");
@@ -145,7 +164,7 @@ function setupChoosePlayerName() {
     document.getElementById("playerBanner").classList.add("playerBannerChooseTeam");
     document.getElementById("playerBanner").classList.remove("playerBannerPlaying");
     document.getElementById("playerBanner").onclick = null;
-    document.getElementById("turnStatusContainer").onclick = null;
+    document.getElementById("turnStatusMessage").onclick = null;
 
     document.getElementById("teamOneName").classList.remove("teamOneColor");
     document.getElementById("teamOneName").classList.add("teamOneBox");
@@ -225,14 +244,20 @@ async function setupPlayerAsync() {
 }
 
 async function finalizePlayerAsync() {
+    playerIsReadyToPlay = true;
+
+    handleGameState(await getGameStateAsync());
+
     var promises = [];
     promises.push(putPlayerAsync());
+    promises.push(getTeamGuessesAsync());
     promises.push(startSignalRAsync("player"));
     promises.push(drawChatsAsync("chats"));
 
     var results = await Promise.all(promises);
 
-    drawPlayer(results[0]); // first promise is the putPlayer
+    drawPlayer(results[0]); // first promise is putPlayer
+    drawTeamGuesses(results[1]); // second promise is getTeamGuessesAsync
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
@@ -242,7 +267,7 @@ async function finalizePlayerAsync() {
         setupChoosePlayerName();
     };
 
-    document.getElementById("turnStatusContainer").onclick = (event) => {
+    document.getElementById("turnStatusMessage").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
         if (!result) {
             return;
@@ -251,7 +276,6 @@ async function finalizePlayerAsync() {
     };
 
     scrollChats("chats", true);
-    playerIsReadyToPlay = true;
 }
 
 function setupTeamSelectionButtons() {
@@ -305,7 +329,7 @@ async function chooseSmallestTeam() {
 function drawTeam(teamNumber) {
     updatePlayerPanelButtons(currentGameState);
 
-    document.getElementById("turnStatusContainer").classList.remove("hidden");
+    document.getElementById("turnStatusMessage").classList.remove("hidden");
 
     if (teamNumber === 1) {
         document.getElementById("teamOneName").classList.remove("hidden");
@@ -344,17 +368,18 @@ function drawTurnType(gameState) {
         return;
     }
 
-    document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerCorrect");
+    document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageCorrect");
+    document.getElementById("teamGuessesContainer").classList.add("hidden");
 
     if (gameState.turnType === "Welcome") {
-        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
+        document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
         document.getElementById("panelButtons").classList.add("hidden");
         document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
         return;
     }
 
     if (gameState.turnType === "EndRound") {
-        document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
+        document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
         document.getElementById("panelButtons").classList.add("hidden");
         document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
         document.getElementById("turnStatusMessage").innerHTML = "This round is over.";
@@ -378,14 +403,14 @@ function drawTurnType(gameState) {
     switch (gameState.turnType) {
         case "OpenPanel":
             if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
-                document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
-                highlightTurnStatusContainer();
+                document.getElementById("turnStatusMessage").classList.add("turnStatusMessageVisible");
+                highlightturnStatusMessage();
 
                 document.getElementById("panelButtons").classList.remove("hidden");
                 document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 document.getElementById("turnStatusMessage").innerHTML = "Vote for a panel to open";
             } else {
-                document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
+                document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
                 document.getElementById("panelButtons").classList.add("hidden");
                 document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
             }
@@ -396,21 +421,21 @@ function drawTurnType(gameState) {
             document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
 
-            document.getElementById("turnStatusContainer").classList.add("turnStatusContainerVisible");
+            document.getElementById("turnStatusMessage").classList.add("turnStatusMessageVisible");
             document.getElementById("turnStatusMessage").innerHTML = "Make your guess or pass";
-            highlightTurnStatusContainer();
+            highlightturnStatusMessage();
 
             break;
         case "GuessesMade":
-            document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerVisible");
+            document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
             break;
     }
 }
 
-function highlightTurnStatusContainer() {
-    document.getElementById("turnStatusContainer").classList.remove("turnStatusContainerHighlight");
+function highlightturnStatusMessage() {
+    document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageHighlight");
     setTimeout(function () {
-        document.getElementById("turnStatusContainer").classList.add("turnStatusContainerHighlight");
+        document.getElementById("turnStatusMessage").classList.add("turnStatusMessageHighlight");
     }, 0);
 }
 
@@ -441,15 +466,48 @@ function handleGameState(gameState) {
     }
 }
 
-function handleTeamGuesses(teamGuesses) {
-    if (currentGameState.turnType === "MakeGuess") {
-        document.getElementById("teamGuesses").innerHTML = "";
-        teamGuesses.forEach(teamGuess => {
-            var teamGuessElement = document.createElement("div");
-            teamGuessElement.appendChild(document.createTextNode(teamGuess.guess));
-            document.getElementById("teamGuesses").appendChild(teamGuessElement);
-        });
+function drawTeamGuesses(teamGuesses) {
+    var teamGuessesElement = document.getElementById("teamGuesses");
+
+    teamGuessesElement.innerHTML = "";
+    teamGuesses.forEach(drawTeamGuess);
+}
+
+function deleteTeamGuess(ticks) {
+    document.getElementById("teamGuess_" + ticks).remove();
+}
+
+function drawTeamGuess(teamGuess) {
+    var teamGuessesElement = document.getElementById("teamGuesses");
+
+    var teamGuessElement = document.createElement("div");
+    teamGuessElement.id = "teamGuess_" + teamGuess.ticks;
+    teamGuessElement.classList = "teamGuessText";
+    if (localStorage.getItem("teamNumber") === "1") {
+        teamGuessElement.classList.add("teamOneDarkColorBackground");
+    } else {
+        teamGuessElement.classList.add("teamTwoDarkColorBackground");
     }
+    teamGuessElement.appendChild(document.createTextNode(teamGuess.guess));
+
+    var teamGuessDeleteButtonElement = document.createElement("div");
+    teamGuessDeleteImageElement = document.createElement("img");
+    teamGuessDeleteImageElement.src = "img/x-mark.png";
+    teamGuessDeleteButtonElement.appendChild(teamGuessDeleteImageElement);
+
+    teamGuessDeleteButtonElement.onclick = (event) => {
+        var result = confirm("Delete the guess '" + teamGuess.guess + "'?");
+        if (!result) {
+            return;
+        }
+
+        deleteTeamGuessAsync(teamGuess.ticks);
+    }
+
+    teamGuessDeleteButtonElement.classList = "teamGuessDeleteButton";
+    teamGuessElement.appendChild(teamGuessDeleteButtonElement);
+
+    teamGuessesElement.appendChild(teamGuessElement);
 }
 
 const innerPanels = ["7", "8", "9", "12", "13", "14"];
@@ -504,7 +562,8 @@ function registerConnections() {
     });
 
     connection.on("GameState", handleGameState);
-    connection.on("TeamGuesses", handleTeamGuesses);
+    connection.on("AddTeamGuess", drawTeamGuess);
+    connection.on("DeleteTeamGuess", deleteTeamGuess);
     connection.on("RandomizeTeam", handleRandomizeTeam);
 
     connection.onreconnected = function () {
@@ -531,21 +590,24 @@ window.onresize = function () {
 var connectionCount = 0;
 
 window.onload = async function () {
+    handleGameState(await getGameStateAsync());
+
     var teamGuessButton = document.getElementById("teamGuessButton");
     teamGuessButton.onclick = (event) => {
-        postTeamGuess();
+        postTeamGuessAsync();
+    }
+
+    var teamGuessInput = document.getElementById("teamGuessInput");
+    teamGuessInput.onkeyup = (event) => {
+        if (event.which === 13) {
+            postTeamGuessAsync();
+            return;
+        }
     }
 
     drawPanelButtons();
     setupPlayerMenu();
-
-    var promises = [];
-    promises.push(getGameStateAsync());
-    promises.push(setupPlayerAsync());
-
-    Promise.all(promises).then((results) => {
-        handleGameState(results[0]);
-    });
+    setupPlayerAsync()
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 

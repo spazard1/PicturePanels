@@ -22,7 +22,7 @@ namespace PicturePanels.Services
 
         private const double CorrectRatio = .95;
 
-        public static bool IsCorrect(string guess, List<string> answers)
+        public static bool IsCorrect(string guess, IEnumerable<string> answers)
         {
             guess = Prepare(guess);
             Levenshtein lev = new Levenshtein(guess);

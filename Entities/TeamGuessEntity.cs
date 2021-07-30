@@ -22,6 +22,6 @@ namespace PicturePanels.Entities
 
         public string Guess { get; set; }
 
-        public long Ticks { get; set; }
+        public string Ticks { get; set; }
     }
 }
