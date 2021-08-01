@@ -117,7 +117,6 @@ body {
 .playerBanner {
     width: 100vw;
     display: flex;
-    height: 1em;
 }
 
 #playerBannerItem {
@@ -137,7 +136,7 @@ body {
 
 .playerBannerPlaying {
     cursor: pointer;
-    flex-basis: 1em;
+    flex: 0 0 auto;
     padding: 2px 0 2px 0;
 }
 
@@ -229,7 +228,6 @@ body {
 }
 
 .teamGuessButton {
-    display: inline-block;
     padding: 4px;
     color: black;
     font-size: .7em;
@@ -243,22 +241,6 @@ body {
     -ms-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-}
-
-.imageButton {
-    position: absolute;
-    padding: 0;
-    right: 0;
-    top: 0;
-    z-index: 100;
-    max-width: 1em;
-    max-height: 1em;
-    padding: 2px;
-}
-
-.imageButton img {
-    object-fit: contain;
-    max-height: 1em;
 }
 
 @keyframes highlightTurnStatus {
