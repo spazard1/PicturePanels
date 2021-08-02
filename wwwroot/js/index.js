@@ -372,7 +372,7 @@ function reloadPage() {
     location.reload();
 }
 
-function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0, prefix = 'animate__') {
+function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0, removeClassesWhenDone = false, prefix = 'animate__') {
     var node;
     if (typeof element !== "string") {
         node = element;
@@ -381,6 +381,11 @@ function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0
     }
     node.classList.add(prefix + "animated");
 
+    function handleAnimationEnd(event) {
+        event.stopPropagation();
+        node.classList.remove(...animationsToAdd);
+    }
+
     return new Promise((resolve) => {
         setTimeout(() => {
             animationsToAdd = animationsToAdd.map(animation => prefix + animation);
@@ -388,6 +393,11 @@ function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0
 
             node.classList.add(...animationsToAdd);
             node.classList.remove(...animationsToRemove);
+
+            if (removeClassesWhenDone) {
+                node.addEventListener('animationend', handleAnimationEnd, { once: true });
+            }
+
             resolve();
         }, startDelay);
     });

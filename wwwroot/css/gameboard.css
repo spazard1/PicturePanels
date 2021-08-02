@@ -348,10 +348,6 @@ body::-webkit-scrollbar {
     z-index: 20;
 }
 
-.panelOpen .panelBackground {
-    opacity: 0;
-}
-
 .panelNumber {
     position: relative;
     font-size: 10vh;

@@ -1,7 +1,7 @@
 ﻿@section css {
 	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
-    <link rel="stylesheet" type="text/css" href="~/css/admin.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/css/chats.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/admin.css" asp-append-version="true" />
 }
 
 @section scripts {
@@ -99,23 +99,15 @@
     <div id="chatsTeam1" class="chats"></div>
 
     <div id="chatsTeam1_input" class="chatInputContainer">
-        <div id="chatInputTextContainer" class="chatInputTextContainer">
-            <input id="chatsTeam1_inputText" type="text" class="chatInput" autocomplete="off" maxlength="280" />
-        </div>
-        <div id="chatSendContainer" class="chatSendContainer">
-            <img id="chatsTeam1_send" class="chatSend" src="img/sendimage.png" />
-        </div>
+        <input id="chatsTeam1_inputText" type="text" class="chatInputText" autocomplete="off" maxlength="280" />
+        <input type ="button" id="chatsTeam1_send" class="chatSendButton" value="Chat" />
     </div>
 
     <div id="chatsTeam2" class="chats"></div>
 
     <div id="chatsTeam2_input" class="chatInputContainer">
-        <div id="chatInputTextContainer" class="chatInputTextContainer">
-            <input id="chatsTeam2_inputText" type="text" class="chatInput" autocomplete="off" maxlength="280" />
-        </div>
-        <div id="chatSendContainer" class="chatSendContainer">
-            <img id="chatsTeam2_send" class="chatSend" src="img/sendimage.png" />
-        </div>
+        <input id="chatsTeam2_inputText" type="text" class="chatInputText" autocomplete="off" maxlength="280" />
+        <input type ="button" id="chatsTeam2_send" class="chatSendButton" value="Chat" />
     </div>
 </div>
 
