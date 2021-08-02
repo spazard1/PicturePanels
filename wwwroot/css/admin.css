@@ -180,6 +180,10 @@ body {
         width: 50vw;
     }
 
+    .chats {
+        flex: 1 0 0;
+    }
+
     .chat img {
         max-width: 40vw;
     }
