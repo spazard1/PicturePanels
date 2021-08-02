@@ -55,6 +55,17 @@ input:focus {
     margin: auto;
 }
 
+.defaultButton {
+    cursor: pointer;
+    padding: 3px 5px 3px 5px;
+    margin: 3px;
+    color: black;
+    font-size: .7em;
+    background-color: rgb(239, 239, 239);
+    border: 3px outset rgb(118, 118, 118);
+    border-radius: 15px;
+}
+
 #signalRConnectionState {
     position: fixed;
     bottom: 0;

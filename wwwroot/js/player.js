@@ -107,10 +107,10 @@ async function postTeamGuessAsync() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                Guess: document.getElementById("teamGuessInput").value
+                Guess: document.getElementById("chats_inputText").value
             })
         }).then(() => {
-            document.getElementById("teamGuessInput").value = "";
+            document.getElementById("chats_inputText").value = "";
         });
 }
 
@@ -369,7 +369,8 @@ function drawTurnType(gameState) {
     }
 
     document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageCorrect");
-    document.getElementById("teamGuessesContainer").classList.add("hidden");
+    document.getElementById("teamGuessesInputContainer").classList.add("hidden");
+    document.getElementById("teamGuesses").classList.add("hidden");
 
     if (gameState.turnType === "Welcome") {
         document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
@@ -386,6 +387,7 @@ function drawTurnType(gameState) {
         return;
     }
 
+    /*
     if (gameState.turnType !== "MakeGuess") {
         var teamGuessInputElement = document.getElementById("teamGuessInput");
         teamGuessInputElement.value = "";
@@ -399,6 +401,7 @@ function drawTurnType(gameState) {
             teamGuessInputElement.fireEvent("onchange");
         }
     }
+    */
 
     switch (gameState.turnType) {
         case "OpenPanel":
@@ -416,7 +419,8 @@ function drawTurnType(gameState) {
             }
             break;
         case "MakeGuess":
-            document.getElementById("teamGuessesContainer").classList.remove("hidden");
+            document.getElementById("teamGuessesInputContainer").classList.remove("hidden");
+            document.getElementById("teamGuesses").classList.remove("hidden");
 
             document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
@@ -592,17 +596,9 @@ var connectionCount = 0;
 window.onload = async function () {
     handleGameState(await getGameStateAsync());
 
-    var teamGuessButton = document.getElementById("teamGuessButton");
-    teamGuessButton.onclick = (event) => {
+    var teamGuessesButton = document.getElementById("teamGuessesButton");
+    teamGuessesButton.onclick = (event) => {
         postTeamGuessAsync();
-    }
-
-    var teamGuessInput = document.getElementById("teamGuessInput");
-    teamGuessInput.onkeyup = (event) => {
-        if (event.which === 13) {
-            postTeamGuessAsync();
-            return;
-        }
     }
 
     drawPanelButtons();
@@ -610,8 +606,6 @@ window.onload = async function () {
     setupPlayerAsync()
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
-
-    setupInputDefaultText("teamGuessInput", "your guess");
 
     setInterval(putPlayerPingAsync, 30000);
 }
