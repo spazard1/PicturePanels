@@ -77,13 +77,14 @@ function openPanel(panel) {
     animateCSS(panel.firstChild, [exitAnimations[Math.floor(Math.random() * exitAnimations.length)]], entranceAnimations);
 }
 
-function resetPanel(panel, entranceAnimation) {
+function resetPanel(panel, entranceAnimation, delay) {
     if (!panel.classList.contains("panelOpen")) {
+        animateCSS(panel.firstChild, [], exitAnimations, 0, true);
         return;
     }
 
     panel.classList.remove("panelOpen");
-    animateCSS(panel.firstChild, [entranceAnimation], exitAnimations, 0, true);
+    animateCSS(panel.firstChild, [entranceAnimation], exitAnimations, delay, true);
 }
 
 async function resetPanelsAsync(gameState) {
@@ -92,8 +93,10 @@ async function resetPanelsAsync(gameState) {
 
     var entranceAnimation = entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
 
+    var delay = 0;
     for (let panel of panels) {
-        resetPanel(panel, entranceAnimation);
+        resetPanel(panel, entranceAnimation, delay);
+        delay += 50;
         imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
     }
 
@@ -787,7 +790,7 @@ function drawRoundNumber(gameState) {
 
         var roundNumberAnimateElement = document.getElementById("roundNumberAnimate");
         var roundNumberPromise = Promise.resolve();
-        roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backInLeft"], ["backOutRight"], 2500));
+        roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backInLeft"], ["backOutRight"], 3000));
         roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backOutRight"], ["backInLeft"], 4000));
     }
 }
@@ -799,7 +802,7 @@ async function drawImageEntityAsync(gameState) {
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
         uploadedByElement.innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
 
-        animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"], 2500);
+        animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"], 3000);
     } else {
         animateCSS(uploadedByElement, ["bounceOutRight"], ["slow", "bounceInRight"]);
     }
