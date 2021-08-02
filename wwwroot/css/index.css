@@ -103,19 +103,11 @@ input:focus {
 }
 
 .panelButtons {
-    background-color: black;
-    width: 98vw;
-    margin-left: 1vw;
-    margin-right: 1vw;
-    border: 4px solid black;
+    flex: none;
+    border: 5px solid black;
     box-sizing: border-box;
-    text-align: center;
-    justify-content: center;
-    position: fixed;
-    top: 1.1em;
     display: flex;
     flex-wrap: wrap;
-    z-index: 100;
 }
 
 .panelButtonsHighlight {
