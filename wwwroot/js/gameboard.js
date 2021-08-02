@@ -312,7 +312,7 @@ function drawTeamStatus(gameState, resetTimer) {
             }
             if (resetTimer) {
                 if (gameState.revealedPanels.length === 0) {
-                    startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 7);
+                    startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 8);
                 } else {
                     startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 3);
                 }
