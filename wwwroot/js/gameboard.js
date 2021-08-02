@@ -1,4 +1,22 @@
-﻿var maxMostVotesPanels = 3;
+﻿var entranceAnimations = [
+    "backInDown", "backInLeft", "backInRight", "backInUp",
+    "bounceInDown", "bounceInLeft", "bounceInRight", "bounceInUp",
+    "fadeInDown", "fadeInLeft", "fadeInRight", "fadeInUp", "fadeInTopLeft", "fadeInTopRight", "fadeInBottomLeft", "fadeInBottomRight",
+    "flipInX", "flipInY",
+    "jackInTheBox", "rollIn",
+    "zoomIn", "zoomInDown", "zoomInLeft", "zoomInRight", "zoomInUp",
+    "slideInDown", "slideInLeft", "slideInRight", "slideInUp"
+    ];
+var exitAnimations = [
+    "backOutDown", "backOutLeft", "backOutRight",
+    "bounceOutDown", "bounceOutLeft", "bounceOutRight", "bounceOutUp",
+    "fadeOutDown", "fadeOutLeft", "fadeOutRight", "fadeOutUp", "fadeOutTopLeft", "fadeOutTopRight", "fadeOutBottomLeft", "fadeOutBottomRight",
+    "flipOutX", "flipOutY", "lightSpeedOutRight", "lightSpeedOutLeft",
+    "hinge", "rollOut",
+    "zoomOut", "zoomOutDown", "zoomOutLeft", "zoomOutRight", "zoomOutUp"
+    ];
+
+var maxMostVotesPanels = 3;
 
 function createPanels() {
     var panelNumber = 1;
@@ -14,6 +32,8 @@ function createPanels() {
 
             var panelBackgroundElement = document.createElement("div");
             panelBackgroundElement.classList.add("panelBackground");
+            panelBackgroundElement.classList.add("animate__animated");
+            panelBackgroundElement.classList.add("animate__slow");
             panelElement.appendChild(panelBackgroundElement);
 
             var panelNumberElement = document.createElement("div");
@@ -30,7 +50,9 @@ function createPanels() {
             panelNumber++;
         }
     }
+}
 
+function createMostVotesPanels() {
     var mostVotesPanelsElement = document.getElementById("mostVotesPanels");
 
     for (var i = 0; i < maxMostVotesPanels; i++) {
@@ -46,19 +68,38 @@ function createPanels() {
     }
 }
 
+function openPanel(panel) {
+    if (panel.classList.contains("panelOpen")) {
+        return;
+    }
+
+    panel.classList.add("panelOpen");
+    animateCSS(panel.firstChild, [exitAnimations[Math.floor(Math.random() * exitAnimations.length)]], entranceAnimations);
+}
+
+function resetPanel(panel, entranceAnimation) {
+    if (!panel.classList.contains("panelOpen")) {
+        return;
+    }
+
+    panel.classList.remove("panelOpen");
+    animateCSS(panel.firstChild, [entranceAnimation], exitAnimations, 0, true);
+}
+
 async function resetPanelsAsync(gameState) {
     var imagePromises = [];
     var panels = document.getElementsByClassName("panel");
 
+    var entranceAnimation = entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
+
     for (let panel of panels) {
-        panel.classList.remove("panelOpen");
+        resetPanel(panel, entranceAnimation);
         imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
     }
 
     var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
     for (let mostVotesPanelElement of mostVotesPanelElements) {
         mostVotesPanelElement.classList.add("opacity0");
-        imagePromises.push(loadImageAsync(mostVotesPanelElement.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
     }
 
     await Promise.all(imagePromises);
@@ -726,7 +767,8 @@ async function openAllPanelsAsync() {
         new Promise((resolve) => {
             if (!panel.classList.contains("panelOpen")) {
                 setTimeout(function () {
-                    panel.classList.add("panelOpen");
+                    openPanel(panel);
+
                     resolve();
                 }, delayTimeout);
                 delayTimeout += 150;
@@ -745,7 +787,7 @@ function drawRoundNumber(gameState) {
 
         var roundNumberAnimateElement = document.getElementById("roundNumberAnimate");
         var roundNumberPromise = Promise.resolve();
-        roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backInLeft"], ["backOutRight"], 2000));
+        roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backInLeft"], ["backOutRight"], 2500));
         roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backOutRight"], ["backInLeft"], 4000));
     }
 }
@@ -757,13 +799,13 @@ async function drawImageEntityAsync(gameState) {
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
         uploadedByElement.innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
 
-        animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"]);
+        animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"], 2500);
     } else {
         animateCSS(uploadedByElement, ["bounceOutRight"], ["slow", "bounceInRight"]);
     }
 
     if (imageEntity && imageEntity.name) {
-        animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["slow", "bounceInDown"], ["bounceOutUp"])).then(() => {
+        animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["slow", "bounceInDown"], ["bounceOutUp"], 2000)).then(() => {
             var answerTitleElement = document.getElementById("answerTitle");
             answerTitleElement.innerHTML = "";
             var answerTitleTextElement = document.createElement("div");
@@ -805,10 +847,13 @@ async function drawRevealedPanelsAsync(gameState) {
         var panelImage = panel.lastChild;
 
         if (gameState.revealedPanels.includes(panel.panelNumber)) {
-            loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then(() => {
-                panel.classList.add("panelOpen");
-                hidePlayerDots(panel.panelNumber);
-            }));
+            if (!panel.classList.contains("panelOpen")) {
+                loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then(() => {
+                    openPanel(panel);
+                }));
+            }
+
+            hidePlayerDots(panel.panelNumber);
         } else {
             panel.classList.remove("panelOpen");
             panelImage.src = "/api/images/panels/" + gameState.imageId + "/0";
@@ -1055,6 +1100,7 @@ window.onresize = function () {
 
 window.onload = async function () {
     createPanels();
+    createMostVotesPanels();
     setupCanvases();
 
     document.onmousemove = function () {
