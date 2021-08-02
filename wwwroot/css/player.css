@@ -170,9 +170,10 @@ body {
     animation: correct 3s infinite alternate;
 }
 
-.teamGuessesContainer {
+.teamGuessesInputContainer {
     margin-top: .5em;
     width: 100%;
+    display: flex;
 }
 
 .teamGuesses {
@@ -216,31 +217,12 @@ body {
     height: .8em;
 }
 
-.teamGuessInput {
-    color: black;
-    background-color: white;
-    font-size: .7em;
-    width: 65%;
-    padding: 3px;
-    margin-top: .25em;
-    border-radius: 15px;
-    padding: 3px 10px 3px 10px;
+.teamGuessesMessage {
+    flex: 1;
 }
 
-.teamGuessButton {
-    padding: 4px;
-    color: black;
-    font-size: .7em;
-    background-color: rgb(239, 239, 239);
-    border: 3px outset rgb(118, 118, 118);
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+.teamGuessesButton {
+    flex: none;
 }
 
 @keyframes highlightTurnStatus {
