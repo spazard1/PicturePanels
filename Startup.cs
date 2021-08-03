@@ -53,13 +53,18 @@ namespace PicturePanels
             {
                 options.EnableDetailedErrors = true;
             })
-                    .AddAzureSignalR(options =>
-                    {
-                        options.AccessTokenLifetime = TimeSpan.FromDays(1);
-                        options.ClaimsProvider = context => context.User.Claims;
-                        options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AccessKey=k0wYaSi/4PvB9kK4G4z7KVzn+QwjsMLmBcTZtFh/PkU=;Version=1.0;";
-                    });
-            
+            .AddAzureSignalR(options =>
+            {
+                options.AccessTokenLifetime = TimeSpan.FromDays(1);
+                options.ClaimsProvider = context => context.User.Claims;
+                options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AccessKey=k0wYaSi/4PvB9kK4G4z7KVzn+QwjsMLmBcTZtFh/PkU=;Version=1.0;";
+            });
+
+            services.AddWebOptimizer(pipeline =>
+            {
+                pipeline.AddJavaScriptBundle("/js/admin.bundle.js", "js/admin.js", "js/chats.js");
+                pipeline.AddCssBundle("/css/admin.bundle.css", "css/index.css", "css/chats.css", "css/admin.css");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +74,8 @@ namespace PicturePanels
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseWebOptimizer();
 
             app.UseStaticFiles();
 
