@@ -1,0 +1,48 @@
+[
+  {
+    "outputFileName": "wwwroot/css/bundles/admin.min.css",
+    "inputFiles": [
+      "wwwroot/css/index.css",
+      "wwwroot/css/chats.css",
+      "wwwroot/css/admin.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/bundles/gameboard.min.css",
+    "inputFiles": [
+      "wwwroot/css/index.css",
+      "wwwroot/css/gameboard.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/bundles/player.min.css",
+    "inputFiles": [
+      "wwwroot/css/index.css",
+      "wwwroot/css/chats.css",
+      "wwwroot/css/player.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/bundles/admin.min.js",
+    "inputFiles": [
+      "wwwroot/js/index.js",
+      "wwwroot/js/chats.js",
+      "wwwroot/js/admin.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/bundles/gameboard.min.js",
+    "inputFiles": [
+      "wwwroot/js/index.js",
+      "wwwroot/js/gameboard.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/bundles/player.min.js",
+    "inputFiles": [
+      "wwwroot/js/index.js",
+      "wwwroot/js/chats.js",
+      "wwwroot/js/player.js"
+    ]
+  }
+]

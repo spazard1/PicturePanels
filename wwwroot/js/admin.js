@@ -66,7 +66,7 @@ function teamIncorrect(teamNumber) {
 function getSelectedPanel() {
     var selectedPanelElements = document.getElementsByClassName("panelButtonSelected");
 
-    for (let selectedPanel of selectedPanelElements) {
+    for (var selectedPanel of selectedPanelElements) {
         if (selectedPanel.classList.contains("panelButtonDisabled")) {
             continue;
         }
@@ -336,8 +336,8 @@ function registerConnections() {
 function drawPlusMinusButtons() {
     var plusMinusDivs = document.getElementsByClassName("plusMinus");
 
-    for (let plusMinusDiv of plusMinusDivs) {
-        let inputText = document.createElement("input");
+    for (var plusMinusDiv of plusMinusDivs) {
+        var inputText = document.createElement("input");
         inputText.id = plusMinusDiv.getAttribute("name");
         inputText.type = "text";
         inputText.value = 0;
@@ -350,8 +350,11 @@ function drawPlusMinusButtons() {
         minusButtonText.appendChild(document.createTextNode("\u2212"));
         minusButton.appendChild(minusButtonText);
         minusButton.classList = "plusMinusInput plusMinusButton";
+        minusButton.pairedId = inputText.id;
+
         minusButton.onclick = function (event) {
-            inputText.value = parseInt(inputText.value) - 1;
+            var pairedTextElement = document.getElementById(event.currentTarget.pairedId);
+            pairedTextElement.value = parseInt(pairedTextElement.value) - 1;
             patchGameState();
         }
 
@@ -360,10 +363,12 @@ function drawPlusMinusButtons() {
         plusButtonText.classList = "plusMinusButtonText";
         plusButtonText.appendChild(document.createTextNode("+"));
         plusButton.appendChild(plusButtonText);
+        plusButton.pairedId = inputText.id;
 
         plusButton.classList = "plusMinusInput plusMinusButton";
         plusButton.onclick = (event) => {
-            inputText.value = parseInt(inputText.value) + 1;
+            var pairedTextElement = document.getElementById(event.currentTarget.pairedId);
+            pairedTextElement.value = parseInt(pairedTextElement.value) + 1;
             patchGameState();
         }
 
@@ -411,7 +416,7 @@ window.onload = async function () {
     drawPlusMinusButtons();
 
     var adminSelects = document.getElementsByClassName("adminSelect");
-    for (let adminSelect of adminSelects) {
+    for (var adminSelect of adminSelects) {
         adminSelect.onchange = (event) => { patchGameState(); };
     }
 
