@@ -82,10 +82,7 @@ namespace PicturePanels.Controllers
 
             playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
 
-            if (!playerModel.IsAdmin)
-            {
-                await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam);
-            }
+            await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
 
             return Json(new PlayerEntity(playerModel));
         }

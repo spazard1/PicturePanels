@@ -49,7 +49,7 @@ var playerLoaded = false;
 function drawPlayer(player) {
     if (player.selectedPanels) {
         var panelButtons = document.getElementsByClassName("panelButton");
-        for (let panelButton of panelButtons) {
+        for (var panelButton of panelButtons) {
             if (player.selectedPanels.includes(panelButton.value)) {
                 panelButton.classList.add("panelButtonSelected");
             }
@@ -171,8 +171,6 @@ function setupChoosePlayerName() {
 
     document.getElementById("teamTwoName").classList.remove("teamTwoColor");
     document.getElementById("teamTwoName").classList.add("teamTwoBox");
-
-    document.getElementById("teamGuessesContainer").classList.add("hidden");
 }
 
 function choosePlayerNameButtonOnClick() {
