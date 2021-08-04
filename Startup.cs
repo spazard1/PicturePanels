@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using PicturePanels.Filters;
+using Microsoft.AspNetCore.Http;
 
 namespace PicturePanels
 {
@@ -49,6 +50,8 @@ namespace PicturePanels
             services.AddScoped<SignalRHelper>();
             services.AddScoped<AuthorizationFilter>();
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
@@ -59,12 +62,7 @@ namespace PicturePanels
                 options.ClaimsProvider = context => context.User.Claims;
                 options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AccessKey=k0wYaSi/4PvB9kK4G4z7KVzn+QwjsMLmBcTZtFh/PkU=;Version=1.0;";
             });
-
-            services.AddWebOptimizer(pipeline =>
-            {
-                pipeline.AddJavaScriptBundle("/js/admin.bundle.js", "js/admin.js", "js/chats.js");
-                pipeline.AddCssBundle("/css/admin.bundle.css", "css/index.css", "css/chats.css", "css/admin.css");
-            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,8 +72,6 @@ namespace PicturePanels
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseWebOptimizer();
 
             app.UseStaticFiles();
 

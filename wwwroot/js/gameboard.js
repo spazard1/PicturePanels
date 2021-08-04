@@ -94,14 +94,14 @@ async function resetPanelsAsync(gameState) {
     var entranceAnimation = entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
 
     var delay = 0;
-    for (let panel of panels) {
+    for (var panel of panels) {
         resetPanel(panel, entranceAnimation, delay);
         delay += 50;
         imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
     }
 
     var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
-    for (let mostVotesPanelElement of mostVotesPanelElements) {
+    for (var mostVotesPanelElement of mostVotesPanelElements) {
         mostVotesPanelElement.classList.add("opacity0");
     }
 
@@ -208,7 +208,7 @@ function drawMostVotesPanels(resetPanels) {
 
     if (currentGameState.turnType !== "OpenPanel" &&
         currentGameState.turnType !== "OpenFreePanel") {
-        for (let mostVotesPanelElement of mostVotesPanelElements) {
+        for (var mostVotesPanelElement of mostVotesPanelElements) {
             mostVotesPanelElement.classList.add("opacity0");
         }
         return;
@@ -245,13 +245,12 @@ function drawMostVotesPanels(resetPanels) {
         }
     }
 
-    var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
     if (mostVotes === 0 || mostVotesPanels.length > maxMostVotesPanels) {
-        for (let mostVotesPanelElement of mostVotesPanelElements) {
+        for (var mostVotesPanelElement of mostVotesPanelElements) {
             mostVotesPanelElement.classList.add("opacity0");
         }
     } else {
-        for (let i = 0; i < maxMostVotesPanels; i++) {
+        for (var i = 0; i < maxMostVotesPanels; i++) {
             if (mostVotesPanels.length > i) {
                 var panelElement = document.getElementById("panel_" + mostVotesPanels[i]);
                 var panelElementRect = panelElement.getBoundingClientRect();
@@ -496,7 +495,7 @@ function isOverflown(element) {
 function setupCanvases() {
     var canvases = document.getElementsByClassName("countdownCanvas");
 
-    for (let canvas of canvases) {
+    for (var canvas of canvases) {
         canvas.style = "";
         var ctx = canvas.getContext("2d");
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
@@ -561,10 +560,10 @@ function drawCountdown(canvas) {
 }
 
 function setClassStyle(className, styleFunc) {
-    for (let i = 0; i < document.styleSheets.length; i++) {
+    for (var i = 0; i < document.styleSheets.length; i++) {
         if (document.styleSheets[i].href.endsWith("gameboard.css")) {
             var cssRules = document.styleSheets[i].cssRules;
-            for (let j = 0; j < cssRules.length; j++) {
+            for (var j = 0; j < cssRules.length; j++) {
                 if (cssRules[j].selectorText === className) {
                     styleFunc(cssRules[j]);
                 }
@@ -582,7 +581,7 @@ function hideMostVotesPanels() {
 function hidePlayerDots(panelNumber) {
     if (panelNumber) {
         var playerDotDivs = document.getElementsByClassName("playerDot_panelNumber_" + panelNumber);
-        for (let playerDotDiv of playerDotDivs) {
+        for (var playerDotDiv of playerDotDivs) {
             playerDotDiv.classList.add("opacity0");
         }
     } else {
@@ -611,7 +610,7 @@ function drawAllPlayerDots(gameState, resetDots) {
     var playerDotDivs = document.getElementsByClassName("playerDot");
     var panels = document.getElementsByClassName("panel");
 
-    for (let playerDotDiv of playerDotDivs) {
+    for (var playerDotDiv of playerDotDivs) {
         drawPlayerDot(panels, playerDotDiv, gameState);
     }
 }
@@ -697,7 +696,7 @@ function random(lower, upper) {
 function resetPlayerDots() {
     var playerDotDivs = document.getElementsByClassName("playerDot");
 
-    for (let playerDotDiv of playerDotDivs) {
+    for (var playerDotDiv of playerDotDivs) {
         playerDotDiv.player.selectedPanels = [];
         playerDotDiv.classList.add("opacity0");
         movePlayerDotToPlayer(playerDotDiv);
@@ -749,7 +748,7 @@ async function openAllPanelsAsync() {
     var panels = document.getElementsByClassName("panel");
 
     var panelsArray = [];
-    for (let panel of panels) {
+    for (var panel of panels) {
         panelsArray.push(panel);
     }
     shuffle(panelsArray);
@@ -828,9 +827,8 @@ async function drawRevealedPanelsAsync(gameState) {
         if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
             animationPromise = animationPromise.then(() => {
                 return new Promise((resolve) => {
-                    setTimeout(async () => {
-                        await openAllPanelsAsync();
-                        resolve();
+                    setTimeout(() => {
+                        openAllPanelsAsync().then(() => resolve());
                     }, 5000);
                 })
             });
@@ -846,13 +844,13 @@ async function drawRevealedPanelsAsync(gameState) {
 
     var loadImagePromises = [];
     var panels = document.getElementsByClassName("panel");
-    for (let panel of panels) {
+    for (var panel of panels) {
         var panelImage = panel.lastChild;
 
         if (gameState.revealedPanels.includes(panel.panelNumber)) {
             if (!panel.classList.contains("panelOpen")) {
-                loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then(() => {
-                    openPanel(panel);
+                loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then((panelImageLoaded) => {
+                    openPanel(panelImageLoaded.parentElement);
                 }));
             }
 
@@ -934,7 +932,7 @@ function setupWelcomeAnimationAsync() {
     var promises = [];
     var panels = document.getElementsByClassName("panel");
 
-    for (let panel of panels) {
+    for (var panel of panels) {
         panel.classList.remove("panelOpen");
         promises.push(loadImageAsync(panel.lastChild, "/api/images/panels/welcome/" + panel.panelNumber));
     }
@@ -951,7 +949,7 @@ function drawWelcomeAnimation() {
     var panels = document.getElementsByClassName("panel");
 
     var panelsArray = [];
-    for (let panel of panels) {
+    for (var panel of panels) {
         panelsArray.push(panel);
     }
 
@@ -1028,7 +1026,7 @@ function handlePlayers(players) {
     allPlayers = players;
 
     var playerNameElements = document.getElementsByClassName("teamPlayerName");
-    for (let playerNameElement of playerNameElements) {
+    for (var playerNameElement of playerNameElements) {
         var found = false;
         players.forEach((player) => {
             if ("player_" + player.playerId === playerNameElement.id) {

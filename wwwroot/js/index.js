@@ -56,7 +56,7 @@ function mobileCheck() {
 
 async function loadImageAsync(img, imgSrc) {
     return new Promise((resolve, reject) => {
-        img.onload = () => resolve();
+        img.onload = () => resolve(img);
         img.onerror = reject;
         img.src = imgSrc;
     })
@@ -153,7 +153,7 @@ function updatePanelButtons(gameState, disabledPanels) {
         disabledPanels = [];
     }
 
-    for (let panelButton of panelButtons) {
+    for (var panelButton of panelButtons) {
         var panelButtonImage = panelButton.lastChild;
 
         if (gameState.revealedPanels.includes(panelButton.value)) {
@@ -199,7 +199,7 @@ function uuidv4() {
 
 function clearPanelButtonSelection() {
     var panelButtons = document.getElementsByClassName("panelButton");
-    for (let panelButton of panelButtons) {
+    for (var panelButton of panelButtons) {
         panelButton.classList.remove("panelButtonSelected");
     }
 }
@@ -211,7 +211,7 @@ async function sendSelectedPanels() {
 
     var selectedPanels = [];
     var selectedPanelElements = document.getElementsByClassName("panelButtonSelected");
-    for (let selectedPanel of selectedPanelElements) {
+    for (var selectedPanel of selectedPanelElements) {
         if (selectedPanel.classList.contains("panelButtonDisabled")) {
             continue;
         }
