@@ -422,13 +422,6 @@ async function startSignalRAsync(playerIdSuffix) {
         document.body.appendChild(connectionStateElement);
     }
 
-    if (connection && connection.state === "Connected") {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chats", "SignalR already connected.");
-        }
-        return;
-    }
-
     if (signalRTimeOut) {
         return;
     }
@@ -440,15 +433,11 @@ async function startSignalRAsync(playerIdSuffix) {
     setTimeout(function () {
         signalRTimeOut = true;
         playerIsReadyToPlay = false;
-        drawSystemChat("chats", "You have been disconnected from the server. Refresh the page to connect again.")
+        drawSystemChat("chats", { message: "You have been disconnected from the server. Refresh the page to connect again." })
         connection.stop();
     }, 1000 * 60 * 60 * 4);
 
     setInterval(signalRMonitor, 1000);
-
-    if (localStorage.getItem("debug")) {
-        drawSystemChat("chats", "SignalR started: " + playerIdSuffix);
-    }
 };
 
 if (!localStorage.getItem("playerId")) {

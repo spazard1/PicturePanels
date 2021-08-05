@@ -49,7 +49,7 @@ namespace PicturePanels.Services
             return (PlayerTableEntity)retrievedResult.Result;
         }
 
-        public async Task<List<PlayerTableEntity>> GetPlayersAsync()
+        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync()
         {
             var playerResults = new List<PlayerTableEntity>();
 
@@ -71,10 +71,34 @@ namespace PicturePanels.Services
             return playerResults;
         }
 
+        public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync()
+        {
+            var playerResults = new Dictionary<string, PlayerTableEntity>();
+
+            TableQuery<PlayerTableEntity> tableQuery = new TableQuery<PlayerTableEntity>();
+            TableContinuationToken continuationToken = null;
+
+            do
+            {
+                TableQuerySegment<PlayerTableEntity> tableQueryResult =
+                    await playerTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
+
+                continuationToken = tableQueryResult.ContinuationToken;
+
+                foreach (var result in tableQueryResult.Results)
+                {
+                    playerResults[result.PlayerId] = result;
+                }
+
+            } while (continuationToken != null);
+
+            return playerResults;
+        }
+
         public async Task ResetPlayersAsync()
         {
             TableBatchOperation batchOperation = new TableBatchOperation();
-            foreach (var playerModel in await this.GetPlayersAsync())
+            foreach (var playerModel in await this.GetActivePlayersAsync())
             {
                 if (batchOperation.Count >= 100)
                 {

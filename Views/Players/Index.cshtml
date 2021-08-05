@@ -49,8 +49,8 @@
     <div id="panelButtons" class="panelButtons center hidden"></div>
 
     <div id="teamGuessesContainer" class="teamGuessesContainer center hidden">
-         <div id="teamGuesses" class="teamGuesses"></div>
-         <div id="teamGuessesPassButton" class="defaultButton teamGuessesButton center">Pass</div>
+        <div id="teamGuesses" class="teamGuesses"></div>
+        <div id="teamGuessesPassButton" class="defaultButton teamGuessesButton center">Pass</div>
     </div>
 
     <div id="chats" class="chats hidden"></div>
@@ -62,7 +62,10 @@
     </div>
     -->
     <div id="chats_input" class="chatInputContainer hidden">
-        <input id="chats_inputText" type="text" class="chatInputText" autocomplete="off" maxlength="280" />
+        <!--<input id="chats_inputText" type="text" class="chatInputText" autocomplete="off" maxlength="280" />-->
+        <div class="chatInputText grow-wrap">
+            <textarea id="chats_inputText" name="text" id="text" rows="1" maxlength="150"></textarea>
+        </div>
         <div id="chats_send" class="defaultButton chatSendButton">Chat</div>
         <div id="teamGuessButton" class="defaultButton teamGuessButton center">Guess</div>
     </div>

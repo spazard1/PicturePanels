@@ -100,7 +100,7 @@ async function postTeamGuessAsync() {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("teamNumber"),
+    await fetch("api/teamGuess/" + localStorage.getItem("playerId"),
         {
             method: "POST",
             headers: {
@@ -115,7 +115,7 @@ async function postTeamGuessAsync() {
 }
 
 async function getTeamGuessesAsync() {
-    return await fetch("/api/teamGuess/" + localStorage.getItem("teamNumber"))
+    return await fetch("/api/teamGuess/" + localStorage.getItem("playerId"))
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -127,7 +127,7 @@ async function deleteTeamGuessAsync(ticks) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("teamNumber") + "/" + ticks,
+    await fetch("api/teamGuess/" + localStorage.getItem("playerId") + "/" + ticks,
         {
             method: "DELETE"
         });
@@ -277,6 +277,7 @@ async function finalizePlayerAsync() {
     };
 
     scrollChats("chats", true);
+    sortChats("chats");
 }
 
 function setupTeamSelectionButtons() {
@@ -458,7 +459,7 @@ function handleGameState(gameState) {
     updatePlayerPanelButtons(gameState);
 
     if (gameState.turnType === "Welcome") {
-        drawSystemChat("chats", "Welcome to the Picture Panels game!");
+        drawSystemChat("chats", { message: "Welcome to the Picture Panels game!" });
         return;
     }
 }
@@ -470,8 +471,10 @@ function drawTeamGuesses(teamGuesses) {
     teamGuesses.forEach(drawTeamGuess);
 }
 
-function deleteTeamGuess(ticks) {
-    document.getElementById("teamGuess_" + ticks).remove();
+function deleteTeamGuess(teamGuess) {
+    document.getElementById("teamGuess_" + teamGuess.ticks).remove();
+
+    //drawSystemChat("chats", { message: "has deleted the guess '" + teamGuess.guess + "'", player: teamGuess.player, ticks: teamGuess.ticks });
 }
 
 function drawTeamGuess(teamGuess) {
@@ -505,6 +508,10 @@ function drawTeamGuess(teamGuess) {
     teamGuessElement.appendChild(teamGuessDeleteButtonElement);
 
     teamGuessesElement.appendChild(teamGuessElement);
+
+    if (teamGuess.player) {
+        //drawSystemChat("chats", { message: "has submitted the team guess '" + teamGuess.guess + "'", player: teamGuess.player, ticks: teamGuess.ticks });
+    }
 }
 
 const innerPanels = ["7", "8", "9", "12", "13", "14"];
@@ -537,15 +544,15 @@ async function handleRandomizeTeam(player) {
     if (parseInt(localStorage.getItem("teamNumber")) !== player.teamNumber) {
         drawTeam(player.teamNumber);
         await drawChatsAsync("chats");
-        drawSystemChat("chats", "The teams have been randomized; you are now on the other team.");
+        drawSystemChat("chats", { message: "The teams have been randomized; you are now on the other team." });
     } else {
-        drawSystemChat("chats", "The teams have been randomized; you have not changed teams.");
+        drawSystemChat("chats", { message: "The teams have been randomized; you have not changed teams." });
     }
 }
 
 function registerConnections() {
-    connection.on("Chat", (player, message) => {
-        drawChat("chats", message, player);
+    connection.on("Chat", (chat) => {
+        drawChat("chats", chat);
     });
 
     connection.on("Typing", (player) => {
@@ -554,7 +561,7 @@ function registerConnections() {
 
     connection.on("AddPlayer", (player) => {
         if (player.playerId !== localStorage.getItem("playerId")) {
-            drawSystemChat("chats", "has joined the team.", player);
+            drawSystemChat("chats", { message: "has joined the team.", player: player });
         }
     });
 
@@ -562,19 +569,6 @@ function registerConnections() {
     connection.on("AddTeamGuess", drawTeamGuess);
     connection.on("DeleteTeamGuess", deleteTeamGuess);
     connection.on("RandomizeTeam", handleRandomizeTeam);
-
-    connection.onreconnected = function () {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chats", "SignalR reconnected");
-        }
-    }
-
-    connection.onclose(async function () {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chats", "SignalR closed.");
-        }
-        await startSignalRAsync("player");
-    });
 }
 
 window.onresize = function () {
@@ -596,7 +590,7 @@ window.onload = async function () {
 
     drawPanelButtons();
     setupPlayerMenu();
-    setupPlayerAsync()
+    setupPlayerAsync();
 
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
