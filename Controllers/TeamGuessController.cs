@@ -56,12 +56,9 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            foreach (var guess in allGuesses)
+            if (GuessChecker.IsCorrect(entity.Guess, allGuesses.Select(guess => guess.Guess)))
             {
-                if (GuessChecker.IsCorrect(entity.Guess, allGuesses.Select(guess => guess.Guess)))
-                {
-                    return StatusCode(405);
-                }
+                return StatusCode(405);
             }
 
             var teamGuess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel(teamNumber));

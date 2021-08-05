@@ -53,6 +53,7 @@
     flex: 0 0 auto;
     width: 100vw;
     display: flex;
+    margin-top: 5px;
     margin-bottom: 3px;
 }
 

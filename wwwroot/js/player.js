@@ -157,6 +157,9 @@ function setupChoosePlayerName() {
 
     document.getElementById("panelButtons").classList.add("hidden");
 
+    document.getElementById("teamGuessButton").classList.add("hidden");
+    document.getElementById("teamGuessesContainer").classList.add("hidden");
+
     document.getElementById("chats").classList.add("hidden");
     document.getElementById("chats_input").classList.add("hidden");
 
@@ -367,8 +370,8 @@ function drawTurnType(gameState) {
     }
 
     document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageCorrect");
-    document.getElementById("teamGuessesInputContainer").classList.add("hidden");
-    document.getElementById("teamGuesses").classList.add("hidden");
+    document.getElementById("teamGuessButton").classList.add("hidden");
+    document.getElementById("teamGuessesContainer").classList.add("hidden");
 
     if (gameState.turnType === "Welcome") {
         document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
@@ -385,21 +388,13 @@ function drawTurnType(gameState) {
         return;
     }
 
-    /*
+    
     if (gameState.turnType !== "MakeGuess") {
-        var teamGuessInputElement = document.getElementById("teamGuessInput");
-        teamGuessInputElement.value = "";
-
-        if ("createEvent" in document) {
-            var evt = document.createEvent("HTMLEvents");
-            evt.initEvent("change", false, true);
-            teamGuessInputElement.dispatchEvent(evt);
-        }
-        else {
-            teamGuessInputElement.fireEvent("onchange");
-        }
+        setInputDefaultText("chats_inputText", "chat with your team...");
+    } else {
+        setInputDefaultText("chats_inputText", "chat or guess...");
     }
-    */
+    
 
     switch (gameState.turnType) {
         case "OpenPanel":
@@ -417,8 +412,8 @@ function drawTurnType(gameState) {
             }
             break;
         case "MakeGuess":
-            document.getElementById("teamGuessesInputContainer").classList.remove("hidden");
-            document.getElementById("teamGuesses").classList.remove("hidden");
+            document.getElementById("teamGuessButton").classList.remove("hidden");
+            document.getElementById("teamGuessesContainer").classList.remove("hidden");
 
             document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
@@ -594,8 +589,8 @@ var connectionCount = 0;
 window.onload = async function () {
     handleGameState(await getGameStateAsync());
 
-    var teamGuessesButton = document.getElementById("teamGuessesButton");
-    teamGuessesButton.onclick = (event) => {
+    var teamGuessButton = document.getElementById("teamGuessButton");
+    teamGuessButton.onclick = (event) => {
         postTeamGuessAsync();
     }
 
