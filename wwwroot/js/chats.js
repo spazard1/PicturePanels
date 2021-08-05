@@ -66,7 +66,7 @@ function setupChats(chatsElementId, teamNumber) {
         });
     }
 
-    setupInputDefaultText(chatsElementId + "_inputText", "send a team message...")
+    setupInputDefaultText(chatsElementId + "_inputText", "chat with your team...")
 
     setupChatTypingIndicator(chatsElementId);
 }

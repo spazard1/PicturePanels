@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.5.1" />
-    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
     <PackageReference Include="Fastenshtein" Version="1.0.0.7" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.311" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
     <PackageReference Include="Microsoft.Azure.SignalR.Management" Version="1.6.0" />
@@ -17,9 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\css\bundles\" />
     <Folder Include="wwwroot\fonts\" />
-    <Folder Include="wwwroot\js\bundles\" />
   </ItemGroup>
 
 </Project>

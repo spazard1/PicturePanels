@@ -62,7 +62,12 @@ namespace PicturePanels
                 options.ClaimsProvider = context => context.User.Claims;
                 options.ConnectionString = "***REMOVED***";
             });
-            
+ 
+            services.AddWebOptimizer(pipeline =>
+            {
+                pipeline.MinifyCssFiles();
+                pipeline.MinifyJsFiles();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +76,10 @@ namespace PicturePanels
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseWebOptimizer();
             }
 
             app.UseStaticFiles();

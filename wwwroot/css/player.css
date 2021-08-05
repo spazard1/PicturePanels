@@ -170,6 +170,11 @@ body {
     animation: correct 3s infinite alternate;
 }
 
+.teamGuessesContainer {
+    margin-top: .5em;
+    width: 100%;
+}
+
 .teamGuessesInputContainer {
     margin-top: .5em;
     width: 100%;
@@ -221,7 +226,8 @@ body {
     flex: 1;
 }
 
-.teamGuessesButton {
+.teamGuessButton {
+    background-color: lightgreen;
     flex: none;
 }
 

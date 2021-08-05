@@ -267,6 +267,16 @@ function getImgSizeInfo(img) {
         parseInt(pos[0]));
 }
 
+function setInputDefaultText(elementId, defaultValue) {
+    var inputElement = document.getElementById(elementId);
+
+    if (inputElement.defaultValue === inputElement.value) {
+        inputElement.value = defaultValue;
+    }
+
+    inputElement.defaultValue = defaultValue;
+}
+
 function setupInputDefaultText(elementId, defaultValue, currentValue) {
     var inputElement = document.getElementById(elementId);
 
@@ -447,7 +457,6 @@ if (!localStorage.getItem("playerId")) {
 
 const urlParams = new URLSearchParams(window.location.search);
 const debugParam = urlParams.get('debug');
-
 if (debugParam === "true") {
     localStorage.setItem("debug", true);
 } else if (debugParam === "false") {
