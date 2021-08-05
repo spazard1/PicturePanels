@@ -23,12 +23,13 @@ namespace PicturePanels.Entities
         [MinLength(1)]
         public string Guess { get; set; }
 
-        public TeamGuessTableEntity ToModel(int teamNumber)
+        public TeamGuessTableEntity ToModel(PlayerTableEntity playerTableEntity)
         {
             return new TeamGuessTableEntity()
             {
-                TeamNumber = teamNumber,
-                Ticks = DateTime.UtcNow.Ticks.ToString(),
+                TeamNumber = playerTableEntity.TeamNumber,
+                PlayerId = playerTableEntity.PlayerId,
+                CreatedTime = DateTime.UtcNow,
                 Guess = this.Guess
             };
         }

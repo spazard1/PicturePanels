@@ -81,6 +81,13 @@ namespace PicturePanels.Services
 
         public async Task Chat(PlayerEntity entity, string message)
         {
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return;
+            }
+
+            message = message.Substring(0, Math.Min(message.Length, 150));
+
             var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
             if (playerModel == null)
             {
@@ -92,9 +99,9 @@ namespace PicturePanels.Services
                 playerModel.TeamNumber = entity.TeamNumber;
             }
 
-            await this.chatTableStorage.AddOrUpdateChatAsync(playerModel, message);
+            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(playerModel, message);
 
-            await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Chat(new PlayerEntity(playerModel), message);
+            await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Chat(new ChatEntity(chatModel, playerModel));
         }
 
         public async Task Typing(PlayerEntity entity)

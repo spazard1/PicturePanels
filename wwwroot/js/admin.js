@@ -305,8 +305,8 @@ function getChatsElementId(player) {
 
 function registerConnections() {
     connection.on("GameState", handleGameState);
-    connection.on("Chat", (player, message) => {
-        drawChat(getChatsElementId(player), message, player);      
+    connection.on("Chat", (chat) => {
+        drawChat(getChatsElementId(player), chat);      
     });
 
     connection.on("Typing", (player) => {
@@ -315,21 +315,8 @@ function registerConnections() {
 
     connection.on("AddPlayer", (player) => {
         if (player.playerId !== localStorage.getItem("playerId")) {
-            drawSystemChat(getChatsElementId(player), "has joined the team.", player);
+            drawSystemChat(getChatsElementId(player), { message: "has joined the team.", player: player });
         }
-    });
-
-    connection.onreconnected = function () {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chatsTeam1", "SignalR reconnected");
-        }
-    }
-
-    connection.onclose(async function () {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chatsTeam1", "SignalR closed.");
-        }
-        await startSignalRAsync("admin");
     });
 }
 

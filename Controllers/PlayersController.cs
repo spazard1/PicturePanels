@@ -34,7 +34,7 @@ namespace PicturePanels.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var allPlayers = await this.playerTableStorage.GetPlayersAsync();
+            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync();
             return Json(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
         }
 

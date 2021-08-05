@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using PicturePanels.Entities;
 using PicturePanels.Services;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PicturePanels.Controllers
 {
@@ -26,22 +25,15 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> GetAsync(string teamNumber)
         {
             var chatModels = await this.chatTableStorage.GetChatsAsync(teamNumber);
-
-            var playerCache = new Dictionary<string, PlayerEntity>();
-
+            var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync();
             var chatEntities = new List<ChatEntity>();
+
             foreach (var chatModel in chatModels)
             {
-                if (playerCache.TryGetValue(chatModel.PlayerId, out PlayerEntity playerEntity))
+                if (players.TryGetValue(chatModel.PlayerId, out PlayerTableEntity playerModel))
                 {
-                    chatEntities.Add(new ChatEntity(chatModel, playerEntity));
+                    chatEntities.Add(new ChatEntity(chatModel, playerModel));
                     continue;
-                }
-                var playerModel = await this.playerTableStorage.GetPlayerAsync(chatModel.PlayerId);
-                if (playerModel != null)
-                {
-                    playerCache[playerModel.PlayerId] = new PlayerEntity(playerModel);
-                    chatEntities.Add(new ChatEntity(chatModel, playerCache[playerModel.PlayerId]));
                 }
                 else
                 {

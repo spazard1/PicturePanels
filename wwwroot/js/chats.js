@@ -23,8 +23,24 @@ async function drawChatsAsync(chatsElementId, teamNumber) {
     var chats = await getChats(teamNumber);
 
     chats.forEach(chat => {
-        drawChat(chatsElementId, chat.message, chat.player, true);
+        drawChat(chatsElementId, chat, true);
     });
+}
+
+function sortChats(chatsElementId) {
+    var chatsElement = document.getElementById(chatsElementId);
+
+    var children = Array.from(chatsElement.childNodes);
+
+    children.sort((a, b) => {
+        return a.ticks - b.ticks;
+    });
+
+    children.reverse();
+
+    children.forEach((child) => chatsElement.append(child));
+
+    setupChatTypingIndicator(chatsElementId);
 }
 
 var lastTypingTime;
@@ -66,80 +82,119 @@ function setupChats(chatsElementId, teamNumber) {
         });
     }
 
+    chatInputText.onkeypress = (event) => {
+        if (event.which === 13) {
+            event.preventDefault();
+            return;
+        }
+    }
+
     setupInputDefaultText(chatsElementId + "_inputText", "chat with your team...")
 
     setupChatTypingIndicator(chatsElementId);
+
+    setupGrowers();
 }
 
 function setupChatTypingIndicator(chatsElementId) {
-    if (document.getElementById(chatsElementId + "_typingIndicator")) {
+    var chatTypingIndicatorElement = document.getElementById(chatsElementId + "_typingIndicator");
+    var chatsElement = document.getElementById(chatsElementId);
+
+    if (chatTypingIndicatorElement) {
+        chatsElement.prepend(chatTypingIndicatorElement);
         return;
     }
 
-    var chatElement = document.createElement("div");
-    chatElement.id = chatsElementId + "_typingIndicator";
-    chatElement.classList.add("chat");
-    chatElement.classList.add("othersChat");
-    chatElement.classList.add("hidden");
+    chatTypingIndicatorElement = document.createElement("div");
+    chatTypingIndicatorElement.id = chatsElementId + "_typingIndicator";
+    chatTypingIndicatorElement.classList.add("chat");
+    chatTypingIndicatorElement.classList.add("othersChat");
+    chatTypingIndicatorElement.classList.add("hidden");
 
     var playerNames = document.createElement("span");
     playerNames.id = chatsElementId + "_typingIndicatorPlayers";
-    chatElement.appendChild(playerNames);
+    chatTypingIndicatorElement.appendChild(playerNames);
 
     var colon = document.createElement("span");
     colon.appendChild(document.createTextNode(": "));
-    chatElement.appendChild(colon);
+    chatTypingIndicatorElement.appendChild(colon);
 
     for (var i = 1; i <= 3; i++) {
         var ellipsis = document.createElement("span");
         ellipsis.classList.add("ellipsis");
         ellipsis.classList.add("ellipsis" + i);
         ellipsis.appendChild(document.createTextNode("."));
-        chatElement.appendChild(ellipsis);
+        chatTypingIndicatorElement.appendChild(ellipsis);
     }
 
-    var chatsElement = document.getElementById(chatsElementId);
-    chatsElement.prepend(chatElement);
+    chatsElement.prepend(chatTypingIndicatorElement);
 }
 
-function drawChat(chatsElementId, message, player, skipScroll) {
+function setupGrowers() {
+    const growers = document.querySelectorAll(".grow-wrap");
+
+    growers.forEach((grower) => {
+        const textarea = grower.querySelector("textarea");
+        textarea.addEventListener("input", (event) => {
+            grower.dataset.replicatedValue = textarea.value;
+        });
+    });
+}
+
+function drawChat(chatsElementId, chat, skipScroll) {
     var chatsElement = document.getElementById(chatsElementId);
 
-    message = message.replaceAll(imageRegex, "<img class=\"chatImage\" src=\"$1\"/>");
+    chat.message = chat.message.replaceAll(imageRegex, "<img class=\"chatImage\" src=\"$1\"/>");
 
     var chatElement = document.createElement("div");
-    chatElement.classList.add("chat");
+    if (chat.ticks) {
+        chatElement.id = "chat_" + chat.ticks;
+        chatElement.ticks = chat.ticks;
+    } else {
+        chatElement.ticks = 0;
+    }
 
-    if (!player) {
+    chatElement.classList.add("chat");
+    if (chat.isSystem) {
+        chatElement.classList.add("systemChat");
+    }
+
+    var chatMessage;
+
+    if (!chat.player) {
         chatElement.classList.add("othersChat");
 
-        var chatMessage = document.createElement("span");
-        chatMessage.innerHTML = "(unknown player): " + message;
+        chatMessage = document.createElement("span");
+        chatMessage.innerHTML = "(unknown player): " + chat.message;
         chatElement.appendChild(chatMessage);
 
-    } else if (player.playerId === localStorage.getItem("playerId")) {
-        stoppedTyping(chatsElementId, player);
+    } else if (!chat.isSystem && chat.player.playerId === localStorage.getItem("playerId")) {
+        stoppedTyping(chatsElementId, chat.player);
 
         chatElement.classList.add("selfChat");
 
-        var chatMessage = document.createElement("span");
-        chatMessage.innerHTML = message;
+        chatMessage = document.createElement("span");
+        chatMessage.innerHTML = chat.message;
         chatElement.appendChild(chatMessage);
     } else {
-        stoppedTyping(chatsElementId, player);
+        stoppedTyping(chatsElementId, chat.player);
 
         chatElement.classList.add("othersChat");
 
         var playerName = document.createElement("span");
-        if (player.isAdmin) {
+        if (chat.player.isAdmin) {
             playerName.classList.add("adminPlayerName")
         }
-        playerName.style = "color: " + player.color + ";";
-        playerName.appendChild(document.createTextNode(player.name));
+        playerName.style = "color: " + chat.player.color + ";";
+        playerName.appendChild(document.createTextNode(chat.player.name));
         chatElement.appendChild(playerName);
 
-        var chatMessage = document.createElement("span");
-        chatMessage.innerHTML = ": " + message;
+        chatMessage = document.createElement("span");
+        if (chat.isSystem) {
+            chatMessage.innerHTML = " " + chat.message;
+        } else {
+            chatMessage.innerHTML = ": " + chat.message;
+        }
         chatElement.appendChild(chatMessage);
     }
 
@@ -155,7 +210,7 @@ function drawChat(chatsElementId, message, player, skipScroll) {
     }
 
     if (!skipScroll) {
-        if (player.playerId === localStorage.getItem("playerId")) {
+        if (chat.player.playerId === localStorage.getItem("playerId")) {
             scrollChats(chatsElementId, true);
         } else {
             scrollChats(chatsElementId);
@@ -163,38 +218,9 @@ function drawChat(chatsElementId, message, player, skipScroll) {
     }
 }
 
-function drawSystemChat(chatsElementId, chatMessage, player) {
-    var chatElement = document.createElement("div");
-    chatElement.classList.add("chat");
-    chatElement.classList.add("systemChat");
-
-    if (player) {
-        var playerName = document.createElement("span");
-        if (player.isAdmin) {
-            playerName.classList.add("adminPlayerName")
-        }
-        playerName.style = "color: " + player.color + ";";
-        playerName.appendChild(document.createTextNode(player.name + " "));
-        chatElement.appendChild(playerName);
-    }
-
-    var chatMessageElement = document.createElement("span");
-    chatMessageElement.appendChild(document.createTextNode(chatMessage));
-    chatElement.appendChild(chatMessageElement);
-
-    var chatsElement = document.getElementById(chatsElementId);
-    var typingIndicator = document.getElementById(chatsElementId + "_typingIndicator");
-    if (typingIndicator && typingIndicator.nextElementSibling) {
-        chatsElement.insertBefore(chatElement, typingIndicator.nextElementSibling);
-    } else {
-        chatsElement.appendChild(chatElement);
-    }
-
-    if (chatsElement.childElementCount > 1000) {
-        chatsElement.lastChild.remove();
-    }
-
-    scrollChats(chatsElementId);
+function drawSystemChat(chatsElementId, chat) {
+    chat.isSystem = true;
+    drawChat(chatsElementId, chat);
 }
 
 function scrollChats(chatsElementId, force) {
@@ -306,7 +332,7 @@ async function sendChat(chatsElementId, teamNumber) {
     };
 
     connection.invoke("Chat", player, chatInputText.value);
-    drawChat(chatsElementId, chatInputText.value, player);
+    drawChat(chatsElementId, { message: chatInputText.value, player: player });
 
     if (document.activeElement === chatInputText) {
         chatInputText.value = "";
@@ -314,4 +340,6 @@ async function sendChat(chatsElementId, teamNumber) {
         chatInputText.value = chatInputText.defaultValue;
         chatInputText.classList.add("inputDefaultText");
     }
+
+    chatInputText.parentElement.dataset.replicatedValue = chatInputText.value;
 }

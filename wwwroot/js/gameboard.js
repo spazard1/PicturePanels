@@ -1059,28 +1059,11 @@ function handleSelectPanels(player) {
     drawMostVotesPanels();
 }
 
-function drawSystemChat(chatsElementId, message) {
-    document.getElementById("teamOneStatus").innerHTML = message;
-}
-
 function registerConnections() {
     connection.on("Players", handlePlayers);
     connection.on("AddPlayer", handleAddPlayer);
     connection.on("SelectPanels", handleSelectPanels);
     connection.on("GameState", handleGameState);
-
-    connection.onreconnected = function () {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chats", "SignalR reconnected");
-        }
-    }
-
-    connection.onclose(async function () {
-        if (localStorage.getItem("debug")) {
-            drawSystemChat("chats", "SignalR closed.");
-        }
-        await startSignalRAsync("gameboard");
-    });
 }
 
 var mouseTimer = null, cursorVisible = true;

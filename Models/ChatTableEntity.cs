@@ -19,13 +19,15 @@ namespace PicturePanels.Models
         }
 
         public DateTime CreatedTime {
-            get { return new DateTime(long.Parse(this.RowKey)); }
+            get { return new DateTime(long.Parse(this.RowKey), DateTimeKind.Utc); }
             set { this.RowKey = value.Ticks.ToString(); }
         }
 
         public string Message { get; set; }
 
         public string PlayerId { get; set; }
+
+        public bool IsSystem { get; set; }
         
     }
 }
