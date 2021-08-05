@@ -52,15 +52,25 @@ namespace PicturePanels.Services
             return chatResults;
         }
 
-        public async Task<ChatTableEntity> AddOrUpdateChatAsync(PlayerTableEntity playerModel, string message)
+        public Task<ChatTableEntity> AddOrUpdateChatAsync(PlayerTableEntity playerModel, string message)
         {
-            var tableEntity = new ChatTableEntity()
+            return this.AddOrUpdateChatAsync(playerModel, message, false);
+        }
+
+        public Task<ChatTableEntity> AddOrUpdateChatAsync(PlayerTableEntity playerModel, string message, bool isSystem)
+        {
+            return this.AddOrUpdateChatAsync(new ChatTableEntity()
             {
                 TeamNumber = playerModel.TeamNumber.ToString(),
                 Message = message,
                 PlayerId = playerModel.PlayerId,
-                CreatedTime = DateTime.UtcNow
-            };
+                CreatedTime = DateTime.UtcNow,
+                IsSystem = isSystem
+            });
+        }
+
+        public async Task<ChatTableEntity> AddOrUpdateChatAsync(ChatTableEntity tableEntity)
+        {
             await chatsTable.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
             return tableEntity;
         }

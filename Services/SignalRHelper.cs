@@ -28,7 +28,7 @@ namespace PicturePanels.Services
             {
                 LastGameboardPlayerUpdate = DateTime.UtcNow;
 
-                var allPlayers = await this.playerTableStorage.GetPlayersAsync();
+                var allPlayers = await this.playerTableStorage.GetActivePlayersAsync();
                 await this.hubContext.Clients.Group(SignalRHub.GameBoardGroup).Players(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
             }
         }
@@ -70,7 +70,7 @@ namespace PicturePanels.Services
             var teamNumber = rand.Next(1, 3);
             TableBatchOperation batchOperation = new TableBatchOperation();
 
-            foreach (var playerModelIteration in (await this.playerTableStorage.GetPlayersAsync()).OrderBy(playerEntity => rand.Next()))
+            foreach (var playerModelIteration in (await this.playerTableStorage.GetActivePlayersAsync()).OrderBy(playerEntity => rand.Next()))
             {
                 if (batchOperation.Count >= 100)
                 {
@@ -97,7 +97,7 @@ namespace PicturePanels.Services
 
             // notify of the new teams
             tasks = new List<Task>();
-            var allPlayers = await this.playerTableStorage.GetPlayersAsync();
+            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync();
             foreach (var playerModel in allPlayers)
             {
                 if (!string.IsNullOrWhiteSpace(playerModel.ConnectionId))
@@ -110,14 +110,19 @@ namespace PicturePanels.Services
             await Task.WhenAll(tasks);
         }
 
-        public async Task AddTeamGuessAsync(TeamGuessEntity teamGuessEntity, int teamNumber)
+        public async Task AddTeamGuessAsync(TeamGuessEntity teamGuessEntity)
         {
-            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).AddTeamGuess(teamGuessEntity);
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamGuessEntity.Player.TeamNumber)).AddTeamGuess(teamGuessEntity);
         }
 
-        public async Task DeleteTeamGuessesAsync(string ticks, int teamNumber)
+        public async Task DeleteTeamGuessesAsync(TeamGuessEntity teamGuessEntity)
         {
-            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).DeleteTeamGuess(ticks);
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamGuessEntity.Player.TeamNumber)).DeleteTeamGuess(teamGuessEntity);
+        }
+
+        public async Task ChatAsync(ChatEntity chatEntity)
+        {
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(chatEntity.Player.TeamNumber)).Chat(chatEntity);
         }
     }
 }
