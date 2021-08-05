@@ -27,10 +27,12 @@ namespace PicturePanels.Services
             guess = Prepare(guess);
             Levenshtein lev = new Levenshtein(guess);
 
-            foreach (var answer in answers)
+            foreach (var answer in answers.Select(a => Prepare(a)))
             {
                 double totalLength = answer.Length + guess.Length;
-                Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+                #if DEBUG
+                    Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+                #endif
                 if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio) {
                     return true;
                 }

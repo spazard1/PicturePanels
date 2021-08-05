@@ -1,29 +1,19 @@
-﻿@section css {
-    <environment include="Development">
-	    <link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
-	    <link rel="stylesheet" type="text/css" href="~/css/chats.css" asp-append-version="true" />
-	    <link rel="stylesheet" type="text/css" href="~/css/player.css" asp-append-version="true" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" type="text/css" href="~/css/bundles/player.min.css" asp-append-version="true" />
-    </environment>
+﻿@section head {
+    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
 }
 
-@section head {
-    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+@section css {
+	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+	<link rel="stylesheet" type="text/css" href="~/css/chats.css" asp-append-version="true" />
+	<link rel="stylesheet" type="text/css" href="~/css/player.css" asp-append-version="true" />
 }
 
 @section scripts {
     <script src="~/external/colorpicker.js" asp-append-version="true"></script>
 
-    <environment include="Development">
-        <script src="~/js/index.js" asp-append-version="true"></script>
-        <script src="~/js/chats.js" asp-append-version="true"></script>
-        <script src="~/js/player.js" asp-append-version="true"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="~/js/bundles/player.min.js" asp-append-version="true"></script>
-    </environment>
+    <script src="~/js/index.js" asp-append-version="true"></script>
+    <script src="~/js/chats.js" asp-append-version="true"></script>
+    <script src="~/js/player.js" asp-append-version="true"></script>
 }
 
 <div id="mainDiv" class="center flexColumns">
@@ -58,17 +48,22 @@
 
     <div id="panelButtons" class="panelButtons center hidden"></div>
 
-    <div id="teamGuesses" class="teamGuesses center hidden"></div>
+    <div id="teamGuessesContainer" class="teamGuessesContainer center hidden">
+         <div id="teamGuesses" class="teamGuesses"></div>
+         <div id="teamGuessesPassButton" class="defaultButton teamGuessesButton center">Pass</div>
+    </div>
 
     <div id="chats" class="chats hidden"></div>
 
+    <!--
     <div id="teamGuessesInputContainer" class="teamGuessesInputContainer center hidden">
         <div id="teamGuessesMessage" class="teamGuessesMessage">This is a default message for the team guess.</div>
-        <input type="button" id="teamGuessesButton" class="defaultButton teamGuessesButton center" value="Guess" />
+        <div id="teamGuessesButton" class="defaultButton teamGuessesButton center">Guess</div>
     </div>
+    -->
     <div id="chats_input" class="chatInputContainer hidden">
         <input id="chats_inputText" type="text" class="chatInputText" autocomplete="off" maxlength="280" />
-        <input type="button" id="chats_send" class="defaultButton chatSendButton" value="Chat" />
+        <div id="chats_send" class="defaultButton chatSendButton">Chat</div>
+        <div id="teamGuessButton" class="defaultButton teamGuessButton center">Guess</div>
     </div>
-
 </div>
