@@ -248,17 +248,16 @@ async function finalizePlayerAsync() {
     playerIsReadyToPlay = true;
 
     handleGameState(await getGameStateAsync());
+    drawPlayer(await putPlayerAsync());
 
     var promises = [];
-    promises.push(putPlayerAsync());
     promises.push(getTeamGuessesAsync());
     promises.push(startSignalRAsync("player"));
     promises.push(drawChatsAsync("chats"));
 
     var results = await Promise.all(promises);
 
-    drawPlayer(results[0]); // first promise is putPlayer
-    drawTeamGuesses(results[1]); // second promise is getTeamGuessesAsync
+    drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
@@ -466,15 +465,12 @@ function handleGameState(gameState) {
 
 function drawTeamGuesses(teamGuesses) {
     var teamGuessesElement = document.getElementById("teamGuesses");
-
     teamGuessesElement.innerHTML = "";
     teamGuesses.forEach(drawTeamGuess);
 }
 
 function deleteTeamGuess(teamGuess) {
     document.getElementById("teamGuess_" + teamGuess.ticks).remove();
-
-    //drawSystemChat("chats", { message: "has deleted the guess '" + teamGuess.guess + "'", player: teamGuess.player, ticks: teamGuess.ticks });
 }
 
 function drawTeamGuess(teamGuess) {
@@ -508,10 +504,6 @@ function drawTeamGuess(teamGuess) {
     teamGuessElement.appendChild(teamGuessDeleteButtonElement);
 
     teamGuessesElement.appendChild(teamGuessElement);
-
-    if (teamGuess.player) {
-        //drawSystemChat("chats", { message: "has submitted the team guess '" + teamGuess.guess + "'", player: teamGuess.player, ticks: teamGuess.ticks });
-    }
 }
 
 const innerPanels = ["7", "8", "9", "12", "13", "14"];
