@@ -38,6 +38,27 @@ async function getPlayersAsync() {
         });
 }
 
+async function putPlayerAsync() {
+    return await fetch("api/players/" + localStorage.getItem("playerId"),
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                PlayerId: localStorage.getItem("playerId"),
+                Name: localStorage.getItem("playerName"),
+                TeamNumber: parseInt(localStorage.getItem("teamNumber")),
+                Color: localStorage.getItem("playerColor"),
+                ConnectionId: connection.connectionId
+            })
+        })
+        .then(response => response.json())
+        .then(responseJson => {
+            return responseJson;
+        });
+}
+
 async function getImageEntityAsync(imageId) {
     return fetch("/api/images/entity/" + imageId)
         .then(response => response.json())
