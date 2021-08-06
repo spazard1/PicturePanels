@@ -37,6 +37,13 @@ namespace PicturePanels.Services
         {
             await this.hubContext.Clients.Group(SignalRHub.GameBoardGroup).AddPlayer(new PlayerEntity(playerModel));
 
+            if (playerModel.IsAdmin)
+            {
+                await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamOneGroup);
+                await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamTwoGroup);
+                return;
+            }
+
             if (playerModel.TeamNumber == 1)
             {
                 if (!string.IsNullOrWhiteSpace(playerModel.ConnectionId))

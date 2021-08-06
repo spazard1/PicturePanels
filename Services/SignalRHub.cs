@@ -35,36 +35,6 @@ namespace PicturePanels.Services
             }
         }
 
-        public override async Task OnConnectedAsync()
-        {
-            if (Context.GetHttpContext().Request.Query.TryGetValue("user", out StringValues userValue))
-            {
-                var playerId = userValue.ToString();
-                if (playerId.EndsWith("_player"))
-                {
-                    playerId = playerId.Substring(0, playerId.Length - "_player".Length);
-                    var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
-                    if (playerModel != null)
-                    {
-                        playerModel.ConnectionId = Context.ConnectionId;
-                        playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
-                        await this.AddPlayerToTeamGroupAsync(playerModel);
-
-                        if (!playerModel.IsAdmin)
-                        {
-                            await Clients.Group(GameBoardGroup).AddPlayer(new PlayerEntity(playerModel));
-                        }
-                    }
-                }
-                else if (playerId.EndsWith("_admin"))
-                {
-                    await Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.TeamOneGroup);
-                    await Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.TeamTwoGroup);
-                }
-            }
-            await base.OnConnectedAsync();
-        }
-
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var removeOne = Groups.RemoveFromGroupAsync(Context.ConnectionId, SignalRHub.TeamOneGroup);

@@ -32,6 +32,8 @@ namespace PicturePanels.Entities
 
         public bool IsAdmin { get; }
 
+        public string ConnectionId { get; set; }
+
         public PlayerTableEntity ToModel()
         {
             return new PlayerTableEntity()
@@ -40,7 +42,8 @@ namespace PicturePanels.Entities
                 Name = this.Name,
                 TeamNumber = this.TeamNumber,
                 SelectedPanels = this.SelectedPanels,
-                Color = this.Color
+                Color = this.Color,
+                ConnectionId = this.ConnectionId
             };
         }
     }
