@@ -155,39 +155,34 @@ function drawChat(chatsElementId, chat, skipScroll) {
     }
 
     chatElement.classList.add("chat");
+    var chatMessage;
+
+    if (chat.player) {
+        stoppedTyping(chatsElementId, chat.player);
+    }
+
     if (chat.isSystem) {
         chatElement.classList.add("systemChat");
     }
 
-    var chatMessage;
-
-    if (!chat.player) {
-        chatElement.classList.add("othersChat");
-
-        chatMessage = document.createElement("span");
-        chatMessage.innerHTML = "(unknown player): " + chat.message;
-        chatElement.appendChild(chatMessage);
-
-    } else if (!chat.isSystem && chat.player.playerId === localStorage.getItem("playerId")) {
-        stoppedTyping(chatsElementId, chat.player);
-
+    if (!chat.isSystem && chat.player.playerId === localStorage.getItem("playerId")) {
         chatElement.classList.add("selfChat");
 
         chatMessage = document.createElement("span");
         chatMessage.innerHTML = chat.message;
         chatElement.appendChild(chatMessage);
     } else {
-        stoppedTyping(chatsElementId, chat.player);
-
         chatElement.classList.add("othersChat");
 
-        var playerName = document.createElement("span");
-        if (chat.player.isAdmin) {
-            playerName.classList.add("adminPlayerName")
+        if (chat.player) {
+            var playerName = document.createElement("span");
+            if (chat.player.isAdmin) {
+                playerName.classList.add("adminPlayerName")
+            }
+            playerName.style = "color: " + chat.player.color + ";";
+            playerName.appendChild(document.createTextNode(chat.player.name));
+            chatElement.appendChild(playerName);
         }
-        playerName.style = "color: " + chat.player.color + ";";
-        playerName.appendChild(document.createTextNode(chat.player.name));
-        chatElement.appendChild(playerName);
 
         chatMessage = document.createElement("span");
         if (chat.isSystem) {
@@ -210,7 +205,7 @@ function drawChat(chatsElementId, chat, skipScroll) {
     }
 
     if (!skipScroll) {
-        if (chat.player.playerId === localStorage.getItem("playerId")) {
+        if (chat.player && chat.player.playerId === localStorage.getItem("playerId")) {
             scrollChats(chatsElementId, true);
         } else {
             scrollChats(chatsElementId);
