@@ -336,7 +336,7 @@ function setupAdminMenu() {
 }
 
 var connection;
-function createSignalRConnection(playerIdSuffix) {
+async function createSignalRConnectionAsync(playerIdSuffix) {
     connection = new signalR.HubConnectionBuilder()
         .withUrl("/signalRHub?user=" + localStorage.getItem("playerId") + "_" + playerIdSuffix)
         .withAutomaticReconnect()
@@ -344,6 +344,8 @@ function createSignalRConnection(playerIdSuffix) {
         .build();
 
     registerConnections();
+
+    await connection.start();
 }
 
 var reconnectingCount = 0;
@@ -415,25 +417,24 @@ function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0
 
 var signalRTimeOut = false;
 async function startSignalRAsync(playerIdSuffix) {
-    if (!document.getElementById("signalRConnectionState")) {
-        var connectionStateElement = document.createElement("div");
+    var connectionStateElement = document.getElementById("signalRConnectionState");
+    if (!connectionStateElement) {
+        connectionStateElement = document.createElement("div");
         connectionStateElement.classList = "hidden";
         connectionStateElement.id = "signalRConnectionState";
         document.body.appendChild(connectionStateElement);
+    } else {
+        return;
     }
 
     if (signalRTimeOut) {
         return;
     }
 
-    createSignalRConnection(playerIdSuffix);
+    await createSignalRConnectionAsync(playerIdSuffix);
    
-    await connection.start();
-
     setTimeout(function () {
         signalRTimeOut = true;
-        playerIsReadyToPlay = false;
-        drawSystemChat("chats", { message: "You have been disconnected from the server. Refresh the page to connect again." })
         connection.stop();
     }, 1000 * 60 * 60 * 4);
 
