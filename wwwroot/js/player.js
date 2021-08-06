@@ -72,7 +72,8 @@ async function putPlayerAsync() {
             PlayerId: localStorage.getItem("playerId"),
             Name: localStorage.getItem("playerName"),
             TeamNumber: parseInt(localStorage.getItem("teamNumber")),
-            Color: localStorage.getItem("playerColor")
+            Color: localStorage.getItem("playerColor"),
+            ConnectionId: connection.connectionId
         })
     })
     .then(response => response.json())
@@ -213,7 +214,6 @@ function teamChosen(teamNumber) {
     localStorage.setItem("teamNumber", teamNumber);
 
     drawTeam(teamNumber);
-    setupChats("chats");
 }
 
 function shouldPlayerLoadFromCache() {
@@ -244,41 +244,6 @@ async function setupPlayerAsync() {
     }
 }
 
-async function finalizePlayerAsync() {
-    playerIsReadyToPlay = true;
-
-    handleGameState(await getGameStateAsync());
-    drawPlayer(await putPlayerAsync());
-
-    var promises = [];
-    promises.push(getTeamGuessesAsync());
-    promises.push(startSignalRAsync("player"));
-    promises.push(drawChatsAsync("chats"));
-
-    var results = await Promise.all(promises);
-
-    drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
-
-    document.getElementById("playerBanner").onclick = (event) => {
-        var result = confirm("Do you want to change your player name, color, or team?");
-        if (!result) {
-            return;
-        }
-        setupChoosePlayerName();
-    };
-
-    document.getElementById("turnStatusMessage").onclick = (event) => {
-        var result = confirm("Do you want to change your player name, color, or team?");
-        if (!result) {
-            return;
-        }
-        setupChoosePlayerName();
-    };
-
-    scrollChats("chats", true);
-    sortChats("chats");
-}
-
 function setupTeamSelectionButtons() {
     document.getElementById("teamOneName").onclick = async function () {
         teamChosen(1);
@@ -289,12 +254,12 @@ function setupTeamSelectionButtons() {
         await finalizePlayerAsync();
     };
     document.getElementById("chooseSmallestTeam").onclick = async function () {
-        await chooseSmallestTeam();
+        await smallestTeamChosenAsync();
         await finalizePlayerAsync();
     };
 }
 
-async function chooseSmallestTeam() {
+async function smallestTeamChosenAsync() {
     document.getElementById("chooseSmallestTeam").innerHTML = "Loading...";
 
     await fetch("api/players")
@@ -534,8 +499,9 @@ async function handleRandomizeTeam(player) {
     clearPanelButtonSelection();
 
     if (parseInt(localStorage.getItem("teamNumber")) !== player.teamNumber) {
-        drawTeam(player.teamNumber);
-        await drawChatsAsync("chats");
+        teamChosen(player.teamNumber);
+        await finalizePlayerAsync();
+
         drawSystemChat("chats", { message: "The teams have been randomized; you are now on the other team." });
     } else {
         drawSystemChat("chats", { message: "The teams have been randomized; you have not changed teams." });
@@ -563,14 +529,49 @@ function registerConnections() {
     connection.on("RandomizeTeam", handleRandomizeTeam);
 }
 
+async function finalizePlayerAsync() {
+    await startSignalRAsync("player");
+    drawPlayer(await putPlayerAsync());
+    playerIsReadyToPlay = true;
+
+    setupChats("chats");
+
+    var promises = [];
+    promises.push(getTeamGuessesAsync());
+    promises.push(getGameStateAsync());
+    promises.push(drawChatsAsync("chats"));
+
+    var results = await Promise.all(promises);
+
+    drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
+    handleGameState(results[1]); // second promise is getGameStateAsync
+
+    document.getElementById("playerBanner").onclick = (event) => {
+        var result = confirm("Do you want to change your player name, color, or team?");
+        if (!result) {
+            return;
+        }
+        setupChoosePlayerName();
+    };
+
+    document.getElementById("turnStatusMessage").onclick = (event) => {
+        var result = confirm("Do you want to change your player name, color, or team?");
+        if (!result) {
+            return;
+        }
+        setupChoosePlayerName();
+    };
+
+    scrollChats("chats", true);
+    sortChats("chats");
+}
+
 window.onresize = function () {
     var chatsElement = document.getElementById("chats");
     chatsElement.classList.remove("smoothScroll");
     scrollChats("chats", true);
     chatsElement.classList.add("smoothScroll");
 }
-
-var connectionCount = 0;
 
 window.onload = async function () {
     handleGameState(await getGameStateAsync());
@@ -583,8 +584,6 @@ window.onload = async function () {
     drawPanelButtons();
     setupPlayerMenu();
     setupPlayerAsync();
-
-    document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
 
     setInterval(putPlayerPingAsync, 30000);
 }

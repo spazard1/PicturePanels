@@ -15,11 +15,13 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class PlayersController : Controller
     {
+        private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly SignalRHelper signalRHelper;
 
-        public PlayersController(PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper)
+        public PlayersController(IHubContext<SignalRHub, ISignalRHub> hubContext, PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper)
         {
+            this.hubContext = hubContext;
             this.playerTableStorage = playerTableStorage;
             this.signalRHelper = signalRHelper;
         }
@@ -79,9 +81,9 @@ namespace PicturePanels.Controllers
             playerModel.TeamNumber = entity.TeamNumber;
             playerModel.Color = entity.Color;
             playerModel.LastPingTime = DateTime.UtcNow;
+            playerModel.ConnectionId = entity.ConnectionId;
 
             playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
-
             await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
 
             return Json(new PlayerEntity(playerModel));
