@@ -300,13 +300,13 @@ async function handleGameState(gameState) {
 }
 
 function getChatsElementId(player) {
-    return player.teamNumber === 1 ? "chatsTeam1" : "chatsTeam2";
+    return player && player.teamNumber === 2 ? "chatsTeam2" : "chatsTeam1";
 }
 
 function registerConnections() {
     connection.on("GameState", handleGameState);
     connection.on("Chat", (chat) => {
-        drawChat(getChatsElementId(player), chat);      
+        drawChat(getChatsElementId(chat.player), chat);
     });
 
     connection.on("Typing", (player) => {
@@ -382,12 +382,14 @@ window.onload = async function () {
         return;
     }
 
+    await startSignalRAsync("admin");
+    await putPlayerAsync();
+
     setupChats("chatsTeam1", 1);
     setupChats("chatsTeam2", 2);
     drawChatsAsync("chatsTeam1", 1);
     drawChatsAsync("chatsTeam2", 2);
 
-    startSignalRAsync("admin");
 
     var promises = [];
     promises.push(getGameStateAsync());
