@@ -117,19 +117,24 @@ namespace PicturePanels.Services
             await Task.WhenAll(tasks);
         }
 
-        public async Task AddTeamGuessAsync(TeamGuessEntity teamGuessEntity)
+        public async Task AddTeamGuessAsync(TeamGuessEntity teamGuessEntity, int teamNumber)
         {
-            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamGuessEntity.Player.TeamNumber)).AddTeamGuess(teamGuessEntity);
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).AddTeamGuess(teamGuessEntity);
         }
 
-        public async Task DeleteTeamGuessesAsync(TeamGuessEntity teamGuessEntity)
+        public async Task DeleteTeamGuessesAsync(TeamGuessEntity teamGuessEntity, int teamNumber)
         {
-            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamGuessEntity.Player.TeamNumber)).DeleteTeamGuess(teamGuessEntity);
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).DeleteTeamGuess(teamGuessEntity);
         }
 
         public async Task ChatAsync(ChatEntity chatEntity)
         {
             await hubContext.Clients.Group(SignalRHub.TeamGroup(chatEntity.Player.TeamNumber)).Chat(chatEntity);
+        }
+
+        public async Task VoteTeamGuessAsync(string oldVote, string newVote, int teamNumber)
+        {
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).VoteTeamGuess(oldVote, newVote);
         }
     }
 }

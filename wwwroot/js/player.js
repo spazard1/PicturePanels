@@ -113,6 +113,17 @@ async function deleteTeamGuessAsync(ticks) {
         });
 }
 
+async function putTeamGuessVoteAsync(ticks) {
+    if (!playerIsReadyToPlay) {
+        return;
+    }
+
+    await fetch("api/teamGuess/" + localStorage.getItem("playerId") + "/" + ticks,
+        {
+            method: "PUT"
+        });
+}
+
 function setupChoosePlayerName() {
     playerIsReadyToPlay = false;
     document.getElementById("chooseSmallestTeam").innerHTML = "Choose for me";
@@ -436,6 +447,8 @@ function drawTeamGuess(teamGuess) {
     teamGuessDeleteButtonElement.appendChild(teamGuessDeleteImageElement);
 
     teamGuessDeleteButtonElement.onclick = (event) => {
+        event.stopPropagation();
+
         var result = confirm("Delete the guess '" + teamGuess.guess + "'?");
         if (!result) {
             return;
@@ -447,7 +460,36 @@ function drawTeamGuess(teamGuess) {
     teamGuessDeleteButtonElement.classList = "teamGuessDeleteButton";
     teamGuessElement.appendChild(teamGuessDeleteButtonElement);
 
+    var teamGuessVoteCountElement = document.createElement("div");
+    teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
+    teamGuessVoteCountElement.classList = "teamGuessVoteCount";
+    teamGuessVoteCountElement.appendChild(document.createTextNode(teamGuess.voteCount));
+    teamGuessElement.appendChild(teamGuessVoteCountElement);
+
+    teamGuessElement.onclick = (event) => {
+        event.stopPropagation(); 
+
+        putTeamGuessVoteAsync(teamGuess.ticks);
+    }
+
     teamGuessesElement.appendChild(teamGuessElement);
+}
+
+function voteTeamGuess(oldVote, newVote) {
+    updateVoteCount(oldVote, -1);
+    updateVoteCount(newVote, 1);
+}
+
+function updateVoteCount(ticks, amount) {
+    var voteCountElement = document.getElementById("teamGuessVoteCount_" + ticks);
+    if (voteCountElement) {
+        var currentVoteCount = parseInt(voteCountElement.textContent);
+        if (currentVoteCount) {
+            voteCountElement.innerHTML = currentVoteCount + amount;
+        } else if (amount > 0) {
+            voteCountElement.innerHTML = amount;
+        }
+    }
 }
 
 const innerPanels = ["7", "8", "9", "12", "13", "14"];
@@ -505,7 +547,9 @@ function registerConnections() {
     connection.on("GameState", handleGameState);
     connection.on("AddTeamGuess", drawTeamGuess);
     connection.on("DeleteTeamGuess", deleteTeamGuess);
+    connection.on("VoteTeamGuess", voteTeamGuess);
     connection.on("RandomizeTeam", handleRandomizeTeam);
+
 }
 
 async function finalizePlayerAsync() {
