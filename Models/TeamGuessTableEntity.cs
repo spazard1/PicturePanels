@@ -10,11 +10,6 @@ namespace PicturePanels.Models
     {
         public const string PartitionKeyPrefix = "team_";
 
-        public TeamGuessTableEntity()
-        {
-            this.PartitionKey = "Players";
-        }
-
         private int teamNumber;
 
         public int TeamNumber

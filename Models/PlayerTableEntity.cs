@@ -34,6 +34,8 @@ namespace PicturePanels.Models
 
         public string ConnectionId { get; set; }
 
+        public string TeamGuessVote { get; set; }
+
         public string SignalRGroup {
            get
            {
