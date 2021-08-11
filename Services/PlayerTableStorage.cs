@@ -71,6 +71,13 @@ namespace PicturePanels.Services
             return playerResults;
         }
 
+        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(int teamNumber)
+        {
+            var players = await GetActivePlayersAsync();
+            players.RemoveAll(player => player.TeamNumber != teamNumber);
+            return players;
+        }
+
         public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync()
         {
             var playerResults = new Dictionary<string, PlayerTableEntity>();
