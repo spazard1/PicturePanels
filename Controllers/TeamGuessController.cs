@@ -1,14 +1,9 @@
-﻿using PicturePanels.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc;
 using PicturePanels.Entities;
-using PicturePanels.Filters;
 using PicturePanels.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net;
 
 namespace PicturePanels.Controllers
 {
@@ -18,15 +13,15 @@ namespace PicturePanels.Controllers
     {
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
-        private readonly ChatTableStorage chatTableStorage;
         private readonly SignalRHelper signalRHelper;
+        private readonly ChatService chatService;
 
-        public TeamGuessController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage, ChatTableStorage chatTableStorage, SignalRHelper signalRHelper)
+        public TeamGuessController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper, ChatService chatService)
         {
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.playerTableStorage = playerTableStorage;
-            this.chatTableStorage = chatTableStorage;
             this.signalRHelper = signalRHelper;
+            this.chatService = chatService;
         }
 
         [HttpGet("{playerId}")]
@@ -116,8 +111,7 @@ namespace PicturePanels.Controllers
             await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
             await signalRHelper.DeleteTeamGuessesAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
 
-            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(player, "has deleted the guess '" + teamGuess.Guess + "'", true);
-            await signalRHelper.ChatAsync(new ChatEntity(chatModel, player));
+            await this.chatService.SendChatAsync(player, "has deleted the guess '" + teamGuess.Guess + "'", true);
 
             return StatusCode(204);
         }
@@ -146,8 +140,7 @@ namespace PicturePanels.Controllers
             var teamGuess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel(player));
             await signalRHelper.AddTeamGuessAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
 
-            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(player, "has submitted the guess '" + teamGuess.Guess + "'", true);
-            await signalRHelper.ChatAsync(new ChatEntity(chatModel, player));
+            await this.chatService.SendChatAsync(player, "has submitted the guess '" + teamGuess.Guess + "'", true);
 
             return Json(new TeamGuessEntity(teamGuess));
         }
