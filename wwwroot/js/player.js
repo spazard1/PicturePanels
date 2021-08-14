@@ -460,14 +460,21 @@ function drawTeamGuess(teamGuess) {
     teamGuessDeleteButtonElement.classList = "teamGuessDeleteButton";
     teamGuessElement.appendChild(teamGuessDeleteButtonElement);
 
+    var teamGuessVoteCountContainerElement = document.createElement("div");
+    teamGuessVoteCountContainerElement.classList = "teamGuessVoteCountContainer";
+
     var teamGuessVoteCountElement = document.createElement("div");
     teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
     teamGuessVoteCountElement.classList = "teamGuessVoteCount";
-    teamGuessVoteCountElement.appendChild(document.createTextNode(teamGuess.voteCount));
-    teamGuessElement.appendChild(teamGuessVoteCountElement);
+    if (teamGuess.voteCount) {
+        teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
+    }
+    teamGuessVoteCountContainerElement.appendChild(teamGuessVoteCountElement);
+
+    teamGuessElement.appendChild(teamGuessVoteCountContainerElement);
 
     teamGuessElement.onclick = (event) => {
-        event.stopPropagation(); 
+        event.stopPropagation();
 
         putTeamGuessVoteAsync(teamGuess.ticks);
     }
@@ -485,7 +492,8 @@ function updateVoteCount(ticks, amount) {
     if (voteCountElement) {
         var currentVoteCount = parseInt(voteCountElement.textContent);
         if (currentVoteCount) {
-            voteCountElement.innerHTML = currentVoteCount + amount;
+            var newVoteCount = currentVoteCount + amount;
+            voteCountElement.innerHTML = newVoteCount ? newVoteCount : "";
         } else if (amount > 0) {
             voteCountElement.innerHTML = amount;
         }
@@ -549,7 +557,6 @@ function registerConnections() {
     connection.on("DeleteTeamGuess", deleteTeamGuess);
     connection.on("VoteTeamGuess", voteTeamGuess);
     connection.on("RandomizeTeam", handleRandomizeTeam);
-
 }
 
 async function finalizePlayerAsync() {
