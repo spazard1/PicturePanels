@@ -15,13 +15,11 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class PlayersController : Controller
     {
-        private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly SignalRHelper signalRHelper;
 
-        public PlayersController(IHubContext<SignalRHub, ISignalRHub> hubContext, PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper)
+        public PlayersController(PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper)
         {
-            this.hubContext = hubContext;
             this.playerTableStorage = playerTableStorage;
             this.signalRHelper = signalRHelper;
         }
@@ -101,6 +99,20 @@ namespace PicturePanels.Controllers
             playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
 
             await this.signalRHelper.PlayerPingAsync();
+
+            return Json(new PlayerEntity(playerModel));
+        }
+
+        [HttpPut("{playerId}/ready")]
+        public async Task<IActionResult> ReadyAsync(string playerId)
+        {
+            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+            
+
 
             return Json(new PlayerEntity(playerModel));
         }

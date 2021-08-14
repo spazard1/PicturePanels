@@ -466,9 +466,7 @@ function drawTeamGuess(teamGuess) {
     var teamGuessVoteCountElement = document.createElement("div");
     teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
     teamGuessVoteCountElement.classList = "teamGuessVoteCount";
-    if (teamGuess.voteCount) {
-        teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
-    }
+    teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
     teamGuessVoteCountContainerElement.appendChild(teamGuessVoteCountElement);
 
     teamGuessElement.appendChild(teamGuessVoteCountContainerElement);
@@ -496,6 +494,8 @@ function updateVoteCount(ticks, amount) {
             voteCountElement.innerHTML = newVoteCount ? newVoteCount : "";
         } else if (amount > 0) {
             voteCountElement.innerHTML = amount;
+        } else {
+            voteCountElement.innerHTML = 0;
         }
     }
 }
@@ -609,6 +609,11 @@ window.onload = async function () {
     var teamGuessButton = document.getElementById("teamGuessButton");
     teamGuessButton.onclick = (event) => {
         postTeamGuessAsync();
+    }
+
+    var playerReadyButton = document.getElementById("playerReadyButton");
+    playerReadyButton.onclick = (event) => {
+        putPlayerReadyAsync();
     }
 
     drawPanelButtons();

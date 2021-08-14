@@ -226,12 +226,22 @@ body {
     flex: 1;
 }
 
+.teamReadyButton {
+    background-color: lightgreen;
+    flex: none;
+}
+
 .teamGuessButton {
     background-color: lightgreen;
     flex: none;
 }
 
 .teamGuessVoteCount {
+    position: absolute;
+    top: .6em;
+    left: .6em;
+    width: .8em;
+    height: .8em;
     background-color: transparent;
 }
 
