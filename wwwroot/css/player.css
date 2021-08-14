@@ -231,6 +231,22 @@ body {
     flex: none;
 }
 
+.teamGuessVoteCount {
+    background-color: transparent;
+}
+
+.teamGuessVoteCount:before {
+    content: "\02606";
+}
+
+.teamGuessVoteCountChoosen:before {
+    content: "\02605";
+}
+
+.teamGuessVoteCount:empty {
+    display: none;
+}
+
 @keyframes highlightTurnStatus {
     0% {
         color: white;
