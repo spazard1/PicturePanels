@@ -39,6 +39,7 @@ namespace PicturePanels
                 options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             });
 
+            services.AddSingleton<ChatService>();
             services.AddSingleton<ImageTableStorage>();
             services.AddSingleton<GameTableStorage>();
             services.AddSingleton<PlayerTableStorage>();
