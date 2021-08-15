@@ -121,6 +121,14 @@ async function putTeamGuessVoteAsync(ticks) {
     await fetch("api/teamGuess/" + localStorage.getItem("playerId") + "/" + ticks,
         {
             method: "PUT"
+        }).then((response) => {
+            if (response.ok) {
+                var teamGuessElements = document.querySelectorAll(".teamGuessVoteCount");
+                for (var teamGuessElement of teamGuessElements) {
+                    teamGuessElement.classList.remove("teamGuessVoteCountChosen");
+                }
+                document.getElementById("teamGuessVoteCount_" + ticks).classList.add("teamGuessVoteCountChosen");
+            }
         });
 }
 
@@ -460,16 +468,12 @@ function drawTeamGuess(teamGuess) {
     teamGuessDeleteButtonElement.classList = "teamGuessDeleteButton";
     teamGuessElement.appendChild(teamGuessDeleteButtonElement);
 
-    var teamGuessVoteCountContainerElement = document.createElement("div");
-    teamGuessVoteCountContainerElement.classList = "teamGuessVoteCountContainer";
-
     var teamGuessVoteCountElement = document.createElement("div");
     teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
     teamGuessVoteCountElement.classList = "teamGuessVoteCount";
     teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
-    teamGuessVoteCountContainerElement.appendChild(teamGuessVoteCountElement);
 
-    teamGuessElement.appendChild(teamGuessVoteCountContainerElement);
+    teamGuessElement.appendChild(teamGuessVoteCountElement);
 
     teamGuessElement.onclick = (event) => {
         event.stopPropagation();
@@ -490,8 +494,7 @@ function updateVoteCount(ticks, amount) {
     if (voteCountElement) {
         var currentVoteCount = parseInt(voteCountElement.textContent);
         if (currentVoteCount) {
-            var newVoteCount = currentVoteCount + amount;
-            voteCountElement.innerHTML = newVoteCount ? newVoteCount : "";
+            voteCountElement.innerHTML = currentVoteCount + amount;
         } else if (amount > 0) {
             voteCountElement.innerHTML = amount;
         } else {
