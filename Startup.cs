@@ -39,7 +39,6 @@ namespace PicturePanels
                 options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             });
 
-            services.AddSingleton<ChatService>();
             services.AddSingleton<ImageTableStorage>();
             services.AddSingleton<GameTableStorage>();
             services.AddSingleton<PlayerTableStorage>();
@@ -49,6 +48,7 @@ namespace PicturePanels
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
             services.AddScoped<SignalRHelper>();
+            services.AddScoped<ChatService>();
             services.AddScoped<AuthorizationFilter>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
