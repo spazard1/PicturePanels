@@ -191,12 +191,13 @@ body {
 
 .teamGuesses .teamGuessText {
     position: relative;
+    cursor: pointer;
     display: inline-block;
     height: fit-content;
     overflow-wrap: break-word;
-    margin-left: .25em;
-    margin-right: .25em;
-    max-width: 45%;
+    margin-left: .5em;
+    margin-right: .5em;
+    max-width: 95%;
     font-size: .7em;
     padding: 4px 7px 4px 7px;
     margin-bottom: .7em;
@@ -238,18 +239,20 @@ body {
 
 .teamGuessVoteCount {
     position: absolute;
-    top: .6em;
-    left: .6em;
-    width: .8em;
-    height: .8em;
-    background-color: transparent;
+    top: -.8em;
+    left: -.6em;
+    font-size: .8em;
+    color: yellow;
+    background-color: dodgerblue;
+    padding: 0px 3px 2px 3px;
+    border-radius: 10px;
 }
 
 .teamGuessVoteCount:before {
     content: "\02606";
 }
 
-.teamGuessVoteCountChoosen:before {
+.teamGuessVoteCountChosen:before {
     content: "\02605";
 }
 
