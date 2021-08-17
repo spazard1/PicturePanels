@@ -447,6 +447,13 @@ function drawTeamGuess(teamGuess) {
     } else {
         teamGuessElement.classList.add("teamTwoDarkColorBackground");
     }
+
+    var teamGuessVoteCountElement = document.createElement("div");
+    teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
+    teamGuessVoteCountElement.classList = "teamGuessVoteCount";
+    teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
+    teamGuessElement.appendChild(teamGuessVoteCountElement);
+
     teamGuessElement.appendChild(document.createTextNode(teamGuess.guess));
 
     var teamGuessDeleteButtonElement = document.createElement("div");
@@ -472,12 +479,10 @@ function drawTeamGuess(teamGuess) {
     teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
     teamGuessVoteCountElement.classList = "teamGuessVoteCount";
     teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
-
     teamGuessElement.appendChild(teamGuessVoteCountElement);
 
     teamGuessElement.onclick = (event) => {
         event.stopPropagation();
-
         putTeamGuessVoteAsync(teamGuess.ticks);
     }
 
