@@ -19,8 +19,10 @@ namespace PicturePanels.Controllers
         private readonly PlayerService playerService;
         private readonly SignalRHelper signalRHelper;
 
-        public PlayersController(PlayerTableStorage playerTableStorage, GameStateTableStorage gameStateTableStorage,
-            PlayerService playerService, SignalRHelper signalRHelper)
+        public PlayersController(PlayerTableStorage playerTableStorage,
+            GameStateTableStorage gameStateTableStorage,
+            PlayerService playerService,
+            SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
             this.gameStateTableStorage = gameStateTableStorage;
