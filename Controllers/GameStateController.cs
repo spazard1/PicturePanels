@@ -16,23 +16,26 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class GameStateController : Controller
     {
-        private readonly GameTableStorage gameTableStorage;
+        private readonly GameStateTableStorage gameTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ImageTableStorage imageTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
+        private readonly GameStateService gameStateService;
 
-        public GameStateController(GameTableStorage gameTableStorage, 
+        public GameStateController(GameStateTableStorage gameTableStorage, 
             PlayerTableStorage playerTableStorage, 
             ImageTableStorage imageTableStorage, 
             IHubContext<SignalRHub, ISignalRHub> hubContext,
-            SignalRHelper signalRHelper)
+            SignalRHelper signalRHelper,
+            GameStateService gameStateService)
         {
             this.gameTableStorage = gameTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.imageTableStorage = imageTableStorage;
             this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
+            this.gameStateService = gameStateService;
         }
 
         [HttpGet]
@@ -229,30 +232,16 @@ namespace PicturePanels.Controllers
         [RequireAuthorization]
         public async Task<IActionResult> PostOpenPanelAsync(string panelId)
         {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
-            gameState.OpenPanel(panelId);
-            gameState.ClearGuesses();
-
-            await this.playerTableStorage.ResetPlayersAsync();
-
-            gameState.SetTurnType(GameStateTableEntity.ActionOpenPanel);
-
-            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await this.gameStateService.OpenPanelAsync(panelId);
 
             return StatusCode(200);
         }
 
         [HttpPost("openPanel/{panelId}/force")]
         [RequireAuthorization]
-        public async Task<IActionResult> PostOpenPanelForceAsync(string panelId)
+        public async Task<IActionResult> PostForceOpenPanelAsync(string panelId)
         {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
-            gameState.OpenPanel(panelId, false);
-            gameState.ClearGuesses();
-
-            gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await this.gameStateService.ForceOpenPanelAsync(panelId);
 
             return StatusCode(200);
         }

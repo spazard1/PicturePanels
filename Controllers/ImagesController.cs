@@ -16,10 +16,10 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class ImagesController : Controller
     {
-        private readonly GameTableStorage gameTableStorage;
+        private readonly GameStateTableStorage gameTableStorage;
         private readonly ImageTableStorage imageTableStorage;
 
-        public ImagesController(GameTableStorage gameTableStorage, ImageTableStorage imageTableStorage)
+        public ImagesController(GameStateTableStorage gameTableStorage, ImageTableStorage imageTableStorage)
         {
             this.gameTableStorage = gameTableStorage;
             this.imageTableStorage = imageTableStorage;
