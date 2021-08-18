@@ -1,17 +1,17 @@
 ﻿using PicturePanels.Models;
-using PicturePanels.Services;
 using Microsoft.Azure.Cosmos.Table;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PicturePanels.Services
 {
-    public class GameTableStorage
+    public class GameStateTableStorage
     {
 
-        private CloudStorageAccount CloudStorageAccount;
-        private CloudTable gameTable;
+        private readonly CloudStorageAccount CloudStorageAccount;
+        private readonly CloudTable gameTable;
 
-        public GameTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider)
+        public GameStateTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider)
         {
             CloudStorageAccount = cloudStorageAccountProvider.CloudStorageAccount;
             var tableClient = CloudStorageAccount.CreateCloudTableClient();
