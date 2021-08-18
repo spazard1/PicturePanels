@@ -106,6 +106,8 @@ namespace PicturePanels.Services
 
                 gameState.IncrementScores();
                 gameState.TurnType = GameStateTableEntity.TurnTypeGuessesMade;
+
+                await this.playerTableStorage.ResetPlayersAsync();
             }
         }
     }
