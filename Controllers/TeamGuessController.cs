@@ -73,12 +73,6 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var teamGuess = await this.teamGuessTableStorage.GetTeamGuessAsync(player.TeamNumber, ticks);
-            if (teamGuess == null)
-            {
-                return StatusCode(404);
-            }
-
             if (player.TeamGuessVote == ticks)
             {
                 return StatusCode(200);
