@@ -40,7 +40,7 @@ namespace PicturePanels
             });
 
             services.AddSingleton<ImageTableStorage>();
-            services.AddSingleton<GameTableStorage>();
+            services.AddSingleton<GameStateTableStorage>();
             services.AddSingleton<PlayerTableStorage>();
             services.AddSingleton<ChatTableStorage>();
             services.AddSingleton<TeamGuessTableStorage>();
@@ -48,8 +48,10 @@ namespace PicturePanels
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
             services.AddScoped<SignalRHelper>();
-            services.AddScoped<ChatService>();
             services.AddScoped<AuthorizationFilter>();
+
+            services.AddScoped<GameStateService>();
+            services.AddScoped<ChatService>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -97,7 +99,7 @@ namespace PicturePanels
                 endpoints.MapHub<SignalRHub>("/signalRHub");
             });
 
-            var gameTableStorage = app.ApplicationServices.GetRequiredService<GameTableStorage>();
+            var gameTableStorage = app.ApplicationServices.GetRequiredService<GameStateTableStorage>();
             await gameTableStorage.Startup();
 
             var playerTableStorage = app.ApplicationServices.GetRequiredService<PlayerTableStorage>();
