@@ -10,12 +10,6 @@ namespace PicturePanels.Models
         public const string GameStatePartitionKey = "GameState";
         public const string GameStateDefaultId = "Default";
 
-        public const string ActionNewRound = "NewRound";
-        public const string ActionNextTurn = "NextTurn";
-        public const string ActionOpenPanel = "OpenPanel";
-        public const string ActionGuessesMade = "GuessesMade";
-        public const string ActionEndRound = "EndRound";
-
         public const string TurnTypeWelcome = "Welcome";
         public const string TurnTypeOpenPanel = "OpenPanel";
         public const string TurnTypeMakeGuess = "MakeGuess";
@@ -84,28 +78,6 @@ namespace PicturePanels.Models
         public bool TeamTwoCorrect { get; set; }
 
         public string TeamTwoGuessStatus { get; set; }
-
-        public void SetTurnType(string action)
-        {
-            switch (action)
-            {
-                case ActionNewRound:
-                    TurnType = TurnTypeOpenPanel;
-                    break;
-                case ActionEndRound:
-                    TurnType = TurnTypeEndRound;
-                    break;
-                case ActionGuessesMade:
-                    TurnType = TurnTypeGuessesMade;
-                    break;
-                case ActionOpenPanel:
-                    TurnType = TurnTypeMakeGuess;
-                    break;
-                case ActionNextTurn:
-                    TurnType = TurnTypeOpenPanel;
-                    break;
-            }
-        }
 
         public void OpenPanel(string panelId, bool force = false)
         {

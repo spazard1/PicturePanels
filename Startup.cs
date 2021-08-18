@@ -51,6 +51,7 @@ namespace PicturePanels
             services.AddScoped<AuthorizationFilter>();
 
             services.AddScoped<GameStateService>();
+            services.AddScoped<PlayerService>();
             services.AddScoped<ChatService>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
