@@ -16,13 +16,13 @@ namespace PicturePanels.Controllers
     public class PlayersController : Controller
     {
         private readonly PlayerTableStorage playerTableStorage;
-        private readonly GameStateTableStorage gameTableStorage;
+        private readonly PlayerService playerService;
         private readonly SignalRHelper signalRHelper;
 
-        public PlayersController(PlayerTableStorage playerTableStorage, GameStateTableStorage gameTableStorage, SignalRHelper signalRHelper)
+        public PlayersController(PlayerTableStorage playerTableStorage, PlayerService playerService, SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
-            this.gameTableStorage = gameTableStorage;
+            this.playerService = playerService;
             this.signalRHelper = signalRHelper;
         }
 
@@ -114,42 +114,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
-
-            if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
-            {
-                var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
-
-                var panelVoteCounts = new Dictionary<string, int>();
-                for (int i = 1; i <= 20; i++)
-                {
-                    panelVoteCounts[i.ToString()] = 0;
-                }
-
-                foreach (var p in players)
-                {
-                    foreach (var panel in p.SelectedPanels)
-                    {
-                        panelVoteCounts[panel]++;
-                    }
-                }
-                List<string> mostVotesPanels = new List<string>();
-                int maxVoteCounts = 0;
-
-                foreach (var panelVoteCount in panelVoteCounts)
-                {
-                    if (panelVoteCount.Value > maxVoteCounts)
-                    {
-                        maxVoteCounts = panelVoteCount.Value;
-                        mostVotesPanels = new List<string> { panelVoteCount.Key };
-                    }
-                    else if (panelVoteCount.Value == maxVoteCounts)
-                    {
-                        mostVotesPanels.Add(panelVoteCount.Key);
-                    }
-                }
-            }
-
+            await this.playerService.ReadyAsync(playerModel);
 
             return Json(new PlayerEntity(playerModel));
         }

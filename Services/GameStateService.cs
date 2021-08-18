@@ -28,7 +28,7 @@ namespace PicturePanels.Services
 
             await this.playerTableStorage.ResetPlayersAsync();
 
-            gameState.SetTurnType(GameStateTableEntity.ActionOpenPanel);
+            gameState.TurnType = GameStateTableEntity.TurnTypeMakeGuess;
 
             gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
