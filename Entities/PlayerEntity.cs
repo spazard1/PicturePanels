@@ -16,6 +16,7 @@ namespace PicturePanels.Entities
             this.Name = tableEntity.Name;
             this.TeamNumber = tableEntity.TeamNumber;
             this.SelectedPanels = tableEntity.SelectedPanels ?? new List<string>();
+            this.IsReady = tableEntity.IsReady;
             this.Color = tableEntity.Color;
             this.IsAdmin = tableEntity.IsAdmin;
         }
@@ -27,6 +28,8 @@ namespace PicturePanels.Entities
         public int TeamNumber { get; set; }
 
         public List<string> SelectedPanels { get; set; }
+
+        public bool IsReady { get; internal set; }
 
         public string Color { get; set; }
 
