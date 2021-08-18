@@ -10,20 +10,29 @@ namespace PicturePanels.Services
     {
         private readonly GameStateTableStorage gameStateTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
+        private readonly TeamGuessTableStorage teamGuessTableStorage;
+        private readonly GameStateService gameStateService;
 
-        public PlayerService(GameStateTableStorage gameStateTableStorage, PlayerTableStorage playerTableStorage)
+        public PlayerService(GameStateTableStorage gameStateTableStorage,
+            PlayerTableStorage playerTableStorage,
+            TeamGuessTableStorage teamGuessTableStorage,
+            GameStateService gameStateService)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.playerTableStorage = playerTableStorage;
+            this.teamGuessTableStorage = teamGuessTableStorage;
+            this.gameStateService = gameStateService;
         }
 
-        public async Task ReadyAsync(PlayerTableEntity playerModel)
+        public async Task ReadyAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
-            var gameState = await this.gameStateTableStorage.GetGameStateAsync();
-
             if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
             {
                 await this.OpenPanelAsync(playerModel);
+            }
+            else if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+            {
+                await this.GuessAsync(playerModel);
             }
         }
 
@@ -60,7 +69,33 @@ namespace PicturePanels.Services
                 }
             }
 
+            var random = new Random();
+            var panelId = mostVotesPanels[random.Next(0, mostVotesPanels.Count())];
 
+            await this.gameStateService.OpenPanelAsync(panelId);
+        }
+
+        private async Task GuessAsync(PlayerTableEntity playerModel)
+        {
+            var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
+
+            var voteCounts = new Dictionary<string, int>();
+
+            foreach (var p in players)
+            {
+                if (!string.IsNullOrEmpty(p.TeamGuessVote))
+                {
+                    if (!voteCounts.TryAdd(p.TeamGuessVote, 1))
+                    {
+                        voteCounts[p.TeamGuessVote]++;
+                    }
+                }
+            }
+
+            var maxGuess = voteCounts.Max();
+            var guess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, maxGuess.Key);
+
+            await this.gameStateService.GuessAsync(playerModel.TeamNumber, guess.Guess);
         }
     }
 }
