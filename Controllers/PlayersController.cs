@@ -17,16 +17,19 @@ namespace PicturePanels.Controllers
         private readonly PlayerTableStorage playerTableStorage;
         private readonly GameStateTableStorage gameStateTableStorage;
         private readonly PlayerService playerService;
+        private readonly ChatService chatService;
         private readonly SignalRHelper signalRHelper;
 
         public PlayersController(PlayerTableStorage playerTableStorage,
             GameStateTableStorage gameStateTableStorage,
             PlayerService playerService,
+            ChatService chatService,
             SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
             this.gameStateTableStorage = gameStateTableStorage;
             this.playerService = playerService;
+            this.chatService = chatService;
             this.signalRHelper = signalRHelper;
         }
 
@@ -124,7 +127,28 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            await this.playerService.ReadyAsync(gameState, playerModel);
+            if (playerModel.IsReady)
+            {
+                return StatusCode(400);
+            }
+
+            var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
+
+            if (players.Count == 1)
+            {
+                await this.playerService.ReadyAsync(gameState, playerModel);
+            }
+            else if (players.Any(p => p.IsReady))
+            {
+                await this.chatService.SendChatAsync(playerModel, "is also ready!", true);
+                await this.playerService.ReadyAsync(gameState, playerModel);
+            }
+            else
+            {
+                playerModel.IsReady = true;
+                await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+                await this.chatService.SendChatAsync(playerModel, "is ready, waiting for a second...", true);
+            }
 
             return Json(new PlayerEntity(playerModel));
         }
