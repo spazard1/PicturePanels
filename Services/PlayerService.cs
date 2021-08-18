@@ -90,9 +90,15 @@ namespace PicturePanels.Services
             }
 
             var maxGuess = voteCounts.Max();
-            var guess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, maxGuess.Key);
-
-            await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, guess.Guess);
+            if (maxGuess.Key == GameStateTableEntity.TeamGuessStatusPass)
+            {
+                await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
+            }
+            else
+            {
+                var guess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, maxGuess.Key);
+                await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, guess.Guess);
+            }
         }
     }
 }
