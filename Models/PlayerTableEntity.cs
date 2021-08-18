@@ -26,6 +26,8 @@ namespace PicturePanels.Models
 
         public List<string> SelectedPanels { get; set; }
 
+        public bool IsReady { get; set; }
+
         public string Color { get; set; }
 
         public DateTime LastPingTime { get; set; }

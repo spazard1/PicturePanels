@@ -114,6 +114,8 @@ namespace PicturePanels.Services
                 }
 
                 playerModel.SelectedPanels = new List<string>();
+                playerModel.IsReady = false;
+
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
             }
 
