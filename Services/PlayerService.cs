@@ -8,17 +8,14 @@ namespace PicturePanels.Services
 {
     public class PlayerService
     {
-        private readonly GameStateTableStorage gameStateTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly GameStateService gameStateService;
 
-        public PlayerService(GameStateTableStorage gameStateTableStorage,
-            PlayerTableStorage playerTableStorage,
+        public PlayerService(PlayerTableStorage playerTableStorage,
             TeamGuessTableStorage teamGuessTableStorage,
             GameStateService gameStateService)
         {
-            this.gameStateTableStorage = gameStateTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.gameStateService = gameStateService;
@@ -28,15 +25,15 @@ namespace PicturePanels.Services
         {
             if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
             {
-                await this.OpenPanelAsync(playerModel);
+                await this.OpenPanelAsync(gameState, playerModel);
             }
             else if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
             {
-                await this.GuessAsync(playerModel);
+                await this.GuessAsync(gameState, playerModel);
             }
         }
 
-        private async Task OpenPanelAsync(PlayerTableEntity playerModel)
+        private async Task OpenPanelAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
 
@@ -72,10 +69,10 @@ namespace PicturePanels.Services
             var random = new Random();
             var panelId = mostVotesPanels[random.Next(0, mostVotesPanels.Count())];
 
-            await this.gameStateService.OpenPanelAsync(panelId);
+            await this.gameStateService.OpenPanelAsync(gameState, panelId);
         }
 
-        private async Task GuessAsync(PlayerTableEntity playerModel)
+        private async Task GuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
 
@@ -95,7 +92,7 @@ namespace PicturePanels.Services
             var maxGuess = voteCounts.Max();
             var guess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, maxGuess.Key);
 
-            await this.gameStateService.GuessAsync(playerModel.TeamNumber, guess.Guess);
+            await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, guess.Guess);
         }
     }
 }
