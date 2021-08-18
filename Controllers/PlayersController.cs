@@ -1,6 +1,5 @@
 ﻿using PicturePanels.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using PicturePanels.Entities;
 using PicturePanels.Filters;
 using PicturePanels.Services;
@@ -16,12 +15,15 @@ namespace PicturePanels.Controllers
     public class PlayersController : Controller
     {
         private readonly PlayerTableStorage playerTableStorage;
+        private readonly GameStateTableStorage gameStateTableStorage;
         private readonly PlayerService playerService;
         private readonly SignalRHelper signalRHelper;
 
-        public PlayersController(PlayerTableStorage playerTableStorage, PlayerService playerService, SignalRHelper signalRHelper)
+        public PlayersController(PlayerTableStorage playerTableStorage, GameStateTableStorage gameStateTableStorage,
+            PlayerService playerService, SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
+            this.gameStateTableStorage = gameStateTableStorage;
             this.playerService = playerService;
             this.signalRHelper = signalRHelper;
         }
@@ -108,13 +110,19 @@ namespace PicturePanels.Controllers
         [HttpPut("{playerId}/ready")]
         public async Task<IActionResult> ReadyAsync(string playerId)
         {
+            var gameState = await this.gameStateTableStorage.GetGameStateAsync();
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
             var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
             }
 
-            await this.playerService.ReadyAsync(playerModel);
+            await this.playerService.ReadyAsync(gameState, playerModel);
 
             return Json(new PlayerEntity(playerModel));
         }
