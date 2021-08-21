@@ -1,4 +1,5 @@
-﻿using PicturePanels.Models;
+﻿using PicturePanels.Entities;
+using PicturePanels.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,29 +12,35 @@ namespace PicturePanels.Services
         private readonly PlayerTableStorage playerTableStorage;
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly GameStateService gameStateService;
+        private readonly ChatService chatService;
+        private readonly SignalRHelper signalRHelper;
 
         public PlayerService(PlayerTableStorage playerTableStorage,
             TeamGuessTableStorage teamGuessTableStorage,
-            GameStateService gameStateService)
+            GameStateService gameStateService,
+            ChatService chatService,
+            SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.gameStateService = gameStateService;
+            this.chatService = chatService;
+            this.signalRHelper = signalRHelper;
         }
 
         public async Task ReadyAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
             {
-                await this.OpenPanelAsync(gameState, playerModel);
+                await this.OpenMostVotesPanelAsync(gameState, playerModel);
             }
             else if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
             {
-                await this.GuessAsync(gameState, playerModel);
+                await this.SubmitMostVotesTeamGuessAsync(gameState, playerModel);
             }
         }
 
-        private async Task OpenPanelAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
+        private async Task OpenMostVotesPanelAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
 
@@ -45,34 +52,52 @@ namespace PicturePanels.Services
 
             foreach (var p in players)
             {
+                if (p.TeamNumber == 1 && gameState.TeamOneInnerPanels <= 0 || p.TeamNumber == 2 && gameState.TeamTwoInnerPanels <= 0)
+                {
+                    p.SelectedPanels.RemoveAll(sp => GameStateTableEntity.InnerPanels.Contains(sp));
+                }
                 foreach (var panel in p.SelectedPanels)
                 {
                     panelVoteCounts[panel]++;
                 }
             }
             List<string> mostVotesPanels = new List<string>();
-            int maxVoteCounts = 0;
+            int maxVoteCount = 0;
 
             foreach (var panelVoteCount in panelVoteCounts)
             {
-                if (panelVoteCount.Value > maxVoteCounts)
+                if (panelVoteCount.Value > maxVoteCount)
                 {
-                    maxVoteCounts = panelVoteCount.Value;
+                    maxVoteCount = panelVoteCount.Value;
                     mostVotesPanels = new List<string> { panelVoteCount.Key };
                 }
-                else if (panelVoteCount.Value == maxVoteCounts)
+                else if (panelVoteCount.Value == maxVoteCount)
                 {
                     mostVotesPanels.Add(panelVoteCount.Key);
                 }
             }
 
-            var random = new Random();
-            var panelId = mostVotesPanels[random.Next(0, mostVotesPanels.Count())];
+            string panelIdToOpen = string.Empty;
+            if (maxVoteCount > 0 && mostVotesPanels.Any())
+            {
+                var random = new Random();
+                panelIdToOpen = mostVotesPanels[random.Next(0, mostVotesPanels.Count)];
+            }
+            else
+            {
+                foreach (var panelId in GameStateTableEntity.AllPanels)
+                {
+                    if (!gameState.RevealedPanels.Contains(panelId))
+                    {
+                        panelIdToOpen = panelId;
+                    }
+                }
+            }
 
-            await this.gameStateService.OpenPanelAsync(gameState, panelId);
+            await this.gameStateService.OpenPanelAsync(gameState, panelIdToOpen);
         }
 
-        private async Task GuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
+        private async Task SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
 
@@ -89,15 +114,42 @@ namespace PicturePanels.Services
                 }
             }
 
-            var maxGuess = voteCounts.Max();
-            if (maxGuess.Key == GameStateTableEntity.TeamGuessStatusPass)
+            List<string> mostVotesTeamGuesses = new List<string>();
+            int maxVoteCount = 0;
+
+            foreach (var voteCount in voteCounts)
+            {
+                if (voteCount.Value > maxVoteCount)
+                {
+                    maxVoteCount = voteCount.Value;
+                    mostVotesTeamGuesses = new List<string> { voteCount.Key };
+                }
+                else if (voteCount.Value == maxVoteCount)
+                {
+                    mostVotesTeamGuesses.Add(voteCount.Key);
+                }
+            }
+
+            if (mostVotesTeamGuesses.Contains(GameStateTableEntity.TeamGuessStatusPass))
             {
                 await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
             }
             else
             {
-                var guess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, maxGuess.Key);
-                await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, guess.Guess);
+                mostVotesTeamGuesses.Sort();
+                foreach (var mostVotesTeamGuess in mostVotesTeamGuesses)
+                {
+                    var teamGuess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, mostVotesTeamGuess);
+                    if (teamGuess != null)
+                    {
+                        await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
+                        await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+                        await this.chatService.SendChatAsync(playerModel.TeamNumber, "Your team has submitted the guess '" + teamGuess.Guess + "'", true);
+                        await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
+                        return;
+                    }
+                }
+                await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
             }
         }
     }

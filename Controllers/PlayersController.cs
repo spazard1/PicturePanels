@@ -137,18 +137,17 @@ namespace PicturePanels.Controllers
             if (players.Count == 1)
             {
                 await this.playerService.ReadyAsync(gameState, playerModel);
-                await this.chatService.SendChatAsync(playerModel, "is ready!", true);
             }
             else if (players.Any(p => p.IsReady))
             {
+                await this.chatService.SendChatAsync(playerModel, "seconds that the team is ready!", true);
                 await this.playerService.ReadyAsync(gameState, playerModel);
-                await this.chatService.SendChatAsync(playerModel, "is also ready!", true);
             }
             else
             {
                 playerModel.IsReady = true;
                 await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
-                await this.chatService.SendChatAsync(playerModel, "is ready, waiting for a second...", true);
+                await this.chatService.SendChatAsync(playerModel, "says the team is ready, waiting for a second...", true);
             }
 
             return Json(new PlayerEntity(playerModel));

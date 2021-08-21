@@ -57,6 +57,17 @@ namespace PicturePanels.Services
             return this.AddOrUpdateChatAsync(playerModel, message, false);
         }
 
+        public Task<ChatTableEntity> AddOrUpdateChatAsync(int teamNumber, string message, bool isSystem)
+        {
+            return this.AddOrUpdateChatAsync(new ChatTableEntity()
+            {
+                TeamNumber = teamNumber.ToString(),
+                Message = message,
+                CreatedTime = DateTime.UtcNow,
+                IsSystem = isSystem
+            });
+        }
+
         public Task<ChatTableEntity> AddOrUpdateChatAsync(PlayerTableEntity playerModel, string message, bool isSystem)
         {
             return this.AddOrUpdateChatAsync(new ChatTableEntity()

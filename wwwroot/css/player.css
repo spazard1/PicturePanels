@@ -170,9 +170,18 @@ body {
     animation: correct 3s infinite alternate;
 }
 
-.teamGuessesContainer {
-    margin-top: .5em;
-    width: 100%;
+.teamButtons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.teamGuessButton {
+    background-color: lightgreen;
+    margin-left: 1.5rem;
+}
+
+.playerReadyButton {
+    background-color: lightgreen;
 }
 
 .teamGuessesInputContainer {
@@ -182,6 +191,7 @@ body {
 }
 
 .teamGuesses {
+    margin-top: .5em;
     width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -192,15 +202,16 @@ body {
 .teamGuesses .teamGuessText {
     position: relative;
     cursor: pointer;
+    user-select: none;
     display: inline-block;
     height: fit-content;
     overflow-wrap: break-word;
-    margin-left: .5em;
-    margin-right: .5em;
+    margin-left: 1rem;
+    margin-right: 1rem;
     max-width: 95%;
-    font-size: .7em;
+    font-size: .6em;
     padding: 4px 7px 4px 7px;
-    margin-bottom: .7em;
+    margin-bottom: .9em;
     border-radius: 10px;
 }
 
@@ -227,21 +238,11 @@ body {
     flex: 1;
 }
 
-.teamReadyButton {
-    background-color: lightgreen;
-    flex: none;
-}
-
-.teamGuessButton {
-    background-color: lightgreen;
-    flex: none;
-}
-
 .teamGuessVoteCount {
     position: absolute;
-    top: -.8em;
-    left: -.6em;
-    font-size: .8em;
+    top: -.9em;
+    left: -.7em;
+    font-size: 1rem;
     color: yellow;
     background-color: dodgerblue;
     padding: 0px 3px 2px 3px;

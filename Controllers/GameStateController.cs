@@ -19,13 +19,15 @@ namespace PicturePanels.Controllers
         private readonly GameStateTableStorage gameTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ImageTableStorage imageTableStorage;
+        private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
         private readonly GameStateService gameStateService;
 
         public GameStateController(GameStateTableStorage gameTableStorage, 
             PlayerTableStorage playerTableStorage, 
-            ImageTableStorage imageTableStorage, 
+            ImageTableStorage imageTableStorage,
+            TeamGuessTableStorage teamGuessTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
             SignalRHelper signalRHelper,
             GameStateService gameStateService)
@@ -33,6 +35,7 @@ namespace PicturePanels.Controllers
             this.gameTableStorage = gameTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.imageTableStorage = imageTableStorage;
+            this.teamGuessTableStorage = teamGuessTableStorage;
             this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
             this.gameStateService = gameStateService;
@@ -70,6 +73,8 @@ namespace PicturePanels.Controllers
 
             if (newRound || newBlobContainer)
             {
+                await this.teamGuessTableStorage.DeleteTeamGuessesAsync();
+
                 gameState.SwitchTeamFirstTurn();
                 gameState.TeamTurn = gameState.TeamFirstTurn;
                 gameState.RoundNumber++;
