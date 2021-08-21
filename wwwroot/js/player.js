@@ -350,18 +350,12 @@ function drawTurnType(gameState) {
     document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageCorrect");
 
     if (gameState.turnType === "Welcome") {
-        document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
+        document.getElementById("turnStatusMessage").classList.add("opacity0");
         document.getElementById("panelButtons").classList.add("hidden");
-        document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
-        return;
-    }
-
-    if (gameState.turnType === "EndRound") {
-        document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
+    } else if (gameState.turnType === "EndRound") {
+        document.getElementById("turnStatusMessage").classList.add("opacity0");
         document.getElementById("panelButtons").classList.add("hidden");
-        document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
         document.getElementById("turnStatusMessage").innerHTML = "This round is over.";
-        return;
     }
 
     if (gameState.turnType !== "MakeGuess") {
@@ -376,17 +370,15 @@ function drawTurnType(gameState) {
             document.getElementById("teamGuesses").classList.add("hidden");
 
             if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
-                document.getElementById("turnStatusMessage").classList.add("turnStatusMessageVisible");
+                document.getElementById("turnStatusMessage").classList.remove("opacity0");
                 highlightturnStatusMessage();
 
                 document.getElementById("panelButtons").classList.remove("hidden");
-                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
                 document.getElementById("turnStatusMessage").innerHTML = "Vote for a panel to open";
                 document.getElementById("playerReadyButton").classList.remove("hidden");
             } else {
-                document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
+                document.getElementById("turnStatusMessage").classList.add("opacity0");
                 document.getElementById("panelButtons").classList.add("hidden");
-                document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
             }
             break;
         case "MakeGuess":
@@ -395,32 +387,33 @@ function drawTurnType(gameState) {
                 document.getElementById("playerReadyButton").classList.add("hidden");
                 document.getElementById("teamGuessButton").classList.add("hidden");
                 document.getElementById("teamGuesses").classList.add("hidden");
-                document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
+                document.getElementById("turnStatusMessage").classList.add("opacity0");
             } else {
                 document.getElementById("playerReadyButton").classList.remove("hidden");
                 document.getElementById("teamGuessButton").classList.remove("hidden");
                 document.getElementById("teamGuesses").classList.remove("hidden");
-                document.getElementById("turnStatusMessage").classList.add("turnStatusMessageVisible");
+                document.getElementById("turnStatusMessage").classList.remove("opacity0");
             }
 
             document.getElementById("panelButtons").classList.add("hidden");
-            document.getElementById("panelButtons").classList.remove("panelButtonsHighlight");
 
-            document.getElementById("turnStatusMessage").innerHTML = "Make your guess or pass";
+            document.getElementById("turnStatusMessage").innerHTML = "Submit and Vote for Guesses";
             highlightturnStatusMessage();
 
             break;
         case "GuessesMade":
+            document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("playerReadyButton").classList.add("hidden");
             document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
-            document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
+            document.getElementById("turnStatusMessage").classList.add("opacity0");
             break;
         default:
+            document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("playerReadyButton").classList.add("hidden");
             document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
-            document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageVisible");
+            document.getElementById("turnStatusMessage").classList.add("opacity0");
             break;
     }
 }

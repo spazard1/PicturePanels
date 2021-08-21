@@ -148,16 +148,11 @@ body {
     font-size: .8em;
     z-index: 20;
     background-color: black;
-    opacity: 0;
     width: 100%;
     vertical-align: middle;
     text-align: center;
     flex-direction: column;
     transition: opacity 1s;
-}
-
-.turnStatusMessageVisible {
-    opacity: 1;
 }
 
 .turnStatusMessageHighlight {
@@ -171,6 +166,7 @@ body {
 }
 
 .teamButtons {
+    flex: 0 0 auto;
     display: flex;
     justify-content: flex-end;
 }

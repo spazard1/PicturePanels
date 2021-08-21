@@ -1,4 +1,5 @@
 ﻿using PicturePanels.Models;
+using System;
 using System.Collections.Generic;
 
 namespace PicturePanels.Entities
@@ -20,6 +21,7 @@ namespace PicturePanels.Entities
             this.RoundNumber = tableEntity.RoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
+            this.TurnStartTime = tableEntity.TurnStartTime;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;
@@ -63,6 +65,8 @@ namespace PicturePanels.Entities
         public int? TeamTurn { get; set; }
 
         public string TurnType { get; set; }
+
+        public DateTime TurnStartTime { get; internal set; }
 
         public int? TeamFirstTurn { get; set; }
 
