@@ -103,8 +103,7 @@ namespace PicturePanels.Controllers
             }
 
             await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
-            await signalRHelper.DeleteTeamGuessesAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
-
+            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
             await this.chatService.SendChatAsync(player, "has deleted the guess '" + teamGuess.Guess + "'", true);
 
             return StatusCode(204);

@@ -20,5 +20,11 @@ namespace PicturePanels.Services
             var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(player, message, isSystem);
             await signalRHelper.ChatAsync(new ChatEntity(chatModel, player));
         }
+
+        public async Task SendChatAsync(int teamNumber, string message, bool isSystem)
+        {
+            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(teamNumber, message, isSystem);
+            await signalRHelper.ChatAsync(teamNumber, new ChatEntity(chatModel));
+        }
     }
 }

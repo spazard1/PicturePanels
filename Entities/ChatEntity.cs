@@ -18,6 +18,14 @@ namespace PicturePanels.Entities
             this.Player = new PlayerEntity(playerEntity);
         }
 
+        public ChatEntity(ChatTableEntity tableEntity)
+        {
+            this.TeamNumber = tableEntity.TeamNumber;
+            this.Message = tableEntity.Message;
+            this.Ticks = tableEntity.CreatedTime.Ticks.ToString();
+            this.IsSystem = tableEntity.IsSystem;
+        }
+
         public string TeamNumber { get; set; }
 
         public string Message { get; set; }

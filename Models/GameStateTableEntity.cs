@@ -19,6 +19,10 @@ namespace PicturePanels.Models
         public const string TeamGuessStatusPass = "Pass";
         public const string TeamGuessStatusGuess = "Guess";
 
+        public static readonly IEnumerable<string> OuterPanels = new List<string>() { "1", "2", "3", "4", "5", "6", "10", "11", "15", "16", "17", "18", "19", "20" };
+        public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
+        public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
+
         public GameStateTableEntity()
         {
             this.PartitionKey = GameStatePartitionKey;
@@ -199,11 +203,9 @@ namespace PicturePanels.Models
             return result;
         }
 
-        private static readonly List<string> innerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
-
         public static bool IsInnerPanel(string panelId)
         {
-            return innerPanels.Contains(panelId);
+            return InnerPanels.Contains(panelId);
         }
     }
 }
