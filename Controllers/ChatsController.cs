@@ -30,14 +30,14 @@ namespace PicturePanels.Controllers
 
             foreach (var chatModel in chatModels)
             {
-                if (players.TryGetValue(chatModel.PlayerId, out PlayerTableEntity playerModel))
+                if (chatModel.PlayerId != null && players.TryGetValue(chatModel.PlayerId, out PlayerTableEntity playerModel))
                 {
                     chatEntities.Add(new ChatEntity(chatModel, playerModel));
                     continue;
                 }
                 else
                 {
-                    chatEntities.Add(new ChatEntity(chatModel, null));
+                    chatEntities.Add(new ChatEntity(chatModel));
                 }
             }
 

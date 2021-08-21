@@ -349,38 +349,51 @@ function drawTeamGuesses(gameState) {
     teamOneGuessElement.classList.remove("teamGuessIncorrect");
     teamTwoGuessElement.classList.remove("teamGuessIncorrect");
 
-    if (gameState.turnType !== "GuessesMade") {
+    if (gameState.teamOneGuessStatus) {
+        animateCSS(teamOneGuessElement, ["slow", "bounceInDown"], ["bounceOutUp"]).then(() => {
+            teamOneGuessElement.innerHTML = "Ready!";
+        });
+    }
+
+    if (gameState.teamTwoGuessStatus) {
+        teamTwoGuessElement.innerHTML = "Ready!";
+        animateCSS(teamTwoGuessElement, ["slow", "bounceInDown"], ["bounceOutUp"]).then(() => {
+            teamTwoGuessElement.innerHTML = "Ready!";
+        });
+    }
+
+    if (gameState.turnType === "GuessesMade") {
+        var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
+        if (gameState.teamOneGuessStatus !== "Guess") {
+            teamOneGuess = "(team passed)";
+        }
+
+        var teamTwoGuess = "\"" + gameState.teamTwoGuess + "\"";
+        if (gameState.teamTwoGuessStatus !== "Guess") {
+            teamTwoGuess = "(team passed)";
+        }
+
+        if (gameState.teamTurn === 1) {
+            drawTeamGuess(teamOneGuess, teamOneGuessElement, 2000);
+            drawTeamGuess(teamTwoGuess, teamTwoGuessElement, 3000);
+        } else {
+            drawTeamGuess(teamTwoGuess, teamTwoGuessElement, 2000);
+            drawTeamGuess(teamOneGuess, teamOneGuessElement, 3000);
+        }
+    } else if (gameState.turnType !== "MakeGuess") {
         animateCSS(teamOneGuessElement, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
         animateCSS(teamTwoGuessElement, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
-        return;
-    }
-
-    var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
-    if (gameState.teamOneGuessStatus !== "Guess") {
-        teamOneGuess = "(team passed)";
-    }
-
-    var teamTwoGuess = "\"" + gameState.teamTwoGuess + "\"";
-    if (gameState.teamTwoGuessStatus !== "Guess") {
-        teamTwoGuess = "(team passed)";
-    }
-
-    if (gameState.teamTurn === 1) {
-        drawTeamGuess(teamOneGuess, teamOneGuessElement, 1000);
-        drawTeamGuess(teamTwoGuess, teamTwoGuessElement, 3000);
-    } else {
-        drawTeamGuess(teamTwoGuess, teamTwoGuessElement, 1000);
-        drawTeamGuess(teamOneGuess, teamOneGuessElement, 3000);
     }
 }
 
 function drawTeamGuess(teamGuessText, teamGuessElement, delay) {
-    if (teamGuessText.length > 20) {
-        teamGuessElement.classList.add("teamGuessLong");
-    } else {
-        teamGuessElement.classList.remove("teamGuessLong");
-    }
     animationPromise = animationPromise.then(() => animateCSS(teamGuessElement, ["slow", "bounceInDown"], ["bounceOutUp"], delay)).then(() => {
+        if (teamGuessText.length > 20) {
+            teamGuessElement.classList.add("teamGuessLong");
+        } else {
+            teamGuessElement.classList.remove("teamGuessLong");
+        }
+
         teamGuessElement.innerHTML = teamGuessText.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (2 + index / Math.max(10, teamGuessElement.textContent.length)) + "s'>" + x + "</span>" }).join("");
         return new Promise((resolve) => {
             setTimeout(resolve, 3000);
@@ -408,7 +421,7 @@ function drawTeamGuessHighlights(gameState) {
 
     if (gameState.teamTwoCorrect) {
         animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessElement, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
-    } else {
+    } else if (gameState.teamTwoGuessStatus === "Guess" && !gameState.teamTwoCorrect) {
         animationPromise = animationPromise.then(() => {
             teamTwoGuessElement.innerHTML = "\"" + gameState.teamTwoGuess + "\"";
             teamTwoGuessElement.classList.add("teamGuessIncorrect");
