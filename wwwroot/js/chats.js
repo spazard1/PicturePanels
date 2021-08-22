@@ -65,11 +65,6 @@ function setupChats(chatsElementId, teamNumber) {
 
     var chatInputText = document.getElementById(chatsElementId + "_inputText");
     chatInputText.onkeyup = (event) => {
-        if (event.which === 13) {
-            sendChat(chatsElementId, teamNumber);
-            return;
-        }
-
         if (lastTypingTime && new Date() - lastTypingTime < typingIndicatorTime - 1000) {
             return;
         }
@@ -80,13 +75,6 @@ function setupChats(chatsElementId, teamNumber) {
             Name: localStorage.getItem("playerName"),
             TeamNumber: teamNumber
         });
-    }
-
-    chatInputText.onkeypress = (event) => {
-        if (event.which === 13) {
-            event.preventDefault();
-            return;
-        }
     }
 
     setupInputDefaultText(chatsElementId + "_inputText", "chat with your team...")
@@ -141,10 +129,15 @@ function setupGrowers() {
     });
 }
 
+const multipleNewLines = /[\n\r]+/g;
+
 function drawChat(chatsElementId, chat, skipScroll) {
     var chatsElement = document.getElementById(chatsElementId);
 
+    chat.message = chat.message.trim();
+    chat.message = chat.message.replaceAll(multipleNewLines, "\n");
     chat.message = chat.message.replaceAll(imageRegex, "<img class=\"chatImage\" src=\"$1\"/>");
+    chat.message = chat.message.replaceAll("\n", "<br/>");
 
     var chatElement = document.createElement("div");
     if (chat.ticks) {

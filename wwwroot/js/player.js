@@ -59,6 +59,11 @@ function drawPlayer(player) {
     if (player.isAdmin) {
         document.getElementById("playerName").classList.add("adminPlayerName");
     }
+
+    var teamGuessVoteElement = document.getElementById("teamGuessVoteCount_" + player.teamGuessVote);
+    if (teamGuessVoteElement) {
+        teamGuessVoteElement.classList.add("teamGuessVoteCountChosen");
+    }
 }
 
 async function putPlayerPingAsync() {
@@ -108,13 +113,9 @@ async function putPlayerReadyAsync() {
     }
 
     await fetch("api/players/" + localStorage.getItem("playerId") + "/ready",
-        {
-            method: "PUT"
-        }).then((response) => {
-            if (response.ok) {
-                document.getElementById("playerReadyButton").classList.add("hidden");
-            }
-        });
+    {
+        method: "PUT"
+    });
 }
 
 async function getPlayerReadyAsync() {
@@ -399,6 +400,7 @@ function drawTurnType(gameState) {
                 document.getElementById("teamGuessButton").classList.add("hidden");
                 document.getElementById("teamGuesses").classList.add("hidden");
                 document.getElementById("turnStatusMessage").classList.add("opacity0");
+                drawPlayerReady();
             } else {
                 document.getElementById("playerReadyButton").classList.remove("hidden");
                 document.getElementById("teamGuessButton").classList.remove("hidden");
@@ -441,9 +443,12 @@ function handleGameState(gameState) {
 
     if (playerIsReadyToPlay && (!currentGameState || currentGameState.turnType !== gameState.turnType || currentGameState.teamTurn !== gameState.teamTurn)) {
         clearPanelButtonSelection();
+        drawPlayerReady();
+        scrollChats("chats", true);
     } else if (currentGameState && currentGameState.imageId !== gameState.imageId) {
         clearPanelButtonSelection();
-        document.getElementById("teamGuesses").innerHTML = "";
+        drawPlayerReady();
+        scrollChats("chats", true);
     }
 
     currentGameState = gameState;
@@ -460,7 +465,6 @@ function handleGameState(gameState) {
 
     if (gameState.turnType === "Welcome") {
         drawSystemChat("chats", { message: "Welcome to the Picture Panels game!" });
-        return;
     }
 }
 
@@ -550,8 +554,7 @@ function updatePlayerPanelButtons(gameState) {
 
     var disabledPanels = [];
 
-    var teamNumber = localStorage.getItem("teamNumber");
-    if (teamNumber === "1") {
+    if (localStorage.getItem("teamNumber") === "1") {
         if (gameState.teamOneInnerPanels <= 0) {
             disabledPanels = disabledPanels.concat(innerPanels);
         }
@@ -582,19 +585,24 @@ function drawPlayerReady(player) {
     playerReadyMessageElement.classList.remove("hidden");
     playerReadyMessageElement.innerHTML = "";
 
+    var playerReadyButton = document.getElementById("playerReadyButton");
     if (!player) {
+        playerReadyButton.innerHTML = "We are Ready!";
         return;
     }
 
     if (player.playerId === localStorage.getItem("playerId")) {
-        playerReadyMessageElement.appendChild(document.createTextNode("You are ready...waiting for a second..."));
+        playerReadyButton.innerHTML = "Undo Ready";
+        playerReadyMessageElement.appendChild(document.createTextNode("Ready; waiting for confirmation..."));
     } else {
+        playerReadyButton.innerHTML = "Confirm!";
+
         var playerName = document.createElement("span");
         playerName.style = "color: " + player.color + ";";
         playerName.appendChild(document.createTextNode(player.name));
         playerReadyMessageElement.appendChild(playerName);
 
-        playerReadyMessageElement.appendChild(document.createTextNode(" is ready...waiting for a second..."));
+        playerReadyMessageElement.appendChild(document.createTextNode(" is ready..."));
     }
 }
 
@@ -623,7 +631,7 @@ function registerConnections() {
 
 async function finalizePlayerAsync() {
     await startSignalRAsync("player");
-    drawPlayer(await putPlayerAsync());
+    var player = await putPlayerAsync();
     playerIsReadyToPlay = true;
 
     setupChats("chats");
@@ -639,6 +647,8 @@ async function finalizePlayerAsync() {
     drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
     handleGameState(results[1]); // second promise is getGameStateAsync
     drawPlayerReady(results[2]); // third promise is getPlayerReadyAsync
+
+    drawPlayer(player);
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
