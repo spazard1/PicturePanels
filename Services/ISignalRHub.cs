@@ -23,6 +23,8 @@ namespace PicturePanels.Services
 
         Task SelectPanels(PlayerEntity entity);
 
+        Task PlayerReady(PlayerEntity entity);
+
         Task Chat(ChatEntity entity);
 
         Task Typing(PlayerEntity entity);

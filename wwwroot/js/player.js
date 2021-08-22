@@ -117,6 +117,17 @@ async function putPlayerReadyAsync() {
         });
 }
 
+async function getPlayerReadyAsync() {
+    return await fetch("api/players/" + localStorage.getItem("playerId") + "/ready").then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        return;
+    }).then(responseJson => {
+        return responseJson;
+    });
+}
+
 async function deleteTeamGuessAsync(ticks) {
     if (!playerIsReadyToPlay) {
         return;
@@ -566,6 +577,27 @@ async function handleRandomizeTeam(player) {
     }
 }
 
+function drawPlayerReady(player) {
+    var playerReadyMessageElement = document.getElementById("playerReadyMessage");
+    playerReadyMessageElement.classList.remove("hidden");
+    playerReadyMessageElement.innerHTML = "";
+
+    if (!player) {
+        return;
+    }
+
+    if (player.playerId === localStorage.getItem("playerId")) {
+        playerReadyMessageElement.appendChild(document.createTextNode("You are ready...waiting for a second..."));
+    } else {
+        var playerName = document.createElement("span");
+        playerName.style = "color: " + player.color + ";";
+        playerName.appendChild(document.createTextNode(player.name));
+        playerReadyMessageElement.appendChild(playerName);
+
+        playerReadyMessageElement.appendChild(document.createTextNode(" is ready...waiting for a second..."));
+    }
+}
+
 function registerConnections() {
     connection.on("Chat", (chat) => {
         drawChat("chats", chat);
@@ -586,6 +618,7 @@ function registerConnections() {
     connection.on("DeleteTeamGuess", deleteTeamGuess);
     connection.on("VoteTeamGuess", voteTeamGuess);
     connection.on("RandomizeTeam", handleRandomizeTeam);
+    connection.on("PlayerReady", drawPlayerReady);
 }
 
 async function finalizePlayerAsync() {
@@ -598,12 +631,14 @@ async function finalizePlayerAsync() {
     var promises = [];
     promises.push(getTeamGuessesAsync());
     promises.push(getGameStateAsync());
+    promises.push(getPlayerReadyAsync());
     promises.push(drawChatsAsync("chats"));
 
     var results = await Promise.all(promises);
 
     drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
     handleGameState(results[1]); // second promise is getGameStateAsync
+    drawPlayerReady(results[2]); // third promise is getPlayerReadyAsync
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");
