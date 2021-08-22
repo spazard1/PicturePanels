@@ -26,6 +26,8 @@ namespace PicturePanels.Models
 
         public List<string> SelectedPanels { get; set; }
 
+        public string TeamGuessVote { get; set; }
+
         public bool IsReady { get; set; }
 
         public string Color { get; set; }
@@ -35,8 +37,6 @@ namespace PicturePanels.Models
         public bool IsAdmin { get; set; }
 
         public string ConnectionId { get; set; }
-
-        public string TeamGuessVote { get; set; }
 
         public string SignalRGroup {
            get

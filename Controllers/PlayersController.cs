@@ -129,7 +129,10 @@ namespace PicturePanels.Controllers
 
             if (playerModel.IsReady)
             {
-                //return StatusCode(400);
+                playerModel.IsReady = false;
+                await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+                await this.signalRHelper.ClearPlayerReadyAsync(playerModel.TeamNumber);
+                return Json(new PlayerEntity(playerModel));
             }
 
             var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
@@ -164,6 +167,12 @@ namespace PicturePanels.Controllers
             var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
             if (playerModel == null)
             {
+                return StatusCode(404);
+            }
+
+            // don't return a ready player if the team has already submitted
+            if ((playerModel.TeamNumber == 1 && !string.IsNullOrWhiteSpace(gameState.TeamOneGuessStatus)) ||
+                (playerModel.TeamNumber == 2 && !string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))) {
                 return StatusCode(404);
             }
 
