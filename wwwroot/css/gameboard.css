@@ -1,7 +1,6 @@
 ﻿body {
     color: white;
     background-color: black;
-    margin: 3px;
     overflow: hidden;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
@@ -81,24 +80,21 @@ body::-webkit-scrollbar {
 }
 
 .teamInfoPanelCounts {
-    position: absolute;
     width: 50%;
     height: 35%;
-    bottom: 4px;
-    left: 25%;
-    font-size: 2.5vh;
     font-weight: bold;
     text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
 .teamInfoPanelCounts div {
-    display: inline-block;
     box-sizing: border-box;
     width: 15%;
-    height: 100%;
+    border-width: 3px;
     margin-left: 2px;
     margin-right: 2px;
-    border-width: 3px;
+    margin-bottom: 3px;
 }
 
 .roundNumberAnimate {
@@ -128,8 +124,8 @@ body::-webkit-scrollbar {
 .roundNumberCorner {
     position: fixed;
     white-space: nowrap;
-    right: 2vw;
-    top: 2vh;
+    right: 1.5vw;
+    top: 1.5vh;
     text-align: center;
     vertical-align: middle;
     font-size: 3vh;
@@ -159,12 +155,14 @@ body::-webkit-scrollbar {
 .teamName {
     white-space: nowrap;
     overflow: hidden;
-    font-size: 3.5vh;
+    font-size: 3vh;
     height: 1em;
     line-height: 1em;
     width: 70%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 .teamScore {
@@ -174,7 +172,7 @@ body::-webkit-scrollbar {
     vertical-align: middle;
     font-size: 6vh;
     height: 7vh;
-    line-height: 6vh;
+    line-height: 5vh;
     width: 100%;
 }
 
@@ -194,15 +192,11 @@ body::-webkit-scrollbar {
     padding: 3px;
     width: 100%;
     top: 7.5vh;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 4vh;
     line-height: normal;
     z-index: 100;
     text-align: center;
-}
-
-.teamGuessLong {
-    
 }
 
 .teamGuess span {
@@ -279,7 +273,7 @@ body::-webkit-scrollbar {
     white-space: nowrap;
     font-size: 2.5vh;
     height: 1.45em;
-    line-height: 1.2em;
+    line-height: 1.1em;
     width: 7vw;
     margin-bottom: 3px;
     z-index: 1;
@@ -359,7 +353,6 @@ body::-webkit-scrollbar {
     z-index: 10;
     width: 100%;
     vertical-align: bottom;
-    z-index: 10;
 }
 
 .mostVotesPanel {
