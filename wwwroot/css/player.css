@@ -171,6 +171,11 @@ body {
     justify-content: flex-end;
 }
 
+.playerReadyMessage {
+    align-self: center;
+    font-size: .7em;
+}
+
 .teamGuessButton {
     background-color: lightgreen;
     margin-left: 1.5rem;

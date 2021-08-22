@@ -141,5 +141,10 @@ namespace PicturePanels.Services
         {
             await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).VoteTeamGuess(oldVote, newVote);
         }
+
+        public async Task PlayerReadyAsync(PlayerEntity player)
+        {
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(player.TeamNumber)).PlayerReady(player);
+        }
     }
 }

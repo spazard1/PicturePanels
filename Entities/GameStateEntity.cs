@@ -21,7 +21,7 @@ namespace PicturePanels.Entities
             this.RoundNumber = tableEntity.RoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
-            this.TurnStartTime = tableEntity.TurnStartTime;
+            // this.TurnStartTime = tableEntity.TurnStartTime;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;

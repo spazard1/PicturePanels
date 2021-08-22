@@ -86,7 +86,7 @@ namespace PicturePanels.Controllers
             {
                 await this.playerTableStorage.ResetPlayersAsync();
                 gameState.ClearGuesses();
-                gameState.TurnStartTime = DateTime.UtcNow;
+                // gameState.TurnStartTime = DateTime.UtcNow;
             }
 
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
