@@ -127,6 +127,11 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
+            if (playerModel.IsAdmin)
+            {
+                return StatusCode(400);
+            }
+
             if (playerModel.IsReady)
             {
                 playerModel.IsReady = false;

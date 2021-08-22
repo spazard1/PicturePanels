@@ -6,6 +6,7 @@
     padding: 0;
     color: white;
     background-color: black;
+    user-select: none;
 }
 
 body {
@@ -168,10 +169,11 @@ body {
 .teamButtons {
     flex: 0 0 auto;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 .playerReadyMessage {
+    flex: 0 0 auto;
     align-self: center;
     font-size: .7em;
 }
@@ -211,7 +213,7 @@ body {
     margin-right: 1rem;
     max-width: 95%;
     font-size: .6em;
-    padding: 4px 7px 4px 7px;
+    padding: 1px 7px 1px 7px;
     margin-bottom: .9em;
     border-radius: 10px;
 }
@@ -246,7 +248,7 @@ body {
     font-size: 1rem;
     color: yellow;
     background-color: dodgerblue;
-    padding: 0px 3px 2px 3px;
+    padding: 0px 3px 1px 3px;
     border-radius: 10px;
 }
 
@@ -260,6 +262,15 @@ body {
 
 .teamGuessVoteCount:empty {
     display: none;
+}
+
+.modal-title {
+    color: black;
+}
+
+.bootbox-body {
+    color: black;
+    font-size: 1rem;
 }
 
 @keyframes highlightTurnStatus {

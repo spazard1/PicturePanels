@@ -20,7 +20,7 @@
     margin-bottom: 4px;
     font-size: .5em;
     max-width: 70%;
-    padding: 4px 10px 4px 10px;
+    padding: 0px 10px 0px 10px;
     border-radius: 15px;
     text-align: left;
 }
@@ -153,7 +153,8 @@
     /* Identical styling required!! */
     box-sizing: border-box;
     border: 1px solid black;
-    padding: 3px;
+    border-radius: 10px;
+    padding: 1px 3px 1px 3px;
     font: inherit;
     /* Place on top of each other */
     grid-area: 1 / 1 / 2 / 2;

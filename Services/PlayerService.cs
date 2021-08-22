@@ -134,8 +134,7 @@ namespace PicturePanels.Services
 
             if (mostVotesTeamGuesses.Contains(GameStateTableEntity.TeamGuessStatusPass))
             {
-                await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
-                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
+                await this.SendPassAsync(gameState, playerModel);
             }
             else
             {
@@ -145,16 +144,36 @@ namespace PicturePanels.Services
                     var teamGuess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, mostVotesTeamGuess);
                     if (teamGuess != null)
                     {
-                        await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
-                        await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
-                        await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
-                        await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
+                        await this.SendGuessAsync(gameState, playerModel, teamGuess);
                         return;
                     }
                 }
-                await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
-                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
+
+                var teamGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(playerModel.TeamNumber);
+
+                if (teamGuesses.Any())
+                {
+                    await this.SendGuessAsync(gameState, playerModel, teamGuesses.First());
+                }
+                else
+                {
+                    await this.SendPassAsync(gameState, playerModel);
+                }
             }
+        }
+
+        private async Task SendGuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel, TeamGuessTableEntity teamGuess)
+        {
+            await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
+            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
+            await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
+        }
+
+        private async Task SendPassAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
+        {
+            await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
         }
     }
 }

@@ -59,7 +59,8 @@ namespace PicturePanels.Services
                 return;
             }
 
-            message = message.Trim().Substring(0, Math.Min(message.Length, 150));
+            message = message.Trim();
+            message = message.Substring(0, Math.Min(message.Length, 150));
             message = MultipleNewLines.Replace(message, "\n");
 
             var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
