@@ -49,7 +49,7 @@ namespace PicturePanels.Models
 
         public string TurnType { get; set; }
 
-        public DateTime TurnStartTime { get; set; }
+        // public DateTime TurnStartTime { get; set; }
 
         public int TeamFirstTurn { get; set; }
 

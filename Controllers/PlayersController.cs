@@ -97,7 +97,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{playerId}/ping")]
-        public async Task<IActionResult> PingAsync(string playerId)
+        public async Task<IActionResult> PutPingAsync(string playerId)
         {
             var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
             if (playerModel == null)
@@ -113,7 +113,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{playerId}/ready")]
-        public async Task<IActionResult> ReadyAsync(string playerId)
+        public async Task<IActionResult> PutReadyAsync(string playerId)
         {
             var gameState = await this.gameStateTableStorage.GetGameStateAsync();
             if (gameState == null)
@@ -129,7 +129,7 @@ namespace PicturePanels.Controllers
 
             if (playerModel.IsReady)
             {
-                return StatusCode(400);
+                //return StatusCode(400);
             }
 
             var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
@@ -140,17 +140,43 @@ namespace PicturePanels.Controllers
             }
             else if (players.Any(p => p.IsReady))
             {
-                await this.chatService.SendChatAsync(playerModel, "seconds that the team is ready!", true);
                 await this.playerService.ReadyAsync(gameState, playerModel);
             }
             else
             {
                 playerModel.IsReady = true;
                 await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
-                await this.chatService.SendChatAsync(playerModel, "says the team is ready, waiting for a second...", true);
+                await this.signalRHelper.PlayerReadyAsync(new PlayerEntity(playerModel));
             }
 
             return Json(new PlayerEntity(playerModel));
+        }
+
+        [HttpGet("{playerId}/ready")]
+        public async Task<IActionResult> GetReadyAsync(string playerId)
+        {
+            var gameState = await this.gameStateTableStorage.GetGameStateAsync();
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
+
+            var readyPlayer = players.FirstOrDefault(p => p.IsReady);
+
+            if (readyPlayer != null)
+            {
+                return Json(new PlayerEntity(readyPlayer));
+            }
+
+            return StatusCode(404);
         }
 
         [HttpPut("{playerId}/admin")]
