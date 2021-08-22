@@ -96,7 +96,7 @@ namespace PicturePanels.Services
             }
 
             await this.gameStateService.OpenPanelAsync(gameState, panelIdToOpen);
-            await this.chatService.SendChatAsync(playerModel, "seconded! Your team has opened panel " + panelIdToOpen + ".", true);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team opened panel " + panelIdToOpen + ".", true);
         }
 
         private async Task SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
@@ -135,6 +135,7 @@ namespace PicturePanels.Services
             if (mostVotesTeamGuesses.Contains(GameStateTableEntity.TeamGuessStatusPass))
             {
                 await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
+                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
             }
             else
             {
@@ -146,12 +147,13 @@ namespace PicturePanels.Services
                     {
                         await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
                         await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
-                        await this.chatService.SendChatAsync(playerModel, "seconded! Your team has submitted the guess \"" + teamGuess.Guess + ".\"", true);
+                        await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
                         await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
                         return;
                     }
                 }
                 await this.gameStateService.PassAsync(gameState, playerModel.TeamNumber);
+                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
             }
         }
     }

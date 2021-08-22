@@ -5,6 +5,7 @@ using PicturePanels.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace PicturePanels.Services
 {
@@ -49,6 +50,8 @@ namespace PicturePanels.Services
             await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup);
         }
 
+        private static readonly Regex MultipleNewLines = new(@"([\r\n])+");
+
         public async Task Chat(PlayerEntity entity, string message)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -56,7 +59,8 @@ namespace PicturePanels.Services
                 return;
             }
 
-            message = message.Substring(0, Math.Min(message.Length, 150));
+            message = message.Trim().Substring(0, Math.Min(message.Length, 150));
+            message = MultipleNewLines.Replace(message, "\n");
 
             var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
             if (playerModel == null)
