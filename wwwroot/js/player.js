@@ -80,7 +80,21 @@ async function putPlayerPingAsync() {
         });
 }
 
-async function postTeamGuessAsync() {
+function promptTeamGuess() {
+    bootbox.prompt({
+        size: "small",
+        title: "What is your guess?",
+        backdrop: true,
+        closeButton: false,
+        callback: function (result) {
+            if (result) {
+                postTeamGuessAsync(result);
+            }
+        }
+    });
+}
+
+async function postTeamGuessAsync(guess) {
     if (!playerIsReadyToPlay) {
         return;
     }
@@ -92,10 +106,8 @@ async function postTeamGuessAsync() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                Guess: document.getElementById("chats_inputText").value
+                Guess: guess
             })
-        }).then(() => {
-            document.getElementById("chats_inputText").value = "";
         });
 }
 
@@ -506,12 +518,17 @@ function drawTeamGuess(teamGuess) {
     teamGuessDeleteButtonElement.onclick = (event) => {
         event.stopPropagation();
 
-        var result = confirm("Delete the guess '" + teamGuess.guess + "'?");
-        if (!result) {
-            return;
-        }
-
-        deleteTeamGuessAsync(teamGuess.ticks);
+        bootbox.confirm({
+            size: "small",
+            message: "Delete the guess '" + teamGuess.guess + "'?",
+            backdrop: true,
+            closeButton: false,
+            callback: function (result) {
+                if (result) {
+                    deleteTeamGuessAsync(teamGuess.ticks);
+                }
+            }
+        });
     }
 
     teamGuessDeleteButtonElement.classList = "teamGuessDeleteButton";
@@ -682,7 +699,7 @@ window.onload = async function () {
 
     var teamGuessButton = document.getElementById("teamGuessButton");
     teamGuessButton.onclick = (event) => {
-        postTeamGuessAsync();
+        promptTeamGuess();
     }
 
     var playerReadyButton = document.getElementById("playerReadyButton");
@@ -695,4 +712,6 @@ window.onload = async function () {
     setupPlayerAsync();
 
     setInterval(putPlayerPingAsync, 30000);
+
+    
 }

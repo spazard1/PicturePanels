@@ -46,10 +46,6 @@ input:focus {
     opacity: 0;
 }
 
-.fade {
-    opacity: .7;
-}
-
 .center {
     text-align: center;
     margin: auto;
@@ -60,7 +56,7 @@ input:focus {
     cursor: pointer;
     user-select: none;
     box-sizing: border-box;
-    padding: 3px 5px 3px 5px;
+    padding: 1px 4px 1px 4px;
     margin: 3px;
     color: black;
     font-size: .7em;
