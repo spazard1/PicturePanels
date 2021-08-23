@@ -25,6 +25,19 @@ namespace PicturePanels.Services
             this.hubContext = hubContext;
         }
 
+        public Task<GameStateTableEntity> GetGameStateAsync()
+        {
+            return this.gameStateTableStorage.GetGameStateAsync();
+        }
+
+        public async Task SetTurnType(GameStateTableEntity gameState, string turnType)
+        {
+            gameState.SetTurnType(turnType);
+
+            gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+        }
+
         public async Task<GameStateTableEntity> OpenPanelAsync(GameStateTableEntity gameState, string panelId)
         {
             gameState.OpenPanel(panelId);
@@ -32,7 +45,7 @@ namespace PicturePanels.Services
 
             await this.playerTableStorage.ResetPlayersAsync();
 
-            gameState.TurnType = GameStateTableEntity.TurnTypeMakeGuess;
+            gameState.SetTurnType(GameStateTableEntity.TurnTypeMakeGuess);
 
             gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
@@ -105,7 +118,7 @@ namespace PicturePanels.Services
                 gameState.TeamTwoCorrect = gameState.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsCorrect(gameState.TeamTwoGuess, imageEntity.Answers);
 
                 gameState.IncrementScores();
-                gameState.TurnType = GameStateTableEntity.TurnTypeGuessesMade;
+                gameState.SetTurnType(GameStateTableEntity.TurnTypeGuessesMade);
 
                 await this.playerTableStorage.ResetPlayersAsync();
             }
