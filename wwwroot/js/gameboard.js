@@ -265,7 +265,7 @@ function drawMostVotesPanels(resetPanels) {
     }
 }
 
-function drawTeamStatus(gameState, resetTimer) {
+function drawTeamStatus(gameState) {
     var teamStatus = document.getElementById("teamStatus");
     var teamOneCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
     var teamTwoCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
@@ -297,11 +297,6 @@ function drawTeamStatus(gameState, resetTimer) {
         stopCountdown(passiveTeamCountdownCanvas);
     }
 
-    if (resetTimer) {
-        stopCountdown(activeTeamCountdownCanvas);
-        stopCountdown(passiveTeamCountdownCanvas);
-    }
-
     switch (gameState.turnType) {
         case "OpenPanel":
             if (gameState.teamTurn === 1) {
@@ -309,26 +304,21 @@ function drawTeamStatus(gameState, resetTimer) {
             } else {
                 teamStatus.innerHTML = "Open a Panel &rarr;";
             }
-            if (resetTimer) {
-                if (gameState.revealedPanels.length === 0) {
-                    startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 8);
-                } else {
-                    startCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, 3);
-                }
-            }
+
+            updateCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, gameState.turnTimeRemaining);
             break;
         case "MakeGuess":
             teamStatus.innerHTML = "Guess or Pass";
 
-            if (resetTimer) {
-                startCountdown(activeTeamCountdownCanvas, gameState.guessTime, 3);
-                startCountdown(passiveTeamCountdownCanvas, gameState.guessTime, 3);
-            }
             if (gameState.teamOneGuessStatus) {
                 stopCountdown(teamOneCountdownCanvas);
+            } else {
+                updateCountdown(teamOneCountdownCanvas, gameState.guessTime, gameState.turnTimeRemaining);
             }
             if (gameState.teamTwoGuessStatus) {
                 stopCountdown(teamTwoCountdownCanvas);
+            } else {
+                updateCountdown(teamTwoCountdownCanvas, gameState.guessTime, gameState.turnTimeRemaining);
             }
             break;
         case "GuessesMade":
@@ -528,14 +518,17 @@ function setupCanvases() {
 
 var framerate = 20;
 
-function startCountdown(canvas, countdownMax, countdownDelay = 0) {
+function updateCountdown(canvas, countdownMax, remainingTime) {
     if (countdownMax <= 0) {
         return;
     }
 
-    canvas.currentCountdown = countdownMax + countdownDelay;
+    canvas.currentCountdown = remainingTime;
     canvas.countdownMax = countdownMax;
-    clearInterval(canvas.countdownInterval);
+
+    if (canvas.countdownInterval) {
+        return;
+    }
 
     canvas.countdownInterval = setInterval(function () {
         canvas.currentCountdown -= 1 / framerate;
@@ -543,6 +536,7 @@ function startCountdown(canvas, countdownMax, countdownDelay = 0) {
 
         if (canvas.currentCountdown <= 0) {
             clearInterval(canvas.countdownInterval);
+            canvas.countdownInterval = null;
         }
 
     }, 1000 / framerate);
@@ -1023,7 +1017,7 @@ async function handleGameState(gameState, firstLoad) {
 
     drawGameState(gameState);
     drawRoundNumber(gameState);
-    drawTeamStatus(gameState, firstLoad || isNewTurn);
+    drawTeamStatus(gameState);
     drawTeamGuesses(gameState);
     await drawRevealedPanelsAsync(gameState);
     await drawImageEntityAsync(gameState);
