@@ -19,6 +19,9 @@ namespace PicturePanels.Models
         public const string TeamGuessStatusPass = "Pass";
         public const string TeamGuessStatusGuess = "Guess";
 
+        public static int RoundStartDelayTime = 8;
+        public static int TurnStartDelayTime = 3;
+
         public static readonly IEnumerable<string> OuterPanels = new List<string>() { "1", "2", "3", "4", "5", "6", "10", "11", "15", "16", "17", "18", "19", "20" };
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
@@ -45,11 +48,13 @@ namespace PicturePanels.Models
 
         public int RoundNumber { get; set; }
 
+        public int TurnNumber { get; set; }
+
         public int TeamTurn { get; set; }
 
         public string TurnType { get; set; }
 
-        // public DateTime TurnStartTime { get; set; }
+        public DateTime TurnStartTime { get; set; }
 
         public int TeamFirstTurn { get; set; }
 
@@ -84,6 +89,13 @@ namespace PicturePanels.Models
         public bool TeamTwoCorrect { get; set; }
 
         public string TeamTwoGuessStatus { get; set; }
+
+        public void SetTurnType(string turnType)
+        {
+            this.TurnType = turnType;
+            this.TurnNumber++;
+            this.TurnStartTime = DateTime.UtcNow;
+        }
 
         public void OpenPanel(string panelId, bool force = false)
         {
@@ -208,6 +220,27 @@ namespace PicturePanels.Models
         public static bool IsInnerPanel(string panelId)
         {
             return InnerPanels.Contains(panelId);
+        }
+
+        public double GetTurnTimeRemaining()
+        {
+            if (this.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
+            {
+                if (!this.RevealedPanels.Any())
+                {
+                    return (this.TurnStartTime.AddSeconds(GameStateTableEntity.RoundStartDelayTime + this.OpenPanelTime) - DateTime.UtcNow).TotalSeconds;
+                }
+                else
+                {
+                    return (this.TurnStartTime.AddSeconds(GameStateTableEntity.TurnStartDelayTime + this.OpenPanelTime) - DateTime.UtcNow).TotalSeconds;
+                }
+            }
+            else if (this.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+            {
+                return (this.TurnStartTime.AddSeconds(GameStateTableEntity.TurnStartDelayTime + this.GuessTime) - DateTime.UtcNow).TotalSeconds;
+            }
+
+            return 0;
         }
     }
 }

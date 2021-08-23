@@ -78,7 +78,8 @@ namespace PicturePanels.Controllers
                 gameState.SwitchTeamFirstTurn();
                 gameState.TeamTurn = gameState.TeamFirstTurn;
                 gameState.RoundNumber++;
-                gameState.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
+                gameState.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+                gameState.TurnNumber = 1;
                 gameState.RevealedPanels = new List<string>();
             }
 
@@ -86,7 +87,7 @@ namespace PicturePanels.Controllers
             {
                 await this.playerTableStorage.ResetPlayersAsync();
                 gameState.ClearGuesses();
-                // gameState.TurnStartTime = DateTime.UtcNow;
+                gameState.TurnStartTime = DateTime.UtcNow;
             }
 
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
@@ -107,7 +108,7 @@ namespace PicturePanels.Controllers
 
             gameState.SwitchTeamTurn();
             gameState.ClearGuesses();
-            gameState.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
+            gameState.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
 
             gameState = await this.gameTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
@@ -175,7 +176,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            gameState.TurnType = GameStateTableEntity.TurnTypeGuessesMade;
+            gameState.SetTurnType(GameStateTableEntity.TurnTypeGuessesMade);
             gameState.ClearGuesses();
 
             await this.imageTableStorage.SetPlayedTimeAsync(gameState.BlobContainer, gameState.ImageId);
@@ -203,7 +204,8 @@ namespace PicturePanels.Controllers
             gameState.TeamTwoIncorrectGuesses = 0;
             gameState.TeamOneInnerPanels = 5;
             gameState.TeamTwoInnerPanels = 5;
-            gameState.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
+            gameState.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            gameState.TurnNumber = 1;
             gameState.RevealedPanels = new List<string>();
             gameState.ClearGuesses();
 

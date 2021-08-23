@@ -1,6 +1,7 @@
 ﻿using PicturePanels.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PicturePanels.Entities
 {
@@ -21,7 +22,6 @@ namespace PicturePanels.Entities
             this.RoundNumber = tableEntity.RoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
-            // this.TurnStartTime = tableEntity.TurnStartTime;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;
@@ -35,6 +35,7 @@ namespace PicturePanels.Entities
             this.TeamTwoIncorrectGuesses = tableEntity.TeamTwoIncorrectGuesses;
             this.TeamTwoInnerPanels = tableEntity.TeamTwoInnerPanels;
             this.TeamTwoCorrect = tableEntity.TeamTwoCorrect;
+            this.TurnTimeRemaining = tableEntity.GetTurnTimeRemaining();
 
             if (tableEntity.ShouldShowGuesses())
             {
@@ -67,6 +68,8 @@ namespace PicturePanels.Entities
         public string TurnType { get; set; }
 
         public DateTime TurnStartTime { get; internal set; }
+
+        public double TurnTimeRemaining { get; set; }
 
         public int? TeamFirstTurn { get; set; }
 

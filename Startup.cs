@@ -47,12 +47,13 @@ namespace PicturePanels
             services.AddSingleton<IUserNameProvider, UserNameProvider>();
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
-            services.AddScoped<SignalRHelper>();
-            services.AddScoped<AuthorizationFilter>();
+            services.AddSingleton<GameStateQueueService>();
+            services.AddSingleton<SignalRHelper>();
+            services.AddSingleton<GameStateService>();
+            services.AddSingleton<PlayerService>();
+            services.AddSingleton<ChatService>();
 
-            services.AddScoped<GameStateService>();
-            services.AddScoped<PlayerService>();
-            services.AddScoped<ChatService>();
+            services.AddScoped<AuthorizationFilter>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -72,6 +73,8 @@ namespace PicturePanels
                 pipeline.MinifyCssFiles();
                 pipeline.MinifyJsFiles();
             });
+
+            services.AddHostedService<GameStateBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
