@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PicturePanels.Services.Storage;
 
 namespace PicturePanels.Controllers
 {
@@ -50,7 +51,7 @@ namespace PicturePanels.Controllers
         [HttpGet("{playerId}")]
         public async Task<IActionResult> GetAsync(string playerId)
         {
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -62,8 +63,9 @@ namespace PicturePanels.Controllers
         [HttpPut("{playerId}")]
         public async Task<IActionResult> PutAsync(string playerId, [FromBody] PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(playerId);
             var notifyTeam = false;
+            var newPlayer = false;
 
             if (playerModel == null)
             {
@@ -73,6 +75,7 @@ namespace PicturePanels.Controllers
                     PlayerId = playerId,
                     SelectedPanels = new List<string>()
                 };
+                newPlayer = true;
             }
             else if (playerModel.TeamNumber != entity.TeamNumber)
             {
@@ -99,7 +102,7 @@ namespace PicturePanels.Controllers
         [HttpPut("{playerId}/ping")]
         public async Task<IActionResult> PutPingAsync(string playerId)
         {
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -121,7 +124,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -169,7 +172,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -197,7 +200,7 @@ namespace PicturePanels.Controllers
         [RequireAuthorization]
         public async Task<IActionResult> PutAdminAsync(string playerId)
         {
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);

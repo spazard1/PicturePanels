@@ -5,6 +5,7 @@ using PicturePanels.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using PicturePanels.Services.Storage;
 
 namespace PicturePanels.Controllers
 {
@@ -24,7 +25,7 @@ namespace PicturePanels.Controllers
         [HttpGet("{teamNumber}")]
         public async Task<IActionResult> GetAsync(string teamNumber)
         {
-            var chatModels = await this.chatTableStorage.GetChatsAsync(teamNumber);
+            var chatModels = await this.chatTableStorage.GetAllAsync(teamNumber);
             var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync();
             var chatEntities = new List<ChatEntity>();
 

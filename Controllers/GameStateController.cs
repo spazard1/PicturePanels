@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using PicturePanels.Services.Storage;
 
 namespace PicturePanels.Controllers
 {

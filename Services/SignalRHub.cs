@@ -1,11 +1,11 @@
 ﻿using PicturePanels.Models;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Primitives;
 using PicturePanels.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using PicturePanels.Services.Storage;
 
 namespace PicturePanels.Services
 {
@@ -63,7 +63,7 @@ namespace PicturePanels.Services
             message = message.Substring(0, Math.Min(message.Length, 150));
             message = MultipleNewLines.Replace(message, "\n");
 
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
+            var playerModel = await this.playerTableStorage.GetAsync(entity.PlayerId);
             if (playerModel == null)
             {
                 return;
@@ -74,14 +74,14 @@ namespace PicturePanels.Services
                 playerModel.TeamNumber = entity.TeamNumber;
             }
 
-            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(playerModel, message);
+            var chatModel = await this.chatTableStorage.InsertAsync(playerModel, message);
 
             await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Chat(new ChatEntity(chatModel, playerModel));
         }
 
         public async Task Typing(PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
+            var playerModel = await this.playerTableStorage.GetAsync(entity.PlayerId);
             if (playerModel == null)
             {
                 return;
@@ -97,7 +97,7 @@ namespace PicturePanels.Services
 
         public async Task SelectPanels(PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetPlayerAsync(entity.PlayerId);
+            var playerModel = await this.playerTableStorage.GetAsync(entity.PlayerId);
             if (playerModel == null)
             {
                 return;

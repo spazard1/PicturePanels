@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using PicturePanels.Filters;
 using Microsoft.AspNetCore.Http;
+using PicturePanels.Services.Storage;
 
 namespace PicturePanels
 {
@@ -107,13 +108,13 @@ namespace PicturePanels
             await gameTableStorage.Startup();
 
             var playerTableStorage = app.ApplicationServices.GetRequiredService<PlayerTableStorage>();
-            await playerTableStorage.Startup();
+            await playerTableStorage.StartupAsync();
 
             var chatTableStorage = app.ApplicationServices.GetRequiredService<ChatTableStorage>();
-            await chatTableStorage.Startup();
+            await chatTableStorage.StartupAsync();
 
             var teamGuessTableStorage = app.ApplicationServices.GetRequiredService<TeamGuessTableStorage>();
-            await teamGuessTableStorage.Startup();
+            await teamGuessTableStorage.StartupAsync();
         }
     }
 }

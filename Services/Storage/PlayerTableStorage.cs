@@ -6,20 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PicturePanels.Services
+namespace PicturePanels.Services.Storage
 {
-    public class PlayerTableStorage
+    public class PlayerTableStorage : DefaultAzureTableStorage<PlayerTableEntity>
     {
         public const int PlayerTimeoutInMinutes = 5;
 
         private CloudStorageAccount CloudStorageAccount;
         private CloudTable playerTable;
 
-        public PlayerTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider)
+        public PlayerTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider) : base(cloudStorageAccountProvider, "players")
         {
-            CloudStorageAccount = cloudStorageAccountProvider.CloudStorageAccount;
-            var tableClient = CloudStorageAccount.CreateCloudTableClient();
-            playerTable = tableClient.GetTableReference("players");
+
         }
 
         public async Task CreatePlayerAsync()
@@ -38,37 +36,16 @@ namespace PicturePanels.Services
             }
         }
 
-        public async Task Startup()
+        public async Task<PlayerTableEntity> GetAsync(string playerId)
         {
-            await playerTable.CreateIfNotExistsAsync();  
-        }
-
-        public async Task<PlayerTableEntity> GetPlayerAsync(string playerId)
-        {
-            TableResult retrievedResult = await playerTable.ExecuteAsync(TableOperation.Retrieve<PlayerTableEntity>(PlayerTableEntity.Players, playerId));
-            return (PlayerTableEntity)retrievedResult.Result;
+            return await this.GetAsync(PlayerTableEntity.Players, playerId);
         }
 
         public async Task<List<PlayerTableEntity>> GetActivePlayersAsync()
         {
-            var playerResults = new List<PlayerTableEntity>();
-
-            TableQuery<PlayerTableEntity> tableQuery = new TableQuery<PlayerTableEntity>();
-            TableContinuationToken continuationToken = null;
-
-            do
-            {
-                TableQuerySegment<PlayerTableEntity> tableQueryResult =
-                    await playerTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
-
-                continuationToken = tableQueryResult.ContinuationToken;
-
-                playerResults.AddRange(tableQueryResult.Results);
-            } while (continuationToken != null);
-
-            playerResults.RemoveAll(player => player.IsAdmin || player.LastPingTime < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(PlayerTimeoutInMinutes)));
-
-            return playerResults;
+            var players = await this.GetAllAsync();
+            players.RemoveAll(player => player.IsAdmin || player.LastPingTime < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(PlayerTimeoutInMinutes)));
+            return players;
         }
 
         public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(int teamNumber)
@@ -80,26 +57,15 @@ namespace PicturePanels.Services
 
         public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync()
         {
-            var playerResults = new Dictionary<string, PlayerTableEntity>();
+            var players = await this.GetAllAsync();
+            var playerDictionary = new Dictionary<string, PlayerTableEntity>();
 
-            TableQuery<PlayerTableEntity> tableQuery = new TableQuery<PlayerTableEntity>();
-            TableContinuationToken continuationToken = null;
-
-            do
+            foreach (var player in players)
             {
-                TableQuerySegment<PlayerTableEntity> tableQueryResult =
-                    await playerTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
+                playerDictionary[player.PlayerId] = player;
+            }
 
-                continuationToken = tableQueryResult.ContinuationToken;
-
-                foreach (var result in tableQueryResult.Results)
-                {
-                    playerResults[result.PlayerId] = result;
-                }
-
-            } while (continuationToken != null);
-
-            return playerResults;
+            return playerDictionary;
         }
 
         public async Task ResetPlayersAsync()
@@ -130,19 +96,13 @@ namespace PicturePanels.Services
             await playerTable.ExecuteBatchAsync(tableBatchOperation);
         }
 
-        public async Task<PlayerTableEntity> AddOrUpdatePlayerAsync(PlayerTableEntity tableEntity)
+        public override async Task<PlayerTableEntity> InsertAsync(PlayerTableEntity tableEntity)
         {
             if (string.IsNullOrWhiteSpace(tableEntity.Color))
             {
                 tableEntity.Color = GenerateRandomColor(tableEntity.PlayerId);
             }
-            await playerTable.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
-            return tableEntity;
-        }
-
-        public async Task DeletePlayerAsync(PlayerTableEntity tableEntity)
-        {
-            await playerTable.ExecuteAsync(TableOperation.Delete(tableEntity));
+            return await base.InsertAsync(tableEntity);
         }
 
         private string GenerateRandomColor(string playerId)
