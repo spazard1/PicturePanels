@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using PicturePanels.Entities;
 using PicturePanels.Models;
+using PicturePanels.Services.Storage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

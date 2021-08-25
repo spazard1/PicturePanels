@@ -1,5 +1,6 @@
 ﻿using PicturePanels.Entities;
 using PicturePanels.Models;
+using PicturePanels.Services.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,7 +142,7 @@ namespace PicturePanels.Services
                 mostVotesTeamGuesses.Sort();
                 foreach (var mostVotesTeamGuess in mostVotesTeamGuesses)
                 {
-                    var teamGuess = await this.teamGuessTableStorage.GetTeamGuessAsync(playerModel.TeamNumber, mostVotesTeamGuess);
+                    var teamGuess = await this.teamGuessTableStorage.GetAsync(playerModel.TeamNumber, mostVotesTeamGuess);
                     if (teamGuess != null)
                     {
                         await this.SendGuessAsync(gameState, playerModel, teamGuess);
@@ -167,7 +168,7 @@ namespace PicturePanels.Services
             await this.gameStateService.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
             await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
             await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
-            await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
+            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
         }
 
         private async Task SendPassAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)

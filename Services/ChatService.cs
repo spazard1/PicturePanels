@@ -1,5 +1,6 @@
 ﻿using PicturePanels.Entities;
 using PicturePanels.Models;
+using PicturePanels.Services.Storage;
 using System.Threading.Tasks;
 
 namespace PicturePanels.Services
@@ -17,13 +18,13 @@ namespace PicturePanels.Services
 
         public async Task SendChatAsync(PlayerTableEntity player, string message, bool isSystem)
         {
-            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(player, message, isSystem);
+            var chatModel = await this.chatTableStorage.InsertAsync(player, message, isSystem);
             await signalRHelper.ChatAsync(new ChatEntity(chatModel, player));
         }
 
         public async Task SendChatAsync(int teamNumber, string message, bool isSystem)
         {
-            var chatModel = await this.chatTableStorage.AddOrUpdateChatAsync(teamNumber, message, isSystem);
+            var chatModel = await this.chatTableStorage.InsertAsync(teamNumber, message, isSystem);
             await signalRHelper.ChatAsync(teamNumber, new ChatEntity(chatModel));
         }
     }

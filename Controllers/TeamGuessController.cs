@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PicturePanels.Entities;
 using PicturePanels.Services;
+using PicturePanels.Services.Storage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace PicturePanels.Controllers
         [HttpGet("{playerId}")]
         public async Task<IActionResult> GetAllAsync(string playerId)
         {
-            var player = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var player = await this.playerTableStorage.GetAsync(playerId);
             if (player == null)
             {
                 return StatusCode(404);
@@ -67,7 +68,7 @@ namespace PicturePanels.Controllers
         [HttpPut("{playerId}/{ticks}")]
         public async Task<IActionResult> PutVoteAsync(string playerId, string ticks)
         {
-            var player = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var player = await this.playerTableStorage.GetAsync(playerId);
             if (player == null)
             {
                 return StatusCode(404);
@@ -90,19 +91,19 @@ namespace PicturePanels.Controllers
         [HttpDelete("{playerId}/{ticks}")]
         public async Task<IActionResult> DeleteAsync(string playerId, string ticks)
         {
-            var player = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var player = await this.playerTableStorage.GetAsync(playerId);
             if (player == null)
             {
                 return StatusCode(404);
             }
 
-            var teamGuess = await this.teamGuessTableStorage.GetTeamGuessAsync(player.TeamNumber, ticks);
+            var teamGuess = await this.teamGuessTableStorage.GetAsync(player.TeamNumber, ticks);
             if (teamGuess == null)
             {
                 return StatusCode(404);
             }
 
-            await this.teamGuessTableStorage.DeleteTeamGuessAsync(teamGuess);
+            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
             await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
             await this.chatService.SendChatAsync(player, "deleted the guess '" + teamGuess.Guess + "'", true);
 
@@ -112,7 +113,7 @@ namespace PicturePanels.Controllers
         [HttpPost("{playerId}")]
         public async Task<IActionResult> PostAsync([FromBody] GuessEntity entity, string playerId)
         {
-            var player = await this.playerTableStorage.GetPlayerAsync(playerId);
+            var player = await this.playerTableStorage.GetAsync(playerId);
             if (player == null)
             {
                 return StatusCode(404);
@@ -130,7 +131,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(405);
             }
 
-            var teamGuess = await this.teamGuessTableStorage.AddOrUpdateTeamGuessAsync(entity.ToModel(player));
+            var teamGuess = await this.teamGuessTableStorage.InsertAsync(entity.ToModel(player));
             await signalRHelper.AddTeamGuessAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
 
             await this.chatService.SendChatAsync(player, "submitted the guess '" + teamGuess.Guess + "'", true);
