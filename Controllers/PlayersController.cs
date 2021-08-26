@@ -17,19 +17,19 @@ namespace PicturePanels.Controllers
     {
         private readonly PlayerTableStorage playerTableStorage;
         private readonly GameStateTableStorage gameStateTableStorage;
-        private readonly PlayerService playerService;
+        private readonly GameStateService gameStateService;
         private readonly ChatService chatService;
         private readonly SignalRHelper signalRHelper;
 
         public PlayersController(PlayerTableStorage playerTableStorage,
             GameStateTableStorage gameStateTableStorage,
-            PlayerService playerService,
+            GameStateService gameStateService,
             ChatService chatService,
             SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
             this.gameStateTableStorage = gameStateTableStorage;
-            this.playerService = playerService;
+            this.gameStateService = gameStateService;
             this.chatService = chatService;
             this.signalRHelper = signalRHelper;
         }
@@ -123,7 +123,7 @@ namespace PicturePanels.Controllers
         [HttpPut("{playerId}/ready")]
         public async Task<IActionResult> PutReadyAsync(string playerId)
         {
-            var gameState = await this.gameStateTableStorage.GetGameStateAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync();
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -154,11 +154,11 @@ namespace PicturePanels.Controllers
 
             if (players.Count == 1)
             {
-                await this.playerService.ReadyAsync(gameState, playerModel);
+                await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
             }
             else if (players.Any(p => p.IsReady))
             {
-                await this.playerService.ReadyAsync(gameState, playerModel);
+                await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
             }
             else
             {
@@ -175,7 +175,7 @@ namespace PicturePanels.Controllers
         [HttpGet("{playerId}/ready")]
         public async Task<IActionResult> GetReadyAsync(string playerId)
         {
-            var gameState = await this.gameStateTableStorage.GetGameStateAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync();
             if (gameState == null)
             {
                 return StatusCode(404);

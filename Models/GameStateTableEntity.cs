@@ -19,6 +19,9 @@ namespace PicturePanels.Models
         public const string TeamGuessStatusPass = "Pass";
         public const string TeamGuessStatusGuess = "Guess";
 
+        public const string UpdateTypeNewRound = "NewRound";
+        public const string UpdateTypeNewTurn = "NewTurn";
+
         public static int RoundStartDelayTime = 8;
         public static int TurnStartDelayTime = 3;
 

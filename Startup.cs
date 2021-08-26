@@ -51,7 +51,6 @@ namespace PicturePanels
             services.AddSingleton<GameStateQueueService>();
             services.AddSingleton<SignalRHelper>();
             services.AddSingleton<GameStateService>();
-            services.AddSingleton<PlayerService>();
             services.AddSingleton<ChatService>();
 
             services.AddScoped<AuthorizationFilter>();
@@ -105,7 +104,7 @@ namespace PicturePanels
             });
 
             var gameTableStorage = app.ApplicationServices.GetRequiredService<GameStateTableStorage>();
-            await gameTableStorage.Startup();
+            await gameTableStorage.StartupAsync();
 
             var playerTableStorage = app.ApplicationServices.GetRequiredService<PlayerTableStorage>();
             await playerTableStorage.StartupAsync();
