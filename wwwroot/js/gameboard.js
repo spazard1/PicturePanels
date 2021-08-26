@@ -305,7 +305,7 @@ function drawTeamStatus(gameState) {
                 teamStatus.innerHTML = "Open a Panel &rarr;";
             }
 
-            updateCountdown(activeTeamCountdownCanvas, gameState.openPanelTime, gameState.turnTimeRemaining);
+            updateCountdown(activeTeamCountdownCanvas, gameState);
             break;
         case "MakeGuess":
             teamStatus.innerHTML = "Guess or Pass";
@@ -313,12 +313,12 @@ function drawTeamStatus(gameState) {
             if (gameState.teamOneGuessStatus) {
                 stopCountdown(teamOneCountdownCanvas);
             } else {
-                updateCountdown(teamOneCountdownCanvas, gameState.guessTime, gameState.turnTimeRemaining);
+                updateCountdown(teamOneCountdownCanvas, gameState);
             }
             if (gameState.teamTwoGuessStatus) {
                 stopCountdown(teamTwoCountdownCanvas);
             } else {
-                updateCountdown(teamTwoCountdownCanvas, gameState.guessTime, gameState.turnTimeRemaining);
+                updateCountdown(teamTwoCountdownCanvas, gameState);
             }
             break;
         case "GuessesMade":
@@ -516,29 +516,25 @@ function setupCanvases() {
     }
 }
 
-var framerate = 20;
+var framerate = 30;
 
-function updateCountdown(canvas, countdownMax, remainingTime) {
-    if (countdownMax <= 0) {
+function updateCountdown(canvas, gameState) {
+    canvas.countdownMax = new Date(gameState.turnEndTime) - new Date(gameState.turnStartTime);
+    if (canvas.countdownMax <= 0) {
         return;
     }
 
-    canvas.currentCountdown = remainingTime;
-    canvas.countdownMax = countdownMax;
-
-    if (canvas.countdownInterval) {
-        return;
-    }
+    clearInterval(canvas.countdownInterval);
 
     canvas.countdownInterval = setInterval(function () {
-        canvas.currentCountdown -= 1 / framerate;
-        drawCountdown(canvas);
+        canvas.currentCountdown = new Date(gameState.turnEndTime) - new Date();
 
         if (canvas.currentCountdown <= 0) {
             clearInterval(canvas.countdownInterval);
             canvas.countdownInterval = null;
         }
 
+        drawCountdown(canvas);
     }, 1000 / framerate);
 }
 

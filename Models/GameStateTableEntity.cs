@@ -22,12 +22,17 @@ namespace PicturePanels.Models
         public const string UpdateTypeNewRound = "NewRound";
         public const string UpdateTypeNewTurn = "NewTurn";
 
-        public static int RoundStartDelayTime = 8;
-        public static int TurnStartDelayTime = 3;
+        public static int RoundStartDelayTime = 10;
+        public static int TurnStartDelayTime = 5;
 
         public static readonly IEnumerable<string> OuterPanels = new List<string>() { "1", "2", "3", "4", "5", "6", "10", "11", "15", "16", "17", "18", "19", "20" };
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
+
+        public const int GuessesMadeTime = 30;
+        public const int EndRoundTime = 30;
+
+        public const int MaxOpenPanels = 10;
 
         public GameStateTableEntity()
         {
@@ -58,6 +63,8 @@ namespace PicturePanels.Models
         public string TurnType { get; set; }
 
         public DateTime TurnStartTime { get; set; }
+
+        public DateTime TurnEndTime { get; set; }
 
         public int TeamFirstTurn { get; set; }
 
@@ -102,7 +109,6 @@ namespace PicturePanels.Models
 
         public void NewGame()
         {
-            this.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
             this.RoundNumber = 1;
             this.TeamOneScore = 0;
             this.TeamTwoScore = 0;
@@ -110,33 +116,57 @@ namespace PicturePanels.Models
             this.TeamTwoIncorrectGuesses = 0;
             this.TeamOneInnerPanels = 5;
             this.TeamTwoInnerPanels = 5;
-            this.TurnNumber = 1;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
+            this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            this.TurnNumber = 1;
         }
 
         public void NewRound()
         {
-            this.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
             this.SwitchTeamFirstTurn();
             this.TeamTurn = this.TeamFirstTurn;
             this.RoundNumber++;
-            this.TurnNumber = 1;
             this.TurnStartTime = DateTime.UtcNow;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
+            this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            this.TurnNumber = 1;
         }
 
-        public void NewTurn()
+        public void NewTurnType(string turnType)
         {
             this.TurnNumber++;
-            this.TurnStartTime = DateTime.UtcNow;
-        }
-
-        public void SetTurnType(string turnType)
-        {
             this.TurnType = turnType;
-            this.NewTurn();
+
+            switch (TurnType)
+            {
+                case GameStateTableEntity.TurnTypeOpenPanel:
+                    this.ClearGuesses();
+                    if (!this.RevealedPanels.Any())
+                    {
+                        this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.RoundStartDelayTime);
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.OpenPanelTime);
+                    }
+                    else
+                    {
+                        this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.OpenPanelTime);
+                    }
+                    break;
+                case GameStateTableEntity.TurnTypeMakeGuess:
+                    this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                    this.TurnEndTime = this.TurnStartTime.AddSeconds(this.GuessTime);
+                    break;
+                case GameStateTableEntity.TurnTypeGuessesMade:
+                    this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                    this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTime);
+                    break;
+                case GameStateTableEntity.TurnTypeEndRound:
+                    this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                    this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.EndRoundTime);
+                    break;
+            }
         }
 
         public void OpenPanel(string panelId, bool force = false)
@@ -290,27 +320,6 @@ namespace PicturePanels.Models
         public static bool IsInnerPanel(string panelId)
         {
             return InnerPanels.Contains(panelId);
-        }
-
-        public double GetTurnTimeRemaining()
-        {
-            if (this.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
-            {
-                if (!this.RevealedPanels.Any())
-                {
-                    return (this.TurnStartTime.AddSeconds(GameStateTableEntity.RoundStartDelayTime + this.OpenPanelTime) - DateTime.UtcNow).TotalSeconds;
-                }
-                else
-                {
-                    return (this.TurnStartTime.AddSeconds(GameStateTableEntity.TurnStartDelayTime + this.OpenPanelTime) - DateTime.UtcNow).TotalSeconds;
-                }
-            }
-            else if (this.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
-            {
-                return (this.TurnStartTime.AddSeconds(GameStateTableEntity.TurnStartDelayTime + this.GuessTime) - DateTime.UtcNow).TotalSeconds;
-            }
-
-            return 0;
         }
     }
 }
