@@ -249,8 +249,6 @@ var playerIsReadyToPlay = false;
 
 function teamChosen(teamNumber) {
     localStorage.setItem("teamNumber", teamNumber);
-
-    drawTeam(teamNumber);
 }
 
 function shouldPlayerLoadFromCache() {
@@ -330,8 +328,6 @@ async function smallestTeamChosenAsync() {
 }
 
 function drawTeam(teamNumber) {
-    updatePlayerPanelButtons(currentGameState);
-
     document.getElementById("turnStatusMessage").classList.remove("hidden");
 
     if (teamNumber === 1) {
@@ -450,20 +446,14 @@ function highlightturnStatusMessage() {
     }, 0);
 }
 
-function handleGameState(gameState) {
+function handleGameState(gameState, updateType) {
     loadThemeCss(gameState);
 
-    if (playerIsReadyToPlay && (!currentGameState || currentGameState.turnType !== gameState.turnType || currentGameState.teamTurn !== gameState.teamTurn)) {
-        clearPanelButtonSelection();
-        drawPlayerReady();
-        scrollChats("chats", true);
-    } else if (currentGameState && currentGameState.imageId !== gameState.imageId) {
+    if (playerIsReadyToPlay && (updateType === "NewTurn" || updateType === "NewRound")) {
         clearPanelButtonSelection();
         drawPlayerReady();
         scrollChats("chats", true);
     }
-
-    currentGameState = gameState;
 
     drawGameState(gameState);
 
@@ -581,7 +571,7 @@ function updatePlayerPanelButtons(gameState) {
         }
     }
 
-    updatePanelButtons(currentGameState, disabledPanels);
+    updatePanelButtons(gameState, disabledPanels);
 }
 
 async function handleRandomizeTeam(player) {
@@ -649,6 +639,9 @@ function registerConnections() {
 async function finalizePlayerAsync() {
     await startSignalRAsync("player");
     var player = await putPlayerAsync();
+    drawPlayer(player);
+    drawTeam(player.teamNumber);
+
     playerIsReadyToPlay = true;
 
     setupChats("chats");
@@ -664,8 +657,6 @@ async function finalizePlayerAsync() {
     drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
     handleGameState(results[1]); // second promise is getGameStateAsync
     drawPlayerReady(results[2]); // third promise is getPlayerReadyAsync
-
-    drawPlayer(player);
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");

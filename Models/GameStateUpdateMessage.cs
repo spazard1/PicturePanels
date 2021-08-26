@@ -7,6 +7,11 @@ namespace PicturePanels.Models
 {
     public class GameStateUpdateMessage
     {
+        public GameStateUpdateMessage()
+        {
+
+        }
+
         public GameStateUpdateMessage(GameStateTableEntity gameState, string newTurnType)
         {
             Id = Guid.NewGuid().ToString();

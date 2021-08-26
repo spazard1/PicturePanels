@@ -983,7 +983,9 @@ function stopWelcomeAnimation() {
 
 var animationPromise;
 
-async function handleGameState(gameState, firstLoad) {
+async function handleGameState(gameState, updateType, firstLoad) {
+    currentGameState = gameState;
+
     loadThemeCss(gameState);
 
     animationPromise = Promise.resolve();
@@ -999,21 +1001,14 @@ async function handleGameState(gameState, firstLoad) {
         gameState.imageId = "welcome";
         drawGameState(gameState);
         resizePanelContainer();
-
         return;
     }
 
-    if (firstLoad || gameState.imageId !== currentGameState.imageId) {
+    if (firstLoad || updateType === "NewRound") {
         await resetPanelsAsync(gameState);
     }
 
     stopWelcomeAnimation();
-
-    var isNewTurn = gameState.turnType !== currentGameState.turnType ||
-        gameState.teamTurn !== currentGameState.teamTurn
-        || gameState.imageId !== currentGameState.imageId;
-
-    currentGameState = gameState;
 
     drawGameState(gameState);
     drawRoundNumber(gameState);
@@ -1025,8 +1020,8 @@ async function handleGameState(gameState, firstLoad) {
     drawTeamScoreChange(gameState);
     drawIncorrectGuesses(gameState);
     drawPanelCounts(gameState);
-    drawAllPlayerDots(gameState, isNewTurn);
-    drawMostVotesPanels(isNewTurn);
+    drawAllPlayerDots(gameState, updateType === "NewTurn");
+    drawMostVotesPanels(updateType === "NewTurn");
 }
 
 function handlePlayers(players) {

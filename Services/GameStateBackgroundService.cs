@@ -1,7 +1,12 @@
 ﻿using Azure.Messaging.ServiceBus;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using PicturePanels.Entities;
 using PicturePanels.Models;
+using PicturePanels.Services.Storage;
+using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,12 +15,16 @@ namespace PicturePanels.Services
     public class GameStateBackgroundService : BackgroundService
     {
         private readonly GameStateQueueService gameStateQueueService;
-        private readonly GameStateService gameStateService;
+        private readonly GameStateTableStorage gameStateTableStorage;
+        private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
 
-        public GameStateBackgroundService(GameStateQueueService gameStateQueueService, GameStateService gameStateService)
+        public GameStateBackgroundService(GameStateQueueService gameStateQueueService,
+            GameStateTableStorage gameStateTableStorage,
+            IHubContext<SignalRHub, ISignalRHub> hubContext)
         {
             this.gameStateQueueService = gameStateQueueService;
-            this.gameStateService = gameStateService;
+            this.gameStateTableStorage = gameStateTableStorage;
+            this.hubContext = hubContext;
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,21 +39,33 @@ namespace PicturePanels.Services
                         continue;
                     }
 
-                    var gameState = await this.gameStateService.GetGameStateAsync();
+                    var gameState = await this.gameStateTableStorage.GetAsync();
                     var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
 
-                    if (gameState.RoundNumber == gameStateUpdate.RoundNumber &&
-                        gameState.TurnType == gameStateUpdate.TurnType &&
-                        gameState.TurnNumber == gameStateUpdate.TurnNumber)
+                    gameState = await this.gameStateTableStorage.ReplaceAsync(gameState,
+                    (gs) =>
                     {
-                        await this.gameStateService.SetTurnType(gameState, gameStateUpdate.NewTurnType);
+                        if (gs.RoundNumber == gameStateUpdate.RoundNumber &&
+                            gs.TurnType == gameStateUpdate.TurnType &&
+                            gs.TurnNumber == gameStateUpdate.TurnNumber)
+                        {
+                            gs.SetTurnType(gameStateUpdate.NewTurnType);
+                            return true;
+                        }
+                        return false;
+                    });
+
+                    if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
+                    {
+                        
                     }
+                    await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
                     await gameStateQueueService.Receiver.CompleteMessageAsync(receivedMessage, stoppingToken);
                 }
-                catch
+                catch(Exception ex)
                 {
-
+                    Debug.WriteLine(ex);
                 }
             }
         }
