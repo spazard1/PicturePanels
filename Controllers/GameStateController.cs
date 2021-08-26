@@ -88,7 +88,7 @@ namespace PicturePanels.Controllers
                 if (newTurnType || newRound || newBlobContainer)
                 {
                     await this.playerTableStorage.ResetPlayersAsync();
-                    gs.NewTurn();
+                    gs.NewTurnType(gs.TurnType);
                     updateType = GameStateTableEntity.UpdateTypeNewTurn;
                 }
             });
@@ -112,7 +112,7 @@ namespace PicturePanels.Controllers
             {
                 gs.SwitchTeamTurn();
                 gs.ClearGuesses();
-                gs.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+                gs.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
             });
 
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
@@ -131,6 +131,7 @@ namespace PicturePanels.Controllers
             }
 
             gameState = await this.gameStateService.PassAsync(gameState, teamNumber);
+            await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -152,6 +153,7 @@ namespace PicturePanels.Controllers
             }
 
             gameState = await this.gameStateService.GuessAsync(gameState, teamNumber, imageEntity.Name);
+            await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -166,6 +168,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
             gameState = await this.gameStateService.GuessAsync(gameState, teamNumber, "incorrect");
+            await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -182,7 +185,7 @@ namespace PicturePanels.Controllers
 
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
-                gs.SetTurnType(GameStateTableEntity.TurnTypeGuessesMade);
+                gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
                 gs.ClearGuesses();
             });
 

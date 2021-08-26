@@ -23,6 +23,8 @@ namespace PicturePanels.Entities
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
+            this.TurnStartTime = tableEntity.TurnStartTime;
+            this.TurnEndTime = tableEntity.TurnEndTime;
             this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;
             this.TeamOneName = tableEntity.TeamOneName;
@@ -35,7 +37,6 @@ namespace PicturePanels.Entities
             this.TeamTwoIncorrectGuesses = tableEntity.TeamTwoIncorrectGuesses;
             this.TeamTwoInnerPanels = tableEntity.TeamTwoInnerPanels;
             this.TeamTwoCorrect = tableEntity.TeamTwoCorrect;
-            this.TurnTimeRemaining = tableEntity.GetTurnTimeRemaining();
 
             if (tableEntity.ShouldShowGuesses())
             {
@@ -68,6 +69,8 @@ namespace PicturePanels.Entities
         public string TurnType { get; set; }
 
         public DateTime TurnStartTime { get; internal set; }
+
+        public DateTime TurnEndTime { get; internal set; }
 
         public double TurnTimeRemaining { get; set; }
 
