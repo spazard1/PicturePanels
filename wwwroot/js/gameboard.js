@@ -1108,7 +1108,7 @@ window.onload = async function () {
 
     Promise.all(promises).then((results) => {
         currentGameState = results[0];
-        handleGameState(currentGameState, true);
+        handleGameState(currentGameState, null, true);
 
         handlePlayers(results[1]);
     });
