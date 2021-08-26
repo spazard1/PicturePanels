@@ -9,6 +9,7 @@ using PicturePanels.Filters;
 using System;
 using System.Text.RegularExpressions;
 using PicturePanels.Models;
+using PicturePanels.Services.Storage;
 
 namespace PicturePanels.Controllers
 {
@@ -29,7 +30,7 @@ namespace PicturePanels.Controllers
         [RequireAuthorization]
         public async Task<IEnumerable<ImageEntity>> GetAllAsync()
         {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
+            var gameState = await this.gameTableStorage.GetAsync();
 
             var results = (await imageTableStorage.GetAllImagesAsync(gameState.BlobContainer))
                 .Select(image => new ImageEntity(image)).ToList();
@@ -53,7 +54,7 @@ namespace PicturePanels.Controllers
         [RequireAuthorization]
         public async Task<IEnumerable<BlobContainerEntity>> GetAllBlobContainersAsync()
         {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
+            var gameState = await this.gameTableStorage.GetAsync();
 
             var results = (await imageTableStorage.GetAllBlobContainersAsync())
                 .Select(blobContainer => new BlobContainerEntity() { Name = blobContainer }).ToList();
@@ -65,7 +66,7 @@ namespace PicturePanels.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
+            var gameState = await this.gameTableStorage.GetAsync();
 
             var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
             if (imageTableEntity == null)
@@ -80,7 +81,7 @@ namespace PicturePanels.Controllers
         [HttpGet("entity/{imageId}")]
         public async Task<IActionResult> GetEntityAsync(string imageId)
         {
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
+            var gameState = await this.gameTableStorage.GetAsync();
 
             var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
 
@@ -117,7 +118,7 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "panelNumber out of range");
             }
 
-            var gameState = await this.gameTableStorage.GetGameStateAsync();
+            var gameState = await this.gameTableStorage.GetAsync();
             ImageTableEntity imageTableEntity;
             string imageUrl;
 

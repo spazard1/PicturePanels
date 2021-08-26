@@ -2,6 +2,7 @@
 using PicturePanels.Entities;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,33 +14,38 @@ namespace PicturePanels.Services
         private readonly GameStateTableStorage gameStateTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ImageTableStorage imageTableStorage;
+        private readonly TeamGuessTableStorage teamGuessTableStorage;
+        private readonly ChatService chatService;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
+        private readonly SignalRHelper signalRHelper;
 
         public GameStateService(GameStateTableStorage gameStateTableStorage, 
             PlayerTableStorage playerTableStorage,
             ImageTableStorage imageTableStorage,
-            IHubContext<SignalRHub, ISignalRHub> hubContext)
+            TeamGuessTableStorage teamGuessTableStorage,
+            ChatService chatService,
+            IHubContext<SignalRHub, ISignalRHub> hubContext,
+            SignalRHelper signalRHelper)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.imageTableStorage = imageTableStorage;
+            this.teamGuessTableStorage = teamGuessTableStorage;
+            this.chatService = chatService;
             this.hubContext = hubContext;
+            this.signalRHelper = signalRHelper;
         }
 
-        public Task<GameStateTableEntity> GetGameStateAsync()
+        public async Task PlayerReadyAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
-            return this.gameStateTableStorage.GetAsync();
-        }
-
-        public async Task SetTurnType(GameStateTableEntity gameState, string turnType)
-        {
-            gameState.SetTurnType(turnType);
-
-            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
             {
-                gs.SetTurnType(turnType);
-            });
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+                await this.OpenMostVotesPanelAsync(gameState, playerModel);
+            }
+            else if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+            {
+                await this.SubmitMostVotesTeamGuessAsync(gameState, playerModel);
+            }
         }
 
         public async Task<GameStateTableEntity> OpenPanelAsync(GameStateTableEntity gameState, string panelId)
@@ -55,6 +61,78 @@ namespace PicturePanels.Services
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
             
             return gameState;
+        }
+
+        public async Task OpenMostVotesPanelAsync(GameStateTableEntity gameState, int teamNumber)
+        {
+            var panelIdToOpen = await this.GetMostVotesPanelAsync(gameState, teamNumber);
+            await this.OpenPanelAsync(gameState, panelIdToOpen);
+            await this.chatService.SendChatAsync(teamNumber, "Voting for panels is finished! Your team opened panel " + panelIdToOpen + ".", true);
+        }
+
+        public async Task OpenMostVotesPanelAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
+        {
+            var panelIdToOpen = await this.GetMostVotesPanelAsync(gameState, playerModel.TeamNumber);
+            await this.OpenPanelAsync(gameState, panelIdToOpen);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team opened panel " + panelIdToOpen + ".", true);
+        }
+
+        private async Task<string> GetMostVotesPanelAsync(GameStateTableEntity gameState, int teamNumber)
+        {
+            var players = await this.playerTableStorage.GetActivePlayersAsync(teamNumber);
+
+            var panelVoteCounts = new Dictionary<string, int>();
+            for (int i = 1; i <= 20; i++)
+            {
+                panelVoteCounts[i.ToString()] = 0;
+            }
+
+            foreach (var p in players)
+            {
+                if (p.TeamNumber == 1 && gameState.TeamOneInnerPanels <= 0 || p.TeamNumber == 2 && gameState.TeamTwoInnerPanels <= 0)
+                {
+                    p.SelectedPanels.RemoveAll(sp => GameStateTableEntity.InnerPanels.Contains(sp));
+                }
+                foreach (var panel in p.SelectedPanels)
+                {
+                    panelVoteCounts[panel]++;
+                }
+            }
+            List<string> mostVotesPanels = new List<string>();
+            int maxVoteCount = 0;
+
+            foreach (var panelVoteCount in panelVoteCounts)
+            {
+                if (panelVoteCount.Value > maxVoteCount)
+                {
+                    maxVoteCount = panelVoteCount.Value;
+                    mostVotesPanels = new List<string> { panelVoteCount.Key };
+                }
+                else if (panelVoteCount.Value == maxVoteCount)
+                {
+                    mostVotesPanels.Add(panelVoteCount.Key);
+                }
+            }
+
+            string panelIdToOpen = string.Empty;
+            if (maxVoteCount > 0 && mostVotesPanels.Any())
+            {
+                var random = new Random();
+                panelIdToOpen = mostVotesPanels[random.Next(0, mostVotesPanels.Count)];
+            }
+            else
+            {
+                foreach (var panelId in GameStateTableEntity.AllPanels)
+                {
+                    if (!gameState.RevealedPanels.Contains(panelId))
+                    {
+                        panelIdToOpen = panelId;
+                        break;
+                    }
+                }
+            }
+
+            return panelIdToOpen;
         }
 
         public async Task<GameStateTableEntity> ForceOpenPanelAsync(GameStateTableEntity gameState, string panelId)
@@ -92,22 +170,129 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> PassAsync(GameStateTableEntity gameState, int teamNumber)
         {
-            if (teamNumber == 1)
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, async (gs) =>
             {
-                gameState.TeamOneGuess = string.Empty;
-                gameState.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                if (teamNumber == 1)
+                {
+                    gs.TeamOneGuess = string.Empty;
+                    gs.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                }
+                else
+                {
+                    gs.TeamTwoGuess = string.Empty;
+                    gs.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                }
+
+                await this.HandleBothTeamsGuessReadyAsync(gameState);
+            });
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            return gameState;
+        }
+
+        public async Task SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
+        {
+            var teamGuess = await this.GetMostVotesTeamGuessAsync(teamNumber);
+            if (teamGuess == null)
+            {
+                await this.PassAsync(gameState, teamNumber);
+                await this.chatService.SendChatAsync(teamNumber, "Guessing is finished! Your team passed.", true);
+                return;
+            }
+
+            await this.GuessAsync(gameState, teamNumber, teamGuess.Guess);
+            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), teamNumber);
+            await this.chatService.SendChatAsync(teamNumber, "Guessing is finished! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
+            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
+        }
+
+        public async Task SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
+        {
+            var teamGuess = await this.GetMostVotesTeamGuessAsync(playerModel.TeamNumber);
+            if (teamGuess == null)
+            {
+                await this.PassAsync(gameState, playerModel.TeamNumber);
+                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
+                return;
+            }
+            
+            await this.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
+            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
+            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
+        }
+
+        public async Task<TeamGuessTableEntity> GetMostVotesTeamGuessAsync(int teamNumber)
+        {
+            var players = await this.playerTableStorage.GetActivePlayersAsync(teamNumber);
+
+            var voteCounts = new Dictionary<string, int>();
+
+            foreach (var p in players)
+            {
+                if (!string.IsNullOrEmpty(p.TeamGuessVote))
+                {
+                    if (!voteCounts.TryAdd(p.TeamGuessVote, 1))
+                    {
+                        voteCounts[p.TeamGuessVote]++;
+                    }
+                }
+            }
+
+            List<string> mostVotesTeamGuesses = new List<string>();
+            int maxVoteCount = 0;
+
+            foreach (var voteCount in voteCounts)
+            {
+                if (voteCount.Value > maxVoteCount)
+                {
+                    maxVoteCount = voteCount.Value;
+                    mostVotesTeamGuesses = new List<string> { voteCount.Key };
+                }
+                else if (voteCount.Value == maxVoteCount)
+                {
+                    mostVotesTeamGuesses.Add(voteCount.Key);
+                }
+            }
+
+            if (mostVotesTeamGuesses.Contains(GameStateTableEntity.TeamGuessStatusPass))
+            {
+                return null;
+            }
+            
+            mostVotesTeamGuesses.Sort();
+            foreach (var mostVotesTeamGuess in mostVotesTeamGuesses)
+            {
+                var teamGuess = await this.teamGuessTableStorage.GetAsync(teamNumber, mostVotesTeamGuess);
+                if (teamGuess != null)
+                {
+                    return teamGuess;
+                }
+            }
+
+            var teamGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(teamNumber);
+
+            if (teamGuesses.Any())
+            {
+                return teamGuesses.First();
             }
             else
             {
-                gameState.TeamTwoGuess = string.Empty;
-                gameState.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                return null;
             }
+        }
 
-            await this.HandleBothTeamsGuessReadyAsync(gameState);
-            gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+        private async Task SendGuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel, TeamGuessTableEntity teamGuess)
+        {
+            await this.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
+            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
+        }
 
-            return gameState;
+        private async Task SendPassAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
+        {
+            await this.PassAsync(gameState, playerModel.TeamNumber);
+            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team has passed.", true);
         }
 
         public async Task HandleBothTeamsGuessReadyAsync(GameStateTableEntity gameState)

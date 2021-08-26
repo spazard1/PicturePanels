@@ -87,17 +87,17 @@ namespace PicturePanels.Services.Storage
             return tableEntity;
         }
 
-        public async Task<T> InsertOrReplaceAsync(T tableEntity, Action<T> update, bool isNewEntity)
+        public async Task<T> InsertOrReplaceAsync(T tableEntity, Func<T, bool> update, bool isNewEntity)
         {
             if (isNewEntity)
             {
                 return await this.InsertAsync(tableEntity);
             }
             
-            return await this.ReplaceAsync(tableEntity, update, null);
+            return await this.ReplaceAsync(tableEntity, update);
         }
 
-        public async Task<T> InsertOrReplaceAsync(T tableEntity, Action<T> update, Func<T, bool> preCondition)
+        public async Task<T> InsertOrReplaceAsync(T tableEntity, Func<T, bool> update)
         {
             var existingEntity = this.GetAsync(tableEntity);
             if (existingEntity == null)
@@ -105,15 +105,10 @@ namespace PicturePanels.Services.Storage
                 return await this.InsertAsync(tableEntity);
             }
 
-            return await this.ReplaceAsync(tableEntity, update, preCondition);
+            return await this.ReplaceAsync(tableEntity, update);
         }
 
-        public virtual async Task<T> ReplaceAsync(T tableEntity, Action<T> update)
-        {
-            return await this.ReplaceAsync(tableEntity, update, null);
-        }
-
-        public async Task<T> ReplaceAsync(T tableEntity, Action<T> update, Func<T, bool> preCondition)
+        public async Task<T> ReplaceAsync(T tableEntity, Func<T, bool> update)
         {
             return await Policy
                 .Handle<StorageException>(ex => ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
@@ -122,24 +117,16 @@ namespace PicturePanels.Services.Storage
                     tableEntity = await this.GetAsync(tableEntity);
                 }).ExecuteAsync(async () =>
                 {
-                    if (preCondition != null && !preCondition(tableEntity))
+                    if (update(tableEntity))
                     {
-                        return tableEntity;
+                        await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
                     }
 
-                    update(tableEntity);
-
-                    await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
                     return tableEntity;
                 });
         }
 
-        public virtual async Task<T> ReplaceAsync(T tableEntity, Func<T, Task> update)
-        {
-            return await this.ReplaceAsync(tableEntity, update, null);
-        }
-
-        public async Task<T> ReplaceAsync(T tableEntity, Func<T, Task> update, Func<T, bool> preCondition)
+        public async Task<T> ReplaceAsync(T tableEntity, Func<T, Task<bool>> update)
         {
             return await Policy
                 .Handle<StorageException>(ex => ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
@@ -148,14 +135,11 @@ namespace PicturePanels.Services.Storage
                     tableEntity = await this.GetAsync(tableEntity);
                 }).ExecuteAsync(async () =>
                 {
-                    if (preCondition != null && !preCondition(tableEntity))
+                    if (await update(tableEntity))
                     {
-                        return tableEntity;
-                    }
+                        await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
+                    };
 
-                    await update(tableEntity);
-
-                    await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
                     return tableEntity;
                 });
         }
