@@ -12,15 +12,6 @@ namespace PicturePanels.Models
 
         }
 
-        public GameStateUpdateMessage(GameStateTableEntity gameState, string newTurnType)
-        {
-            Id = Guid.NewGuid().ToString();
-            RoundNumber = gameState.RoundNumber;
-            TurnType = gameState.TurnType;
-            TurnNumber = gameState.TurnNumber;
-            NewTurnType = newTurnType;
-        }
-
         public GameStateUpdateMessage(GameStateTableEntity gameState)
         {
             Id = Guid.NewGuid().ToString();
@@ -36,7 +27,5 @@ namespace PicturePanels.Models
         public string TurnType { get; set; }
 
         public int TurnNumber { get; set; }
-
-        public string NewTurnType { get; set; }
     }
 }

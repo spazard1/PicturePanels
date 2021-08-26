@@ -19,9 +19,9 @@ namespace PicturePanels.Services
             Receiver = client.CreateReceiver("gamestateupdates");
         }
 
-        public async Task QueueGameStateChangeAsync(GameStateTableEntity gameState, string newTurnType, int delay)
+        public async Task QueueGameStateChangeAsync(GameStateTableEntity gameState, int delay)
         {
-            var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState, newTurnType)));
+            var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState)));
 
             await this.Sender.ScheduleMessageAsync(message, DateTimeOffset.UtcNow.AddSeconds(delay));
         }

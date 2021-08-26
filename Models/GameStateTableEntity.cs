@@ -93,11 +93,50 @@ namespace PicturePanels.Models
 
         public string TeamTwoGuessStatus { get; set; }
 
+        public bool IsUpdateAllowed(GameStateUpdateMessage gameStateUpdate)
+        {
+            return RoundNumber == gameStateUpdate.RoundNumber &&
+                TurnType == gameStateUpdate.TurnType &&
+                TurnNumber == gameStateUpdate.TurnNumber;
+        }
+
+        public void NewGame()
+        {
+            this.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            this.RoundNumber = 1;
+            this.TeamOneScore = 0;
+            this.TeamTwoScore = 0;
+            this.TeamOneIncorrectGuesses = 0;
+            this.TeamTwoIncorrectGuesses = 0;
+            this.TeamOneInnerPanels = 5;
+            this.TeamTwoInnerPanels = 5;
+            this.TurnNumber = 1;
+            this.RevealedPanels = new List<string>();
+            this.ClearGuesses();
+        }
+
+        public void NewRound()
+        {
+            this.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            this.SwitchTeamFirstTurn();
+            this.TeamTurn = this.TeamFirstTurn;
+            this.RoundNumber++;
+            this.TurnNumber = 1;
+            this.TurnStartTime = DateTime.UtcNow;
+            this.RevealedPanels = new List<string>();
+            this.ClearGuesses();
+        }
+
+        public void NewTurn()
+        {
+            this.TurnNumber++;
+            this.TurnStartTime = DateTime.UtcNow;
+        }
+
         public void SetTurnType(string turnType)
         {
             this.TurnType = turnType;
-            this.TurnNumber++;
-            this.TurnStartTime = DateTime.UtcNow;
+            this.NewTurn();
         }
 
         public void OpenPanel(string panelId, bool force = false)
@@ -193,6 +232,34 @@ namespace PicturePanels.Models
             if (!TeamTwoCorrect && TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
             {
                 TeamTwoIncorrectGuesses += 1;
+            }
+        }
+
+        public void Pass(int teamNumber)
+        {
+            if (teamNumber == 1)
+            {
+                this.TeamOneGuess = string.Empty;
+                this.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+            }
+            else
+            {
+                this.TeamTwoGuess = string.Empty;
+                this.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+            }
+        }
+
+        public void Guess(int teamNumber, string guess)
+        {
+            if (teamNumber == 1)
+            {
+                this.TeamOneGuess = guess;
+                this.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
+            }
+            else
+            {
+                this.TeamTwoGuess = guess;
+                this.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
             }
         }
 

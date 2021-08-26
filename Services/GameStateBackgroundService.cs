@@ -16,15 +16,15 @@ namespace PicturePanels.Services
     {
         private readonly GameStateQueueService gameStateQueueService;
         private readonly GameStateTableStorage gameStateTableStorage;
-        private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
+        private readonly GameStateService gameStateService;
 
         public GameStateBackgroundService(GameStateQueueService gameStateQueueService,
             GameStateTableStorage gameStateTableStorage,
-            IHubContext<SignalRHub, ISignalRHub> hubContext)
+            GameStateService gameStateService)
         {
             this.gameStateQueueService = gameStateQueueService;
             this.gameStateTableStorage = gameStateTableStorage;
-            this.hubContext = hubContext;
+            this.gameStateService = gameStateService;
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,24 +42,10 @@ namespace PicturePanels.Services
                     var gameState = await this.gameStateTableStorage.GetAsync();
                     var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
 
-                    gameState = await this.gameStateTableStorage.ReplaceAsync(gameState,
-                    (gs) =>
+                    if (gameState.IsUpdateAllowed(gameStateUpdate))
                     {
-                        if (gs.RoundNumber == gameStateUpdate.RoundNumber &&
-                            gs.TurnType == gameStateUpdate.TurnType &&
-                            gs.TurnNumber == gameStateUpdate.TurnNumber)
-                        {
-                            gs.SetTurnType(gameStateUpdate.NewTurnType);
-                            return true;
-                        }
-                        return false;
-                    });
-
-                    if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
-                    {
-                        
+                        await this.gameStateService.ToNextTurnTypeAsync(gameState);
                     }
-                    await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
                     await gameStateQueueService.Receiver.CompleteMessageAsync(receivedMessage, stoppingToken);
                 }
