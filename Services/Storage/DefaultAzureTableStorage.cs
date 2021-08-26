@@ -87,32 +87,22 @@ namespace PicturePanels.Services.Storage
             return tableEntity;
         }
 
-        public async Task<T> InsertOrReplaceAsync(T tableEntity, Func<T, bool> update, bool isNewEntity)
+        public async Task<T> InsertOrReplaceAsync(T tableEntity, Action<T> update, bool isNewEntity)
         {
             if (isNewEntity)
             {
-                return await this.InsertAsync(tableEntity);
-            }
-            
-            return await this.ReplaceAsync(tableEntity, update);
-        }
-
-        public async Task<T> InsertOrReplaceAsync(T tableEntity, Func<T, bool> update)
-        {
-            var existingEntity = this.GetAsync(tableEntity);
-            if (existingEntity == null)
-            {
+                update(tableEntity);
                 return await this.InsertAsync(tableEntity);
             }
 
             return await this.ReplaceAsync(tableEntity, update);
         }
 
-        public async Task<T> ReplaceAsync(T tableEntity, Func<T, bool> update)
+        public async Task<Tuple<T, bool>> ReplaceAsync(T tableEntity, Func<T, bool> update)
         {
             return await Policy
                 .Handle<StorageException>(ex => ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
-                .RetryAsync(5, onRetryAsync: async(exception, retryCount) =>
+                .RetryAsync(5, onRetryAsync: async (exception, retryCount) =>
                 {
                     tableEntity = await this.GetAsync(tableEntity);
                 }).ExecuteAsync(async () =>
@@ -120,13 +110,46 @@ namespace PicturePanels.Services.Storage
                     if (update(tableEntity))
                     {
                         await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
-                    }
+                        return Tuple.Create(tableEntity, true);
+                    };
+
+                    return Tuple.Create(tableEntity, false);
+                });
+        }
+
+        public async Task<T> ReplaceAsync(T tableEntity, Func<T, Task> update)
+        {
+            return await Policy
+                .Handle<StorageException>(ex => ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
+                .RetryAsync(5, onRetryAsync: async (exception, retryCount) =>
+                {
+                    tableEntity = await this.GetAsync(tableEntity);
+                }).ExecuteAsync(async () =>
+                {
+                    await update(tableEntity);
+                    var result = await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
 
                     return tableEntity;
                 });
         }
 
-        public async Task<T> ReplaceAsync(T tableEntity, Func<T, Task<bool>> update)
+        public async Task<T> ReplaceAsync(T tableEntity, Action<T> update)
+        {
+            return await Policy
+                .Handle<StorageException>(ex => ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
+                .RetryAsync(5, onRetryAsync: async (exception, retryCount) =>
+                {
+                    tableEntity = await this.GetAsync(tableEntity);
+                }).ExecuteAsync(async () =>
+                {
+                    update(tableEntity);
+                    var result = await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
+
+                    return tableEntity;
+                });
+        }
+
+        public async Task<Tuple<T,bool>> ReplaceAsync(T tableEntity, Func<T, Task<bool>> update)
         {
             return await Policy
                 .Handle<StorageException>(ex => ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
@@ -138,9 +161,10 @@ namespace PicturePanels.Services.Storage
                     if (await update(tableEntity))
                     {
                         await cloudTable.ExecuteAsync(TableOperation.Replace(tableEntity));
+                        return Tuple.Create(tableEntity, true);
                     };
 
-                    return tableEntity;
+                    return Tuple.Create(tableEntity, false);
                 });
         }
 

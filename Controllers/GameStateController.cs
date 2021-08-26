@@ -81,30 +81,17 @@ namespace PicturePanels.Controllers
                 if (newRound || newBlobContainer)
                 {
                     await this.teamGuessTableStorage.DeleteTeamGuessesAsync();
-
-                    gs.SwitchTeamFirstTurn();
-                    gs.TeamTurn = gameState.TeamFirstTurn;
-                    gs.RoundNumber++;
-                    gs.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
-                    gs.TurnNumber = 1;
-                    gs.RevealedPanels = new List<string>();
+                    gs.NewRound();
                     updateType = GameStateTableEntity.UpdateTypeNewRound;
                 }
 
                 if (newTurnType || newRound || newBlobContainer)
                 {
                     await this.playerTableStorage.ResetPlayersAsync();
-                    gs.ClearGuesses();
-                    gs.TurnStartTime = DateTime.UtcNow;
+                    gs.NewTurn();
                     updateType = GameStateTableEntity.UpdateTypeNewTurn;
                 }
             });
-
-            if (newRound && gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
-            {
-                await this.gameStateQueueService.QueueGameStateChangeAsync(gameState, GameStateTableEntity.TurnTypeMakeGuess,
-                    gameState.OpenPanelTime);
-            }
 
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState), updateType);
 
@@ -217,17 +204,7 @@ namespace PicturePanels.Controllers
 
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
-                gs.RoundNumber = 1;
-                gs.TeamOneScore = 0;
-                gs.TeamTwoScore = 0;
-                gs.TeamOneIncorrectGuesses = 0;
-                gs.TeamTwoIncorrectGuesses = 0;
-                gs.TeamOneInnerPanels = 5;
-                gs.TeamTwoInnerPanels = 5;
-                gs.SetTurnType(GameStateTableEntity.TurnTypeOpenPanel);
-                gs.TurnNumber = 1;
-                gs.RevealedPanels = new List<string>();
-                gs.ClearGuesses();
+                gs.NewGame();
             });
 
             await this.playerTableStorage.ResetPlayersAsync();
