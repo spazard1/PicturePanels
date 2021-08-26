@@ -108,8 +108,10 @@ namespace PicturePanels.Services
                 return;
             }
 
-            playerModel.SelectedPanels = entity.SelectedPanels;
-            playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.SelectedPanels = entity.SelectedPanels;
+            });
 
             await Clients.Group(GameBoardGroup).SelectPanels(new PlayerEntity(playerModel));
         }

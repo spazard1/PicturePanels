@@ -65,7 +65,7 @@ namespace PicturePanels.Controllers
         {
             var playerModel = await this.playerTableStorage.GetAsync(playerId);
             var notifyTeam = false;
-            var newPlayer = false;
+            bool newPlayer = false;
 
             if (playerModel == null)
             {
@@ -86,14 +86,16 @@ namespace PicturePanels.Controllers
                 notifyTeam = true;
             }
 
-            playerModel.Name = entity.Name.Replace("(", "").Replace(")", "");
-            playerModel.Name = playerModel.Name.Substring(0, Math.Min(playerModel.Name.Length, 14));
-            playerModel.TeamNumber = entity.TeamNumber;
-            playerModel.Color = entity.Color;
-            playerModel.LastPingTime = DateTime.UtcNow;
-            playerModel.ConnectionId = entity.ConnectionId;
+            playerModel = await this.playerTableStorage.InsertOrReplaceAsync(playerModel, (pm) =>
+            {
+                pm.Name = entity.Name.Replace("(", "").Replace(")", "");
+                pm.Name = playerModel.Name.Substring(0, Math.Min(playerModel.Name.Length, 14));
+                pm.TeamNumber = entity.TeamNumber;
+                pm.Color = entity.Color;
+                pm.LastPingTime = DateTime.UtcNow;
+                pm.ConnectionId = entity.ConnectionId;
+            }, newPlayer);
 
-            playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
             await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
 
             return Json(new PlayerEntity(playerModel));
@@ -107,8 +109,11 @@ namespace PicturePanels.Controllers
             {
                 return StatusCode(404);
             }
-            playerModel.LastPingTime = DateTime.UtcNow;
-            playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.LastPingTime = DateTime.UtcNow;
+            });
 
             await this.signalRHelper.PlayerPingAsync();
 
@@ -137,8 +142,10 @@ namespace PicturePanels.Controllers
 
             if (playerModel.IsReady)
             {
-                playerModel.IsReady = false;
-                await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+                playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+                {
+                    pm.IsReady = false;
+                });
                 await this.signalRHelper.ClearPlayerReadyAsync(playerModel.TeamNumber);
                 return Json(new PlayerEntity(playerModel));
             }
@@ -155,8 +162,10 @@ namespace PicturePanels.Controllers
             }
             else
             {
-                playerModel.IsReady = true;
-                await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+                playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+                {
+                    pm.IsReady = true;
+                });
                 await this.signalRHelper.PlayerReadyAsync(new PlayerEntity(playerModel));
             }
 
@@ -205,8 +214,11 @@ namespace PicturePanels.Controllers
             {
                 return StatusCode(404);
             }
-            playerModel.IsAdmin = !playerModel.IsAdmin;
-            playerModel = await this.playerTableStorage.AddOrUpdatePlayerAsync(playerModel);
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.IsAdmin = !pm.IsAdmin;
+            });
 
             return Json(new PlayerEntity(playerModel));
         }
