@@ -28,27 +28,30 @@ namespace PicturePanels.Services
 
         public Task<GameStateTableEntity> GetGameStateAsync()
         {
-            return this.gameStateTableStorage.GetGameStateAsync();
+            return this.gameStateTableStorage.GetAsync();
         }
 
         public async Task SetTurnType(GameStateTableEntity gameState, string turnType)
         {
             gameState.SetTurnType(turnType);
 
-            gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.SetTurnType(turnType);
+            });
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
         }
 
         public async Task<GameStateTableEntity> OpenPanelAsync(GameStateTableEntity gameState, string panelId)
         {
-            gameState.OpenPanel(panelId);
-            gameState.ClearGuesses();
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.OpenPanel(panelId);
+                gs.ClearGuesses();
+                gs.SetTurnType(GameStateTableEntity.TurnTypeMakeGuess);
+            });
 
             await this.playerTableStorage.ResetPlayersAsync();
-
-            gameState.SetTurnType(GameStateTableEntity.TurnTypeMakeGuess);
-
-            gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
             
             return gameState;
@@ -56,9 +59,10 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> ForceOpenPanelAsync(GameStateTableEntity gameState, string panelId)
         {
-            gameState.OpenPanel(panelId, true);
-
-            gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.OpenPanel(panelId, true);
+            });
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             return gameState;
@@ -66,21 +70,23 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> GuessAsync(GameStateTableEntity gameState, int teamNumber, string guess)
         {
-            if (teamNumber == 1)
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, async (gs) =>
             {
-                gameState.TeamOneGuess = guess;
-                gameState.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
-            }
-            else
-            {
-                gameState.TeamTwoGuess = guess;
-                gameState.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
-            }
+                if (teamNumber == 1)
+                {
+                    gs.TeamOneGuess = guess;
+                    gs.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
+                }
+                else
+                {
+                    gs.TeamTwoGuess = guess;
+                    gs.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
+                }
 
-            await this.HandleBothTeamsGuessReadyAsync(gameState);
-            gameState = await this.gameStateTableStorage.AddOrUpdateGameStateAsync(gameState);
+                await this.HandleBothTeamsGuessReadyAsync(gameState);
+            });
+            
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
-
             return gameState;
         }
 

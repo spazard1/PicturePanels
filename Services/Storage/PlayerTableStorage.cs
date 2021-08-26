@@ -12,9 +12,6 @@ namespace PicturePanels.Services.Storage
     {
         public const int PlayerTimeoutInMinutes = 5;
 
-        private CloudStorageAccount CloudStorageAccount;
-        private CloudTable playerTable;
-
         public PlayerTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider) : base(cloudStorageAccountProvider, "players")
         {
 
@@ -32,7 +29,7 @@ namespace PicturePanels.Services.Storage
                     LastPingTime = DateTime.UtcNow
                 };
 
-                await this.AddOrUpdatePlayerAsync(playerModel);
+                await this.InsertAsync(playerModel);
             }
         }
 
@@ -75,7 +72,7 @@ namespace PicturePanels.Services.Storage
             {
                 if (batchOperation.Count >= 100)
                 {
-                    await playerTable.ExecuteBatchAsync(batchOperation);
+                    await cloudTable.ExecuteBatchAsync(batchOperation);
                     batchOperation = new TableBatchOperation();
                 }
 
@@ -87,13 +84,8 @@ namespace PicturePanels.Services.Storage
 
             if (batchOperation.Count > 0)
             {
-                await playerTable.ExecuteBatchAsync(batchOperation);
+                await cloudTable.ExecuteBatchAsync(batchOperation);
             }
-        }
-
-        public async Task ExecuteBatchAsync(TableBatchOperation tableBatchOperation)
-        {
-            await playerTable.ExecuteBatchAsync(tableBatchOperation);
         }
 
         public override async Task<PlayerTableEntity> InsertAsync(PlayerTableEntity tableEntity)
