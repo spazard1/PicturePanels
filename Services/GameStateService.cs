@@ -314,8 +314,10 @@ namespace PicturePanels.Services
                 var imageEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
                 if (imageEntity.Answers == null || !imageEntity.Answers.Any())
                 {
-                    imageEntity.Answers = new List<string>() { GuessChecker.Prepare(imageEntity.Name) };
-                    imageEntity = await this.imageTableStorage.AddOrUpdateAsync(imageEntity);
+                    imageEntity = await this.imageTableStorage.ReplaceAsync(imageEntity, i =>
+                    {
+                        i.Answers = new List<string>() { GuessChecker.Prepare(imageEntity.Name) };
+                    });
                 }
 
                 gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>

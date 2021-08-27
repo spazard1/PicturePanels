@@ -17,13 +17,11 @@ using Azure.Storage;
 using Azure.Storage.Blobs.Models;
 using System.Drawing.Drawing2D;
 
-namespace PicturePanels.Services
+namespace PicturePanels.Services.Storage
 {
-    public class ImageTableStorage
+    public class ImageTableStorage : DefaultAzureTableStorage<ImageTableEntity>
     {
         private readonly IConnectionStringProvider connectionStringProvider;
-        private CloudStorageAccount cloudStorageAccount;
-        private CloudTable imageTable;
         private BlobServiceClient blobServiceClient;
 
         public const int Across = 5;
@@ -36,102 +34,37 @@ namespace PicturePanels.Services
         public const string WelcomeImageId = "soundofmusic";
 
 
-        public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider)
+        public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider) : base(cloudStorageAccountProvider, "images")
         {
             this.connectionStringProvider = connectionStringProvider;
-            cloudStorageAccount = cloudStorageAccountProvider.CloudStorageAccount;
-            var tableClient = cloudStorageAccount.CreateCloudTableClient();
-            imageTable = tableClient.GetTableReference("images");
-
             blobServiceClient = cloudStorageAccountProvider.BlobServiceClient;
         }
 
-        public async Task Startup()
+        public override async Task<ImageTableEntity> InsertAsync(ImageTableEntity image)
         {
-            await imageTable.CreateIfNotExistsAsync();
-        }
-        
-        public async Task<ImageTableEntity> GetAsync(string blobContainer, string id)
-        {
-            TableResult retrievedResult = await imageTable.ExecuteAsync(TableOperation.Retrieve<ImageTableEntity>(blobContainer, id));
-            return (ImageTableEntity) retrievedResult.Result;
-        }
-
-        public async Task<ImageTableEntity> AddOrUpdateAsync(ImageTableEntity image)
-        {
-            await imageTable.ExecuteAsync(TableOperation.InsertOrReplace(image));
-
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(image.BlobContainer);
             await blobContainerClient.CreateIfNotExistsAsync();
 
-            return image;
+            return await base.InsertAsync(image);
         }
 
-        public async Task DeleteAsync(ImageTableEntity tableEntity)
+        public override async Task DeleteAsync(ImageTableEntity tableEntity)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(tableEntity.BlobContainer);
             var blobClient = blobContainerClient.GetBlobClient(tableEntity.BlobName);
             await blobClient.DeleteIfExistsAsync();
 
-            await imageTable.ExecuteAsync(TableOperation.Delete(tableEntity));
+            await base.DeleteAsync(tableEntity);
         }
 
         public async Task SetPlayedTimeAsync(string blobContainer, string imageId)
         {
             var imageTableEntity = await this.GetAsync(blobContainer, imageId);
 
-            imageTableEntity.PlayedTime = DateTime.UtcNow;
-            await this.AddOrUpdateAsync(imageTableEntity);
-        }
-
-        public async Task<ImageEntity> GetMissingImageTableEntityAsync(GameStateTableEntity gameState)
-        {
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(gameState.BlobContainer);
-
-            await foreach (var blobItem in blobContainerClient.GetBlobsAsync())
+            await this.ReplaceAsync(imageTableEntity, (i) =>
             {
-                var found = false;
-                foreach (var imageEntity in await this.GetAllImagesAsync(gameState.BlobContainer))
-                {
-                    if (imageEntity.BlobName == blobItem.Name)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    return new ImageEntity()
-                    {
-                        BlobContainer = gameState.BlobContainer,
-                        BlobName = blobItem.Name
-                    };
-                }
-            }
-
-            return null;
-        }
-
-        public string GetUploadUrl(ImageTableEntity image)
-        {
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(image.BlobContainer);
-
-            // Create a SAS token that's valid for one hour.
-            BlobSasBuilder sasBuilderBlob = new BlobSasBuilder()
-            {
-                BlobContainerName = blobContainerClient.Name,
-                BlobName = image.BlobName,
-                Resource = "b",
-            };
-            sasBuilderBlob.StartsOn = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(15));
-            sasBuilderBlob.ExpiresOn = DateTimeOffset.UtcNow.AddHours(1);
-            sasBuilderBlob.SetPermissions(BlobSasPermissions.Write | BlobSasPermissions.Add | BlobSasPermissions.Create);
-
-            // Use the key to get the SAS token.
-            var sasToken = sasBuilderBlob.ToSasQueryParameters(new StorageSharedKeyCredential(blobServiceClient.AccountName, connectionStringProvider.AccountKey)).ToString();
-
-            return blobContainerClient.GetBlockBlobClient(image.BlobName).Uri + "?" + sasToken;
+                i.PlayedTime = DateTime.UtcNow;
+            });
         }
 
         public string GetDownloadUrl(string blobContainer, ImageTableEntity imageEntity)
@@ -164,82 +97,11 @@ namespace PicturePanels.Services
             return blobContainerClient.GetBlockBlobClient(imageId).Uri + "?" + sasToken;
         }
 
-        public async Task<ImageTableEntity> MoveToBlobContainerAsync(ImageTableEntity imageTableEntity, string targetBlobContainer)
-        {
-            var targetBlobContainerClient = blobServiceClient.GetBlobContainerClient(targetBlobContainer);
-            var targetCloudBlob = targetBlobContainerClient.GetBlobClient(imageTableEntity.BlobName);
-
-            if (!await targetCloudBlob.ExistsAsync())
-            {
-                await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(imageTableEntity)));
-            }
-
-            var sourceImageTableEntity = imageTableEntity.Clone();
-
-            imageTableEntity.BlobContainer = targetBlobContainer;
-            await this.AddOrUpdateAsync(imageTableEntity);
-
-            await this.DeleteAsync(sourceImageTableEntity);
-
-            return imageTableEntity;
-        }
-
-        public async Task<ImageTableEntity> CopyToBlobContainerAsync(ImageTableEntity imageTableEntity, string targetBlobContainer)
-        {
-            var targetBlobContainerClient = blobServiceClient.GetBlobContainerClient(targetBlobContainer);
-            var targetCloudBlob = targetBlobContainerClient.GetBlobClient(imageTableEntity.BlobName);
-
-            if (!await targetCloudBlob.ExistsAsync())
-            {
-                await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(imageTableEntity)));
-            }
-
-            imageTableEntity.BlobContainer = targetBlobContainer;
-            await this.AddOrUpdateAsync(imageTableEntity);
-
-            return imageTableEntity;
-        }
-
-        public async Task<List<ImageTableEntity>> GetAllImagesAsync()
-        {
-            var imageTableResults = new List<ImageTableEntity>();
-
-            TableQuery<ImageTableEntity> tableQuery = new TableQuery<ImageTableEntity>();
-
-            TableContinuationToken continuationToken = null;
-
-            do
-            {
-                TableQuerySegment<ImageTableEntity> tableQueryResult =
-                    await imageTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
-
-                continuationToken = tableQueryResult.ContinuationToken;
-
-                imageTableResults.AddRange(tableQueryResult.Results.Where(result => result.UploadComplete));
-            } while (continuationToken != null);
-
-            return imageTableResults;
-        }
-
         public async Task<List<ImageTableEntity>> GetAllImagesAsync(string blobContainer)
         {
-            var imageTableResults = new List<ImageTableEntity>();
-
-            TableQuery<ImageTableEntity> tableQuery = new TableQuery<ImageTableEntity>();
-
-            TableContinuationToken continuationToken = null;
-
-            do
-            {
-                TableQuerySegment<ImageTableEntity> tableQueryResult =
-                    await imageTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
-
-                continuationToken = tableQueryResult.ContinuationToken;
-
-                imageTableResults.AddRange(tableQueryResult.Results.Where(result => result.UploadComplete && result.BlobContainer == blobContainer));
-            } while (continuationToken != null);
-
-            return imageTableResults;
+            var allImages = await this.GetAllAsync();
+            allImages.RemoveAll(result => !result.UploadComplete && result.BlobContainer != blobContainer);
+            return allImages;
         }
 
         public async Task<List<string>> GetAllBlobContainersAsync()
@@ -332,8 +194,10 @@ namespace PicturePanels.Services
 
                 if (image.Width <= 400)
                 {
-                    entity.ThumbnailId = "skip - too small";
-                    await this.AddOrUpdateAsync(entity);
+                    await this.ReplaceAsync(entity, i =>
+                    {
+                        i.ThumbnailId = "skip - too small";
+                    });
                     return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
                 }
 
@@ -346,15 +210,19 @@ namespace PicturePanels.Services
                 var blobResized = blobContainerThumbnail.GetBlobClient(entity.Id);
                 await blobResized.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
 
-                entity.ThumbnailId = entity.Id;
-                await this.AddOrUpdateAsync(entity);
+                await this.ReplaceAsync(entity, i =>
+                {
+                    i.ThumbnailId = entity.Id;
+                });
 
                 return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
             }
             catch
             {
-                entity.ThumbnailId = "skip - failed";
-                await this.AddOrUpdateAsync(entity);
+                await this.ReplaceAsync(entity, i =>
+                {
+                    i.ThumbnailId = "skip - failed";
+                });
                 return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
             }
         }

@@ -198,7 +198,8 @@ namespace PicturePanels.Controllers
             {
                 imageEntity.BlobContainer = ImageTableStorage.DefaultBlobContainer;
             }
-            var imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageEntity.ToTableEntity());
+
+            var imageTableEntity = await imageTableStorage.InsertAsync(imageEntity.ToTableEntity());
             return Json(new ImageEntity(imageTableEntity));
         }
 
@@ -211,39 +212,11 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified blobcontainer/id");
             }
 
-            imageTableEntity.Name = imageEntity.Name;
-            imageTableEntity.UploadedBy = imageEntity.UploadedBy;
-            imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
-
-            return Json(new ImageEntity(imageTableEntity));
-        }
-
-        [HttpPut("move")]
-        [RequireAuthorization]
-        public async Task<IActionResult> MoveAsync([FromBody] MoveImageEntity moveImageEntity)
-        {
-            var sourceImageTableEntity = await imageTableStorage.GetAsync(moveImageEntity.SourceBlobContainer, moveImageEntity.SourceImageId);
-            if (sourceImageTableEntity == null)
+            imageTableEntity = await imageTableStorage.ReplaceAsync(imageTableEntity, i =>
             {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            var imageTableEntity = await this.imageTableStorage.MoveToBlobContainerAsync(sourceImageTableEntity, moveImageEntity.TargetBlobContainer);
-            
-            return Json(new ImageEntity(imageTableEntity));
-        }
-
-        [HttpPut("copy")]
-        [RequireAuthorization]
-        public async Task<IActionResult> CopyAsync([FromBody] MoveImageEntity moveImageEntity)
-        {
-            var sourceImageTableEntity = await imageTableStorage.GetAsync(moveImageEntity.SourceBlobContainer, moveImageEntity.SourceImageId);
-            if (sourceImageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            var imageTableEntity = await this.imageTableStorage.CopyToBlobContainerAsync(sourceImageTableEntity, moveImageEntity.TargetBlobContainer);
+                i.Name = imageEntity.Name;
+                i.UploadedBy = imageEntity.UploadedBy;
+            });
 
             return Json(new ImageEntity(imageTableEntity));
         }
@@ -297,9 +270,11 @@ namespace PicturePanels.Controllers
 
             await imageTableStorage.UploadFromStream(blobContainer, imageTableEntity.BlobName, this.Request.BodyReader.AsStream());
 
-            imageTableEntity.UploadComplete = true;
-            imageTableEntity.UploadCompleteTime = DateTime.UtcNow;
-            imageTableEntity = await imageTableStorage.AddOrUpdateAsync(imageTableEntity);
+            imageTableEntity = await imageTableStorage.ReplaceAsync(imageTableEntity, i =>
+            {
+                i.UploadComplete = true;
+                i.UploadCompleteTime = DateTime.UtcNow;
+            });
 
             var generateTask = Task.Run(() =>
             {
