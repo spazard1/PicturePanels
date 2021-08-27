@@ -34,7 +34,12 @@ input:focus {
 }
 
 .hideIfEmpty:empty {
-    display: none;
+    display: none !important;
+}
+
+.animate__hidden {
+    display: none !important;
+    visibility: hidden;
 }
 
 .hidden {

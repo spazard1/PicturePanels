@@ -97,40 +97,6 @@ body::-webkit-scrollbar {
     margin-bottom: 3px;
 }
 
-.roundNumberAnimate {
-    font-size: 10vh;
-    position: absolute;
-    top: 45vh;
-    width: 100%;
-    z-index: 1000;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.roundNumberAnimateBackground {
-    opacity: 0;
-    animation-fill-mode: forwards;
-    display: inline-block;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .7);
-    border: 3px solid rgba(50, 50, 50, 1);
-    padding: .1em .2em .1em .2em;
-}
-
-.roundNumberAnimateText {
-    opacity: 1;
-}
-
-.roundNumberCorner {
-    position: fixed;
-    white-space: nowrap;
-    right: 1.5vw;
-    top: 1.5vh;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 3vh;
-}
-
 .teamNameBox {
     box-sizing: border-box;
     flex: 6;
@@ -397,32 +363,38 @@ body::-webkit-scrollbar {
     vertical-align: middle;
 }
 
-.uploadedBy {
-    font-size: 1.4em;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: .5vh .5vw .5vh .5vw;
-    z-index: 1000;
-    overflow: hidden;
-    white-space: nowrap;
-    text-align: right;
-    background-color: rgba(0, 0, 0, .6);
-    border: 2px solid rgb(50, 50, 50);
-    margin: 0 .5vw .5vh 0;
+.uploadedByContainer {
+    font-size: 3vh;
+    bottom: 1vh;
+    right: .5vw;
 }
 
-.answerTitle {
-    font-size: 6vh;
-    position: absolute;
-    top: 18vh;
+.roundNumberAnimateContainer {
+    font-size: 10vh;
+    top: 45vh;
     width: 100%;
+}
+
+.answerTitleContainer {
+    font-size: 6vh;
+    top: 15vh;
+    width: 100%;
+}
+
+.remainingTurnTimeContainer {
+    font-size: 6vh;
+    bottom: 15vh;
+    right: 10vw;
+}
+
+.fadedDisplayBox {
+    position: absolute;
     z-index: 1000;
     white-space: nowrap;
     text-align: center;
 }
 
-.answerTitleBackground {
+.fadedDisplayBox .fadedDisplayBoxTitle {
     display: inline-block;
     height: 100%;
     background-color: rgba(0, 0, 0, .6);
@@ -430,8 +402,18 @@ body::-webkit-scrollbar {
     padding: .1em .2em .1em .2em;
 }
 
-.answerTitleText {
+.fadedDisplayBoxTitle div {
     opacity: 1;
+}
+
+.roundNumberCorner {
+    position: fixed;
+    white-space: nowrap;
+    right: 1.5vw;
+    top: 1.5vh;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 3vh;
 }
 
 .countdownDiv {
