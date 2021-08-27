@@ -45,6 +45,8 @@ namespace PicturePanels
             services.AddSingleton<PlayerTableStorage>();
             services.AddSingleton<ChatTableStorage>();
             services.AddSingleton<TeamGuessTableStorage>();
+            services.AddSingleton<GameRoundsTableStorage>();
+
             services.AddSingleton<IUserNameProvider, UserNameProvider>();
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
@@ -78,7 +80,7 @@ namespace PicturePanels
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -103,17 +105,12 @@ namespace PicturePanels
                 endpoints.MapHub<SignalRHub>("/signalRHub");
             });
 
-            var gameTableStorage = app.ApplicationServices.GetRequiredService<GameStateTableStorage>();
-            await gameTableStorage.StartupAsync();
-
-            var playerTableStorage = app.ApplicationServices.GetRequiredService<PlayerTableStorage>();
-            await playerTableStorage.StartupAsync();
-
-            var chatTableStorage = app.ApplicationServices.GetRequiredService<ChatTableStorage>();
-            await chatTableStorage.StartupAsync();
-
-            var teamGuessTableStorage = app.ApplicationServices.GetRequiredService<TeamGuessTableStorage>();
-            await teamGuessTableStorage.StartupAsync();
+            var gameStateTableStorageTask = app.ApplicationServices.GetRequiredService<GameStateTableStorage>().StartupAsync();
+            var playerTableStorageTask = app.ApplicationServices.GetRequiredService<PlayerTableStorage>().StartupAsync();
+            var chatTableStorageTask = app.ApplicationServices.GetRequiredService<ChatTableStorage>().StartupAsync();
+            var teamGuessTableStorageTask = app.ApplicationServices.GetRequiredService<TeamGuessTableStorage>().StartupAsync();
+            var imageTableStorageTask = app.ApplicationServices.GetRequiredService<ImageTableStorage>().StartupAsync();
+            var gameRoundsStorageTask = app.ApplicationServices.GetRequiredService<GameRoundsTableStorage>().StartupAsync();
         }
     }
 }
