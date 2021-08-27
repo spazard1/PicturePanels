@@ -382,7 +382,7 @@ body::-webkit-scrollbar {
 }
 
 .remainingTurnTimeContainer {
-    font-size: 6vh;
+    font-size: 4vh;
     bottom: 15vh;
     right: 10vw;
 }
@@ -402,7 +402,7 @@ body::-webkit-scrollbar {
     padding: .1em .2em .1em .2em;
 }
 
-.fadedDisplayBoxTitle div {
+.fadedDisplayBoxTitle * {
     opacity: 1;
 }
 

@@ -286,18 +286,12 @@ function drawTeamStatus(gameState) {
         document.getElementById("teamTwoDiv").classList.add("activeTeam");
     }
 
-    if (gameState.turnType === "Welcome") {
-        teamStatus.innerHTML = "";
-        stopCountdown(activeTeamCountdownCanvas);
-        stopCountdown(passiveTeamCountdownCanvas);
-        return;
-    } else if (gameState.turnType === "GuessesMade" ||
-        gameState.turnType === "EndRound") {
-        stopCountdown(activeTeamCountdownCanvas);
-        stopCountdown(passiveTeamCountdownCanvas);
-    }
-
     switch (gameState.turnType) {
+        case "Welcome":
+            teamStatus.innerHTML = "";
+            stopCountdown(activeTeamCountdownCanvas);
+            stopCountdown(passiveTeamCountdownCanvas);
+            break;
         case "OpenPanel":
             if (gameState.teamTurn === 1) {
                 teamStatus.innerHTML = "&larr; Open a Panel";
@@ -306,6 +300,8 @@ function drawTeamStatus(gameState) {
             }
 
             updateCountdown(activeTeamCountdownCanvas, gameState);
+            stopCountdown(passiveTeamCountdownCanvas);
+
             break;
         case "MakeGuess":
             teamStatus.innerHTML = "Guess or Pass";
@@ -323,9 +319,13 @@ function drawTeamStatus(gameState) {
             break;
         case "GuessesMade":
             teamStatus.innerHTML = "Who was right?";
+            stopCountdown(activeTeamCountdownCanvas);
+            stopCountdown(passiveTeamCountdownCanvas);
             break;
         case "EndRound":
             teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
+            stopCountdown(activeTeamCountdownCanvas);
+            stopCountdown(passiveTeamCountdownCanvas);
             break;
         default:
             teamStatus.innerHTML = gameState.turnType;
@@ -527,11 +527,10 @@ function updateCountdown(canvas, gameState) {
     clearInterval(canvas.countdownInterval);
 
     canvas.countdownInterval = setInterval(function () {
-        canvas.currentCountdown = new Date(gameState.turnEndTime) - new Date();
-
         if (canvas.currentCountdown <= 0) {
             clearInterval(canvas.countdownInterval);
-            canvas.countdownInterval = null;
+        } else {
+            canvas.currentCountdown = new Date(gameState.turnEndTime) - new Date();
         }
 
         drawCountdown(canvas);
@@ -560,6 +559,24 @@ function drawCountdown(canvas) {
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
+}
+
+var remainingTurnTimeInterval;
+function drawRemainingTurnTime(gameState) {
+    if ((gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect)) || gameState.turnType === "EndRound") {
+        document.getElementById("remainingTurnTimeText").innerHTML = "Next round starts in";
+
+        remainingTurnTimeInterval = setInterval(function () {
+            var remainingSeconds = Math.ceil((new Date(gameState.turnEndTime) - new Date()) / 1000);
+            if (remainingSeconds >= 0 && remainingSeconds <= 10) {
+                document.getElementById("remainingTurnTimeTextSeconds").innerHTML = Math.max(0, remainingSeconds) + "...";
+                animateCSS("#remainingTurnTime", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
+            }
+        }, 500);
+    } else {
+        clearInterval(remainingTurnTimeInterval);
+        animateCSS("#remainingTurnTime", ["bounceOutRight"], ["slow", "bounceInRight"]);
+    }
 }
 
 function setClassStyle(className, styleFunc) {
@@ -801,7 +818,7 @@ async function drawImageEntityAsync(gameState) {
 
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
         document.getElementById("uploadedByText").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
-        animateCSS("#uploadedBy", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"], 3000);
+        animateCSS("#uploadedBy", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
     } else {
         animateCSS("#uploadedBy", ["bounceOutRight"], ["slow", "bounceInRight"]);
     }
@@ -1007,6 +1024,7 @@ async function handleGameState(gameState, updateType, firstLoad) {
     drawTeamScoreChange(gameState);
     drawIncorrectGuesses(gameState);
     drawPanelCounts(gameState);
+    drawRemainingTurnTime(gameState);
     drawAllPlayerDots(gameState, updateType === "NewTurn");
     drawMostVotesPanels(updateType === "NewTurn");
 }
