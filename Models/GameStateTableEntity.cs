@@ -29,7 +29,8 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
-        public const int GuessesMadeTime = 30;
+        public const int GuessesMadeTimeIncorrect = 25;
+        public const int GuessesMadeTimeCorrect = 40;
         public const int EndRoundTime = 30;
 
         public const int MaxOpenPanels = 10;
@@ -160,7 +161,14 @@ namespace PicturePanels.Models
                     break;
                 case GameStateTableEntity.TurnTypeGuessesMade:
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
-                    this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTime);
+                    if (this.TeamOneCorrect || this.TeamTwoCorrect)
+                    {
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeCorrect);
+                    }
+                    else
+                    {
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeIncorrect);
+                    }
                     break;
                 case GameStateTableEntity.TurnTypeEndRound:
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
