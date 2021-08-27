@@ -168,7 +168,7 @@ namespace PicturePanels.Services.Storage
                 });
         }
 
-        public async Task DeleteAsync(T tableEntity)
+        public virtual async Task DeleteAsync(T tableEntity)
         {
             await cloudTable.ExecuteAsync(TableOperation.Delete(tableEntity));
         }

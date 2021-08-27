@@ -519,7 +519,9 @@ function setupCanvases() {
 var framerate = 30;
 
 function updateCountdown(canvas, gameState) {
+    canvas.currentCountdown = new Date(gameState.turnEndTime) - new Date();
     canvas.countdownMax = new Date(gameState.turnEndTime) - new Date(gameState.turnStartTime);
+
     if (canvas.countdownMax <= 0) {
         return;
     }
@@ -562,18 +564,21 @@ function drawCountdown(canvas) {
 }
 
 var remainingTurnTimeInterval;
+var remainingSeconds;
 function drawRemainingTurnTime(gameState) {
     if ((gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect)) || gameState.turnType === "EndRound") {
         document.getElementById("remainingTurnTimeText").innerHTML = "Next round starts in";
 
+        remainingSeconds = (new Date(gameState.turnEndTime) - new Date()) / 1000;
         remainingTurnTimeInterval = setInterval(function () {
-            var remainingSeconds = Math.ceil((new Date(gameState.turnEndTime) - new Date()) / 1000);
             if (remainingSeconds >= 0 && remainingSeconds <= 10) {
-                document.getElementById("remainingTurnTimeTextSeconds").innerHTML = Math.max(0, remainingSeconds) + "...";
+                document.getElementById("remainingTurnTimeTextSeconds").innerHTML = Math.max(0, Math.floor(remainingSeconds)) + "...";
                 animateCSS("#remainingTurnTime", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
             }
+            remainingSeconds = (new Date(gameState.turnEndTime) - new Date()) / 1000;
         }, 500);
     } else {
+        remainingSeconds = -1;
         clearInterval(remainingTurnTimeInterval);
         animateCSS("#remainingTurnTime", ["bounceOutRight"], ["slow", "bounceInRight"]);
     }
