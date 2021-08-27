@@ -790,34 +790,25 @@ function drawRoundNumber(gameState) {
     if (gameState.revealedPanels.length === 0 && gameState.turnType === "OpenPanel") {
         document.getElementById("roundNumberAnimateText").innerHTML = "Round " + gameState.roundNumber;
 
-        var roundNumberAnimateElement = document.getElementById("roundNumberAnimate");
         var roundNumberPromise = Promise.resolve();
-        roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backInLeft"], ["backOutRight"], 3000));
-        roundNumberPromise = roundNumberPromise.then(() => animateCSS(roundNumberAnimateElement, ["backOutRight"], ["backInLeft"], 4000));
+        roundNumberPromise = roundNumberPromise.then(() => animateCSS("#roundNumberAnimate", ["backInLeft"], ["backOutRight", "hidden"], 3000));
+        roundNumberPromise = roundNumberPromise.then(() => animateCSS("#roundNumberAnimate", ["backOutRight"], ["backInLeft"], 4000));
     }
 }
 
 async function drawImageEntityAsync(gameState) {
     var imageEntity = await getImageEntityAsync(gameState.imageId);
 
-    var uploadedByElement = document.getElementById("uploadedBy");
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
-        uploadedByElement.innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
-
-        animateCSS(uploadedByElement, ["slow", "bounceInRight"], ["bounceOutRight"], 3000);
+        document.getElementById("uploadedByText").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
+        animateCSS("#uploadedBy", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"], 3000);
     } else {
-        animateCSS(uploadedByElement, ["bounceOutRight"], ["slow", "bounceInRight"]);
+        animateCSS("#uploadedBy", ["bounceOutRight"], ["slow", "bounceInRight"]);
     }
 
     if (imageEntity && imageEntity.name) {
-        animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["slow", "bounceInDown"], ["bounceOutUp"], 2000)).then(() => {
-            var answerTitleElement = document.getElementById("answerTitle");
-            answerTitleElement.innerHTML = "";
-            var answerTitleTextElement = document.createElement("div");
-            answerTitleTextElement.appendChild(document.createTextNode(imageEntity.name));
-            answerTitleTextElement.classList.add("answerTitleText");
-            answerTitleElement.appendChild(answerTitleTextElement);
-        });
+        document.getElementById("answerTitleText").innerHTML = imageEntity.name;
+        animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["slow", "bounceInDown"], ["bounceOutUp", "hidden"], 2000));
     } else {
         animateCSS("#answerTitle", ["bounceOutUp"], ["slow", "bounceInDown"]);
     }

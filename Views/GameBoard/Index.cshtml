@@ -55,19 +55,31 @@
     Round <span id="roundNumber"></span>
 </div>
 
-<div class="roundNumberAnimate">
-    <div id="roundNumberAnimate" class="roundNumberAnimateBackground animate__animated">
-        <div id="roundNumberAnimateText" class="roundNumberAnimateText"></div>
+<div class="roundNumberAnimateContainer fadedDisplayBox">
+    <div id="roundNumberAnimate" class="fadedDisplayBoxTitle animate__hidden">
+        <div id="roundNumberAnimateText"></div>
+    </div>
+</div>
+
+<div class="remainingTurnTimeContainer fadedDisplayBox">
+    <div id="remainingTurnTime" class="fadedDisplayBoxTitle">
+        <div id="remainingTurnTimeText">Next turn starts in 30...</div>
     </div>
 </div>
 
 <div id="teamOnePlayerNames" class="teamPlayerNames"></div>
 <div id="teamTwoPlayerNames" class="teamPlayerNames"></div>
 
-<div id="uploadedBy" class="uploadedBy hideIfEmpty animate__animated animate__bounceInRight"></div>
+<div class="uploadedByContainer fadedDisplayBox">
+    <div id="uploadedBy" class="fadedDisplayBoxTitle animate__hidden">
+        <div id="uploadedByText"></div>
+    </div>
+</div>
 
-<div class="answerTitle">
-    <div id="answerTitle" class="answerTitleBackground hideIfEmpty animate__animated"></div>
+<div class="answerTitleContainer fadedDisplayBox">
+    <div id="answerTitle" class="fadedDisplayBoxTitle animate__hidden">
+        <div id="answerTitleText"></div>
+    </div>
 </div>
 
 <div id="panels" class="panels"></div>
