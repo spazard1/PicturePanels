@@ -81,7 +81,7 @@ namespace PicturePanels.Services
                 gs.NewTurnType(GameStateTableEntity.TurnTypeMakeGuess);
             });
 
-            await this.playerTableStorage.ResetPlayersAsync();
+            await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
@@ -108,7 +108,7 @@ namespace PicturePanels.Services
 
         private async Task<string> GetMostVotesPanelAsync(GameStateTableEntity gameState)
         {
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameState.TeamTurn);
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, gameState.TeamTurn);
 
             var panelVoteCounts = new Dictionary<string, int>();
             for (int i = 1; i <= 20; i++)
@@ -213,7 +213,7 @@ namespace PicturePanels.Services
 
         private async Task<GameStateTableEntity> SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
         {
-            var teamGuess = await this.GetMostVotesTeamGuessAsync(teamNumber);
+            var teamGuess = await this.GetMostVotesTeamGuessAsync(gameState, teamNumber);
             if (teamGuess == null)
             {
                 gameState = await this.PassAsync(gameState, teamNumber);
@@ -229,7 +229,7 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
-            var teamGuess = await this.GetMostVotesTeamGuessAsync(playerModel.TeamNumber);
+            var teamGuess = await this.GetMostVotesTeamGuessAsync(gameState, playerModel.TeamNumber);
             if (teamGuess == null)
             {
                 gameState = await this.PassAsync(gameState, playerModel.TeamNumber);
@@ -245,9 +245,9 @@ namespace PicturePanels.Services
             return gameState;
         }
 
-        public async Task<TeamGuessTableEntity> GetMostVotesTeamGuessAsync(int teamNumber)
+        public async Task<TeamGuessTableEntity> GetMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
         {
-            var players = await this.playerTableStorage.GetActivePlayersAsync(teamNumber);
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, teamNumber);
 
             var voteCounts = new Dictionary<string, int>();
 
@@ -329,7 +329,7 @@ namespace PicturePanels.Services
                     gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
                 });
 
-                await this.playerTableStorage.ResetPlayersAsync();
+                await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
 
                 await hubContext.Clients.All.GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
 

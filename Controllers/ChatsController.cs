@@ -22,11 +22,11 @@ namespace PicturePanels.Controllers
             this.playerTableStorage = playerTableStorage;
         }
 
-        [HttpGet("{teamNumber}")]
-        public async Task<IActionResult> GetAsync(string teamNumber)
+        [HttpGet("{gameStateId:string}/{teamNumber}")]
+        public async Task<IActionResult> GetAsync(string gameStateId, string teamNumber)
         {
             var chatModels = await this.chatTableStorage.GetAllAsync(teamNumber);
-            var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync();
+            var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync(gameStateId);
             var chatEntities = new List<ChatEntity>();
 
             foreach (var chatModel in chatModels)

@@ -12,9 +12,9 @@ namespace PicturePanels.Services.Storage
 
         }
 
-        public async Task<GameStateTableEntity> GetAsync()
+        public async Task<GameStateTableEntity> GetAsync(string id)
         {
-            return await this.GetAsync(GameStateTableEntity.GameStatePartitionKey, GameStateTableEntity.GameStateDefaultId);
+            return await this.GetAsync(GameStateTableEntity.GameStatePartitionKey, id);
         }
     }
 }

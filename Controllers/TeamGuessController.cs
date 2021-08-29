@@ -25,17 +25,17 @@ namespace PicturePanels.Controllers
             this.chatService = chatService;
         }
 
-        [HttpGet("{playerId}")]
-        public async Task<IActionResult> GetAllAsync(string playerId)
+        [HttpGet("{gameStateId:string}/{playerId}")]
+        public async Task<IActionResult> GetAllAsync(string gameStateId, string playerId)
         {
-            var player = await this.playerTableStorage.GetAsync(playerId);
+            var player = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (player == null)
             {
                 return StatusCode(404);
             }
 
             var allGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(player.TeamNumber);
-            var players = await this.playerTableStorage.GetActivePlayersAsync(player.TeamNumber);
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, player.TeamNumber);
 
             var voteCounts = new Dictionary<string, int>();
 
@@ -65,10 +65,10 @@ namespace PicturePanels.Controllers
             return Json(teamGuessEntities);
         }
 
-        [HttpPut("{playerId}/{ticks}")]
-        public async Task<IActionResult> PutVoteAsync(string playerId, string ticks)
+        [HttpPut("{gameStateId:string}/{playerId}/{ticks}")]
+        public async Task<IActionResult> PutVoteAsync(string gameStateId, string playerId, string ticks)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -90,10 +90,10 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        [HttpDelete("{playerId}/{ticks}")]
-        public async Task<IActionResult> DeleteAsync(string playerId, string ticks)
+        [HttpDelete("{gameStateId:string}/{playerId}/{ticks}")]
+        public async Task<IActionResult> DeleteAsync(string gameStateId, string playerId, string ticks)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -112,10 +112,10 @@ namespace PicturePanels.Controllers
             return StatusCode(204);
         }
 
-        [HttpPost("{playerId}")]
-        public async Task<IActionResult> PostAsync([FromBody] GuessEntity entity, string playerId)
+        [HttpPost("{gameStateId:string}/{playerId}")]
+        public async Task<IActionResult> PostAsync([FromBody] GuessEntity entity, string gameStateId, string playerId)
         {
-            var player = await this.playerTableStorage.GetAsync(playerId);
+            var player = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (player == null)
             {
                 return StatusCode(404);

@@ -41,17 +41,17 @@ namespace PicturePanels.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        [HttpGet("{gameStateId:string}")]
+        public async Task<IActionResult> GetAsync(string gameStateId)
         {
-            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync();
+            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId);
             return Json(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
         }
 
-        [HttpGet("{playerId}")]
-        public async Task<IActionResult> GetAsync(string playerId)
+        [HttpGet("{gameStateId:string}/{playerId}")]
+        public async Task<IActionResult> GetAsync(string gameStateId, string playerId)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -60,10 +60,10 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{playerId}")]
-        public async Task<IActionResult> PutAsync(string playerId, [FromBody] PlayerEntity entity)
+        [HttpPut("{gameStateId:string}/{playerId}")]
+        public async Task<IActionResult> PutAsync(string gameStateId, string playerId, [FromBody] PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             var notifyTeam = false;
             bool newPlayer = false;
 
@@ -101,10 +101,10 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{playerId}/ping")]
-        public async Task<IActionResult> PutPingAsync(string playerId)
+        [HttpPut("{gameStateId:string}/{playerId}/ping")]
+        public async Task<IActionResult> PutPingAsync(string gameStateId, string playerId)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -115,21 +115,21 @@ namespace PicturePanels.Controllers
                 pm.LastPingTime = DateTime.UtcNow;
             });
 
-            await this.signalRHelper.PlayerPingAsync();
+            await this.signalRHelper.PlayerPingAsync(gameStateId);
 
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{playerId}/ready")]
-        public async Task<IActionResult> PutReadyAsync(string playerId)
+        [HttpPut("{gameStateId:string}/{playerId}/ready")]
+        public async Task<IActionResult> PutReadyAsync(string gameStateId, string playerId)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
             if (gameState == null)
             {
                 return StatusCode(404);
             }
 
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -150,7 +150,7 @@ namespace PicturePanels.Controllers
                 return Json(new PlayerEntity(playerModel));
             }
 
-            var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber);
 
             if (players.Count == 1)
             {
@@ -172,16 +172,16 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpGet("{playerId}/ready")]
-        public async Task<IActionResult> GetReadyAsync(string playerId)
+        [HttpGet("{gameStateId:string}/{playerId}/ready")]
+        public async Task<IActionResult> GetReadyAsync(string gameStateId, string playerId)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
             if (gameState == null)
             {
                 return StatusCode(404);
             }
 
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);
@@ -193,7 +193,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var players = await this.playerTableStorage.GetActivePlayersAsync(playerModel.TeamNumber);
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber);
 
             var readyPlayer = players.FirstOrDefault(p => p.IsReady);
 
@@ -205,11 +205,11 @@ namespace PicturePanels.Controllers
             return StatusCode(404);
         }
 
-        [HttpPut("{playerId}/admin")]
+        [HttpPut("{gameStateId:string}/{playerId}/admin")]
         [RequireAuthorization]
-        public async Task<IActionResult> PutAdminAsync(string playerId)
+        public async Task<IActionResult> PutAdminAsync(string gameStateId, string playerId)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
                 return StatusCode(404);

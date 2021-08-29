@@ -14,9 +14,9 @@ namespace PicturePanels.Services.Storage
         }
 
 
-        public async Task<List<ChatTableEntity>> GetAllAsync(string teamNumber)
+        public async Task<List<ChatTableEntity>> GetAllAsync(string gameStateId, string teamNumber)
         {
-            string partitionFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, teamNumber);
+            string partitionFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, ChatTableEntity.GetPartitionKey(gameStateId, teamNumber));
             string rowFilter = TableQuery.GenerateFilterCondition(
                                "RowKey", QueryComparisons.GreaterThanOrEqual,
                                DateTime.UtcNow.Subtract(TimeSpan.FromHours(1)).Ticks.ToString());
@@ -31,10 +31,11 @@ namespace PicturePanels.Services.Storage
             return this.InsertAsync(playerModel, message, false);
         }
 
-        public Task<ChatTableEntity> InsertAsync(int teamNumber, string message, bool isSystem)
+        public Task<ChatTableEntity> InsertAsync(string gameStateId, int teamNumber, string message, bool isSystem)
         {
             return this.InsertAsync(new ChatTableEntity()
             {
+                GameStateId = gameStateId,
                 TeamNumber = teamNumber.ToString(),
                 Message = message,
                 CreatedTime = DateTime.UtcNow,
@@ -46,6 +47,7 @@ namespace PicturePanels.Services.Storage
         {
             return this.InsertAsync(new ChatTableEntity()
             {
+                GameStateId = playerModel.GameStateId,
                 TeamNumber = playerModel.TeamNumber.ToString(),
                 Message = message,
                 PlayerId = playerModel.PlayerId,

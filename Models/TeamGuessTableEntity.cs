@@ -8,19 +8,14 @@ namespace PicturePanels.Models
 {
     public class TeamGuessTableEntity : TableEntity
     {
-        public const string PartitionKeyPrefix = "team_";
-
-        private int teamNumber;
-
-        public int TeamNumber
+        public static string GetPartitionKey(string gameStateId, string teamNumber)
         {
-            get { return teamNumber; }
-            set
-            {
-                teamNumber = value;
-                this.PartitionKey = PartitionKeyPrefix + value;
-            }
+            return gameStateId + "_" + teamNumber;
         }
+
+        public string GameStateId { get; set; }
+
+        public string TeamNumber { get; set; }
 
         public DateTime CreatedTime
         {
@@ -31,5 +26,14 @@ namespace PicturePanels.Models
         public string Guess { get; set; }
 
         public string PlayerId { get; set; }
+
+        public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
+        {
+            this.PartitionKey = GameStateId + "_" + TeamNumber;
+
+            var result = base.WriteEntity(operationContext);
+
+            return result;
+        }
     }
 }

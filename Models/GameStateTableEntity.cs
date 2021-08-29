@@ -8,7 +8,6 @@ namespace PicturePanels.Models
     public class GameStateTableEntity : TableEntity
     {
         public const string GameStatePartitionKey = "GameState";
-        public const string GameStateDefaultId = "Default";
 
         public const string TurnTypeWelcome = "Welcome";
         public const string TurnTypeOpenPanel = "OpenPanel";
@@ -38,10 +37,9 @@ namespace PicturePanels.Models
         public GameStateTableEntity()
         {
             this.PartitionKey = GameStatePartitionKey;
-            this.Id = GameStateDefaultId;
         }
 
-        public string Id
+        public string GameStateId
         {
             get { return this.RowKey; }
             set { this.RowKey = value; }
