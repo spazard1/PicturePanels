@@ -26,8 +26,8 @@ namespace PicturePanels.Controllers
         private readonly GameStateService gameStateService;
         private readonly GameStateQueueService gameStateQueueService;
 
-        public GameStateController(GameStateTableStorage gameStateTableStorage, 
-            PlayerTableStorage playerTableStorage, 
+        public GameStateController(GameStateTableStorage gameStateTableStorage,
+            PlayerTableStorage playerTableStorage,
             ImageTableStorage imageTableStorage,
             TeamGuessTableStorage teamGuessTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
@@ -45,17 +45,17 @@ namespace PicturePanels.Controllers
             this.gameStateQueueService = gameStateQueueService;
         }
 
-        [HttpGet]
-        public async Task<GameStateEntity> GetAsync()
+        [HttpGet("{id:string}")]
+        public async Task<GameStateEntity> GetAsync(string id)
         {
-            return new GameStateEntity(await this.gameStateTableStorage.GetAsync());
+            return new GameStateEntity(await this.gameStateTableStorage.GetAsync(id));
         }
 
-        [HttpPatch]
+        [HttpPatch("{id:string}")]
         [RequireAuthorization]
-        public async Task<IActionResult> PatchAsync(GameStateEntity entity)
+        public async Task<IActionResult> PatchAsync(GameStateEntity entity, string id)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -87,7 +87,7 @@ namespace PicturePanels.Controllers
 
                 if (newTurnType || newRound || newBlobContainer)
                 {
-                    await this.playerTableStorage.ResetPlayersAsync();
+                    await this.playerTableStorage.ResetPlayersAsync(entity.GameStateId);
                     gs.NewTurnType(gs.TurnType);
                     updateType = GameStateTableEntity.UpdateTypeNewTurn;
                 }
@@ -98,11 +98,11 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("nextTurn")]
+        [HttpPut("{id:string}/nextTurn")]
         [RequireAuthorization]
-        public async Task<IActionResult> PutNextTurnAsync()
+        public async Task<IActionResult> PutNextTurnAsync(string id)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -120,11 +120,11 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("teamPass/{teamNumber:int}")]
+        [HttpPut("{id:string}/teamPass/{teamNumber:int}")]
         [RequireAuthorization]
-        public async Task<IActionResult> PutTeamPassAsync(int teamNumber)
+        public async Task<IActionResult> PutTeamPassAsync(string id, int teamNumber)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -136,11 +136,11 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("teamCorrect/{teamNumber:int}")]
+        [HttpPut("{id:string}/teamCorrect/{teamNumber:int}")]
         [RequireAuthorization]
-        public async Task<IActionResult> PutTeamCorrectAsync(int teamNumber)
+        public async Task<IActionResult> PutTeamCorrectAsync(string id, int teamNumber)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -158,11 +158,11 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("teamIncorrect/{teamNumber:int}")]
+        [HttpPut("{id:string}/teamIncorrect/{teamNumber:int}")]
         [RequireAuthorization]
-        public async Task<IActionResult> PutTeamIncorrectAsync(int teamNumber)
+        public async Task<IActionResult> PutTeamIncorrectAsync(string id, int teamNumber)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -173,11 +173,11 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("endRound")]
+        [HttpPut("{id:string}/endRound")]
         [RequireAuthorization]
-        public async Task<IActionResult> PutEndRoundAsync()
+        public async Task<IActionResult> PutEndRoundAsync(string id)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -195,10 +195,11 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("newGame")]
-        [RequireAuthorization]
-        public async Task<IActionResult> PutNewGameAsync()
+        /*
+        [HttpPut()]
+        public async Task<IActionResult> PutAsync()
         {
+            
             var gameState = await this.gameStateTableStorage.GetAsync();
             if (gameState == null)
             {
@@ -213,28 +214,29 @@ namespace PicturePanels.Controllers
             await this.playerTableStorage.ResetPlayersAsync();
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
-            return Json(new GameStateEntity(gameState));
+            return Json(new GameStateEntity(gameState));      
         }
+         */
 
-        [HttpPut("randomizeTeams")]
+        [HttpPut("{id:string}/randomizeTeams")]
         [RequireAuthorization]
-        public async Task<IActionResult> RandomizeTeamsAsync()
+        public async Task<IActionResult> RandomizeTeamsAsync(string id)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
             }
 
-            await this.signalRHelper.RandomizeTeamsAsync();
+            await this.signalRHelper.RandomizeTeamsAsync(id);
             return StatusCode((int)HttpStatusCode.Accepted);
         }
 
-        [HttpPost("openPanel/{panelId}")]
+        [HttpPost("{id:string}/openPanel/{panelId:string}")]
         [RequireAuthorization]
-        public async Task<IActionResult> PostOpenPanelAsync(string panelId)
+        public async Task<IActionResult> PostOpenPanelAsync(string id, string panelId)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);
@@ -244,11 +246,11 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost("openPanel/{panelId}/force")]
+        [HttpPost("{id:string}/openPanel/{panelId:string}/force")]
         [RequireAuthorization]
-        public async Task<IActionResult> PostForceOpenPanelAsync(string panelId)
+        public async Task<IActionResult> PostForceOpenPanelAsync(string id, string panelId)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync();
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
             {
                 return StatusCode(404);

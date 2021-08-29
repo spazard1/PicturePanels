@@ -18,19 +18,19 @@ namespace PicturePanels.Services.Storage
 
         }
 
-        public async Task<TeamGuessTableEntity> GetAsync(int teamNumber, string ticks)
+        public async Task<TeamGuessTableEntity> GetAsync(string gameStateId, int teamNumber, string ticks)
         {
-            return await this.GetAsync(TeamGuessTableEntity.PartitionKeyPrefix + teamNumber, ticks);
+            return await this.GetAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, teamNumber.ToString()), ticks);
         }
 
-        public async Task<List<TeamGuessTableEntity>> GetTeamGuessesAsync(int teamNumber)
+        public async Task<List<TeamGuessTableEntity>> GetTeamGuessesAsync(string gameStateId, int teamNumber)
         {
-            return await this.GetAllFromPartitionAsync(TeamGuessTableEntity.PartitionKeyPrefix + teamNumber);
+            return await this.GetAllFromPartitionAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, teamNumber.ToString()));
         }
 
-        public async Task DeleteTeamGuessesAsync()
+        public async Task DeleteTeamGuessesAsync(string gameStateId)
         {
-            await Task.WhenAll(this.DeleteFromPartitionAsync(TeamGuessTableEntity.PartitionKeyPrefix + 1), this.DeleteFromPartitionAsync(TeamGuessTableEntity.PartitionKeyPrefix + 2));
+            await Task.WhenAll(this.DeleteFromPartitionAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, "1")), this.DeleteFromPartitionAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, "2")));
         }
     }
 }

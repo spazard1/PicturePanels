@@ -1122,4 +1122,8 @@ window.onload = async function () {
 
         handlePlayers(results[1]);
     });
+
+
+    // full screen
+    // window.innerWidth == screen.width && window.innerHeight == screen.height
 }

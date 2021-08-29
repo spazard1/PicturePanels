@@ -14,7 +14,7 @@ namespace PicturePanels.Entities
 
         public GameStateEntity(GameStateTableEntity tableEntity)
         {
-            this.Id = tableEntity.Id;
+            this.GameStateId = tableEntity.GameStateId;
             this.BlobContainer = tableEntity.BlobContainer;
             this.ThemeCss = tableEntity.ThemeCss;
             this.OpenPanelTime = tableEntity.OpenPanelTime;
@@ -52,7 +52,7 @@ namespace PicturePanels.Entities
             }
         }
 
-        public string Id { get; set; }
+        public string GameStateId { get; set; }
 
         public string BlobContainer { get; set; }
 

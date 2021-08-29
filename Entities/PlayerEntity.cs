@@ -12,6 +12,7 @@ namespace PicturePanels.Entities
 
         public PlayerEntity(PlayerTableEntity tableEntity)
         {
+            this.GameStateId = tableEntity.GameStateId;
             this.PlayerId = tableEntity.PlayerId;
             this.Name = tableEntity.Name;
             this.TeamNumber = tableEntity.TeamNumber;
@@ -21,6 +22,8 @@ namespace PicturePanels.Entities
             this.Color = tableEntity.Color;
             this.IsAdmin = tableEntity.IsAdmin;
         }
+
+        public string GameStateId { get; set; }
 
         public string PlayerId { get; set; }
 
@@ -44,6 +47,7 @@ namespace PicturePanels.Entities
         {
             return new PlayerTableEntity()
             {
+                GameStateId = this.GameStateId,
                 PlayerId = this.PlayerId,
                 Name = this.Name,
                 TeamNumber = this.TeamNumber,
