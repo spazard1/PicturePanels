@@ -23,13 +23,13 @@ namespace PicturePanels.Services
             this.playerTableStorage = playerTableStorage;
         }
 
-        public async Task PlayerPingAsync()
+        public async Task PlayerPingAsync(string gameStateId)
         {
             if (LastGameboardPlayerUpdate.AddSeconds(30) < DateTime.UtcNow)
             {
                 LastGameboardPlayerUpdate = DateTime.UtcNow;
 
-                var allPlayers = await this.playerTableStorage.GetActivePlayersAsync();
+                var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId);
                 await this.hubContext.Clients.Group(SignalRHub.GameBoardGroup).Players(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
             }
         }
@@ -71,14 +71,14 @@ namespace PicturePanels.Services
             }
         }
 
-        public async Task RandomizeTeamsAsync()
+        public async Task RandomizeTeamsAsync(string gameStateId)
         {
             var tasks = new List<Task>();
             var rand = new Random();
             var teamNumber = rand.Next(1, 3);
             TableBatchOperation batchOperation = new TableBatchOperation();
 
-            foreach (var playerModelIteration in (await this.playerTableStorage.GetActivePlayersAsync()).OrderBy(playerEntity => rand.Next()))
+            foreach (var playerModelIteration in (await this.playerTableStorage.GetActivePlayersAsync(gameStateId)).OrderBy(playerEntity => rand.Next()))
             {
                 if (batchOperation.Count >= 100)
                 {
@@ -105,7 +105,7 @@ namespace PicturePanels.Services
 
             // notify of the new teams
             tasks = new List<Task>();
-            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync();
+            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId);
             foreach (var playerModel in allPlayers)
             {
                 if (!string.IsNullOrWhiteSpace(playerModel.ConnectionId))

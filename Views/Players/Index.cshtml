@@ -23,13 +23,19 @@
     </div>
 
     <div id="playerNameInputDiv" class="center hidden">
-        <input id="playerNameInput" class="playerNameInput" type="text" maxlength="14" autocomplete="off" />
+        <input id="playerNameInput" class="playerTextInput" type="text" maxlength="14" autocomplete="off" />
+
+        <input id="gameStateId" class="playerTextInput gameStateId" type="text" maxlength="4" autocomplete="off" />
     </div>
 
     <div id="colorPicker" class="center hidden"></div>
 
-    <div id="choosePlayerName" class="center hidden">
+    <div id="choosePlayerName" class="choosePlayerName center hidden">
         <input id="choosePlayerNameButton" class="center" type="button" value="Play!" onclick="choosePlayerNameButtonOnClick()" />
+    </div>
+
+    <div id="playerHelp" class="playerHelp center hidden">
+        To create a game and get a room code, go to https://www.picturepanels.net/gameboard on a screen that all players can see.<br />
     </div>
 
     <div id="chooseTeam" class="center hidden">

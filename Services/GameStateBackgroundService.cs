@@ -39,8 +39,8 @@ namespace PicturePanels.Services
                         continue;
                     }
 
-                    var gameState = await this.gameStateTableStorage.GetAsync();
                     var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
+                    var gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.Id);
 
                     if (gameState.RoundNumber <= 10 && gameState.IsUpdateAllowed(gameStateUpdate))
                     {

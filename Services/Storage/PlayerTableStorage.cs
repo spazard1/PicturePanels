@@ -17,44 +17,23 @@ namespace PicturePanels.Services.Storage
 
         }
 
-        public async Task CreatePlayerAsync()
+        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(string gameStateId)
         {
-            for (int i = 0; i < 50; i++)
-            {
-                var playerModel = new PlayerTableEntity()
-                {
-                    PlayerId = Guid.NewGuid().ToString(),
-                    Name = "Player " + i,
-                    TeamNumber = i % 2,
-                    LastPingTime = DateTime.UtcNow
-                };
-
-                await this.InsertAsync(playerModel);
-            }
-        }
-
-        public async Task<PlayerTableEntity> GetAsync(string playerId)
-        {
-            return await this.GetAsync(PlayerTableEntity.Players, playerId);
-        }
-
-        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync()
-        {
-            var players = await this.GetAllAsync();
+            var players = await this.GetAllFromPartitionAsync(gameStateId);
             players.RemoveAll(player => player.IsAdmin || player.LastPingTime < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(PlayerTimeoutInMinutes)));
             return players;
         }
 
-        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(int teamNumber)
+        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(string gameStateId, int teamNumber)
         {
-            var players = await GetActivePlayersAsync();
+            var players = await GetActivePlayersAsync(gameStateId);
             players.RemoveAll(player => player.TeamNumber != teamNumber);
             return players;
         }
 
-        public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync()
+        public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync(string gameStateId)
         {
-            var players = await this.GetAllAsync();
+            var players = await this.GetAllFromPartitionAsync(gameStateId);
             var playerDictionary = new Dictionary<string, PlayerTableEntity>();
 
             foreach (var player in players)
@@ -65,10 +44,10 @@ namespace PicturePanels.Services.Storage
             return playerDictionary;
         }
 
-        public async Task ResetPlayersAsync()
+        public async Task ResetPlayersAsync(string gameStateId)
         {
             TableBatchOperation batchOperation = new TableBatchOperation();
-            foreach (var playerModel in await this.GetActivePlayersAsync())
+            foreach (var playerModel in await this.GetActivePlayersAsync(gameStateId))
             {
                 if (batchOperation.Count >= 100)
                 {

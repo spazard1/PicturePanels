@@ -26,19 +26,6 @@ namespace PicturePanels.Controllers
             this.imageTableStorage = imageTableStorage;
         }
 
-        [HttpGet("all")]
-        [RequireAuthorization]
-        public async Task<IEnumerable<ImageEntity>> GetAllAsync()
-        {
-            var gameState = await this.gameTableStorage.GetAsync();
-
-            var results = (await imageTableStorage.GetAllImagesAsync(gameState.BlobContainer))
-                .Select(image => new ImageEntity(image)).ToList();
-            results.Sort();
-
-            return results;
-        }
-
         [HttpGet("all/{blobContainer}")]
         [RequireAuthorization]
         public async Task<IEnumerable<ImageEntity>> GetAllByBlobContainerAsync(string blobContainer)
@@ -54,8 +41,6 @@ namespace PicturePanels.Controllers
         [RequireAuthorization]
         public async Task<IEnumerable<BlobContainerEntity>> GetAllBlobContainersAsync()
         {
-            var gameState = await this.gameTableStorage.GetAsync();
-
             var results = (await imageTableStorage.GetAllBlobContainersAsync())
                 .Select(blobContainer => new BlobContainerEntity() { Name = blobContainer }).ToList();
             results.Sort();
@@ -63,6 +48,7 @@ namespace PicturePanels.Controllers
             return results;
         }
 
+        /*
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
@@ -77,6 +63,7 @@ namespace PicturePanels.Controllers
             Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(gameState.BlobContainer, imageTableEntity);
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
+        
 
         [HttpGet("entity/{imageId}")]
         public async Task<IActionResult> GetEntityAsync(string imageId)
@@ -109,6 +96,7 @@ namespace PicturePanels.Controllers
             }
             return Json(imageEntity);
         }
+        
 
         [HttpGet("panels/{imageId}/{panelNumber:int}")]
         public async Task<IActionResult> GetPanelImageAsync(string imageId, int panelNumber)
@@ -152,6 +140,7 @@ namespace PicturePanels.Controllers
             Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
+        */
 
         [HttpGet("{blobContainer}/{imageId}")]
         public async Task<IActionResult> GetAsync(string blobContainer, string imageId)

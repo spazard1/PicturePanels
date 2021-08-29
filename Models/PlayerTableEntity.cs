@@ -8,11 +8,10 @@ namespace PicturePanels.Models
 {
     public class PlayerTableEntity : TableEntity
     {
-        public const string Players = "Players";
-
-        public PlayerTableEntity()
+        public string GameStateId
         {
-            this.PartitionKey = "Players";
+            get { return this.PartitionKey; }
+            set { this.PartitionKey = value; }
         }
 
         public string PlayerId {

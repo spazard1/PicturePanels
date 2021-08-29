@@ -15,7 +15,7 @@ async function isAuthorized() {
 }
 
 async function getGameStateAsync() {
-    return await fetch("/api/gameState")
+    return await fetch("/api/gameState/")
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;

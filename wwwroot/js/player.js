@@ -25,23 +25,31 @@ function setupPlayerMenu() {
             },
         ],
         color: initialColor,
-        width: Math.ceil(Math.min(300, window.screen.width * .65))
+        width: Math.ceil(Math.min(250, window.screen.width * .60))
     });
 
     if (localStorage.getItem("playerName")) {
         document.getElementById("playerNameInput").style.color = initialColor;
+        document.getElementById("gameStateId").style.color = initialColor;
     }
 
     document.getElementById("playerNameInput").oninput = function (event) {
         event.target.style.color = window.colorPicker.color.hslString;
     }
 
+    document.getElementById("gameStateId").oninput = function (event) {
+        event.target.style.color = window.colorPicker.color.hslString;
+    }
+
     window.colorPicker.on('color:change', function (color) {
         color.value = 100;
         document.getElementById("playerNameInput").style.color = color.hslString;
+        document.getElementById("gameStateId").style.color = color.hslString;
     });
 
     setupInputDefaultText("playerNameInput", "your name", localStorage.getItem("playerName"));
+
+    setupInputDefaultText("gameStateId", "4-letter room code", localStorage.getItem("gameStateId"));
 }
 
 var playerLoaded = false;
@@ -179,9 +187,9 @@ function setupChoosePlayerName() {
 
     document.getElementById("choosePlayerNameLabel").classList.remove("hidden");
     document.getElementById("playerNameInputDiv").classList.remove("hidden");
-
     document.getElementById("colorPicker").classList.remove("hidden");
     document.getElementById("choosePlayerName").classList.remove("hidden");
+    document.getElementById("playerHelp").classList.remove("hidden");
 
     document.getElementById("playerBanner").classList.add("hidden");
     document.getElementById("chooseTeam").classList.add("hidden");
@@ -228,14 +236,20 @@ function choosePlayerNameButtonOnClick() {
 }
 
 function playerNameChosen(player) {
+    if (document.getElementById("gameStateId").value) {
+        localStorage.setItem("gameStateId", document.getElementById("gameStateId").value);
+    }
+
     localStorage.setItem("playerName", player.name);
     localStorage.setItem("playerColor", player.color);
+
     document.getElementById("playerName").innerHTML = player.name;
 
     document.getElementById("choosePlayerNameLabel").classList.add("hidden");
     document.getElementById("playerNameInputDiv").classList.add("hidden");
     document.getElementById("colorPicker").classList.add("hidden");
     document.getElementById("choosePlayerName").classList.add("hidden");
+    document.getElementById("playerHelp").classList.add("hidden");
 
     document.getElementById("playerBanner").classList.remove("hidden");
     document.getElementById("chooseTeam").classList.remove("hidden");

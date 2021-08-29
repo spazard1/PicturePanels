@@ -14,20 +14,20 @@ body {
 }
 
 #choosePlayerNameLabel {
-    flex: 1;
+    flex: 0 0 auto;
+    margin-top: 3rem;
     width: 100%;
     vertical-align: middle;
     text-align: center;
-    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    font-size: .75em;
+    font-size: .8em;
 }
 
 #playerNameInputDiv {
     width: 75%;
-    flex: .5;
+    flex: 0 0 auto;
     vertical-align: middle;
     text-align: center;
     align-items: center;
@@ -42,25 +42,38 @@ body {
 }
 
 #colorPicker {
-    flex: 2;
+    flex: 0 0 auto;
+    margin-top: 3rem;
 }
 
-#choosePlayerName {
+.choosePlayerName {
+    flex: 0 0 auto;
+    margin-top: 3rem;
+}
+
+.playerHelp {
+    margin-top: 3rem;
+    color: white;
     flex: 1;
 }
 
 #choosePlayerNameButton {
-    font-size: 2em;
+    font-size: 1.5em;
     width: 100%;
     flex: 1;
 }
 
-.playerNameInput {
+.playerTextInput {
+    margin-top: 3vh;
     caret-color: white;
     background-color: black;
     font-size: 1em;
-    width: 100%;
+    width: 60%;
     text-align: center;
+}
+
+.gameStateId {
+    width: 60%
 }
 
 .playerBannerFlex {

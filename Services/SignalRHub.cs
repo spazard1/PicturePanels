@@ -63,7 +63,7 @@ namespace PicturePanels.Services
             message = message.Substring(0, Math.Min(message.Length, 150));
             message = MultipleNewLines.Replace(message, "\n");
 
-            var playerModel = await this.playerTableStorage.GetAsync(entity.PlayerId);
+            var playerModel = await this.playerTableStorage.GetAsync(entity.GameStateId, entity.PlayerId);
             if (playerModel == null)
             {
                 return;
@@ -81,7 +81,7 @@ namespace PicturePanels.Services
 
         public async Task Typing(PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(entity.PlayerId);
+            var playerModel = await this.playerTableStorage.GetAsync(entity.GameStateId, entity.PlayerId);
             if (playerModel == null)
             {
                 return;
@@ -97,7 +97,7 @@ namespace PicturePanels.Services
 
         public async Task SelectPanels(PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(entity.PlayerId);
+            var playerModel = await this.playerTableStorage.GetAsync(entity.GameStateId, entity.PlayerId);
             if (playerModel == null)
             {
                 return;
