@@ -22,6 +22,12 @@ namespace PicturePanels.Services.Storage
             await cloudTable.CreateIfNotExistsAsync();
         }
 
+        public async Task<T> GetAsync(string partitionKey, int rowKey)
+        {
+            TableResult retrievedResult = await cloudTable.ExecuteAsync(TableOperation.Retrieve<T>(partitionKey, rowKey.ToString()));
+            return (T)retrievedResult.Result;
+        }
+
         public async Task<T> GetAsync(string partitionKey, string rowKey)
         {
             TableResult retrievedResult = await cloudTable.ExecuteAsync(TableOperation.Retrieve<T>(partitionKey, rowKey));

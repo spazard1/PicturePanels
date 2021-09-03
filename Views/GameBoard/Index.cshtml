@@ -19,10 +19,27 @@
 
     <div id="welcomeCreateGame" class="welcomeText welcomeCreateGame hidden">
         <div id="welcomeCreateGameMessage" class="welcomeCreateGameMessage"></div>
-        <div id="welcomeGameStateOptions" class="hidden">
+        <div id="welcomeGameStateOptions" class="welcomeGameStateOptions hidden">
             <input id="welcomeGameStateTeamOneName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/><br />
             VS. <br />
-            <input id="welcomeGameStateTeamTwoName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/>
+            <input id="welcomeGameStateTeamTwoName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/><br /><br />
+
+            Panel Voting Time:
+            <select id = "welcomeOpenPanelTime" >
+                <option value="15">15 seconds</option>
+                <option value="30" selected="selected">30 seconds</option>
+                <option value="45">45 seconds</option>
+                <option value="60">60 seconds</option>
+            </select>
+
+            Guessing Time:
+            <select id = "welcomeGuessTime" >
+                <option value="60">1 minute</option>
+                <option value="90">1.5 minute</option>
+                <option value="120" selected="selected">2 minutes</option>
+                <option value="150">2.5 minutes</option>
+                <option value="180">3 minutes</option>
+            </select>
         </div>
     </div>
 

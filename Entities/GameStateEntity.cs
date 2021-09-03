@@ -1,6 +1,7 @@
 ﻿using PicturePanels.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace PicturePanels.Entities
@@ -15,7 +16,6 @@ namespace PicturePanels.Entities
         public GameStateEntity(GameStateTableEntity tableEntity)
         {
             this.GameStateId = tableEntity.GameStateId;
-            this.BlobContainer = tableEntity.BlobContainer;
             this.ThemeCss = tableEntity.ThemeCss;
             this.OpenPanelTime = tableEntity.OpenPanelTime;
             this.GuessTime = tableEntity.GuessTime;
@@ -25,7 +25,6 @@ namespace PicturePanels.Entities
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.TurnStartTime = tableEntity.TurnStartTime;
             this.TurnEndTime = tableEntity.TurnEndTime;
-            this.ImageId = tableEntity.ImageId;
             this.RevealedPanels = tableEntity.RevealedPanels;
             this.TeamOneName = tableEntity.TeamOneName;
             this.TeamOneScore = tableEntity.TeamOneScore;
@@ -54,12 +53,12 @@ namespace PicturePanels.Entities
 
         public string GameStateId { get; set; }
 
-        public string BlobContainer { get; set; }
-
         public string ThemeCss { get; set; }
 
+        [Range(15, 60)]
         public int? OpenPanelTime { get; set; }
 
+        [Range(60, 180)]
         public int? GuessTime { get; set; }
 
         public int? RoundNumber { get; set; }
@@ -76,10 +75,9 @@ namespace PicturePanels.Entities
 
         public int? TeamFirstTurn { get; set; }
 
-        public string ImageId { get; set; }
-
         public IList<string> RevealedPanels { get; set; }
 
+        [MaxLength(30)]
         public string TeamOneName { get; set; }
 
         public int? TeamOneScore { get; set; }
@@ -94,6 +92,7 @@ namespace PicturePanels.Entities
 
         public string TeamOneGuessStatus { get; set; }
 
+        [MaxLength(30)]
         public string TeamTwoName { get; set; }
 
         public int? TeamTwoScore { get; set; }
@@ -110,7 +109,6 @@ namespace PicturePanels.Entities
 
         public void CopyProperties(GameStateTableEntity currentModel)
         {
-            currentModel.BlobContainer = this.BlobContainer ?? currentModel.BlobContainer;
             currentModel.ThemeCss = this.ThemeCss ?? currentModel.ThemeCss;
             currentModel.OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime;
             currentModel.GuessTime = this.GuessTime ?? currentModel.GuessTime;
@@ -118,7 +116,6 @@ namespace PicturePanels.Entities
             currentModel.TeamTurn = this.TeamTurn ?? currentModel.TeamTurn;
             currentModel.TurnType = this.TurnType ?? currentModel.TurnType;
             currentModel.TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn;
-            currentModel.ImageId = this.ImageId ?? currentModel.ImageId;
             currentModel.TeamOneName = this.TeamOneName ?? currentModel.TeamOneName;
             currentModel.TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore;
             currentModel.TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses;
