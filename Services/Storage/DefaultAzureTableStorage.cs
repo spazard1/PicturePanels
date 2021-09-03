@@ -34,9 +34,8 @@ namespace PicturePanels.Services.Storage
             return (T)retrievedResult.Result;
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public async IAsyncEnumerable<T> GetAllAsync()
         {
-            var results = new List<T>();
             TableQuery<T> tableQuery = new TableQuery<T>();
             TableContinuationToken continuationToken = null;
 
@@ -44,30 +43,31 @@ namespace PicturePanels.Services.Storage
             {
                 TableQuerySegment<T> tableQueryResult = await cloudTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
                 continuationToken = tableQueryResult.ContinuationToken;
-                results.AddRange(tableQueryResult.Results);
-            } while (continuationToken != null);
 
-            return results;
+                foreach (var result in tableQueryResult.Results)
+                {
+                    yield return result;
+                }
+            } while (continuationToken != null);
         }
 
-        public async Task<List<T>> GetAllAsync(TableQuery<T> tableQuery)
+        public async IAsyncEnumerable<T> GetAllAsync(TableQuery<T> tableQuery)
         {
-            var results = new List<T>();
             TableContinuationToken continuationToken = null;
 
             do
             {
                 TableQuerySegment<T> tableQueryResult = await cloudTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
                 continuationToken = tableQueryResult.ContinuationToken;
-                results.AddRange(tableQueryResult.Results);
+                foreach (var result in tableQueryResult.Results)
+                {
+                    yield return result;
+                }
             } while (continuationToken != null);
-
-            return results;
         }
 
-        public async Task<List<T>> GetAllFromPartitionAsync(string partitionKey)
+        public async IAsyncEnumerable<T> GetAllFromPartitionAsync(string partitionKey)
         {
-            var results = new List<T>();
             var tableQueryFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
             TableContinuationToken continuationToken = null;
 
@@ -75,10 +75,11 @@ namespace PicturePanels.Services.Storage
             {
                 TableQuerySegment<T> tableQueryResult = await cloudTable.ExecuteQuerySegmentedAsync(new TableQuery<T>().Where(tableQueryFilter), continuationToken);
                 continuationToken = tableQueryResult.ContinuationToken;
-                results.AddRange(tableQueryResult.Results);
+                foreach (var result in tableQueryResult.Results)
+                {
+                    yield return result;
+                }
             } while (continuationToken != null);
-
-            return results;
         }
 
         public virtual async Task<T> InsertAsync(T tableEntity)
@@ -176,7 +177,7 @@ namespace PicturePanels.Services.Storage
         public async Task DeleteFromPartitionAsync(string partitionKey)
         {
             TableBatchOperation batchOperation = new TableBatchOperation();
-            foreach (var tableEntity in await this.GetAllFromPartitionAsync(partitionKey))
+            await foreach (var tableEntity in this.GetAllFromPartitionAsync(partitionKey))
             {
                 if (batchOperation.Count >= 100)
                 {

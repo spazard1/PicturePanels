@@ -30,10 +30,8 @@ namespace PicturePanels.Controllers
         [RequireAuthorization]
         public async Task<IEnumerable<ImageEntity>> GetAllByBlobContainerAsync(string blobContainer)
         {
-            var results = (await imageTableStorage.GetAllImagesAsync(blobContainer))
-                .Select(image => new ImageEntity(image)).ToList();
+            var results = await imageTableStorage.GetAllImagesAsync(blobContainer).Select(image => new ImageEntity(image)).ToListAsync();
             results.Sort();
-
             return results;
         }
 

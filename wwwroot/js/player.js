@@ -79,7 +79,7 @@ async function putPlayerPingAsync() {
         return;
     }
     
-    await fetch("api/players/" + localStorage.getItem("playerId") + "/ping",
+    await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/ping",
         {
             method: "PUT",
             headers: {
@@ -107,7 +107,7 @@ async function postTeamGuessAsync(guess) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("playerId"),
+    await fetch("api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"),
         {
             method: "POST",
             headers: {
@@ -120,7 +120,7 @@ async function postTeamGuessAsync(guess) {
 }
 
 async function getTeamGuessesAsync() {
-    return await fetch("/api/teamGuess/" + localStorage.getItem("playerId"))
+    return await fetch("/api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"))
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -132,14 +132,14 @@ async function putPlayerReadyAsync() {
         return;
     }
 
-    await fetch("api/players/" + localStorage.getItem("playerId") + "/ready",
+    await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/ready",
     {
         method: "PUT"
     });
 }
 
 async function getPlayerReadyAsync() {
-    return await fetch("api/players/" + localStorage.getItem("playerId") + "/ready").then(response => {
+    return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/ready").then(response => {
         if (response.ok) {
             return response.json();
         }
@@ -154,7 +154,7 @@ async function deleteTeamGuessAsync(ticks) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("playerId") + "/" + ticks,
+    await fetch("api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/" + ticks,
         {
             method: "DELETE"
         });
@@ -165,7 +165,7 @@ async function putTeamGuessVoteAsync(ticks) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("playerId") + "/" + ticks,
+    await fetch("api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/" + ticks,
         {
             method: "PUT"
         }).then((response) => {
@@ -311,7 +311,7 @@ function setupTeamSelectionButtons() {
 async function smallestTeamChosenAsync() {
     document.getElementById("chooseSmallestTeam").innerHTML = "Loading...";
 
-    await fetch("api/players")
+    await fetch("api/players" + localStorage.getItem("gameStateId") + "/")
         .then(response => response.json())
         .then(responseJson => {
             var teamOneCount = 0;

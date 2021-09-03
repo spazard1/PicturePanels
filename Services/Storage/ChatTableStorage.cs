@@ -14,7 +14,7 @@ namespace PicturePanels.Services.Storage
         }
 
 
-        public async Task<List<ChatTableEntity>> GetAllAsync(string gameStateId, string teamNumber)
+        public IAsyncEnumerable<ChatTableEntity> GetAllAsync(string gameStateId, string teamNumber)
         {
             string partitionFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, ChatTableEntity.GetPartitionKey(gameStateId, teamNumber));
             string rowFilter = TableQuery.GenerateFilterCondition(
@@ -23,7 +23,7 @@ namespace PicturePanels.Services.Storage
             string finalFilter = TableQuery.CombineFilters(partitionFilter, TableOperators.And, rowFilter);
             var tableQuery = new TableQuery<ChatTableEntity>().Where(finalFilter).Take(1000);
 
-            return await this.GetAllAsync(tableQuery);
+            return this.GetAllAsync(tableQuery);
         }
 
         public Task<ChatTableEntity> InsertAsync(PlayerTableEntity playerModel, string message)

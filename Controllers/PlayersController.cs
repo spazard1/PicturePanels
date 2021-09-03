@@ -44,8 +44,8 @@ namespace PicturePanels.Controllers
         [HttpGet("{gameStateId:string}")]
         public async Task<IActionResult> GetAsync(string gameStateId)
         {
-            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId);
-            return Json(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
+            var allPlayers = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+            return Json(await allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToListAsync());
         }
 
         [HttpGet("{gameStateId:string}/{playerId}")]
@@ -150,7 +150,7 @@ namespace PicturePanels.Controllers
                 return Json(new PlayerEntity(playerModel));
             }
 
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber);
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber).ToListAsync();
 
             if (players.Count == 1)
             {
@@ -193,9 +193,9 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber);
+            var players = this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber);
 
-            var readyPlayer = players.FirstOrDefault(p => p.IsReady);
+            var readyPlayer = await players.FirstOrDefaultAsync(p => p.IsReady);
 
             if (readyPlayer != null)
             {
