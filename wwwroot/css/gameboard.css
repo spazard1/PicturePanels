@@ -27,10 +27,10 @@ body::-webkit-scrollbar {
     padding: .5em;
     font-size: 3vh;
     position: absolute;
-    width: 40vw;
-    height: 50vh;
-    top: 25vh;
-    left: 30vw;
+    width: 50vw;
+    height: 60vh;
+    top: 20vh;
+    left: 25vw;
     background-color: black;
     z-index: 900;
     text-align: center;
@@ -68,6 +68,10 @@ body::-webkit-scrollbar {
 
 .welcomeGameStateInput {
     text-align: center;
+}
+
+.welcomeGameStateOptions {
+    margin-top: 2vh;
 }
 
 .teamInfos {

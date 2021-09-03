@@ -33,6 +33,9 @@ namespace PicturePanels.Models
         public const int GuessesMadeTimeCorrect = 40;
         public const int EndRoundTime = 30;
 
+        public const int DefaultOpenPanelTime = 30;
+        public const int DefaultMakeGuessTime = 120;
+
         public const int MaxOpenPanels = 10;
 
         public GameStateTableEntity()
@@ -45,8 +48,6 @@ namespace PicturePanels.Models
             get { return this.RowKey; }
             set { this.RowKey = value; }
         }
-
-        public string BlobContainer { get; set; }
 
         public string ThemeCss { get; set; }
 
@@ -67,8 +68,6 @@ namespace PicturePanels.Models
         public DateTime TurnEndTime { get; set; }
 
         public int TeamFirstTurn { get; set; }
-
-        public string ImageId { get; set; }
 
         public IList<string> RevealedPanels { get; set; }
 

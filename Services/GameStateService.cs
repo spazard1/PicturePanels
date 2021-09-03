@@ -15,6 +15,7 @@ namespace PicturePanels.Services
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ImageTableStorage imageTableStorage;
         private readonly TeamGuessTableStorage teamGuessTableStorage;
+        private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly ChatService chatService;
         private readonly GameStateQueueService gameStateQueueService;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
@@ -24,6 +25,7 @@ namespace PicturePanels.Services
             PlayerTableStorage playerTableStorage,
             ImageTableStorage imageTableStorage,
             TeamGuessTableStorage teamGuessTableStorage,
+            GameRoundTableStorage gameRoundTableStorage,
             ChatService chatService,
             GameStateQueueService gameStateQueueService,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
@@ -33,6 +35,7 @@ namespace PicturePanels.Services
             this.playerTableStorage = playerTableStorage;
             this.imageTableStorage = imageTableStorage;
             this.teamGuessTableStorage = teamGuessTableStorage;
+            this.gameRoundTableStorage = gameRoundTableStorage;
             this.chatService = chatService;
             this.gameStateQueueService = gameStateQueueService;
             this.hubContext = hubContext;
@@ -307,19 +310,21 @@ namespace PicturePanels.Services
                 !string.IsNullOrWhiteSpace(gameState.TeamOneGuessStatus) &&
                 !string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))
             {
-                var imageEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
-                if (imageEntity.Answers == null || !imageEntity.Answers.Any())
+                var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+                var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
+
+                if (imageTableEntity.Answers == null || !imageTableEntity.Answers.Any())
                 {
-                    imageEntity = await this.imageTableStorage.ReplaceAsync(imageEntity, i =>
+                    imageTableEntity = await this.imageTableStorage.ReplaceAsync(imageTableEntity, i =>
                     {
-                        i.Answers = new List<string>() { GuessChecker.Prepare(imageEntity.Name) };
+                        i.Answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
                     });
                 }
 
                 gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
                 {
-                    gs.TeamOneCorrect = gameState.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsCorrect(gs.TeamOneGuess, imageEntity.Answers);
-                    gs.TeamTwoCorrect = gameState.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsCorrect(gs.TeamTwoGuess, imageEntity.Answers);
+                    gs.TeamOneCorrect = gameState.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsCorrect(gs.TeamOneGuess, imageTableEntity.Answers);
+                    gs.TeamTwoCorrect = gameState.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsCorrect(gs.TeamTwoGuess, imageTableEntity.Answers);
 
                     gs.IncrementScores();
                     gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);

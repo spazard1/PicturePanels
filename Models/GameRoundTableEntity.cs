@@ -2,13 +2,12 @@
 
 namespace PicturePanels.Models
 {
-    public class GameRoundsTableEntity : TableEntity
+    public class GameRoundTableEntity : TableEntity
     {
-        public const string GameStateDefaultId = "Default";
-
-        public GameRoundsTableEntity()
+        public string GameStateId
         {
-            this.PartitionKey = GameStateDefaultId;
+            get { return this.PartitionKey; }
+            set { this.PartitionKey = value; }
         }
 
         public int RoundNumber
@@ -16,6 +15,8 @@ namespace PicturePanels.Models
             get { return int.Parse(this.RowKey); }
             set { this.RowKey = value.ToString(); }
         }
+
+        public string BlobContainer { get; set; }
 
         public string ImageId { get; set; }
 

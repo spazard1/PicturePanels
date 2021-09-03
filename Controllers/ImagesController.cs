@@ -17,12 +17,17 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class ImagesController : Controller
     {
-        private readonly GameStateTableStorage gameTableStorage;
+        private readonly GameStateTableStorage gameStateTableStorage;
+        private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly ImageTableStorage imageTableStorage;
 
-        public ImagesController(GameStateTableStorage gameTableStorage, ImageTableStorage imageTableStorage)
+        public ImagesController(
+            GameStateTableStorage gameStateTableStorage,
+            GameRoundTableStorage gameRoundTableStorage,
+            ImageTableStorage imageTableStorage)
         {
-            this.gameTableStorage = gameTableStorage;
+            this.gameStateTableStorage = gameStateTableStorage;
+            this.gameRoundTableStorage = gameRoundTableStorage;
             this.imageTableStorage = imageTableStorage;
         }
 
@@ -46,32 +51,25 @@ namespace PicturePanels.Controllers
             return results;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        [HttpGet("entity/{gameStateId}")]
+        public async Task<IActionResult> GetEntityAsync(string gameStateId)
         {
-            var gameState = await this.gameTableStorage.GetAsync("gameStateId");
-
-            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
-            if (imageTableEntity == null)
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
             {
-                return StatusCode((int) HttpStatusCode.NotFound, "Did not find image with specified id");
+                return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(gameState.BlobContainer, imageTableEntity);
-            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
-        }
-        
+            var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameStateId, gameState.RoundNumber);
+            if (gameRoundEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
 
-        [HttpGet("entity/{imageId}")]
-        public async Task<IActionResult> GetEntityAsync(string imageId)
-        {
-            var gameState = await this.gameTableStorage.GetAsync("gameStateId");
-
-            var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
-
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
             if (imageTableEntity == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+                return StatusCode((int)HttpStatusCode.NotFound);
             }
 
             ImageEntity imageEntity;
@@ -95,8 +93,8 @@ namespace PicturePanels.Controllers
         }
         
 
-        [HttpGet("panels/{imageId}/{panelNumber:int}")]
-        public async Task<IActionResult> GetPanelImageAsync(string imageId, int panelNumber)
+        [HttpGet("panels/{gameStateId}/{panelNumber:int}")]
+        public async Task<IActionResult> GetPanelImageAsync(string gameStateId, int panelNumber)
         {
             if (panelNumber < 0 || panelNumber > ImageTableStorage.Across * ImageTableStorage.Down)
             {
@@ -106,20 +104,29 @@ namespace PicturePanels.Controllers
             ImageTableEntity imageTableEntity;
             string imageUrl;
 
-            if (imageId == ImageTableStorage.WelcomeBlobContainer)
+            if (gameStateId == ImageTableStorage.WelcomeBlobContainer)
             {
                 imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, ImageTableStorage.WelcomeImageId);
                 imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
             }
             else
             {
-                var gameState = await this.gameTableStorage.GetAsync("gameStateId");
+                var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+                if (gameState == null)
+                {
+                    return StatusCode((int)HttpStatusCode.NotFound);
+                }
 
-                imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
+                var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameStateId, gameState.RoundNumber);
+                if (gameRoundEntity == null)
+                {
+                    return StatusCode((int)HttpStatusCode.NotFound);
+                }
 
+                imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
                 if (imageTableEntity == null)
                 {
-                    return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+                    return StatusCode((int)HttpStatusCode.NotFound);
                 }
                 
                 if (panelNumber == 0 ||
@@ -130,7 +137,7 @@ namespace PicturePanels.Controllers
                 }
                 else
                 {
-                    imageUrl = "/api/images/panels/" + imageId + "/0";
+                    imageUrl = "/api/images/panels/" + gameStateId + "/0";
                 }
             }
 
