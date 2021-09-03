@@ -72,15 +72,14 @@ namespace PicturePanels.Controllers
 
                 if (newBlobContainer)
                 {
-                    var results = (await imageTableStorage.GetAllImagesAsync(gs.BlobContainer))
-                        .Select(image => new ImageEntity(image)).ToList();
+                    var results = await imageTableStorage.GetAllImagesAsync(gs.BlobContainer).Select(image => new ImageEntity(image)).ToListAsync();
                     results.Sort();
                     gs.ImageId = results.FirstOrDefault()?.Id;
                 }
 
                 if (newRound || newBlobContainer)
                 {
-                    await this.teamGuessTableStorage.DeleteTeamGuessesAsync();
+                    await this.teamGuessTableStorage.DeleteTeamGuessesAsync(gameState.GameStateId);
                     gs.NewRound();
                     updateType = GameStateTableEntity.UpdateTypeNewRound;
                 }

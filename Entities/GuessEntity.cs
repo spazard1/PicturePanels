@@ -27,7 +27,8 @@ namespace PicturePanels.Entities
         {
             return new TeamGuessTableEntity()
             {
-                TeamNumber = playerTableEntity.TeamNumber,
+                GameStateId = playerTableEntity.GameStateId,
+                TeamNumber = playerTableEntity.TeamNumber.ToString(),
                 PlayerId = playerTableEntity.PlayerId,
                 CreatedTime = DateTime.UtcNow,
                 Guess = this.Guess

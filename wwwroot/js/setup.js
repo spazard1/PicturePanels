@@ -1,5 +1,5 @@
 ﻿function patchGameState() {
-    fetch("/api/gameState", {
+    fetch("/api/gameState" + localStorage.getItem("gameStateId") + "/", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -19,7 +19,7 @@
 }
 
 async function putAdmin() {
-    return await fetch("api/players/" + localStorage.getItem("playerId") + "/admin", {
+    return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/"  + localStorage.getItem("playerId") + "/admin", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -57,7 +57,7 @@ function randomizeTeams() {
         return;
     }
 
-    fetch("/api/gameState/randomizeTeams", {
+    fetch("/api/gameState/" + localStorage.getItem("gameStateId") + "/randomizeTeams", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

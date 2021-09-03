@@ -25,11 +25,10 @@ namespace PicturePanels.Controllers
         [HttpGet("{gameStateId:string}/{teamNumber}")]
         public async Task<IActionResult> GetAsync(string gameStateId, string teamNumber)
         {
-            var chatModels = await this.chatTableStorage.GetAllAsync(teamNumber);
             var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync(gameStateId);
             var chatEntities = new List<ChatEntity>();
 
-            foreach (var chatModel in chatModels)
+            await foreach (var chatModel in this.chatTableStorage.GetAllAsync(gameStateId, teamNumber))
             {
                 if (chatModel.PlayerId != null && players.TryGetValue(chatModel.PlayerId, out PlayerTableEntity playerModel))
                 {

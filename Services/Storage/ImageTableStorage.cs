@@ -97,10 +97,10 @@ namespace PicturePanels.Services.Storage
             return blobContainerClient.GetBlockBlobClient(imageId).Uri + "?" + sasToken;
         }
 
-        public async Task<List<ImageTableEntity>> GetAllImagesAsync(string blobContainer)
+        public IAsyncEnumerable<ImageTableEntity> GetAllImagesAsync(string blobContainer)
         {
-            var allImages = await this.GetAllAsync();
-            allImages.RemoveAll(result => !result.UploadComplete && result.BlobContainer != blobContainer);
+            var allImages = this.GetAllAsync();
+            allImages = allImages.Where(result => result.UploadComplete && result.BlobContainer == blobContainer);
             return allImages;
         }
 

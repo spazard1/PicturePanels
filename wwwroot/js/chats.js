@@ -5,7 +5,7 @@ async function getChats(teamNumber) {
     if (!teamNumber) {
         teamNumber = localStorage.getItem("teamNumber");
     }
-    return await fetch("api/chats/" + teamNumber)
+    return await fetch("api/chats/" + localStorage.getItem("gameStateId") + "/" + teamNumber)
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;

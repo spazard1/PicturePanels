@@ -29,7 +29,7 @@ namespace PicturePanels.Services
             {
                 LastGameboardPlayerUpdate = DateTime.UtcNow;
 
-                var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+                var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId).ToListAsync();
                 await this.hubContext.Clients.Group(SignalRHub.GameBoardGroup).Players(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
             }
         }
@@ -78,7 +78,7 @@ namespace PicturePanels.Services
             var teamNumber = rand.Next(1, 3);
             TableBatchOperation batchOperation = new TableBatchOperation();
 
-            foreach (var playerModelIteration in (await this.playerTableStorage.GetActivePlayersAsync(gameStateId)).OrderBy(playerEntity => rand.Next()))
+            await foreach (var playerModelIteration in this.playerTableStorage.GetActivePlayersAsync(gameStateId).OrderBy(playerEntity => rand.Next()))
             {
                 if (batchOperation.Count >= 100)
                 {
@@ -105,15 +105,15 @@ namespace PicturePanels.Services
 
             // notify of the new teams
             tasks = new List<Task>();
-            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId);
-            foreach (var playerModel in allPlayers)
+            var allPlayers = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+            await foreach (var playerModel in allPlayers)
             {
                 if (!string.IsNullOrWhiteSpace(playerModel.ConnectionId))
                 {
                     tasks.Add(hubContext.Clients.Client(playerModel.ConnectionId).RandomizeTeam(new PlayerEntity(playerModel)));
                 }
             }
-            tasks.Add(hubContext.Clients.Group(SignalRHub.GameBoardGroup).Players(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList()));
+            tasks.Add(hubContext.Clients.Group(SignalRHub.GameBoardGroup).Players(await allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToListAsync()));
 
             await Task.WhenAll(tasks);
         }

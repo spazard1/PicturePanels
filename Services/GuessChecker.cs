@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PicturePanels.Services
 {
@@ -34,6 +35,25 @@ namespace PicturePanels.Services
                     Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
                 #endif
                 if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static async Task<bool> IsCorrectAsync(string guess, IAsyncEnumerable<string> answers)
+        {
+            guess = Prepare(guess);
+            Levenshtein lev = new Levenshtein(guess);
+
+            await foreach (var answer in answers.Select(a => Prepare(a)))
+            {
+                double totalLength = answer.Length + guess.Length;
+#if DEBUG
+                Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+#endif
+                if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio)
+                {
                     return true;
                 }
             }
