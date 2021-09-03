@@ -31,6 +31,26 @@ async function postGameStateAsync() {
         });
 }
 
+async function putGameStateAsync() {
+    return await fetch("/api/gameState/" + localStorage.getItem("gameStateId"), {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            TeamOneName: document.getElementById("welcomeGameStateTeamOneName").value,
+            TeamTwoName: document.getElementById("welcomeGameStateTeamTwoName").value,
+            OpenPanelTime: parseInt(document.getElementById("welcomeOpenPanelTime").value),
+            GuessTime: parseInt(document.getElementById("welcomeGuessTime").value)
+        })
+    }).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        return;
+    });
+}
+
 function createPanels() {
     var panelNumber = 1;
 
@@ -1190,7 +1210,7 @@ window.onload = async function () {
         document.getElementById("startGameButtons").classList.add("hidden");
     }
 
-    document.getElementById("startGameButton").onclick = () => {
+    document.getElementById("startGameButton").onclick = async () => {
         var welcomeErrorMessageElement = document.getElementById("welcomeErrorMessage");
 
         if (document.getElementById("welcomeCreateGame").classList.contains("hidden")) {
@@ -1203,7 +1223,13 @@ window.onload = async function () {
                 }
             });
         } else {
-            
+            await putGameStateAsync().then(result => {
+                if (!result) {
+                    welcomeErrorMessageElement.classList.remove("hidden");
+                    welcomeErrorMessageElement.innerHTML = "Could not start the game. Refresh the page and try again.";
+                }
+            });
+            await tryStartGameAsync();
         }
     }
 
