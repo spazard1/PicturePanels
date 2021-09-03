@@ -31,9 +31,10 @@ namespace PicturePanels.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                ServiceBusReceivedMessage receivedMessage = null;
                 try
                 {
-                    ServiceBusReceivedMessage receivedMessage = await gameStateQueueService.Receiver.ReceiveMessageAsync(cancellationToken: stoppingToken);
+                    receivedMessage = await gameStateQueueService.Receiver.ReceiveMessageAsync(cancellationToken: stoppingToken);
                     if (receivedMessage == null)
                     {
                         continue;
@@ -52,6 +53,13 @@ namespace PicturePanels.Services
                 catch(Exception ex)
                 {
                     Debug.WriteLine(ex);
+                }
+                finally
+                {
+                    if (receivedMessage != null)
+                    {
+                        await gameStateQueueService.Receiver.CompleteMessageAsync(receivedMessage, stoppingToken);
+                    }
                 }
             }
         }

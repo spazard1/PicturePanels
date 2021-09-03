@@ -10,18 +10,43 @@
     <script src="~/js/gameboard.js" asp-append-version="true"></script>
 }
 
-<div id="welcome" class="welcomeContainer hidden">
-    <div class="welcomeText">
-        Welcome to the Picture Panels Game!<br />
+<div id="welcome" class="welcomeContainer">
+    <div id="welcomeStartGame" class="welcomeText welcomeStartGame">
+        Welcome to Picture Panels!<br />
+        <div id="welcomeCreateGameButton" class="center defaultButton welcomeButton">Create New Game</div>
+        <div id="welcomeJoinGameButton" class="center defaultButton welcomeButton">Join Existing Game</div>
+    </div>
+
+    <div id="welcomeCreateGame" class="welcomeText welcomeCreateGame hidden">
+        <div id="welcomeCreateGameMessage" class="welcomeCreateGameMessage"></div>
+        <div id="welcomeGameStateOptions" class="hidden">
+            <input id="welcomeGameStateTeamOneName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/><br />
+            VS. <br />
+            <input id="welcomeGameStateTeamTwoName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/>
+        </div>
+    </div>
+
+    <div id="welcomeExistingGame" class="welcomeText welcomeExistingGame hidden">
+        What is the game id? <br />
+        <input id="gameStateIdInput" class="gameStateIdInput" maxlength="4"/>
+    </div>
+    <div id="startGameButtons" class="hidden">
+        <div id="startGameButton" class="center defaultButton welcomeButton">Start Game</div>
+        <div id="welcomeCancelButton" class="center defaultButton welcomeButton">Cancel</div>
+    </div>
+    <div id="welcomeErrorMessage" class="welcomeErrorMessage hidden"></div>
+
+    <div id="welcomeJoinGame" class="welcomeText hidden">
+        Welcome to Picture Panels!<br />
+        <div id="welcomeGameStateId" class="welcomeGameStateId"></div>
         To join in, scan this QR code, or go to <a href="https://picturepanels.net/" target="_blank">https://picturepanels.net/</a>.
     </div>
-    <div class="welcomeQRCode">
+    <div id="welcomeQRCode" class="welcomeQRCode hidden">
         <img src="~/img/qrcode.svg" alt="Welcome QR Code" asp-append-version="true">
     </div>
 </div>
 
-<div class="teamInfos">
-    
+<div class="teamInfos">  
     <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
         <div id="teamOneCountdownDiv" class="teamInfo countdownDiv">
             <canvas id="teamOneCountdownCanvas" class="countdownCanvas"></canvas>

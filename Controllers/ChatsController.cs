@@ -22,7 +22,7 @@ namespace PicturePanels.Controllers
             this.playerTableStorage = playerTableStorage;
         }
 
-        [HttpGet("{gameStateId:string}/{teamNumber}")]
+        [HttpGet("{gameStateId}/{teamNumber}")]
         public async Task<IActionResult> GetAsync(string gameStateId, string teamNumber)
         {
             var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync(gameStateId);
