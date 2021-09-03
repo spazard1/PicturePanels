@@ -34,12 +34,9 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var allGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(player.TeamNumber);
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, player.TeamNumber);
-
             var voteCounts = new Dictionary<string, int>();
 
-            foreach (var p in players)
+            await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameStateId, player.TeamNumber))
             {
                 if (!string.IsNullOrEmpty(p.TeamGuessVote)) {
                     if (!voteCounts.TryAdd(p.TeamGuessVote, 1)) {
@@ -50,7 +47,7 @@ namespace PicturePanels.Controllers
 
             var teamGuessEntities = new List<TeamGuessEntity>();
 
-            foreach (var guessModel in allGuesses)
+            await foreach (var guessModel in this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber))
             {
                 if (voteCounts.TryGetValue(guessModel.CreatedTime.Ticks.ToString(), out int voteCount))
                 {
@@ -99,7 +96,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var teamGuess = await this.teamGuessTableStorage.GetAsync(playerModel.TeamNumber, ticks);
+            var teamGuess = await this.teamGuessTableStorage.GetAsync(gameStateId, playerModel.TeamNumber, ticks);
             if (teamGuess == null)
             {
                 return StatusCode(404);
@@ -121,7 +118,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var allGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(player.TeamNumber);
+            var allGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber).ToListAsync();
 
             if (allGuesses.Count >= TeamGuessTableStorage.MaxGuesses)
             {

@@ -5,6 +5,7 @@ using Microsoft.OData;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PicturePanels.Services.Storage
 {
@@ -17,26 +18,26 @@ namespace PicturePanels.Services.Storage
 
         }
 
-        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(string gameStateId)
+        public IAsyncEnumerable<PlayerTableEntity> GetActivePlayersAsync(string gameStateId)
         {
-            var players = await this.GetAllFromPartitionAsync(gameStateId);
-            players.RemoveAll(player => player.IsAdmin || player.LastPingTime < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(PlayerTimeoutInMinutes)));
+            var players = this.GetAllFromPartitionAsync(gameStateId);
+            players = players.Where(player => !player.IsAdmin && player.LastPingTime > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(PlayerTimeoutInMinutes)));
             return players;
         }
 
-        public async Task<List<PlayerTableEntity>> GetActivePlayersAsync(string gameStateId, int teamNumber)
+        public IAsyncEnumerable<PlayerTableEntity> GetActivePlayersAsync(string gameStateId, int teamNumber)
         {
-            var players = await GetActivePlayersAsync(gameStateId);
-            players.RemoveAll(player => player.TeamNumber != teamNumber);
+            var players = GetActivePlayersAsync(gameStateId);
+            players = players.Where(player => player.TeamNumber == teamNumber);
             return players;
         }
 
         public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync(string gameStateId)
         {
-            var players = await this.GetAllFromPartitionAsync(gameStateId);
+            var players = GetActivePlayersAsync(gameStateId);
             var playerDictionary = new Dictionary<string, PlayerTableEntity>();
 
-            foreach (var player in players)
+            await foreach (var player in players)
             {
                 playerDictionary[player.PlayerId] = player;
             }
@@ -47,7 +48,7 @@ namespace PicturePanels.Services.Storage
         public async Task ResetPlayersAsync(string gameStateId)
         {
             TableBatchOperation batchOperation = new TableBatchOperation();
-            foreach (var playerModel in await this.GetActivePlayersAsync(gameStateId))
+            await foreach (var playerModel in this.GetActivePlayersAsync(gameStateId))
             {
                 if (batchOperation.Count >= 100)
                 {

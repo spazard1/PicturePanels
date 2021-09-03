@@ -93,7 +93,7 @@ namespace PicturePanels.Services
         {
             var panelIdToOpen = await this.GetMostVotesPanelAsync(gameState);
             gameState = await this.OpenPanelAsync(gameState, panelIdToOpen);
-            await this.chatService.SendChatAsync(gameState.TeamTurn, "Voting for panels is finished! Your team opened panel " + panelIdToOpen + ".", true);
+            await this.chatService.SendChatAsync(gameState.GameStateId, gameState.TeamTurn, "Voting for panels is finished! Your team opened panel " + panelIdToOpen + ".", true);
 
             return gameState;
         }
@@ -108,15 +108,13 @@ namespace PicturePanels.Services
 
         private async Task<string> GetMostVotesPanelAsync(GameStateTableEntity gameState)
         {
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, gameState.TeamTurn);
-
             var panelVoteCounts = new Dictionary<string, int>();
             for (int i = 1; i <= 20; i++)
             {
                 panelVoteCounts[i.ToString()] = 0;
             }
 
-            foreach (var p in players)
+            await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, gameState.TeamTurn))
             {
                 if (p.TeamNumber == 1 && gameState.TeamOneInnerPanels <= 0 || p.TeamNumber == 2 && gameState.TeamTwoInnerPanels <= 0)
                 {
@@ -247,11 +245,9 @@ namespace PicturePanels.Services
 
         public async Task<TeamGuessTableEntity> GetMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
         {
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, teamNumber);
-
             var voteCounts = new Dictionary<string, int>();
 
-            foreach (var p in players)
+            await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, teamNumber))
             {
                 if (!string.IsNullOrEmpty(p.TeamGuessVote))
                 {
@@ -286,14 +282,14 @@ namespace PicturePanels.Services
             mostVotesTeamGuesses.Sort();
             foreach (var mostVotesTeamGuess in mostVotesTeamGuesses)
             {
-                var teamGuess = await this.teamGuessTableStorage.GetAsync(teamNumber, mostVotesTeamGuess);
+                var teamGuess = await this.teamGuessTableStorage.GetAsync(gameState.GameStateId, teamNumber, mostVotesTeamGuess);
                 if (teamGuess != null)
                 {
                     return teamGuess;
                 }
             }
 
-            var teamGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(teamNumber);
+            var teamGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(gameState.GameStateId, teamNumber).ToListAsync();
 
             if (teamGuesses.Any())
             {

@@ -15,7 +15,7 @@ async function isAuthorized() {
 }
 
 async function getGameStateAsync() {
-    return await fetch("/api/gameState/")
+    return await fetch("/api/gameState/" + localStorage.getItem("gameStateId") + "/")
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -23,7 +23,7 @@ async function getGameStateAsync() {
 }
 
 async function getPlayer() {
-    return await fetch("api/players/" + localStorage.getItem("playerId"))
+    return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"))
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -31,7 +31,7 @@ async function getPlayer() {
 }
 
 async function getPlayersAsync() {
-    return await fetch("/api/players")
+    return await fetch("/api/players" + localStorage.getItem("gameStateId") + "/")
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -39,7 +39,7 @@ async function getPlayersAsync() {
 }
 
 async function putPlayerAsync() {
-    return await fetch("api/players/" + localStorage.getItem("playerId"),
+    return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"),
         {
             method: "PUT",
             headers: {

@@ -23,9 +23,9 @@ namespace PicturePanels.Services.Storage
             return await this.GetAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, teamNumber.ToString()), ticks);
         }
 
-        public async Task<List<TeamGuessTableEntity>> GetTeamGuessesAsync(string gameStateId, int teamNumber)
+        public IAsyncEnumerable<TeamGuessTableEntity> GetTeamGuessesAsync(string gameStateId, int teamNumber)
         {
-            return await this.GetAllFromPartitionAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, teamNumber.ToString()));
+            return this.GetAllFromPartitionAsync(TeamGuessTableEntity.GetPartitionKey(gameStateId, teamNumber.ToString()));
         }
 
         public async Task DeleteTeamGuessesAsync(string gameStateId)
