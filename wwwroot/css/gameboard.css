@@ -27,14 +27,19 @@ body::-webkit-scrollbar {
     padding: .5em;
     font-size: 3vh;
     position: absolute;
-    width: 30vw;
-    height: 40vh;
-    top: 30vh;
-    left: 35vw;
+    width: 40vw;
+    height: 50vh;
+    top: 25vh;
+    left: 30vw;
     background-color: black;
     z-index: 900;
     text-align: center;
     opacity: .9;
+}
+
+.welcomeStartGame {
+    font-size: 4vh;
+    margin-top: 2vh;
 }
 
 .welcomeText a {
@@ -45,6 +50,24 @@ body::-webkit-scrollbar {
 .welcomeQRCode img {
     margin-top: 2vh;
     height: 25vh;
+}
+
+.welcomeButton {
+    margin-top: 3vh;
+    font-size: 3vh;
+    width: 15vw;
+}
+
+.gameStateIdInput {
+    margin-top: 3vh;
+    font-size: 4vh;
+    width: 10vw;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.welcomeGameStateInput {
+    text-align: center;
 }
 
 .teamInfos {

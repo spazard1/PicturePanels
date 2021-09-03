@@ -51,11 +51,6 @@ input:focus {
     opacity: 0;
 }
 
-.center {
-    text-align: center;
-    margin: auto;
-}
-
 .defaultButton {
     height: fit-content;
     cursor: pointer;
@@ -72,6 +67,11 @@ input:focus {
 
 .defaultButton:active {
     border: 3px inset rgb(118, 118, 118);
+}
+
+.center {
+    text-align: center;
+    margin: auto;
 }
 
 #signalRConnectionState {

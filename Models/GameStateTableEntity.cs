@@ -9,6 +9,7 @@ namespace PicturePanels.Models
     {
         public const string GameStatePartitionKey = "GameState";
 
+        public const string TurnTypeSetup = "Setup";
         public const string TurnTypeWelcome = "Welcome";
         public const string TurnTypeOpenPanel = "OpenPanel";
         public const string TurnTypeMakeGuess = "MakeGuess";

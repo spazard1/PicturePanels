@@ -25,7 +25,7 @@ namespace PicturePanels.Controllers
             this.chatService = chatService;
         }
 
-        [HttpGet("{gameStateId:string}/{playerId}")]
+        [HttpGet("{gameStateId}/{playerId}")]
         public async Task<IActionResult> GetAllAsync(string gameStateId, string playerId)
         {
             var player = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -62,7 +62,7 @@ namespace PicturePanels.Controllers
             return Json(teamGuessEntities);
         }
 
-        [HttpPut("{gameStateId:string}/{playerId}/{ticks}")]
+        [HttpPut("{gameStateId}/{playerId}/{ticks}")]
         public async Task<IActionResult> PutVoteAsync(string gameStateId, string playerId, string ticks)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -87,7 +87,7 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        [HttpDelete("{gameStateId:string}/{playerId}/{ticks}")]
+        [HttpDelete("{gameStateId}/{playerId}/{ticks}")]
         public async Task<IActionResult> DeleteAsync(string gameStateId, string playerId, string ticks)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -109,7 +109,7 @@ namespace PicturePanels.Controllers
             return StatusCode(204);
         }
 
-        [HttpPost("{gameStateId:string}/{playerId}")]
+        [HttpPost("{gameStateId}/{playerId}")]
         public async Task<IActionResult> PostAsync([FromBody] GuessEntity entity, string gameStateId, string playerId)
         {
             var player = await this.playerTableStorage.GetAsync(gameStateId, playerId);

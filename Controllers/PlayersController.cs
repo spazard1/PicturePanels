@@ -41,14 +41,14 @@ namespace PicturePanels.Controllers
             return View();
         }
 
-        [HttpGet("{gameStateId:string}")]
+        [HttpGet("{gameStateId}")]
         public async Task<IActionResult> GetAsync(string gameStateId)
         {
             var allPlayers = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
             return Json(await allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToListAsync());
         }
 
-        [HttpGet("{gameStateId:string}/{playerId}")]
+        [HttpGet("{gameStateId}/{playerId}")]
         public async Task<IActionResult> GetAsync(string gameStateId, string playerId)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -60,7 +60,7 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{gameStateId:string}/{playerId}")]
+        [HttpPut("{gameStateId}/{playerId}")]
         public async Task<IActionResult> PutAsync(string gameStateId, string playerId, [FromBody] PlayerEntity entity)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -101,7 +101,7 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{gameStateId:string}/{playerId}/ping")]
+        [HttpPut("{gameStateId}/{playerId}/ping")]
         public async Task<IActionResult> PutPingAsync(string gameStateId, string playerId)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -120,7 +120,7 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{gameStateId:string}/{playerId}/ready")]
+        [HttpPut("{gameStateId}/{playerId}/ready")]
         public async Task<IActionResult> PutReadyAsync(string gameStateId, string playerId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
@@ -172,7 +172,7 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpGet("{gameStateId:string}/{playerId}/ready")]
+        [HttpGet("{gameStateId}/{playerId}/ready")]
         public async Task<IActionResult> GetReadyAsync(string gameStateId, string playerId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
@@ -205,7 +205,7 @@ namespace PicturePanels.Controllers
             return StatusCode(404);
         }
 
-        [HttpPut("{gameStateId:string}/{playerId}/admin")]
+        [HttpPut("{gameStateId}/{playerId}/admin")]
         [RequireAuthorization]
         public async Task<IActionResult> PutAdminAsync(string gameStateId, string playerId)
         {

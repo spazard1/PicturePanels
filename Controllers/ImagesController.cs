@@ -46,11 +46,10 @@ namespace PicturePanels.Controllers
             return results;
         }
 
-        /*
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var gameState = await this.gameTableStorage.GetAsync();
+            var gameState = await this.gameTableStorage.GetAsync("gameStateId");
 
             var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, gameState.ImageId);
             if (imageTableEntity == null)
@@ -66,7 +65,7 @@ namespace PicturePanels.Controllers
         [HttpGet("entity/{imageId}")]
         public async Task<IActionResult> GetEntityAsync(string imageId)
         {
-            var gameState = await this.gameTableStorage.GetAsync();
+            var gameState = await this.gameTableStorage.GetAsync("gameStateId");
 
             var imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
 
@@ -104,7 +103,6 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "panelNumber out of range");
             }
 
-            var gameState = await this.gameTableStorage.GetAsync();
             ImageTableEntity imageTableEntity;
             string imageUrl;
 
@@ -115,6 +113,8 @@ namespace PicturePanels.Controllers
             }
             else
             {
+                var gameState = await this.gameTableStorage.GetAsync("gameStateId");
+
                 imageTableEntity = await this.imageTableStorage.GetAsync(gameState.BlobContainer, imageId);
 
                 if (imageTableEntity == null)
@@ -138,7 +138,6 @@ namespace PicturePanels.Controllers
             Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
-        */
 
         [HttpGet("{blobContainer}/{imageId}")]
         public async Task<IActionResult> GetAsync(string blobContainer, string imageId)

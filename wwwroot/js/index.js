@@ -14,11 +14,17 @@ async function isAuthorized() {
         });
 }
 
-async function getGameStateAsync() {
-    return await fetch("/api/gameState/" + localStorage.getItem("gameStateId") + "/")
-        .then(response => response.json())
-        .then(responseJson => {
-            return responseJson;
+async function getGameStateAsync(gameStateId) {
+    if (!gameStateId) {
+        gameStateId = localStorage.getItem("gameStateId");
+    }
+
+    return await fetch("/api/gameState/" + gameStateId + "/")
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return;
         });
 }
 

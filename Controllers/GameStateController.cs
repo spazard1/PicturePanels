@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PicturePanels.Services.Storage;
+using System.Text;
 
 namespace PicturePanels.Controllers
 {
@@ -24,7 +25,6 @@ namespace PicturePanels.Controllers
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
         private readonly GameStateService gameStateService;
-        private readonly GameStateQueueService gameStateQueueService;
 
         public GameStateController(GameStateTableStorage gameStateTableStorage,
             PlayerTableStorage playerTableStorage,
@@ -32,8 +32,7 @@ namespace PicturePanels.Controllers
             TeamGuessTableStorage teamGuessTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
             SignalRHelper signalRHelper,
-            GameStateService gameStateService,
-            GameStateQueueService gameStateQueueService)
+            GameStateService gameStateService)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.playerTableStorage = playerTableStorage;
@@ -42,16 +41,89 @@ namespace PicturePanels.Controllers
             this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
             this.gameStateService = gameStateService;
-            this.gameStateQueueService = gameStateQueueService;
         }
 
-        [HttpGet("{id:string}")]
-        public async Task<GameStateEntity> GetAsync(string id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(string id)
         {
-            return new GameStateEntity(await this.gameStateTableStorage.GetAsync(id));
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPatch("{id:string}")]
+        private char[] gameStateIdLetters = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Z' };
+
+        private string GenerateGameStateId()
+        {
+            var rand = new Random();
+            var stringBuilder = new StringBuilder();
+
+            for (var i = 0; i < 4; i++)
+            {
+                stringBuilder.Append(gameStateIdLetters[rand.Next(0, gameStateIdLetters.Length)]);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostAsync()
+        {
+            string gameStateId = string.Empty;
+            GameStateTableEntity gameState;
+            for (int i = 0; i < 10; i++)
+            {
+                gameStateId = GenerateGameStateId();
+                gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+                if (gameState == null)
+                {
+                    break;
+                }
+                gameStateId = string.Empty;
+            }
+            if (string.IsNullOrWhiteSpace(gameStateId))
+            {
+                return StatusCode((int)HttpStatusCode.Conflict);
+            }
+
+            gameState = new GameStateTableEntity()
+            {
+                GameStateId = gameStateId,
+                TurnType = GameStateTableEntity.TurnTypeSetup,
+                TurnStartTime = DateTime.UtcNow,
+                TurnEndTime = DateTime.UtcNow.Add(TimeSpan.FromHours(1)),
+                TeamOneName = "Team 1",
+                TeamTwoName = "Team 2"
+            };
+
+            gameState = await this.gameStateTableStorage.InsertAsync(gameState);
+
+            return Json(new GameStateEntity(gameState));
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(GameStateEntity entity, string id)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.NewGame();
+            });
+
+            return Json(new GameStateEntity(gameState));
+        }
+
+        [HttpPatch("{id}")]
         [RequireAuthorization]
         public async Task<IActionResult> PatchAsync(GameStateEntity entity, string id)
         {
@@ -97,7 +169,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id:string}/nextTurn")]
+        [HttpPut("{id}/nextTurn")]
         [RequireAuthorization]
         public async Task<IActionResult> PutNextTurnAsync(string id)
         {
@@ -119,7 +191,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id:string}/teamPass/{teamNumber:int}")]
+        [HttpPut("{id}/teamPass/{teamNumber:int}")]
         [RequireAuthorization]
         public async Task<IActionResult> PutTeamPassAsync(string id, int teamNumber)
         {
@@ -135,7 +207,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id:string}/teamCorrect/{teamNumber:int}")]
+        [HttpPut("{id}/teamCorrect/{teamNumber:int}")]
         [RequireAuthorization]
         public async Task<IActionResult> PutTeamCorrectAsync(string id, int teamNumber)
         {
@@ -157,7 +229,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id:string}/teamIncorrect/{teamNumber:int}")]
+        [HttpPut("{id}/teamIncorrect/{teamNumber:int}")]
         [RequireAuthorization]
         public async Task<IActionResult> PutTeamIncorrectAsync(string id, int teamNumber)
         {
@@ -172,7 +244,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id:string}/endRound")]
+        [HttpPut("{id}/endRound")]
         [RequireAuthorization]
         public async Task<IActionResult> PutEndRoundAsync(string id)
         {
@@ -194,30 +266,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        /*
-        [HttpPut()]
-        public async Task<IActionResult> PutAsync()
-        {
-            
-            var gameState = await this.gameStateTableStorage.GetAsync();
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-
-            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
-            {
-                gs.NewGame();
-            });
-
-            await this.playerTableStorage.ResetPlayersAsync();
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
-
-            return Json(new GameStateEntity(gameState));      
-        }
-         */
-
-        [HttpPut("{id:string}/randomizeTeams")]
+        [HttpPut("{id}/randomizeTeams")]
         [RequireAuthorization]
         public async Task<IActionResult> RandomizeTeamsAsync(string id)
         {
@@ -231,7 +280,7 @@ namespace PicturePanels.Controllers
             return StatusCode((int)HttpStatusCode.Accepted);
         }
 
-        [HttpPost("{id:string}/openPanel/{panelId:string}")]
+        [HttpPost("{id}/openPanel/{panelId}")]
         [RequireAuthorization]
         public async Task<IActionResult> PostOpenPanelAsync(string id, string panelId)
         {
@@ -245,7 +294,7 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost("{id:string}/openPanel/{panelId:string}/force")]
+        [HttpPost("{id}/openPanel/{panelId}/force")]
         [RequireAuthorization]
         public async Task<IActionResult> PostForceOpenPanelAsync(string id, string panelId)
         {
