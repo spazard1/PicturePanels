@@ -18,6 +18,19 @@ var exitAnimations = [
 
 var maxMostVotesPanels = 3;
 
+async function postGameStateAsync() {
+    return await fetch("/api/gameState/",
+        {
+            method: "POST"
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return;
+        });
+}
+
 function createPanels() {
     var panelNumber = 1;
 
@@ -75,6 +88,20 @@ function openPanel(panel) {
 
     panel.classList.add("panelOpen");
     animateCSS(panel.firstChild, [exitAnimations[Math.floor(Math.random() * exitAnimations.length)]], entranceAnimations);
+}
+
+function closePanel(panel) {
+    var entranceAnimation = entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
+
+    resetPanel(panel, entranceAnimation);
+}
+
+function togglePanel(panel) {
+    if (panel.classList.contains("panelOpen")) {
+        closePanel(panel);
+    } else {
+        openPanel(panel);
+    }
 }
 
 function resetPanel(panel, entranceAnimation, delay) {
@@ -974,13 +1001,7 @@ function drawWelcomeAnimation() {
     } while (randomIndex === previousRandomIndex)
     previousRandomIndex = randomIndex;
 
-    var panel = panelsArray[randomIndex];
-
-    if (panel.classList.contains("panelOpen")) {
-        panel.classList.remove("panelOpen");
-    } else {
-        panel.classList.add("panelOpen");
-    }
+    togglePanel(panelsArray[randomIndex]);
 }
 
 function stopWelcomeAnimation() {
@@ -993,31 +1014,17 @@ function stopWelcomeAnimation() {
 var animationPromise;
 
 async function handleGameState(gameState, updateType, firstLoad) {
+    stopWelcomeAnimation();
+
     currentGameState = gameState;
 
     loadThemeCss(gameState);
 
     animationPromise = Promise.resolve();
 
-    if (gameState.turnType === "Welcome") {
-        await setupWelcomeAnimationAsync();
-
-        if (!welcomeAnimationTimeout) {
-            welcomeAnimationTimeout = setInterval(drawWelcomeAnimation, 1500);
-        }
-
-        document.getElementById("welcome").classList.remove("hidden");
-        gameState.imageId = "welcome";
-        drawGameState(gameState);
-        resizePanelContainer();
-        return;
-    }
-
     if (firstLoad || updateType === "NewRound") {
         await resetPanelsAsync(gameState);
     }
-
-    stopWelcomeAnimation();
 
     drawGameState(gameState);
     drawRoundNumber(gameState);
@@ -1085,6 +1092,52 @@ function disappearCursor() {
     cursorVisible = false;
 }
 
+function setupHideCursor() {
+    document.onmousemove = function () {
+        clearTimeout(mouseTimer);
+        if (!cursorVisible) {
+            document.body.style.cursor = "default";
+            cursorVisible = true;
+        }
+        mouseTimer = window.setTimeout(disappearCursor, 3000);
+    };
+}
+
+async function tryStartGameAsync() {
+    var gameState = await getGameStateAsync();
+    if (gameState) {
+        await startGameAsync(gameState);
+        return true;
+    }
+    return false;
+}
+
+async function startGameAsync(gameState) {
+    startSignalRAsync("gameboard").then(function () {
+        connection.invoke("RegisterGameBoard")
+    });
+
+    handleGameState(gameState, null, true);
+
+    getPlayersAsync().then(players => {
+        handlePlayers(players);
+    });
+
+    setupHideCursor();
+}
+
+async function startGameboardAsync() {
+    await setupWelcomeAnimationAsync();
+
+    if (!welcomeAnimationTimeout) {
+        welcomeAnimationTimeout = setInterval(drawWelcomeAnimation, 5000);
+        drawWelcomeAnimation();
+    }
+
+    document.getElementById("welcome").classList.remove("hidden");
+    resizePanelContainer();
+}
+
 var reloadTimeout;
 window.onresize = function () {
     clearTimeout(reloadTimeout);
@@ -1099,30 +1152,68 @@ window.onload = async function () {
     createMostVotesPanels();
     setupCanvases();
 
-    document.onmousemove = function () {
-        clearTimeout(mouseTimer);
-        if (!cursorVisible) {
-            document.body.style.cursor = "default";
-            cursorVisible = true;
-        }
-        mouseTimer = window.setTimeout(disappearCursor, 3000);
+    startGameboardAsync();
+
+    document.getElementById("welcomeCreateGameButton").onclick = async () => {
+        document.getElementById("welcomeStartGame").classList.add("hidden");
+
+        document.getElementById("welcomeCreateGame").classList.remove("hidden");
+
+        document.getElementById("welcomeCreateGameMessage").innerHTML = "Creating game...";
+
+        await postGameStateAsync().then(gameState => {
+            localStorage.setItem("gameStateId", gameState.gameStateId);
+            document.getElementById("startGameButtons").classList.remove("hidden");
+            document.getElementById("welcomeGameStateId").innerHTML = gameState.gameStateId;
+            document.getElementById("welcomeGameStateTeamOneName").value = gameState.teamOneName;
+            document.getElementById("welcomeGameStateTeamTwoName").value = gameState.teamTwoName;
+            document.getElementById("welcomeCreateGameMessage").innerHTML = "Your game is ready, make changes if you want!";
+            document.getElementById("welcomeGameStateOptions").classList.remove("hidden");
+        });
     };
 
-    startSignalRAsync("gameboard").then(function () {
-        connection.invoke("RegisterGameBoard")
-    });
+    document.getElementById("welcomeJoinGameButton").onclick = () => {
+        document.getElementById("gameStateIdInput").value = localStorage.getItem("gameStateId");
 
-    var promises = [];
-    promises.push(getGameStateAsync());
-    promises.push(getPlayersAsync());
+        document.getElementById("welcomeStartGame").classList.add("hidden");
 
-    Promise.all(promises).then((results) => {
-        currentGameState = results[0];
-        handleGameState(currentGameState, null, true);
+        document.getElementById("welcomeExistingGame").classList.remove("hidden");
+        document.getElementById("startGameButtons").classList.remove("hidden");
+    };
 
-        handlePlayers(results[1]);
-    });
+    document.getElementById("welcomeCancelButton").onclick = () => {
+        document.getElementById("welcomeStartGame").classList.remove("hidden");
 
+        document.getElementById("welcomeCreateGame").classList.add("hidden");
+        document.getElementById("welcomeGameStateOptions").classList.add("hidden");
+        document.getElementById("welcomeExistingGame").classList.add("hidden");
+        document.getElementById("startGameButtons").classList.add("hidden");
+    }
+
+    document.getElementById("startGameButton").onclick = () => {
+        var welcomeErrorMessageElement = document.getElementById("welcomeErrorMessage");
+
+        if (document.getElementById("welcomeCreateGame").classList.contains("hidden")) {
+            localStorage.setItem("gameStateId", document.getElementById("gameStateIdInput").value);
+
+            tryStartGameAsync().then(result => {
+                if (!result) {
+                    welcomeErrorMessageElement.classList.remove("hidden");
+                    welcomeErrorMessageElement.innerHTML = "Could not join the game. Double check your game id.";
+                }
+            });
+        } else {
+            
+        }
+    }
+
+    document.getElementById("welcomeGameStateTeamOneName").oninput = (event) => {
+        document.getElementById("teamOneName").innerHTML = event.target.value;
+    };
+
+    document.getElementById("welcomeGameStateTeamTwoName").oninput = (event) => {
+        document.getElementById("teamTwoName").innerHTML = event.target.value;
+    };
 
     // full screen
     // window.innerWidth == screen.width && window.innerHeight == screen.height
