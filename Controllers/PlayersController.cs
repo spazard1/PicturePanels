@@ -1,13 +1,13 @@
-﻿using PicturePanels.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PicturePanels.Entities;
 using PicturePanels.Filters;
+using PicturePanels.Models;
 using PicturePanels.Services;
+using PicturePanels.Services.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PicturePanels.Services.Storage;
 
 namespace PicturePanels.Controllers
 {
@@ -64,41 +64,52 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> PutAsync(string gameStateId, string playerId, [FromBody] PlayerEntity entity)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
-            var notifyTeam = false;
-            bool newPlayer = false;
+            var isNewPlayer = false;
 
             if (playerModel == null)
             {
-                notifyTeam = true;
+                isNewPlayer = true;
                 playerModel = new PlayerTableEntity()
                 {
+                    Name = GetPlayerName(entity.Name),
+                    TeamNumber = entity.TeamNumber,
+                    Color = entity.Color,
+                    LastPingTime = DateTime.UtcNow,
+                    ConnectionId = entity.ConnectionId,
                     PlayerId = playerId,
                     SelectedPanels = new List<string>()
                 };
-                newPlayer = true;
+                await this.playerTableStorage.InsertAsync(playerModel);
             }
-            else if (playerModel.TeamNumber != entity.TeamNumber)
-            {
-                notifyTeam = true;
-            }
-            else if (playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow)
-            {
-                notifyTeam = true;
+            else
+            {  
+                playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+                {
+                    pm.Name = GetPlayerName(entity.Name);
+                    pm.TeamNumber = entity.TeamNumber;
+                    pm.Color = entity.Color;
+                    pm.LastPingTime = DateTime.UtcNow;
+                    pm.ConnectionId = entity.ConnectionId;
+                });
             }
 
-            playerModel = await this.playerTableStorage.InsertOrReplaceAsync(playerModel, (pm) =>
-            {
-                pm.Name = entity.Name.Replace("(", "").Replace(")", "");
-                pm.Name = playerModel.Name.Substring(0, Math.Min(playerModel.Name.Length, 14));
-                pm.TeamNumber = entity.TeamNumber;
-                pm.Color = entity.Color;
-                pm.LastPingTime = DateTime.UtcNow;
-                pm.ConnectionId = entity.ConnectionId;
-            }, newPlayer);
+            var notifyTeam = isNewPlayer || playerModel.TeamNumber != entity.TeamNumber ||
+                playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
 
             await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
 
             return Json(new PlayerEntity(playerModel));
+        }
+
+        private static string GetPlayerName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return "player";
+            }
+            name = name.Replace("(", "").Replace(")", "");
+            name = name.Substring(0, Math.Min(name.Length, 14));
+            return name;
         }
 
         [HttpPut("{gameStateId}/{playerId}/ping")]

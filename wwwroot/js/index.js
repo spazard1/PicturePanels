@@ -37,7 +37,7 @@ async function getPlayer() {
 }
 
 async function getPlayersAsync() {
-    return await fetch("/api/players" + localStorage.getItem("gameStateId") + "/")
+    return await fetch("/api/players/" + localStorage.getItem("gameStateId") + "/")
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -65,8 +65,8 @@ async function putPlayerAsync() {
         });
 }
 
-async function getImageEntityAsync(imageId) {
-    return fetch("/api/images/entity/" + imageId)
+async function getImageEntityAsync(gameStateId) {
+    return fetch("/api/images/entity/" + gameStateId)
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;

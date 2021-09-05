@@ -46,7 +46,10 @@ namespace PicturePanels
             services.AddSingleton<ChatTableStorage>();
             services.AddSingleton<TeamGuessTableStorage>();
             services.AddSingleton<GameRoundTableStorage>();
-            services.AddSingleton<ImageTagCountTableStorage>();
+            services.AddSingleton<ImageTagTableStorage>();
+            services.AddSingleton<ImageNumberTableStorage>();
+            services.AddSingleton<UserTableStorage>();
+            services.AddSingleton<UserPlayedImageTableStorage>();
 
             services.AddSingleton<IUserNameProvider, UserNameProvider>();
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
@@ -112,7 +115,11 @@ namespace PicturePanels
             var teamGuessTableStorageTask = app.ApplicationServices.GetRequiredService<TeamGuessTableStorage>().StartupAsync();
             var imageTableStorageTask = app.ApplicationServices.GetRequiredService<ImageTableStorage>().StartupAsync();
             var gameRoundTableStorageTask = app.ApplicationServices.GetRequiredService<GameRoundTableStorage>().StartupAsync();
-            var imageTagCountTableStorageTask = app.ApplicationServices.GetRequiredService<ImageTagCountTableStorage>().StartupAsync();
+            var imageTagTableStorageTask = app.ApplicationServices.GetRequiredService<ImageTagTableStorage>().StartupAsync();
+            var imageNumberTableStorageTask = app.ApplicationServices.GetRequiredService<ImageNumberTableStorage>().StartupAsync();
+            var userTableStorageTask = app.ApplicationServices.GetRequiredService<UserTableStorage>().StartupAsync();
+            var userPlayedImageTableStorageTask = app.ApplicationServices.GetRequiredService<UserPlayedImageTableStorage>().StartupAsync();
+
         }
     }
 }

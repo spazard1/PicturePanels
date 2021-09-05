@@ -16,6 +16,9 @@ namespace PicturePanels.Services
         private readonly ImageTableStorage imageTableStorage;
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
+        private readonly ImageTagTableStorage imageTagTableStorage;
+        private readonly ImageNumberTableStorage imageNumberTableStorage;
+        private readonly UserPlayedImageTableStorage userPlayedImageTableStorage;
         private readonly ChatService chatService;
         private readonly GameStateQueueService gameStateQueueService;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
@@ -26,6 +29,9 @@ namespace PicturePanels.Services
             ImageTableStorage imageTableStorage,
             TeamGuessTableStorage teamGuessTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
+            ImageTagTableStorage imageTagTableStorage,
+            ImageNumberTableStorage imageNumberTableStorage,
+            UserPlayedImageTableStorage userPlayedImageTableStorage,
             ChatService chatService,
             GameStateQueueService gameStateQueueService,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
@@ -36,6 +42,9 @@ namespace PicturePanels.Services
             this.imageTableStorage = imageTableStorage;
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
+            this.imageTagTableStorage = imageTagTableStorage;
+            this.imageNumberTableStorage = imageNumberTableStorage;
+            this.userPlayedImageTableStorage = userPlayedImageTableStorage;
             this.chatService = chatService;
             this.gameStateQueueService = gameStateQueueService;
             this.hubContext = hubContext;
@@ -311,7 +320,7 @@ namespace PicturePanels.Services
                 !string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))
             {
                 var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-                var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
+                var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
 
                 if (imageTableEntity.Answers == null || !imageTableEntity.Answers.Any())
                 {
@@ -382,6 +391,90 @@ namespace PicturePanels.Services
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
+        }
+
+        private static Random rand = new Random();
+
+        public async Task<GameStateTableEntity> PopulateGameRoundsAsync(GameStateTableEntity gameState)
+        {
+            var imageTags = await this.imageTagTableStorage.GetAllDictionaryAsync();
+            var populatedImages = new HashSet<string>();
+
+            while (populatedImages.Count < GameStateTableEntity.MaxRounds)
+            {
+                var imageTag = GetRandomTag(imageTags);
+                if (imageTag == null)
+                {
+                    break;
+                }
+
+                var startIndex = rand.Next(imageTag.Count);
+                var foundImageId = string.Empty;
+                for (var i = 0; i < imageTag.Count; i++)
+                {
+                    var imageNumber = ((startIndex + i) % imageTag.Count) + 1;
+                    var imageNumberEntity = await this.imageNumberTableStorage.GetAsync(imageTag.Tag, imageNumber);
+                    if (!string.IsNullOrWhiteSpace(gameState.CreatedBy))
+                    {
+                        var userPlayedImageEntity = await this.userPlayedImageTableStorage.GetAsync(gameState.CreatedBy, imageNumberEntity.ImageId);
+                        if (userPlayedImageEntity != null)
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (populatedImages.Contains(imageNumberEntity.ImageId))
+                    {
+                        continue;
+                    }
+
+                    foundImageId = imageNumberEntity.ImageId;
+                    break;
+                }
+
+                if (string.IsNullOrWhiteSpace(foundImageId))
+                {
+                    imageTags.Remove(imageTag.Tag);
+                    continue;
+                }
+
+                populatedImages.Add(foundImageId);
+                await this.gameRoundTableStorage.InsertAsync(new GameRoundTableEntity()
+                {
+                    GameStateId = gameState.GameStateId,
+                    ImageId = foundImageId,
+                    RoundNumber = populatedImages.Count
+                });    
+            }
+
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, gs =>
+            {
+                gs.FinalRoundNumber = populatedImages.Count;
+            });
+
+            return gameState;
+        }
+
+        private ImageTagTableEntity GetRandomTag(Dictionary<string, ImageTagTableEntity> imageTags)
+        {
+            var totalSum = 0;
+            foreach (var imageTag in imageTags)
+            {
+                totalSum += imageTag.Value.Count;
+            }
+
+            var index = rand.Next(totalSum);
+
+            foreach (var imageTag in imageTags)
+            {
+                index -= imageTag.Value.Count;
+                if (index <= 0)
+                {
+                    return imageTag.Value;
+                }
+            }
+
+            return null;
         }
     }
 }

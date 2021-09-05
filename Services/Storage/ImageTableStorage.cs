@@ -40,6 +40,11 @@ namespace PicturePanels.Services.Storage
             blobServiceClient = cloudStorageAccountProvider.BlobServiceClient;
         }
 
+        public async Task<ImageTableEntity> GetAsync(string imageId)
+        {
+            return await this.GetAsync(ImageTableEntity.DefaultPartitionKey, imageId);
+        }
+
         public override async Task<ImageTableEntity> InsertAsync(ImageTableEntity image)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(image.BlobContainer);
@@ -55,16 +60,6 @@ namespace PicturePanels.Services.Storage
             await blobClient.DeleteIfExistsAsync();
 
             await base.DeleteAsync(tableEntity);
-        }
-
-        public async Task SetPlayedTimeAsync(string blobContainer, string imageId)
-        {
-            var imageTableEntity = await this.GetAsync(blobContainer, imageId);
-
-            await this.ReplaceAsync(imageTableEntity, (i) =>
-            {
-                i.PlayedTime = DateTime.UtcNow;
-            });
         }
 
         public string GetDownloadUrl(string blobContainer, ImageTableEntity imageEntity)
@@ -117,6 +112,20 @@ namespace PicturePanels.Services.Storage
             blobContainers.Remove(WelcomeBlobContainer);
 
             return blobContainers;
+        }
+
+        public async Task CopyToBlobContainerAsync(ImageTableEntity imageTableEntity, string targetBlobContainer)
+        {
+            var targetBlobContainerClient = blobServiceClient.GetBlobContainerClient(targetBlobContainer);
+            await targetBlobContainerClient.CreateIfNotExistsAsync();
+            var targetCloudBlob = targetBlobContainerClient.GetBlobClient(imageTableEntity.BlobName);
+
+            if (await targetCloudBlob.ExistsAsync())
+            {
+                return;   
+            }
+
+            await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(imageTableEntity)));
         }
 
         public async Task<string> UploadFromStream(string blobContainer, string blobName, Stream imageStream)
@@ -227,14 +236,28 @@ namespace PicturePanels.Services.Storage
             }
         }
 
-        public async Task<string> GetPanelImageUrlAsync(ImageTableEntity entity, int panelNumber)
+        public string GetPanelImageUrl(string imageId, int panelNumber)
+        {
+            return this.GetDownloadUrl(PanelsBlobContainer, imageId + "_panel_" + panelNumber);
+        }
+
+        public async Task GeneratePanelImageUrlAsync(string imageId, int panelNumber)
+        {
+            var imageEntity = await this.GetAsync(imageId);
+            if (imageEntity != null)
+            {
+                await this.GeneratePanelImageUrlAsync(imageEntity, panelNumber);
+            }
+        }
+
+        public async Task GeneratePanelImageUrlAsync(ImageTableEntity entity, int panelNumber)
         {
             var panelsContainer = blobServiceClient.GetBlobContainerClient(PanelsBlobContainer);
             var panelBlob = panelsContainer.GetBlobClient(entity.Id + "_panel_" + panelNumber);
 
             if (await panelBlob.ExistsAsync())
             {
-                return this.GetDownloadUrl(PanelsBlobContainer, entity.Id + "_panel_" + panelNumber);
+                return;
             }
 
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(entity.BlobContainer);
@@ -251,7 +274,6 @@ namespace PicturePanels.Services.Storage
             memoryStream.Seek(0, SeekOrigin.Begin);
 
             await panelBlob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
-            return this.GetDownloadUrl(PanelsBlobContainer, entity.Id + "_panel_" + panelNumber);
         }
 
         /// <summary>
@@ -327,7 +349,7 @@ namespace PicturePanels.Services.Storage
 
             for (var i = 0; i <= Across * Down; i++)
             {
-                tasks.Add(this.GetPanelImageUrlAsync(entity, i));
+                tasks.Add(this.GeneratePanelImageUrlAsync(entity, i));
             }
 
             return Task.WhenAll(tasks);

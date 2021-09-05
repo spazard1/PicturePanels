@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace PicturePanels.Models
 {
-    public class ImageTagCountTableEntity : TableEntity
+    public class ImageTagTableEntity : TableEntity
     {
-        public ImageTagCountTableEntity()
+        public const string DefaultPartitionKey = "imagetags";
+
+        public ImageTagTableEntity()
         {
-            this.PartitionKey = "imagetagcount";
+            this.PartitionKey = DefaultPartitionKey;
         }
 
         public string Tag
