@@ -55,6 +55,9 @@ namespace PicturePanels.Services
         {
             switch (gameState.TurnType)
             {
+                case GameStateTableEntity.TurnTypeWelcome:
+                    gameState = await this.StartGameAsync(gameState);
+                    break;
                 case GameStateTableEntity.TurnTypeOpenPanel:
                     gameState = await this.OpenMostVotesPanelAsync(gameState);
                     break;
@@ -70,6 +73,30 @@ namespace PicturePanels.Services
             }
 
              await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+        }
+
+        public async Task<GameStateTableEntity> QueueStartGameAsync(GameStateTableEntity gameState)
+        {
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.TurnEndTime = DateTime.UtcNow.AddSeconds(10);
+            });
+
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+            return gameState;
+        }
+
+        public async Task<GameStateTableEntity> StartGameAsync(GameStateTableEntity gameState)
+        {
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
+            });
+
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+            return gameState;
         }
 
         public async Task PlayerReadyAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)

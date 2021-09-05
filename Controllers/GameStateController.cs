@@ -92,7 +92,6 @@ namespace PicturePanels.Controllers
                 GameStateId = gameStateId,
                 TurnType = GameStateTableEntity.TurnTypeSetup,
                 TurnStartTime = DateTime.UtcNow,
-                TurnEndTime = DateTime.UtcNow.Add(TimeSpan.FromHours(1)),
                 TeamOneName = "Team 1",
                 TeamTwoName = "Team 2",
             };
@@ -127,6 +126,25 @@ namespace PicturePanels.Controllers
             });
 
             gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
+
+            return Json(new GameStateEntity(gameState));
+        }
+
+        [HttpPut("{id}/start")]
+        public async Task<IActionResult> PutStartAsync(string id)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeWelcome)
+            {
+                return StatusCode(403);
+            }
+
+            await this.gameStateService.QueueStartGameAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
