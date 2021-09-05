@@ -73,7 +73,7 @@ namespace PicturePanels.Models
 
         public DateTime TurnStartTime { get; set; }
 
-        public DateTime TurnEndTime { get; set; }
+        public DateTime? TurnEndTime { get; set; }
 
         public int TeamFirstTurn { get; set; }
 
@@ -127,6 +127,7 @@ namespace PicturePanels.Models
             this.ClearGuesses();
             this.NewTurnType(GameStateTableEntity.TurnTypeWelcome);
             this.TurnNumber = 1;
+            this.TeamTurn = 1;
         }
 
         public void NewRound()

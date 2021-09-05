@@ -626,8 +626,15 @@ function drawCountdown(canvas) {
 var remainingTurnTimeInterval;
 var remainingSeconds;
 function drawRemainingTurnTime(gameState) {
-    if ((gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect)) || gameState.turnType === "EndRound") {
-        document.getElementById("remainingTurnTimeText").innerHTML = "Next round starts in";
+    if (gameState.turnEndTime && ((gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect)) ||
+        gameState.turnType === "Welcome" ||
+        gameState.turnType === "EndRound")) {
+
+        if (gameState.turnType === "Welcome") {
+            document.getElementById("remainingTurnTimeText").innerHTML = "Game starts in";
+        } else {
+            document.getElementById("remainingTurnTimeText").innerHTML = "Next round starts in";
+        }
 
         remainingSeconds = (new Date(gameState.turnEndTime) - new Date()) / 1000;
         remainingTurnTimeInterval = setInterval(function () {
