@@ -25,7 +25,7 @@ namespace PicturePanels.Entities
             this.TurnType = tableEntity.TurnType;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.TurnStartTime = tableEntity.TurnStartTime;
-            this.TurnEndTime = tableEntity.TurnEndTime;
+            this.TurnEndTime = tableEntity.TurnEndTime.Value;
             this.RevealedPanels = tableEntity.RevealedPanels;
             this.TeamOneName = tableEntity.TeamOneName;
             this.TeamOneScore = tableEntity.TeamOneScore;
@@ -72,7 +72,7 @@ namespace PicturePanels.Entities
 
         public DateTime TurnStartTime { get; internal set; }
 
-        public DateTime TurnEndTime { get; internal set; }
+        public DateTime? TurnEndTime { get; internal set; }
 
         public double TurnTimeRemaining { get; set; }
 
