@@ -76,6 +76,7 @@ namespace PicturePanels.Controllers
                     Color = entity.Color,
                     LastPingTime = DateTime.UtcNow,
                     ConnectionId = entity.ConnectionId,
+                    GameStateId = gameStateId,
                     PlayerId = playerId,
                     SelectedPanels = new List<string>()
                 };

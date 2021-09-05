@@ -15,8 +15,10 @@ async function isAuthorized() {
 }
 
 async function getGameStateAsync(gameStateId) {
-    if (!gameStateId) {
+    if (!gameStateId && localStorage.getItem("gameStateId")) {
         gameStateId = localStorage.getItem("gameStateId");
+    } else {
+        return null;
     }
 
     return await fetch("/api/gameState/" + gameStateId + "/")
@@ -28,7 +30,10 @@ async function getGameStateAsync(gameStateId) {
         });
 }
 
-async function getPlayer() {
+async function getPlayerAsync() {
+    if (!localStorage.getItem("gameStateId") || !localStorage.getItem("playerId")) {
+        return null;
+    }
     return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"))
         .then(response => response.json())
         .then(responseJson => {
