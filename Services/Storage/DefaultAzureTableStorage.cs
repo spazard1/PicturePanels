@@ -94,15 +94,10 @@ namespace PicturePanels.Services.Storage
             return tableEntity;
         }
 
-        public async Task<T> InsertOrReplaceAsync(T tableEntity, Action<T> update, bool isNewEntity)
+        public async Task<T> InsertOrReplaceAsync(T tableEntity)
         {
-            if (isNewEntity)
-            {
-                update(tableEntity);
-                return await this.InsertAsync(tableEntity);
-            }
-
-            return await this.ReplaceAsync(tableEntity, update);
+            await cloudTable.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
+            return tableEntity;
         }
 
         public async Task<Tuple<T, bool>> ReplaceAsync(T tableEntity, Func<T, bool> update)

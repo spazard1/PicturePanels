@@ -144,7 +144,7 @@ async function resetPanelsAsync(gameState) {
     for (var panel of panels) {
         resetPanel(panel, entranceAnimation, delay);
         delay += 50;
-        imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.imageId + "/0"));
+        imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.gameStateId + "/0"));
     }
 
     var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
@@ -829,7 +829,7 @@ async function openAllPanelsAsync() {
     var loadPromises = [];
     panelsArray.forEach(function (panel) {
         if (!panel.classList.contains("panelOpen")) {
-            loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.imageId + "/" + panel.panelNumber));
+            loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + panel.panelNumber));
         }
     });
 
@@ -866,7 +866,7 @@ function drawRoundNumber(gameState) {
 }
 
 async function drawImageEntityAsync(gameState) {
-    var imageEntity = await getImageEntityAsync(gameState.imageId);
+    var imageEntity = await getImageEntityAsync(gameState.gameStateId);
 
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
         document.getElementById("uploadedByText").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
@@ -912,7 +912,7 @@ async function drawRevealedPanelsAsync(gameState) {
 
         if (gameState.revealedPanels.includes(panel.panelNumber)) {
             if (!panel.classList.contains("panelOpen")) {
-                loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.imageId + "/" + panel.panelNumber).then((panelImageLoaded) => {
+                loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.gameStateId + "/" + panel.panelNumber).then((panelImageLoaded) => {
                     openPanel(panelImageLoaded.parentElement);
                 }));
             }
@@ -920,7 +920,7 @@ async function drawRevealedPanelsAsync(gameState) {
             hidePlayerDots(panel.panelNumber);
         } else {
             panel.classList.remove("panelOpen");
-            panelImage.src = "/api/images/panels/" + gameState.imageId + "/0";
+            panelImage.src = "/api/images/panels/" + gameState.gameStateId + "/0";
         }
     }
 
