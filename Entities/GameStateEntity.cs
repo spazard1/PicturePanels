@@ -20,6 +20,7 @@ namespace PicturePanels.Entities
             this.OpenPanelTime = tableEntity.OpenPanelTime;
             this.GuessTime = tableEntity.GuessTime;
             this.RoundNumber = tableEntity.RoundNumber;
+            this.FinalRoundNumber = tableEntity.FinalRoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
             this.TeamFirstTurn = tableEntity.TeamFirstTurn;
@@ -62,6 +63,8 @@ namespace PicturePanels.Entities
         public int? GuessTime { get; set; }
 
         public int? RoundNumber { get; set; }
+
+        public int? FinalRoundNumber { get; set; }
 
         public int? TeamTurn { get; set; }
 
@@ -113,6 +116,7 @@ namespace PicturePanels.Entities
             currentModel.OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime;
             currentModel.GuessTime = this.GuessTime ?? currentModel.GuessTime;
             currentModel.RoundNumber = this.RoundNumber ?? currentModel.RoundNumber;
+            currentModel.FinalRoundNumber = this.FinalRoundNumber ?? currentModel.FinalRoundNumber;
             currentModel.TeamTurn = this.TeamTurn ?? currentModel.TeamTurn;
             currentModel.TurnType = this.TurnType ?? currentModel.TurnType;
             currentModel.TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn;

@@ -20,15 +20,118 @@ namespace PicturePanels.Controllers
         private readonly GameStateTableStorage gameStateTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly ImageTableStorage imageTableStorage;
+        private readonly ImageTagTableStorage imageTagTableStorage;
+        private readonly ImageNumberTableStorage imageNumberTableStorage;
+        private readonly UserTableStorage userTableStorage;
 
         public ImagesController(
             GameStateTableStorage gameStateTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
-            ImageTableStorage imageTableStorage)
+            ImageTableStorage imageTableStorage,
+            ImageTagTableStorage imageTagTableStorage,
+            ImageNumberTableStorage imageNumberTableStorage,
+            UserTableStorage userTableStorage)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
             this.imageTableStorage = imageTableStorage;
+            this.imageTagTableStorage = imageTagTableStorage;
+            this.imageNumberTableStorage = imageNumberTableStorage;
+            this.userTableStorage = userTableStorage;
+        }
+
+        [HttpPatch("migrate")]
+        public async Task<IActionResult> MigrateAsync()
+        {
+            await foreach (var imageEntity in this.imageTableStorage.GetAllAsync())
+            {
+                if (imageEntity.PartitionKey == "images")
+                {
+                    continue;
+                }
+
+                if (imageEntity.UploadedBy == "admin")
+                {
+                    imageEntity.UploadedBy = "spazard1";
+                }
+
+                var migratedImageEntity = new ImageTableEntity()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    BlobName = imageEntity.BlobName,
+                    Name = imageEntity.Name,
+                    UploadComplete = imageEntity.UploadComplete,
+                    UploadCompleteTime = imageEntity.UploadCompleteTime,
+                    ThumbnailId = imageEntity.ThumbnailId,
+                    Approved = true
+                };
+
+                if (imageEntity.BlobContainer.Contains("guysweekend"))
+                {
+                    migratedImageEntity.Tags = new List<string> { "guysweekend", "all" };
+                }
+                else if (imageEntity.BlobContainer.Contains("benji"))
+                {
+                    migratedImageEntity.Tags = new List<string> { "benji" };
+                }
+                else if (imageEntity.BlobContainer.Contains("welcome"))
+                {
+                    migratedImageEntity.Tags = new List<string> { "welcome" };
+                }
+                else if (imageEntity.BlobContainer.Contains("christmas"))
+                {
+                    migratedImageEntity.Tags = new List<string> { "christmas" };
+                }
+                else
+                {
+                    migratedImageEntity.Tags = new List<string> { "all" };
+                }
+
+                int imageNumber;
+                foreach (var tag in migratedImageEntity.Tags)
+                {
+                    var imageTagEntity = await this.imageTagTableStorage.GetAsync(tag);
+                    if (imageTagEntity == null)
+                    {
+                        imageTagEntity = new ImageTagTableEntity()
+                        {
+                            Tag = tag,
+                            Count = 1
+                        };
+                        imageNumber = 1;
+                    }
+                    else
+                    {
+                        imageTagEntity.Count++;
+                        imageNumber = imageTagEntity.Count;
+                    }
+
+                    var imageNumberEntity = new ImageNumberTableEntity()
+                    {
+                        ImageId = migratedImageEntity.Id,
+                        Number = imageNumber,
+                        Tag = tag
+                    };
+
+                    await this.imageTagTableStorage.InsertOrReplaceAsync(imageTagEntity);
+                    await this.imageNumberTableStorage.InsertOrReplaceAsync(imageNumberEntity);
+                }
+
+                var userName = imageEntity.UploadedBy.ToLowerInvariant().Replace(" ", "");
+                var user = await this.userTableStorage.GetAsync(userName);
+                if (user == null)
+                {
+                    user = await this.userTableStorage.NewUserAsync(userName, migratedImageEntity.UploadedBy);
+                }
+
+                await this.imageTableStorage.CopyToBlobContainerAsync(imageEntity, user.UserId);
+
+                migratedImageEntity.UploadedBy = user.UserId;
+                migratedImageEntity.BlobContainer = user.UserId;
+                await this.imageTableStorage.InsertAsync(migratedImageEntity);
+            }
+
+            return StatusCode(200);
         }
 
         [HttpGet("all/{blobContainer}")]
@@ -66,7 +169,7 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
             if (imageTableEntity == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound);
@@ -102,48 +205,40 @@ namespace PicturePanels.Controllers
             }
 
             ImageTableEntity imageTableEntity;
-            string imageUrl;
 
             if (gameStateId == ImageTableStorage.WelcomeBlobContainer)
             {
                 imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, ImageTableStorage.WelcomeImageId);
-                imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
+                await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, panelNumber);
+                return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(imageTableEntity.Id, panelNumber));
             }
-            else
+            
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
             {
-                var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
-                if (gameState == null)
-                {
-                    return StatusCode((int)HttpStatusCode.NotFound);
-                }
-
-                var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameStateId, gameState.RoundNumber);
-                if (gameRoundEntity == null)
-                {
-                    return StatusCode((int)HttpStatusCode.NotFound);
-                }
-
-                imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
-                if (imageTableEntity == null)
-                {
-                    return StatusCode((int)HttpStatusCode.NotFound);
-                }
-                
-                if (panelNumber == 0 ||
-                    gameState.RevealedPanels.Contains(panelNumber.ToString()) ||
-                    gameState.IsRoundOver())
-                {
-                    imageUrl = await this.imageTableStorage.GetPanelImageUrlAsync(imageTableEntity, panelNumber);
-                }
-                else
-                {
-                    imageUrl = "/api/images/panels/" + gameStateId + "/0";
-                }
+                return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            Response.Headers["Location"] = imageUrl;
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
-            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
+            var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameStateId, gameState.RoundNumber);
+            if (gameRoundEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            if (!gameState.RevealedPanels.Contains(panelNumber.ToString()) && !gameState.IsRoundOver())
+            {
+                await this.imageTableStorage.GeneratePanelImageUrlAsync(gameRoundEntity.ImageId, 0);
+                return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(gameRoundEntity.ImageId, 0));
+            }
+
+            imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, 0);
+            return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(gameRoundEntity.ImageId, panelNumber));
         }
 
         [HttpGet("{blobContainer}/{imageId}")]
@@ -156,7 +251,12 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(blobContainer, imageTableEntity);
+            return ImageRedirectResult(this.imageTableStorage.GetDownloadUrl(blobContainer, imageTableEntity));
+        }
+
+        private IActionResult ImageRedirectResult(string imageUrl)
+        {
+            Response.Headers["Location"] = imageUrl;
             Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }

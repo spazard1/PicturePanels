@@ -21,14 +21,6 @@ namespace PicturePanels.Entities
             UploadedBy = tableEntity.UploadedBy;
             UploadComplete = tableEntity.UploadComplete;
             UploadCompleteTime = tableEntity.UploadCompleteTime;
-            if (tableEntity.PlayedTime.HasValue)
-            {
-                PlayedTime = tableEntity.PlayedTime.Value.ToShortDateString();
-            }
-            else
-            {
-                PlayedTime = string.Empty;
-            }
         }
 
         public string BlobContainer { get; set; }
@@ -64,8 +56,7 @@ namespace PicturePanels.Entities
                 Name = this.Name,
                 UploadedBy = this.UploadedBy,
                 UploadComplete = this.UploadComplete,
-                UploadCompleteTime = this.UploadCompleteTime,
-                PlayedTime = null
+                UploadCompleteTime = this.UploadCompleteTime
             };
         }
 

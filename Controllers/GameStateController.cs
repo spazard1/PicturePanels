@@ -19,28 +19,22 @@ namespace PicturePanels.Controllers
     public class GameStateController : Controller
     {
         private readonly GameStateTableStorage gameStateTableStorage;
-        private readonly PlayerTableStorage playerTableStorage;
         private readonly ImageTableStorage imageTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
-        private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
         private readonly GameStateService gameStateService;
 
         public GameStateController(GameStateTableStorage gameStateTableStorage,
-            PlayerTableStorage playerTableStorage,
             ImageTableStorage imageTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
-            TeamGuessTableStorage teamGuessTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
             SignalRHelper signalRHelper,
             GameStateService gameStateService)
         {
             this.gameStateTableStorage = gameStateTableStorage;
-            this.playerTableStorage = playerTableStorage;
             this.imageTableStorage = imageTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
-            this.teamGuessTableStorage = teamGuessTableStorage;
             this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
             this.gameStateService = gameStateService;
@@ -100,7 +94,7 @@ namespace PicturePanels.Controllers
                 TurnStartTime = DateTime.UtcNow,
                 TurnEndTime = DateTime.UtcNow.Add(TimeSpan.FromHours(1)),
                 TeamOneName = "Team 1",
-                TeamTwoName = "Team 2"
+                TeamTwoName = "Team 2",
             };
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
@@ -125,13 +119,14 @@ namespace PicturePanels.Controllers
 
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
-                gs.TurnType = GameStateTableEntity.TurnTypeWelcome;
-                gs.TurnStartTime = DateTime.UtcNow;
+                gs.NewGame();
                 gs.TeamOneName = entity.TeamOneName;
                 gs.TeamTwoName = entity.TeamTwoName;
                 gs.OpenPanelTime = entity.OpenPanelTime.HasValue ? entity.OpenPanelTime.Value : GameStateTableEntity.DefaultOpenPanelTime;
                 gs.GuessTime = entity.GuessTime.HasValue ? entity.GuessTime.Value : GameStateTableEntity.DefaultMakeGuessTime;
             });
+
+            gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -238,7 +233,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var imageEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.BlobContainer, gameRoundEntity.ImageId);
+            var imageEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
             if (imageEntity == null)
             {
                 return StatusCode(404);

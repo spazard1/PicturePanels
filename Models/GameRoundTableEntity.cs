@@ -16,8 +16,6 @@ namespace PicturePanels.Models
             set { this.RowKey = value.ToString(); }
         }
 
-        public string BlobContainer { get; set; }
-
         public string ImageId { get; set; }
 
         public int TeamOneScore { get; set; }

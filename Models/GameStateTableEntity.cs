@@ -38,6 +38,8 @@ namespace PicturePanels.Models
 
         public const int MaxOpenPanels = 10;
 
+        public const int MaxRounds = 10;
+
         public GameStateTableEntity()
         {
             this.PartitionKey = GameStatePartitionKey;
@@ -49,6 +51,10 @@ namespace PicturePanels.Models
             set { this.RowKey = value; }
         }
 
+        public string CreatedBy { get; set; }
+
+        public List<string> Tags { get; set; }
+
         public string ThemeCss { get; set; }
 
         public int OpenPanelTime { get; set; }
@@ -56,6 +62,8 @@ namespace PicturePanels.Models
         public int GuessTime { get; set; }
 
         public int RoundNumber { get; set; }
+
+        public int FinalRoundNumber { get; set; }
 
         public int TurnNumber { get; set; }
 
@@ -117,7 +125,7 @@ namespace PicturePanels.Models
             this.TeamTwoInnerPanels = 5;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
-            this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            this.NewTurnType(GameStateTableEntity.TurnTypeWelcome);
             this.TurnNumber = 1;
         }
 
@@ -307,6 +315,11 @@ namespace PicturePanels.Models
             {
                 this.RevealedPanels = properties[nameof(this.RevealedPanels)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
+
+            if (properties.ContainsKey(nameof(this.Tags)))
+            {
+                this.Tags = properties[nameof(this.Tags)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
         }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
@@ -318,7 +331,13 @@ namespace PicturePanels.Models
                 this.RevealedPanels = new List<string>();
             }
 
+            if (this.Tags == null)
+            {
+                this.Tags = new List<string>();
+            }
+
             result[nameof(this.RevealedPanels)] = new EntityProperty(string.Join(",", this.RevealedPanels));
+            result[nameof(this.Tags)] = new EntityProperty(string.Join(",", this.Tags));
 
             return result;
         }
