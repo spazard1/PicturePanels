@@ -49,7 +49,7 @@ function setupPlayerMenu() {
 
     setupInputDefaultText("playerNameInput", "your name", localStorage.getItem("playerName"));
 
-    setupInputDefaultText("gameStateId", "4-letter room code", localStorage.getItem("gameStateId"));
+    setupInputDefaultText("gameStateId", "4-letter game code", localStorage.getItem("gameStateId"));
 }
 
 var playerLoaded = false;
@@ -222,24 +222,31 @@ function setupChoosePlayerName() {
     document.getElementById("teamTwoName").classList.add("teamTwoBox");
 }
 
-function choosePlayerNameButtonOnClick() {
+async function choosePlayerNameButtonOnClickAsync() {
     var playerNameInput = document.getElementById("playerNameInput");
     if (playerNameInput.value.length <= 1 || playerNameInput.value === playerNameInput.defaultValue) {
         document.getElementById("playerNameInput").classList.add("playerNameInputDivInvalid");
         return;
     }
 
-    playerNameChosen({
-        name: document.getElementById("playerNameInput").value,
-        color: window.colorPicker.color.hslString
-    });
-}
-
-function playerNameChosen(player) {
     if (document.getElementById("gameStateId").value) {
         localStorage.setItem("gameStateId", document.getElementById("gameStateId").value);
     }
 
+    playerNameChosen({
+        name: document.getElementById("playerNameInput").value,
+        color: window.colorPicker.color.hslString
+    });
+
+    var gameState = await getGameStateAsync();
+    if (gameState) {
+        handleGameState(gameState);
+    } else {
+        return;
+    }
+}
+
+function playerNameChosen(player) {
     localStorage.setItem("playerName", player.name);
     localStorage.setItem("playerColor", player.color);
 
@@ -280,15 +287,20 @@ function shouldPlayerLoadFromCache() {
 }
 
 async function setupPlayerAsync() {
-    if (shouldPlayerLoadFromCache() && localStorage.getItem("playerName") && localStorage.getItem("playerColor") && localStorage.getItem("teamNumber")) {
+    var promises = [];
+    promises.push(getGameStateAsync());
+    promises.push(getPlayerAsync());
+
+    var results = await Promise.all(promises);
+    
+    if (shouldPlayerLoadFromCache() && results[0] && results[1]) {
         playerNameChosen({
-            name: localStorage.getItem("playerName"),
-            color: localStorage.getItem("playerColor")
+            name: results[1].name,
+            color: results[1].color
         });
-        teamChosen(parseInt(localStorage.getItem("teamNumber")));
+        teamChosen(results[1].teamNumber);
         return finalizePlayerAsync();
     } else {
-        localStorage.setItem("createdTime", new Date());
         setupChoosePlayerName();
     }
 }
@@ -657,6 +669,7 @@ async function finalizePlayerAsync() {
     drawTeam(player.teamNumber);
 
     playerIsReadyToPlay = true;
+    localStorage.setItem("createdTime", new Date());
 
     setupChats("chats");
 
@@ -700,8 +713,6 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
-    handleGameState(await getGameStateAsync());
-
     var teamGuessButton = document.getElementById("teamGuessButton");
     teamGuessButton.onclick = (event) => {
         promptTeamGuess();
@@ -717,6 +728,4 @@ window.onload = async function () {
     setupPlayerAsync();
 
     setInterval(putPlayerPingAsync, 30000);
-
-    
 }

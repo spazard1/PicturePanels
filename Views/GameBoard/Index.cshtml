@@ -44,7 +44,7 @@
     </div>
 
     <div id="welcomeExistingGame" class="welcomeText welcomeExistingGame hidden">
-        What is the game id? <br />
+        What is the game code? <br />
         <input id="gameStateIdInput" class="gameStateIdInput" maxlength="4"/>
     </div>
     <div id="startGameButtons" class="hidden">
@@ -52,14 +52,19 @@
         <div id="welcomeCancelButton" class="center defaultButton welcomeButton">Cancel</div>
     </div>
     <div id="welcomeErrorMessage" class="welcomeErrorMessage hidden"></div>
+</div>
 
-    <div id="welcomeJoinGame" class="welcomeText hidden">
+<div id="welcomeJoinGame" class="welcomeContainer hidden">
+    <div class="welcomeText">
         Welcome to Picture Panels!<br />
-        <div id="welcomeGameStateId" class="welcomeGameStateId"></div>
         To join in, scan this QR code, or go to <a href="https://picturepanels.net/" target="_blank">https://picturepanels.net/</a>.
     </div>
-    <div id="welcomeQRCode" class="welcomeQRCode hidden">
+    <div id="welcomeQRCode" class="welcomeQRCode">
         <img src="~/img/qrcode.svg" alt="Welcome QR Code" asp-append-version="true">
+    </div>
+    <div id="welcomeGameCode" class="welcomeGameCode">
+        Game Code:
+        <div id="welcomeGameStateId" class="welcomeGameStateId"></div>
     </div>
 </div>
 
@@ -74,12 +79,12 @@
         <div id="teamOneGuessText" class="teamGuess teamOneBox teamOneGuess hideIfEmpty animate__animated"></div>
     </div>
     <div class="teamBox teamOneBox teamInfo teamScore">
-        <div id="teamOneScoreText"></div>
+        <div id="teamOneScoreText">0</div>
         <div id="teamOneScoreChange" class="teamOneBox teamScoreChange hideIfEmpty animate__animated"></div>
     </div>
     <div id="teamStatus" class="teamInfo teamStatus"></div>
     <div class="teamBox teamTwoBox teamInfo teamScore">
-        <div id="teamTwoScoreText"></div>
+        <div id="teamTwoScoreText">0</div>
         <div id="teamTwoScoreChange" class="teamTwoBox teamScoreChange hideIfEmpty animate__animated"></div>
     </div>
     <div id="teamTwoDiv" class="teamInfo teamNameBox">
@@ -93,7 +98,8 @@
     </div>
 
 </div>
-<div class="roundNumberCorner">
+
+<div id="roundNumberCorner" class="roundNumberCorner hidden">
     Round <span id="roundNumber"></span>
 </div>
 
@@ -110,8 +116,8 @@
     </div>
 </div>
 
-<div id="teamOnePlayerNames" class="teamPlayerNames"></div>
-<div id="teamTwoPlayerNames" class="teamPlayerNames"></div>
+<div id="teamOnePlayerNames" class="teamPlayerNames teamOnePlayerNames"></div>
+<div id="teamTwoPlayerNames" class="teamPlayerNames teamTwoPlayerNames"></div>
 
 <div class="uploadedByContainer fadedDisplayBox">
     <div id="uploadedBy" class="fadedDisplayBoxTitle animate__hidden">

@@ -312,6 +312,21 @@ function drawMostVotesPanels(resetPanels) {
     }
 }
 
+function drawWelcome(gameState) {
+    if (gameState.turnType === "Welcome") {
+        document.getElementById("welcomeJoinGame").classList.remove("hidden");
+
+        document.getElementById("teamOnePlayerNames").classList.add("welcomePlayerNames");
+        document.getElementById("teamTwoPlayerNames").classList.add("welcomePlayerNames");
+        document.getElementById("welcomeGameStateId").innerHTML = gameState.gameStateId;
+    } else {
+        document.getElementById("welcomeJoinGame").classList.add("hidden");
+
+        document.getElementById("teamOnePlayerNames").classList.remove("welcomePlayerNames");
+        document.getElementById("teamTwoPlayerNames").classList.remove("welcomePlayerNames");
+    }
+}
+
 function drawTeamStatus(gameState) {
     var teamStatus = document.getElementById("teamStatus");
     var teamOneCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
@@ -334,11 +349,6 @@ function drawTeamStatus(gameState) {
     }
 
     switch (gameState.turnType) {
-        case "Welcome":
-            teamStatus.innerHTML = "";
-            stopCountdown(activeTeamCountdownCanvas);
-            stopCountdown(passiveTeamCountdownCanvas);
-            break;
         case "OpenPanel":
             if (gameState.teamTurn === 1) {
                 teamStatus.innerHTML = "&larr; Open a Panel";
@@ -363,16 +373,19 @@ function drawTeamStatus(gameState) {
             } else {
                 updateCountdown(teamTwoCountdownCanvas, gameState);
             }
+
             break;
         case "GuessesMade":
             teamStatus.innerHTML = "Who was right?";
             stopCountdown(activeTeamCountdownCanvas);
             stopCountdown(passiveTeamCountdownCanvas);
+
             break;
         case "EndRound":
             teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
             stopCountdown(activeTeamCountdownCanvas);
             stopCountdown(passiveTeamCountdownCanvas);
+
             break;
         default:
             teamStatus.innerHTML = gameState.turnType;
@@ -856,6 +869,12 @@ async function openAllPanelsAsync() {
 var allPlayers = [];
 
 function drawRoundNumber(gameState) {
+    if (gameState.turnType === "Welcome") {
+        document.getElementById("roundNumberCorner").classList.add("hidden");
+    } else {
+        document.getElementById("roundNumberCorner").classList.remove("hidden");
+    }
+
     if (gameState.revealedPanels.length === 0 && gameState.turnType === "OpenPanel") {
         document.getElementById("roundNumberAnimateText").innerHTML = "Round " + gameState.roundNumber;
 
@@ -866,6 +885,10 @@ function drawRoundNumber(gameState) {
 }
 
 async function drawImageEntityAsync(gameState) {
+    if (gameState.turnType === "Welcome") {
+        return;
+    }
+
     var imageEntity = await getImageEntityAsync(gameState.gameStateId);
 
     if (imageEntity && imageEntity.uploadedBy !== "admin") {
@@ -884,9 +907,11 @@ async function drawImageEntityAsync(gameState) {
 }
 
 async function drawRevealedPanelsAsync(gameState) {
-    if (gameState.turnType === "EndRound") {
+    if (gameState.turnType === "Welcome" || gameState.turnType === "EndRound") {
         return openAllPanelsAsync();
-    } else if (gameState.turnType === "GuessesMade") {
+    }
+
+    if (gameState.turnType === "GuessesMade") {
         if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
             animationPromise = animationPromise.then(() => {
                 return new Promise((resolve) => {
@@ -1034,8 +1059,6 @@ function stopWelcomeAnimation() {
 var animationPromise;
 
 async function handleGameState(gameState, updateType, firstLoad) {
-    stopWelcomeAnimation();
-
     currentGameState = gameState;
 
     loadThemeCss(gameState);
@@ -1046,6 +1069,8 @@ async function handleGameState(gameState, updateType, firstLoad) {
         await resetPanelsAsync(gameState);
     }
 
+    stopWelcomeAnimation();
+    drawWelcome(gameState);
     drawGameState(gameState);
     drawRoundNumber(gameState);
     drawTeamStatus(gameState);
@@ -1184,7 +1209,6 @@ window.onload = async function () {
         await postGameStateAsync().then(gameState => {
             localStorage.setItem("gameStateId", gameState.gameStateId);
             document.getElementById("startGameButtons").classList.remove("hidden");
-            document.getElementById("welcomeGameStateId").innerHTML = gameState.gameStateId;
             document.getElementById("welcomeGameStateTeamOneName").value = gameState.teamOneName;
             document.getElementById("welcomeGameStateTeamTwoName").value = gameState.teamTwoName;
             document.getElementById("welcomeCreateGameMessage").innerHTML = "Your game is ready, make changes if you want!";
