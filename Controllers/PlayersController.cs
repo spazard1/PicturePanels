@@ -64,14 +64,14 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> PutAsync(string gameStateId, string playerId, [FromBody] PlayerEntity entity)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
-            if (playerModel == null)
+
+            if (entity.GameStateId != gameStateId || entity.PlayerId != playerId)
             {
-                return StatusCode(404);
+                return StatusCode(400);
             }
 
             var isNewPlayer = false;
-            var notifyTeam = isNewPlayer || playerModel.TeamNumber != entity.TeamNumber ||
-                playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
+            bool notifyTeam = true;
 
             if (playerModel == null)
             {
@@ -99,6 +99,9 @@ namespace PicturePanels.Controllers
                     pm.LastPingTime = DateTime.UtcNow;
                     pm.ConnectionId = entity.ConnectionId;
                 });
+
+                notifyTeam = isNewPlayer || playerModel.TeamNumber != entity.TeamNumber ||
+                    playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
             }
 
             await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);

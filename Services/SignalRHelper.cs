@@ -126,11 +126,6 @@ namespace PicturePanels.Services
             await hubContext.Clients.Group(SignalRHub.GetTeamGroupName(gameStateId, teamNumber)).DeleteTeamGuess(teamGuessEntity);
         }
 
-        public async Task ChatAsync(ChatEntity chatEntity, int teamNumber)
-        {
-            await hubContext.Clients.Group(SignalRHub.GetTeamGroupName(chatEntity.GameStateId, teamNumber)).Chat(chatEntity);
-        }
-
         public async Task ChatAsync(ChatEntity chatEntity)
         {
             await hubContext.Clients.Group(SignalRHub.GetTeamGroupName(chatEntity.GameStateId, int.Parse(chatEntity.TeamNumber))).Chat(chatEntity);
