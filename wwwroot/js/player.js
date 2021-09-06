@@ -510,6 +510,11 @@ function handleGameState(gameState, updateType) {
 function drawTeamGuesses(teamGuesses) {
     var teamGuessesElement = document.getElementById("teamGuesses");
     teamGuessesElement.innerHTML = "";
+
+    if (!teamGuesses) {
+        return;
+    }
+    
     teamGuesses.forEach(drawTeamGuess);
 }
 
