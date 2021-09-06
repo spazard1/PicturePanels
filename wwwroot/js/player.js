@@ -1,14 +1,24 @@
 ﻿async function putStartGameAsync() {
-    await fetch("api/gameState/" + localStorage.getItem("gameStateId") + "/start",
+    await fetch("api/gameState/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/start",
         {
             method: "PUT",
         });
 }
 
 async function putCancelStartGameAsync() {
-    await fetch("api/gameState/" + localStorage.getItem("gameStateId") + "/cancelStart",
+    await fetch("api/gameState/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/cancelStart",
         {
             method: "PUT",
+        });
+}
+
+async function getSmallestTeamAsync() {
+    return await fetch("/api/gameState/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/smallestTeam")
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return;
         });
 }
 
@@ -337,34 +347,13 @@ function setupTeamSelectionButtons() {
 async function smallestTeamChosenAsync() {
     document.getElementById("chooseSmallestTeam").innerHTML = "Loading...";
 
-    await fetch("api/players" + localStorage.getItem("gameStateId") + "/")
-        .then(response => response.json())
-        .then(responseJson => {
-            var teamOneCount = 0;
-            var teamTwoCount = 0;
-            for (var i = 0; i < responseJson.length; i++) {
-                if (responseJson[i].playerId === localStorage.getItem("playerId")) {
-                    continue;
-                }
-                if (responseJson[i].teamNumber === 1) {
-                    teamOneCount++;
-                } else {
-                    teamTwoCount++;
-                }
-            }
-
-            if (teamOneCount < teamTwoCount) {
-                teamChosen(1);
-            } else if (teamOneCount > teamTwoCount) {
-                teamChosen(2);
-            } else {
-                if (Math.random() < .5) {
-                    teamChosen(1);
-                } else {
-                    teamChosen(2);
-                }
-            }
-        });
+    await getSmallestTeamAsync().then(entity => {
+        if (entity) {
+            teamChosen(entity.teamNumber);
+        } else {
+            teamChosen(Math.ceil(Math.random() * 2));
+        }
+    });
 }
 
 function drawTeam(teamNumber) {

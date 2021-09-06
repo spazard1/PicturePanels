@@ -11,6 +11,7 @@ namespace PicturePanels.Entities
 
         public ChatEntity(ChatTableEntity tableEntity, PlayerTableEntity playerEntity)
         {
+            this.GameStateId = tableEntity.GameStateId;
             this.TeamNumber = tableEntity.TeamNumber;
             this.Message = tableEntity.Message;
             this.Ticks = tableEntity.CreatedTime.Ticks.ToString();
@@ -20,11 +21,14 @@ namespace PicturePanels.Entities
 
         public ChatEntity(ChatTableEntity tableEntity)
         {
+            this.GameStateId = tableEntity.GameStateId;
             this.TeamNumber = tableEntity.TeamNumber;
             this.Message = tableEntity.Message;
             this.Ticks = tableEntity.CreatedTime.Ticks.ToString();
             this.IsSystem = tableEntity.IsSystem;
         }
+
+        public string GameStateId { get; set; }
 
         public string TeamNumber { get; set; }
 

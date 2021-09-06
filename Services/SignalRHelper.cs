@@ -138,6 +138,11 @@ namespace PicturePanels.Services
             await hubContext.Clients.Group(SignalRHub.TeamGroup(chatEntity.Player.TeamNumber)).Chat(chatEntity);
         }
 
+        public async Task ChatAsync(ChatEntity chatEntity, int teamNumber)
+        {
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).Chat(chatEntity);
+        }
+
         public async Task VoteTeamGuessAsync(string oldVote, string newVote, int teamNumber)
         {
             await hubContext.Clients.Group(SignalRHub.TeamGroup(teamNumber)).VoteTeamGuess(oldVote, newVote);
