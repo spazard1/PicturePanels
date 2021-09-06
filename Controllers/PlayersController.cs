@@ -64,7 +64,14 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> PutAsync(string gameStateId, string playerId, [FromBody] PlayerEntity entity)
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
             var isNewPlayer = false;
+            var notifyTeam = isNewPlayer || playerModel.TeamNumber != entity.TeamNumber ||
+                playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
 
             if (playerModel == null)
             {
@@ -93,9 +100,6 @@ namespace PicturePanels.Controllers
                     pm.ConnectionId = entity.ConnectionId;
                 });
             }
-
-            var notifyTeam = isNewPlayer || playerModel.TeamNumber != entity.TeamNumber ||
-                playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
 
             await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
 

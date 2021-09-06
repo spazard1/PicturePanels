@@ -255,11 +255,11 @@ async function sendSelectedPanels() {
     }
 
     await connection.invoke("SelectPanels", {
-        GameStateId: localStorage.getItem("gameStateId"),
-        PlayerId: localStorage.getItem("playerId"),
-        Name: localStorage.getItem("playerName"),
-        TeamNumber: parseInt(localStorage.getItem("teamNumber")),
-        SelectedPanels: selectedPanels
+        gameStateId: localStorage.getItem("gameStateId"),
+        playerId: localStorage.getItem("playerId"),
+        name: localStorage.getItem("playerName"),
+        teamNumber: parseInt(localStorage.getItem("teamNumber")),
+        selectedPanels: selectedPanels
     });
 }
 
