@@ -255,7 +255,7 @@ namespace PicturePanels.Controllers
                 }
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState), updateType);
+            await hubContext.Clients.Group(SignalRHub.AllGroup(id)).GameState(new GameStateEntity(gameState), updateType);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -278,7 +278,7 @@ namespace PicturePanels.Controllers
                 gs.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(id)).GameState(new GameStateEntity(gameState));
 
             return Json(new GameStateEntity(gameState));
         }
@@ -358,7 +358,7 @@ namespace PicturePanels.Controllers
                 gs.ClearGuesses();
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(id)).GameState(new GameStateEntity(gameState));
 
             return Json(new GameStateEntity(gameState));
         }
