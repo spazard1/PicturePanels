@@ -144,7 +144,7 @@ async function resetPanelsAsync(gameState) {
     for (var panel of panels) {
         resetPanel(panel, entranceAnimation, delay);
         delay += 50;
-        imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.gameStateId + "/0"));
+        imagePromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/0"));
     }
 
     var mostVotesPanelElements = document.getElementsByClassName("mostVotesPanel");
@@ -848,7 +848,7 @@ async function openAllPanelsAsync() {
     var delayTimeout = 0;
     var loadPromises = [];
     panelsArray.forEach(function (panel) {
-        loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + panel.panelNumber));
+        loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + currentGameState.roundNumber + "/" + panel.panelNumber));
     });
 
     await Promise.all(loadPromises);
@@ -941,14 +941,14 @@ async function drawRevealedPanelsAsync(gameState) {
         var panelImage = panel.lastChild;
 
         if (gameState.revealedPanels.includes(panel.panelNumber)) {
-            loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.gameStateId + "/" + panel.panelNumber).then((panelImageLoaded) => {
+            loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/" + panel.panelNumber).then((panelImageLoaded) => {
                 openPanel(panelImageLoaded.parentElement);
             }));
 
             hidePlayerDots(panel.panelNumber);
         } else {
             panel.classList.remove("panelOpen");
-            panelImage.src = "/api/images/panels/" + gameState.gameStateId + "/0";
+            panelImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/0";
         }
     }
 
@@ -1025,7 +1025,7 @@ function setupWelcomeAnimationAsync() {
 
     for (var panel of panels) {
         panel.classList.remove("panelOpen");
-        promises.push(loadImageAsync(panel.lastChild, "/api/images/panels/welcome/" + panel.panelNumber));
+        promises.push(loadImageAsync(panel.lastChild, "/api/images/panels/welcome/0/" + panel.panelNumber));
     }
 
     return Promise.all(promises);

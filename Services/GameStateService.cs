@@ -75,7 +75,7 @@ namespace PicturePanels.Services
              await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
         }
 
-        public async Task<GameStateTableEntity> QueueStartGameAsync(GameStateTableEntity gameState)
+        public async Task<GameStateTableEntity> QueueStartGameAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
@@ -84,6 +84,8 @@ namespace PicturePanels.Services
 
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+
+            await this.chatService.SendBroadcastAsync(playerModel, "has started the game!");
             return gameState;
         }
 
@@ -99,7 +101,7 @@ namespace PicturePanels.Services
             return gameState;
         }
 
-        public async Task<GameStateTableEntity> CancelStartGameAsync(GameStateTableEntity gameState)
+        public async Task<GameStateTableEntity> CancelStartGameAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
@@ -107,6 +109,8 @@ namespace PicturePanels.Services
             });
 
             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await this.chatService.SendBroadcastAsync(playerModel, "canceled the start of the game.");
+
             return gameState;
         }
 
@@ -265,6 +269,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             return gameState;
         }
@@ -290,21 +295,19 @@ namespace PicturePanels.Services
             var teamGuess = await this.GetMostVotesTeamGuessAsync(gameState, playerModel.TeamNumber);
             if (teamGuess == null)
             {
-                try
-                {
-                    gameState = await this.PassAsync(gameState, playerModel.TeamNumber);
-                    await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
-                } catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-                return gameState;
+                gameState = await this.PassAsync(gameState, playerModel.TeamNumber);
+                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
             }
-            
-            gameState = await this.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
-            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
-            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
-            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
+            else
+            {
+                gameState = await this.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
+                await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
+                await this.teamGuessTableStorage.DeleteAsync(teamGuess);
+            }
+
+            gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
 
             return gameState;
         }
@@ -394,9 +397,6 @@ namespace PicturePanels.Services
                 });
 
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
-
-                await hubContext.Clients.All.GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
-
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
             }
 

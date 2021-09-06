@@ -195,14 +195,14 @@ function updatePanelButtons(gameState, disabledPanels) {
         if (gameState.revealedPanels.includes(panelButton.value)) {
             panelButton.classList.add("panelButtonDisabled");
             panelButton.classList.remove("panelButtonSelected");
-            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + panelButton.value;
+            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/" + panelButton.value;
         } else if (disabledPanels.includes(panelButton.value)) { 
             panelButton.classList.add("panelButtonDisabled");
             panelButton.classList.remove("panelButtonSelected");
-            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/0";
+            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/0";
         } else {
             panelButton.classList.remove("panelButtonDisabled");
-            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/0";
+            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/0";
         }
     }
 }

@@ -162,11 +162,7 @@ namespace PicturePanels.Controllers
 
             var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber).ToListAsync();
 
-            if (players.Count == 1)
-            {
-                await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
-            }
-            else if (players.Any(p => p.IsReady))
+            if (players.Count == 1 || players.Any(p => p.IsReady && p.PlayerId != playerId))
             {
                 await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
             }
