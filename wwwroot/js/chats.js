@@ -159,7 +159,7 @@ function drawChat(chatsElementId, chat, skipScroll) {
         chatElement.classList.add("systemChat");
     }
 
-    if (!chat.isSystem && chat.player.playerId === localStorage.getItem("playerId")) {
+    if (!chat.isSystem && chat.player && chat.player.playerId === localStorage.getItem("playerId")) {
         chatElement.classList.add("selfChat");
 
         chatMessage = document.createElement("span");
