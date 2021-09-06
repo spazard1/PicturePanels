@@ -25,14 +25,19 @@ namespace PicturePanels.Services
             this.gameStateService = gameStateService;
         }
 
-        public static string GetTeamGroupName(string gameStateId, int teamNumber)
+        public static string TeamGroup(string gameStateId, int teamNumber)
         {
              return gameStateId + "_team_" + teamNumber;        
         }
 
-        public static string GetGameBoardGroupName(string gameStateId)
+        public static string GameBoardGroup(string gameStateId)
         {
             return gameStateId + "_gameboard";
+        }
+
+        public static string AllGroup(string gameStateId)
+        {
+            return gameStateId + "_all";
         }
 
         public async Task GameBoardPing(string gameStateId)
@@ -46,7 +51,8 @@ namespace PicturePanels.Services
         public async Task RegisterGameBoard(string gameStateId)
         {
             await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
-            await Groups.AddToGroupAsync(Context.ConnectionId, GetGameBoardGroupName(gameStateId));
+            await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup(gameStateId));
+            await Groups.AddToGroupAsync(Context.ConnectionId, AllGroup(gameStateId));
         }
 
         private static readonly Regex MultipleNewLines = new(@"([\r\n])+");
@@ -112,7 +118,7 @@ namespace PicturePanels.Services
                 pm.SelectedPanels = entity.SelectedPanels;
             });
 
-            await Clients.Group(GetGameBoardGroupName(entity.GameStateId)).SelectPanels(new PlayerEntity(playerModel));
+            await Clients.Group(GameBoardGroup(entity.GameStateId)).SelectPanels(new PlayerEntity(playerModel));
         }
     }
 }

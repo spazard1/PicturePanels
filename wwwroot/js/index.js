@@ -35,17 +35,21 @@ async function getPlayerAsync() {
         return null;
     }
     return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"))
-        .then(response => response.json())
-        .then(responseJson => {
-            return responseJson;
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return;
         });
 }
 
 async function getPlayersAsync() {
     return await fetch("/api/players/" + localStorage.getItem("gameStateId") + "/")
-        .then(response => response.json())
-        .then(responseJson => {
-            return responseJson;
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return;
         });
 }
 
@@ -57,6 +61,7 @@ async function putPlayerAsync() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
+                GameStateId: localStorage.getItem("gameStateId"),
                 PlayerId: localStorage.getItem("playerId"),
                 Name: localStorage.getItem("playerName"),
                 TeamNumber: parseInt(localStorage.getItem("teamNumber")),

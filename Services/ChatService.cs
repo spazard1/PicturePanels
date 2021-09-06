@@ -22,22 +22,24 @@ namespace PicturePanels.Services
             await signalRHelper.ChatAsync(new ChatEntity(chatModel, player));
         }
 
-        public async Task SendBroadcastAsync(PlayerTableEntity player, string message)
+        public async Task SendBroadcastAsync(PlayerTableEntity playerModel, string message)
         {
             await signalRHelper.ChatAsync(new ChatEntity()
             {
-                GameStateId = player.GameStateId,
+                GameStateId = playerModel.GameStateId,
                 TeamNumber = "1",
                 Message = message,
-                IsSystem = true
+                IsSystem = true,
+                Player = new PlayerEntity(playerModel)
             });
 
             await signalRHelper.ChatAsync(new ChatEntity()
             {
-                GameStateId = player.GameStateId,
+                GameStateId = playerModel.GameStateId,
                 TeamNumber = "2",
                 Message = message,
-                IsSystem = true
+                IsSystem = true,
+                Player = new PlayerEntity(playerModel)
             });
         }
 
