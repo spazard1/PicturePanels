@@ -72,7 +72,7 @@ namespace PicturePanels.Services
                     break;
             }
 
-             await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
         }
 
         public async Task<GameStateTableEntity> QueueStartGameAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
@@ -82,10 +82,10 @@ namespace PicturePanels.Services
                 gs.TurnEndTime = DateTime.UtcNow.AddSeconds(10);
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
-
             await this.chatService.SendBroadcastAsync(playerModel, "has started the game!");
+
             return gameState;
         }
 
@@ -96,7 +96,7 @@ namespace PicturePanels.Services
                 gs.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
             return gameState;
         }
@@ -108,7 +108,7 @@ namespace PicturePanels.Services
                 gs.TurnEndTime = null;
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.chatService.SendBroadcastAsync(playerModel, "canceled the start of the game.");
 
             return gameState;
@@ -146,8 +146,7 @@ namespace PicturePanels.Services
             });
 
             await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
-
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
@@ -232,7 +231,7 @@ namespace PicturePanels.Services
             {
                 gs.OpenPanel(panelId, true);
             });
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
 
             return gameState;
         }
@@ -269,7 +268,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
 
             return gameState;
         }
@@ -307,7 +306,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
 
             return gameState;
         }
@@ -426,7 +425,7 @@ namespace PicturePanels.Services
                 }
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState), updateType);
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), updateType);
 
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
@@ -440,7 +439,7 @@ namespace PicturePanels.Services
                 gs.NewRound();
             });
 
-            await hubContext.Clients.All.GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewRound);
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewRound);
 
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 

@@ -40,7 +40,7 @@ namespace PicturePanels.Models
         public string SignalRTeamGroupName {
            get
            {
-                return SignalRHub.GetTeamGroupName(GameStateId, TeamNumber);
+                return SignalRHub.TeamGroup(GameStateId, TeamNumber);
            }
         }
 
