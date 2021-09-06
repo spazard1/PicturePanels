@@ -15,9 +15,6 @@ namespace PicturePanels.Services
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ChatTableStorage chatTableStorage;
         private readonly GameStateService gameStateService;
-        public const string GameBoardGroup = "gameboard";
-        public const string TeamOneGroup = "teamone";
-        public const string TeamTwoGroup = "teamtwo";
 
         public SignalRHub(PlayerTableStorage playerTableStorage,
             ChatTableStorage chatTableStorage, 
@@ -28,25 +25,14 @@ namespace PicturePanels.Services
             this.gameStateService = gameStateService;
         }
 
-        public static string TeamGroup(int teamNumber)
+        public static string GetTeamGroupName(string gameStateId, int teamNumber)
         {
-            if (teamNumber == 1)
-            {
-                return TeamOneGroup;
-            }
-            else
-            {
-                return TeamTwoGroup;
-            }
+             return gameStateId + "_team_" + teamNumber;        
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public static string GetGameBoardGroupName(string gameStateId)
         {
-            var removeOne = Groups.RemoveFromGroupAsync(Context.ConnectionId, SignalRHub.TeamOneGroup);
-            var removeTwo = Groups.RemoveFromGroupAsync(Context.ConnectionId, SignalRHub.TeamTwoGroup);
-            var removeGameboard = Groups.RemoveFromGroupAsync(Context.ConnectionId, SignalRHub.GameBoardGroup);
-
-            await Task.CompletedTask;
+            return gameStateId + "_gameboard";
         }
 
         public async Task GameBoardPing(string gameStateId)
@@ -60,7 +46,7 @@ namespace PicturePanels.Services
         public async Task RegisterGameBoard(string gameStateId)
         {
             await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
-            await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup);
+            await Groups.AddToGroupAsync(Context.ConnectionId, GetGameBoardGroupName(gameStateId));
         }
 
         private static readonly Regex MultipleNewLines = new(@"([\r\n])+");
@@ -89,7 +75,7 @@ namespace PicturePanels.Services
 
             var chatModel = await this.chatTableStorage.InsertAsync(playerModel, message);
 
-            await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Chat(new ChatEntity(chatModel, playerModel));
+            await Clients.GroupExcept(playerModel.SignalRTeamGroupName, new List<string>() { Context.ConnectionId }).Chat(new ChatEntity(chatModel, playerModel));
         }
 
         public async Task Typing(PlayerEntity entity)
@@ -105,7 +91,7 @@ namespace PicturePanels.Services
                 playerModel.TeamNumber = entity.TeamNumber;
             }
 
-            await Clients.GroupExcept(playerModel.SignalRGroup, new List<string>() { Context.ConnectionId }).Typing(new PlayerEntity(playerModel));
+            await Clients.GroupExcept(playerModel.SignalRTeamGroupName, new List<string>() { Context.ConnectionId }).Typing(new PlayerEntity(playerModel));
         }
 
         public async Task SelectPanels(PlayerEntity entity)
@@ -126,26 +112,7 @@ namespace PicturePanels.Services
                 pm.SelectedPanels = entity.SelectedPanels;
             });
 
-            await Clients.Group(GameBoardGroup).SelectPanels(new PlayerEntity(playerModel));
-        }
-
-        public async Task AddPlayerToTeamGroupAsync(PlayerTableEntity playerModel)
-        {
-            if (string.IsNullOrWhiteSpace(playerModel.ConnectionId))
-            {
-                return;
-            }
-
-            if (playerModel.TeamNumber == 1)
-            {
-                var remove = Groups.RemoveFromGroupAsync(playerModel.ConnectionId, SignalRHub.TeamTwoGroup);
-                await Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamOneGroup);
-            }
-            else
-            {
-                var remove = Groups.RemoveFromGroupAsync(playerModel.ConnectionId, SignalRHub.TeamOneGroup);
-                await Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamTwoGroup);
-            }
+            await Clients.Group(GetGameBoardGroupName(entity.GameStateId)).SelectPanels(new PlayerEntity(playerModel));
         }
     }
 }
