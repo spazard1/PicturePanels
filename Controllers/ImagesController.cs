@@ -204,8 +204,8 @@ namespace PicturePanels.Controllers
         }
         
 
-        [HttpGet("panels/{gameStateId}/{panelNumber:int}")]
-        public async Task<IActionResult> GetPanelImageAsync(string gameStateId, int panelNumber)
+        [HttpGet("panels/{gameStateId}/{roundNumber:int}/{panelNumber:int}")]
+        public async Task<IActionResult> GetPanelImageAsync(string gameStateId, int roundNumber, int panelNumber)
         {
             if (panelNumber < 0 || panelNumber > ImageTableStorage.Across * ImageTableStorage.Down)
             {

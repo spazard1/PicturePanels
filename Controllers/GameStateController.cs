@@ -20,6 +20,7 @@ namespace PicturePanels.Controllers
     {
         private readonly GameStateTableStorage gameStateTableStorage;
         private readonly ImageTableStorage imageTableStorage;
+        private readonly PlayerTableStorage playerTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
@@ -27,6 +28,7 @@ namespace PicturePanels.Controllers
 
         public GameStateController(GameStateTableStorage gameStateTableStorage,
             ImageTableStorage imageTableStorage,
+            PlayerTableStorage playerTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
             SignalRHelper signalRHelper,
@@ -34,6 +36,7 @@ namespace PicturePanels.Controllers
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.imageTableStorage = imageTableStorage;
+            this.playerTableStorage = playerTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
             this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
@@ -130,8 +133,8 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id}/start")]
-        public async Task<IActionResult> PutStartAsync(string id)
+        [HttpPut("{id}/{playerId}/start")]
+        public async Task<IActionResult> PutStartAsync(string id, string playerId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
@@ -144,13 +147,19 @@ namespace PicturePanels.Controllers
                 return StatusCode(403);
             }
 
-            await this.gameStateService.QueueStartGameAsync(gameState);
+            var playerModel = await this.playerTableStorage.GetAsync(id, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            await this.gameStateService.QueueStartGameAsync(gameState, playerModel);
 
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id}/cancelStart")]
-        public async Task<IActionResult> PutCancelStartAsync(string id)
+        [HttpPut("{id}/{playerId}/cancelStart")]
+        public async Task<IActionResult> PutCancelStartAsync(string id, string playerId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
@@ -163,9 +172,45 @@ namespace PicturePanels.Controllers
                 return StatusCode(403);
             }
 
-            await this.gameStateService.CancelStartGameAsync(gameState);
+            var playerModel = await this.playerTableStorage.GetAsync(id, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            await this.gameStateService.CancelStartGameAsync(gameState, playerModel);
 
             return Json(new GameStateEntity(gameState));
+        }
+
+        [HttpGet("{id}/{playerId}/smallestTeam")]
+        public async Task<IActionResult> GetSmallestTeamAsync(string id, string playerId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            var playerModel = await this.playerTableStorage.GetAsync(id, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            var allPlayers = this.playerTableStorage.GetActivePlayersAsync(id);
+            var teamOneCount = await allPlayers.CountAsync(player => player.TeamNumber == 1 && player.PlayerId != playerId);
+            var teamTwoCount = await allPlayers.CountAsync(player => player.TeamNumber == 2 && player.PlayerId != playerId);
+
+            if (teamOneCount == teamTwoCount)
+            {
+                return Json(new TeamNumberEntity() { TeamNumber = new Random().Next(1) + 1 });
+            }
+            else if (teamOneCount < teamTwoCount)
+            {
+                return Json(new TeamNumberEntity() { TeamNumber = 1 });
+            }
+            return Json(new TeamNumberEntity() { TeamNumber = 2 });
         }
 
         /*
