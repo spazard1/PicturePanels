@@ -175,6 +175,14 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
+            var user = await this.userTableStorage.GetAsync(imageTableEntity.UploadedBy);
+            string uploadedBy = string.Empty;
+
+            if (user != null)
+            {
+                uploadedBy = user.Name;
+            }
+
             ImageEntity imageEntity;
 
             if (gameState.IsRoundOver())
@@ -182,14 +190,14 @@ namespace PicturePanels.Controllers
                 imageEntity = new ImageEntity
                 {
                     Name = imageTableEntity.Name,
-                    UploadedBy = imageTableEntity.UploadedBy
+                    UploadedBy = uploadedBy
                 };
             }
             else
             {
                 imageEntity = new ImageEntity
                 {
-                    UploadedBy = imageTableEntity.UploadedBy
+                    UploadedBy = uploadedBy
                 };
             }
             return Json(imageEntity);
@@ -237,7 +245,7 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, 0);
+            await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, panelNumber);
             return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(gameRoundEntity.ImageId, panelNumber));
         }
 

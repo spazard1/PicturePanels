@@ -99,6 +99,27 @@ namespace PicturePanels.Services
             return gameState;
         }
 
+        public async Task<GameStateTableEntity> CancelStartGameAsync(GameStateTableEntity gameState)
+        {
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.TurnEndTime = null;
+            });
+
+            await hubContext.Clients.All.GameState(new GameStateEntity(gameState));
+            return gameState;
+        }
+
+        public async Task QueueNextTurnIfNeeded(string gameStateId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+
+            if (gameState.TurnEndTime.HasValue && gameState.TurnEndTime.Value.AddSeconds(10) > DateTime.UtcNow)
+            {
+                await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+            }
+        }
+
         public async Task PlayerReadyAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
         {
             if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
@@ -269,8 +290,14 @@ namespace PicturePanels.Services
             var teamGuess = await this.GetMostVotesTeamGuessAsync(gameState, playerModel.TeamNumber);
             if (teamGuess == null)
             {
-                gameState = await this.PassAsync(gameState, playerModel.TeamNumber);
-                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
+                try
+                {
+                    gameState = await this.PassAsync(gameState, playerModel.TeamNumber);
+                    await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
                 return gameState;
             }
             
@@ -313,7 +340,7 @@ namespace PicturePanels.Services
                 }
             }
 
-            if (mostVotesTeamGuesses.Contains(GameStateTableEntity.TeamGuessStatusPass))
+            if (mostVotesTeamGuesses.Contains(GameStateTableEntity.TeamGuessStatusPass) || maxVoteCount == 0)
             {
                 return null;
             }

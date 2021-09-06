@@ -1,4 +1,18 @@
-﻿async function panelButtonOnClick(event) {
+﻿async function putStartGameAsync() {
+    await fetch("api/gameState/" + localStorage.getItem("gameStateId") + "/start",
+        {
+            method: "PUT",
+        });
+}
+
+async function putCancelStartGameAsync() {
+    await fetch("api/gameState/" + localStorage.getItem("gameStateId") + "/cancelStart",
+        {
+            method: "PUT",
+        });
+}
+
+async function panelButtonOnClick(event) {
     if (event.currentTarget.classList.contains("panelButtonDisabled")) {
         event.currentTarget.classList.remove("panelButtonSelected");
         return;
@@ -395,23 +409,27 @@ function drawTurnType(gameState) {
 
     document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageCorrect");
 
-    if (gameState.turnType === "Welcome") {
-        document.getElementById("turnStatusMessage").classList.add("opacity0");
-        document.getElementById("panelButtons").classList.add("hidden");
-    } else if (gameState.turnType === "EndRound") {
-        document.getElementById("turnStatusMessage").classList.add("opacity0");
-        document.getElementById("panelButtons").classList.add("hidden");
-        document.getElementById("turnStatusMessage").innerHTML = "This round is over.";
-    }
-
-    if (gameState.turnType !== "MakeGuess") {
-        setInputDefaultText("chats_inputText", "chat with your team...");
-    } else {
-        setInputDefaultText("chats_inputText", "chat or guess...");
-    }
-
     switch (gameState.turnType) {
+        case "Welcome":
+
+            if (!gameState.turnEndTime) {
+                document.getElementById("startGameButton").classList.remove("hidden");
+                document.getElementById("cancelStartGameButton").classList.add("hidden");
+            } else {
+                document.getElementById("startGameButton").classList.add("hidden");
+                document.getElementById("cancelStartGameButton").classList.remove("hidden");
+            }
+
+            document.getElementById("panelButtons").classList.add("hidden");
+            document.getElementById("playerReadyButton").classList.add("hidden");
+            document.getElementById("teamGuessButton").classList.add("hidden");
+            document.getElementById("teamGuesses").classList.add("hidden");
+            document.getElementById("turnStatusMessage").classList.add("opacity0");
+            break;
         case "OpenPanel":
+            document.getElementById("startGameButton").classList.add("hidden");
+            document.getElementById("cancelStartGameButton").classList.add("hidden");
+
             document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
 
@@ -428,6 +446,10 @@ function drawTurnType(gameState) {
             }
             break;
         case "MakeGuess":
+            document.getElementById("startGameButton").classList.add("hidden");
+            document.getElementById("cancelStartGameButton").classList.add("hidden");
+            document.getElementById("panelButtons").classList.add("hidden");
+
             if ((localStorage.getItem("teamNumber") === "1" && gameState.teamOneGuessStatus) ||
                 (localStorage.getItem("teamNumber") === "2" && gameState.teamTwoGuessStatus)) {
                 document.getElementById("playerReadyButton").classList.add("hidden");
@@ -442,21 +464,25 @@ function drawTurnType(gameState) {
                 document.getElementById("turnStatusMessage").classList.remove("opacity0");
             }
 
-            document.getElementById("panelButtons").classList.add("hidden");
-
             document.getElementById("turnStatusMessage").innerHTML = "Submit and Vote for Guesses";
             highlightturnStatusMessage();
 
             break;
         case "GuessesMade":
+            document.getElementById("startGameButton").classList.add("hidden");
+            document.getElementById("cancelStartGameButton").classList.add("hidden");
             document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("playerReadyButton").classList.add("hidden");
             document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
             document.getElementById("turnStatusMessage").classList.add("opacity0");
             break;
-        default:
+        case "EndRound":
+            document.getElementById("startGameButton").classList.add("hidden");
+            document.getElementById("cancelStartGameButton").classList.add("hidden");
+            document.getElementById("turnStatusMessage").classList.add("opacity0");
             document.getElementById("panelButtons").classList.add("hidden");
+
             document.getElementById("playerReadyButton").classList.add("hidden");
             document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
@@ -490,10 +516,6 @@ function handleGameState(gameState, updateType) {
     drawTurnType(gameState);
 
     updatePlayerPanelButtons(gameState);
-
-    if (gameState.turnType === "Welcome") {
-        drawSystemChat("chats", { message: "Welcome to the Picture Panels game!" });
-    }
 }
 
 function drawTeamGuesses(teamGuesses) {
@@ -713,14 +735,20 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
-    var teamGuessButton = document.getElementById("teamGuessButton");
-    teamGuessButton.onclick = (event) => {
+    document.getElementById("teamGuessButton").onclick = (event) => {
         promptTeamGuess();
     }
 
-    var playerReadyButton = document.getElementById("playerReadyButton");
-    playerReadyButton.onclick = (event) => {
+    document.getElementById("playerReadyButton").onclick = (event) => {
         putPlayerReadyAsync();
+    }
+
+    document.getElementById("startGameButton").onclick = (event) => {
+        putStartGameAsync();
+    }
+
+    document.getElementById("cancelStartGameButton").onclick = (event) => {
+        putCancelStartGameAsync();
     }
 
     drawPanelButtons();

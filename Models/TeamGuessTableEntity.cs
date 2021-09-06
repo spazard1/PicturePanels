@@ -13,6 +13,11 @@ namespace PicturePanels.Models
             return gameStateId + "_" + teamNumber;
         }
 
+        public string GetPartitionKey()
+        {
+            return GetPartitionKey(GameStateId, TeamNumber);
+        }
+
         public string GameStateId { get; set; }
 
         public string TeamNumber { get; set; }
@@ -29,9 +34,8 @@ namespace PicturePanels.Models
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
-            this.PartitionKey = GameStateId + "_" + TeamNumber;
-
             var result = base.WriteEntity(operationContext);
+            result[nameof(this.PartitionKey)] = new EntityProperty(GetPartitionKey());
 
             return result;
         }
