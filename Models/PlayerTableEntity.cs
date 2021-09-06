@@ -37,10 +37,10 @@ namespace PicturePanels.Models
 
         public string ConnectionId { get; set; }
 
-        public string SignalRGroup {
+        public string SignalRTeamGroupName {
            get
            {
-                return TeamNumber == 1 ? SignalRHub.TeamOneGroup : SignalRHub.TeamTwoGroup;
+                return SignalRHub.GetTeamGroupName(GameStateId, TeamNumber);
            }
         }
 

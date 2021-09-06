@@ -156,7 +156,7 @@ namespace PicturePanels.Controllers
                 {
                     pm.IsReady = false;
                 });
-                await this.signalRHelper.ClearPlayerReadyAsync(playerModel.TeamNumber);
+                await this.signalRHelper.ClearPlayerReadyAsync(playerModel);
                 return Json(new PlayerEntity(playerModel));
             }
 
@@ -172,7 +172,7 @@ namespace PicturePanels.Controllers
                 {
                     pm.IsReady = true;
                 });
-                await this.signalRHelper.PlayerReadyAsync(new PlayerEntity(playerModel));
+                await this.signalRHelper.PlayerReadyAsync(playerModel);
             }
 
             return Json(new PlayerEntity(playerModel));
