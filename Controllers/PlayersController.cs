@@ -127,8 +127,6 @@ namespace PicturePanels.Controllers
                 pm.LastPingTime = DateTime.UtcNow;
             });
 
-            await this.signalRHelper.PlayerPingAsync(gameStateId);
-
             return Json(new PlayerEntity(playerModel));
         }
 

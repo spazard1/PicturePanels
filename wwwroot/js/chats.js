@@ -71,6 +71,7 @@ function setupChats(chatsElementId, teamNumber) {
         lastTypingTime = new Date();
 
         connection.invoke("Typing", {
+            GameStateId: localStorage.getItem("gameStateId"),
             PlayerId: localStorage.getItem("playerId"),
             Name: localStorage.getItem("playerName"),
             TeamNumber: teamNumber
@@ -314,9 +315,10 @@ async function sendChat(chatsElementId, teamNumber) {
     lastTypingTime = null;
 
     var player = {
-        playerId: localStorage.getItem("playerId"),
-        name: localStorage.getItem("playerName"),
-        teamNumber: teamNumber
+        GameStateId: localStorage.getItem("gameStateId"),
+        PlayerId: localStorage.getItem("playerId"),
+        Name: localStorage.getItem("playerName"),
+        TeamNumber: teamNumber
     };
 
     connection.invoke("Chat", player, chatInputText.value);

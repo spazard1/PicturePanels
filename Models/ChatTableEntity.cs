@@ -7,14 +7,14 @@ namespace PicturePanels.Models
 {
     public class ChatTableEntity : TableEntity
     {
-        public ChatTableEntity()
-        {
-
-        }
-
         public static string GetPartitionKey(string gameStateId, string teamNumber)
         {
             return gameStateId + "_" + teamNumber;
+        }
+
+        public string GetPartitionKey()
+        {
+            return GetPartitionKey(GameStateId, TeamNumber);
         }
 
         public string GameStateId { get; set; }
@@ -34,9 +34,8 @@ namespace PicturePanels.Models
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
-            this.PartitionKey = GameStateId + "_" + TeamNumber;
-
             var result = base.WriteEntity(operationContext);
+            result[nameof(this.PartitionKey)] = new EntityProperty(GetPartitionKey());
 
             return result;
         }

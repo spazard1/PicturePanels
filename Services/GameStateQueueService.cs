@@ -23,7 +23,7 @@ namespace PicturePanels.Services
         {
             var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState)));
 
-            await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime);
+            await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime.Value);
         }
     }
 }

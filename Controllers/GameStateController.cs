@@ -149,6 +149,25 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
+        [HttpPut("{id}/cancelStart")]
+        public async Task<IActionResult> PutCancelStartAsync(string id)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeWelcome)
+            {
+                return StatusCode(403);
+            }
+
+            await this.gameStateService.CancelStartGameAsync(gameState);
+
+            return Json(new GameStateEntity(gameState));
+        }
+
         /*
         [HttpPatch("{id}")]
         [RequireAuthorization]

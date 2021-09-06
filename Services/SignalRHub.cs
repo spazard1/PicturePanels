@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using PicturePanels.Services.Storage;
+using System.Linq;
 
 namespace PicturePanels.Services
 {
@@ -13,15 +14,18 @@ namespace PicturePanels.Services
     {
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ChatTableStorage chatTableStorage;
-        
+        private readonly GameStateService gameStateService;
         public const string GameBoardGroup = "gameboard";
         public const string TeamOneGroup = "teamone";
         public const string TeamTwoGroup = "teamtwo";
 
-        public SignalRHub(PlayerTableStorage playerTableStorage, ChatTableStorage chatTableStorage)
+        public SignalRHub(PlayerTableStorage playerTableStorage,
+            ChatTableStorage chatTableStorage, 
+            GameStateService gameStateService)
         {
             this.playerTableStorage = playerTableStorage;
             this.chatTableStorage = chatTableStorage;
+            this.gameStateService = gameStateService;
         }
 
         public static string TeamGroup(int teamNumber)
@@ -45,8 +49,17 @@ namespace PicturePanels.Services
             await Task.CompletedTask;
         }
 
-        public async Task RegisterGameBoard()
+        public async Task GameBoardPing(string gameStateId)
         {
+            await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
+
+            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId).ToListAsync();
+            await this.Clients.Caller.Players(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
+        }
+
+        public async Task RegisterGameBoard(string gameStateId)
+        {
+            await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
             await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup);
         }
 

@@ -23,9 +23,8 @@ namespace PicturePanels.Entities
             this.FinalRoundNumber = tableEntity.FinalRoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
-            this.TeamFirstTurn = tableEntity.TeamFirstTurn;
             this.TurnStartTime = tableEntity.TurnStartTime;
-            this.TurnEndTime = tableEntity.TurnEndTime.Value;
+            this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
             this.RevealedPanels = tableEntity.RevealedPanels;
             this.TeamOneName = tableEntity.TeamOneName;
             this.TeamOneScore = tableEntity.TeamOneScore;
@@ -76,8 +75,6 @@ namespace PicturePanels.Entities
 
         public double TurnTimeRemaining { get; set; }
 
-        public int? TeamFirstTurn { get; set; }
-
         public IList<string> RevealedPanels { get; set; }
 
         [MaxLength(30)]
@@ -119,7 +116,6 @@ namespace PicturePanels.Entities
             currentModel.FinalRoundNumber = this.FinalRoundNumber ?? currentModel.FinalRoundNumber;
             currentModel.TeamTurn = this.TeamTurn ?? currentModel.TeamTurn;
             currentModel.TurnType = this.TurnType ?? currentModel.TurnType;
-            currentModel.TeamFirstTurn = this.TeamFirstTurn ?? currentModel.TeamFirstTurn;
             currentModel.TeamOneName = this.TeamOneName ?? currentModel.TeamOneName;
             currentModel.TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore;
             currentModel.TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses;
