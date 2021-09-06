@@ -14,18 +14,21 @@ namespace PicturePanels.Models
 
         public GameStateUpdateMessage(GameStateTableEntity gameState)
         {
-            Id = Guid.NewGuid().ToString();
+            GameStateId = gameState.GameStateId;
             RoundNumber = gameState.RoundNumber;
             TurnType = gameState.TurnType;
             TurnNumber = gameState.TurnNumber;
+            TurnEndTime = gameState.TurnEndTime.Value;
         }
 
-        public string Id { get; set; }
+        public string GameStateId { get; set; }
 
         public int RoundNumber { get; set; }
 
         public string TurnType { get; set; }
 
         public int TurnNumber { get; set; }
+
+        public DateTime TurnEndTime { get; set; }
     }
 }

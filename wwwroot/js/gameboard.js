@@ -848,9 +848,7 @@ async function openAllPanelsAsync() {
     var delayTimeout = 0;
     var loadPromises = [];
     panelsArray.forEach(function (panel) {
-        if (!panel.classList.contains("panelOpen")) {
-            loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + panel.panelNumber));
-        }
+        loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + panel.panelNumber));
     });
 
     await Promise.all(loadPromises);
@@ -898,7 +896,7 @@ async function drawImageEntityAsync(gameState) {
 
     var imageEntity = await getImageEntityAsync(gameState.gameStateId);
 
-    if (imageEntity && imageEntity.uploadedBy !== "admin") {
+    if (imageEntity && imageEntity.uploadedBy) {
         document.getElementById("uploadedByText").innerHTML = "Uploaded by: " + imageEntity.uploadedBy;
         animateCSS("#uploadedBy", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
     } else {
@@ -943,11 +941,9 @@ async function drawRevealedPanelsAsync(gameState) {
         var panelImage = panel.lastChild;
 
         if (gameState.revealedPanels.includes(panel.panelNumber)) {
-            if (!panel.classList.contains("panelOpen")) {
-                loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.gameStateId + "/" + panel.panelNumber).then((panelImageLoaded) => {
-                    openPanel(panelImageLoaded.parentElement);
-                }));
-            }
+            loadImagePromises.push(loadImageAsync(panelImage, "/api/images/panels/" + gameState.gameStateId + "/" + panel.panelNumber).then((panelImageLoaded) => {
+                openPanel(panelImageLoaded.parentElement);
+            }));
 
             hidePlayerDots(panel.panelNumber);
         } else {
@@ -1164,10 +1160,16 @@ async function tryStartGameAsync() {
     return false;
 }
 
+var gameBoardPingInterval;
 async function startGameAsync(gameState) {
     startSignalRAsync("gameboard").then(function () {
-        connection.invoke("RegisterGameBoard")
+        connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"))
     });
+
+    clearInterval(gameBoardPingInterval);
+    gameBoardPingInterval = setInterval(() => {
+        connection.invoke("GameBoardPing", localStorage.getItem("gameStateId"));
+    }, 30000)
 
     handleGameState(gameState, null, true);
 

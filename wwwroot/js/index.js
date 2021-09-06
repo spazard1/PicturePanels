@@ -87,6 +87,10 @@ function mobileCheck() {
 };
 
 async function loadImageAsync(img, imgSrc) {
+    if (img.src === imgSrc) {
+        return Promise.resolve(img);
+    }
+
     return new Promise((resolve, reject) => {
         img.onload = () => resolve(img);
         img.onerror = reject;
@@ -191,14 +195,14 @@ function updatePanelButtons(gameState, disabledPanels) {
         if (gameState.revealedPanels.includes(panelButton.value)) {
             panelButton.classList.add("panelButtonDisabled");
             panelButton.classList.remove("panelButtonSelected");
-            panelButtonImage.src = "/api/images/panels/" + gameState.imageId + "/" + panelButton.value;
+            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + panelButton.value;
         } else if (disabledPanels.includes(panelButton.value)) { 
             panelButton.classList.add("panelButtonDisabled");
             panelButton.classList.remove("panelButtonSelected");
-            panelButtonImage.src = "/api/images/panels/" + gameState.imageId + "/0";
+            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/0";
         } else {
             panelButton.classList.remove("panelButtonDisabled");
-            panelButtonImage.src = "/api/images/panels/" + gameState.imageId + "/0";
+            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/0";
         }
     }
 }
@@ -251,6 +255,7 @@ async function sendSelectedPanels() {
     }
 
     await connection.invoke("SelectPanels", {
+        GameStateId: localStorage.getItem("gameStateId"),
         PlayerId: localStorage.getItem("playerId"),
         Name: localStorage.getItem("playerName"),
         TeamNumber: parseInt(localStorage.getItem("teamNumber")),

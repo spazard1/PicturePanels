@@ -75,8 +75,6 @@ namespace PicturePanels.Models
 
         public DateTime? TurnEndTime { get; set; }
 
-        public int TeamFirstTurn { get; set; }
-
         public IList<string> RevealedPanels { get; set; }
 
         public string TeamOneName { get; set; }
@@ -109,9 +107,11 @@ namespace PicturePanels.Models
 
         public bool IsUpdateAllowed(GameStateUpdateMessage gameStateUpdate)
         {
-            return RoundNumber == gameStateUpdate.RoundNumber &&
+            return RoundNumber <= GameStateTableEntity.MaxRounds &&
+                RoundNumber == gameStateUpdate.RoundNumber &&
                 TurnType == gameStateUpdate.TurnType &&
-                TurnNumber == gameStateUpdate.TurnNumber;
+                TurnNumber == gameStateUpdate.TurnNumber &&
+                TurnEndTime == gameStateUpdate.TurnEndTime;
         }
 
         public void NewGame()
@@ -132,9 +132,8 @@ namespace PicturePanels.Models
 
         public void NewRound()
         {
-            this.SwitchTeamFirstTurn();
-            this.TeamTurn = this.TeamFirstTurn;
             this.RoundNumber++;
+            this.TeamTurn = this.RoundNumber % 2 == 0 ? 2 : 1;
             this.TurnStartTime = DateTime.UtcNow;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
@@ -210,18 +209,6 @@ namespace PicturePanels.Models
             else
             {
                 TeamTurn = 1;
-            }
-        }
-
-        public void SwitchTeamFirstTurn()
-        {
-            if (TeamFirstTurn == 1)
-            {
-                TeamFirstTurn = 2;
-            }
-            else
-            {
-                TeamFirstTurn = 1;
             }
         }
 

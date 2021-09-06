@@ -9,7 +9,6 @@
             RoundNumber: parseInt(document.getElementById("roundNumber").value),
             TeamTurn: parseInt(document.getElementById("teamTurn").value),
             TurnType: document.getElementById("turnType").value,
-            TeamFirstTurn: parseInt(document.getElementById("teamFirstTurn").value),
             ImageId: document.getElementById("imageId").value,
             TeamOneName: document.getElementById("teamOneName").value,
             TeamOneScore: parseInt(document.getElementById("teamOneScore").value),
