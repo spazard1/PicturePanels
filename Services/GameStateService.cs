@@ -284,7 +284,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.GuessAsync(gameState, teamNumber, teamGuess.Guess);
-            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), teamNumber);
+            await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), teamNumber);
             await this.teamGuessTableStorage.DeleteAsync(teamGuess);
 
             return gameState;
@@ -301,7 +301,7 @@ namespace PicturePanels.Services
             else
             {
                 gameState = await this.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
-                await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+                await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
                 await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
                 await this.teamGuessTableStorage.DeleteAsync(teamGuess);
             }

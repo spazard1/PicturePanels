@@ -82,7 +82,7 @@ namespace PicturePanels.Controllers
                 pm.TeamGuessVote = ticks;
             });
 
-            await signalRHelper.VoteTeamGuessAsync(oldVote, playerModel.TeamGuessVote, playerModel.TeamNumber);
+            await signalRHelper.VoteTeamGuessAsync(gameStateId, oldVote, playerModel.TeamGuessVote, playerModel.TeamNumber);
 
             return StatusCode(200);
         }
@@ -103,7 +103,7 @@ namespace PicturePanels.Controllers
             }
 
             await this.teamGuessTableStorage.DeleteAsync(teamGuess);
-            await signalRHelper.DeleteTeamGuessAsync(new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
+            await signalRHelper.DeleteTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
             await this.chatService.SendChatAsync(playerModel, "deleted the guess '" + teamGuess.Guess + "'", true);
 
             return StatusCode(204);
@@ -131,7 +131,7 @@ namespace PicturePanels.Controllers
             }
 
             var teamGuess = await this.teamGuessTableStorage.InsertAsync(entity.ToModel(player));
-            await signalRHelper.AddTeamGuessAsync(new TeamGuessEntity(teamGuess), player.TeamNumber);
+            await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess), player.TeamNumber);
 
             await this.chatService.SendChatAsync(player, "submitted the guess '" + teamGuess.Guess + "'", true);
 
