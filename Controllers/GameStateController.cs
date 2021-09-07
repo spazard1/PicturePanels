@@ -55,49 +55,24 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        private char[] gameStateIdLetters = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Z' };
-
-        private string GenerateGameStateId()
-        {
-            var rand = new Random();
-            var stringBuilder = new StringBuilder();
-
-            for (var i = 0; i < 4; i++)
-            {
-                stringBuilder.Append(gameStateIdLetters[rand.Next(0, gameStateIdLetters.Length)]);
-            }
-
-            return stringBuilder.ToString();
-        }
-
         [HttpPost]
         public async Task<IActionResult> PostAsync()
         {
-            string gameStateId = string.Empty;
-            GameStateTableEntity gameState;
+            GameStateTableEntity gameState = null;
             for (int i = 0; i < 10; i++)
             {
-                gameStateId = GenerateGameStateId();
-                gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
-                if (gameState == null)
+                gameState = GameStateTableEntity.NewGameState();
+                if (await this.gameStateTableStorage.GetAsync(gameState.GameStateId) == null)
                 {
                     break;
                 }
-                gameStateId = string.Empty;
+                gameState = null;
             }
-            if (string.IsNullOrWhiteSpace(gameStateId))
+
+            if (gameState == null)
             {
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
-
-            gameState = new GameStateTableEntity()
-            {
-                GameStateId = gameStateId,
-                TurnType = GameStateTableEntity.TurnTypeSetup,
-                TurnStartTime = DateTime.UtcNow,
-                TeamOneName = "Team 1",
-                TeamTwoName = "Team 2",
-            };
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 
@@ -121,7 +96,7 @@ namespace PicturePanels.Controllers
 
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
-                gs.NewGame();
+                gs.Welcome();
                 gs.TeamOneName = entity.TeamOneName;
                 gs.TeamTwoName = entity.TeamTwoName;
                 gs.OpenPanelTime = entity.OpenPanelTime.HasValue ? entity.OpenPanelTime.Value : GameStateTableEntity.DefaultOpenPanelTime;
