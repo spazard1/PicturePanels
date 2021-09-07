@@ -50,6 +50,7 @@ namespace PicturePanels
             services.AddSingleton<ImageNumberTableStorage>();
             services.AddSingleton<UserTableStorage>();
             services.AddSingleton<UserPlayedImageTableStorage>();
+            services.AddSingleton<ActiveGameBoardTableStorage>();
 
             services.AddSingleton<IUserNameProvider, UserNameProvider>();
             services.AddSingleton<ICloudStorageAccountProvider, CloudStorageAccountProvider>();
@@ -119,7 +120,7 @@ namespace PicturePanels
             var imageNumberTableStorageTask = app.ApplicationServices.GetRequiredService<ImageNumberTableStorage>().StartupAsync();
             var userTableStorageTask = app.ApplicationServices.GetRequiredService<UserTableStorage>().StartupAsync();
             var userPlayedImageTableStorageTask = app.ApplicationServices.GetRequiredService<UserPlayedImageTableStorage>().StartupAsync();
-
+            var activeGameBoardTableStorageTask = app.ApplicationServices.GetRequiredService<ActiveGameBoardTableStorage>().StartupAsync();
         }
     }
 }

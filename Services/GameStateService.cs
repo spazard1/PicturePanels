@@ -19,6 +19,7 @@ namespace PicturePanels.Services
         private readonly ImageTagTableStorage imageTagTableStorage;
         private readonly ImageNumberTableStorage imageNumberTableStorage;
         private readonly UserPlayedImageTableStorage userPlayedImageTableStorage;
+        private readonly ActiveGameBoardTableStorage activeGameBoardTableStorage;
         private readonly ChatService chatService;
         private readonly GameStateQueueService gameStateQueueService;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
@@ -32,6 +33,7 @@ namespace PicturePanels.Services
             ImageTagTableStorage imageTagTableStorage,
             ImageNumberTableStorage imageNumberTableStorage,
             UserPlayedImageTableStorage userPlayedImageTableStorage,
+            ActiveGameBoardTableStorage activeGameBoardTableStorage,
             ChatService chatService,
             GameStateQueueService gameStateQueueService,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
@@ -45,6 +47,7 @@ namespace PicturePanels.Services
             this.imageTagTableStorage = imageTagTableStorage;
             this.imageNumberTableStorage = imageNumberTableStorage;
             this.userPlayedImageTableStorage = userPlayedImageTableStorage;
+            this.activeGameBoardTableStorage = activeGameBoardTableStorage;
             this.chatService = chatService;
             this.gameStateQueueService = gameStateQueueService;
             this.hubContext = hubContext;
@@ -118,10 +121,19 @@ namespace PicturePanels.Services
         {
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
 
-            if (gameState.TurnEndTime.HasValue && gameState.TurnEndTime.Value.AddSeconds(10) > DateTime.UtcNow)
+            if (gameState.TurnEndTime.HasValue && gameState.TurnEndTime.Value.AddSeconds(GameStateTableEntity.TurnEndTimeGracePeriod) < DateTime.UtcNow)
             {
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
             }
+        }
+
+        public async Task SetGameBoardActiveAsync(string gameStateId)
+        {
+            await this.activeGameBoardTableStorage.InsertOrReplaceAsync(new ActiveGameBoardTableEntity()
+            {
+                GameStateId = gameStateId,
+                PingTime = DateTime.UtcNow
+            });
         }
 
         public async Task PlayerReadyAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)

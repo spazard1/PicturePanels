@@ -421,14 +421,15 @@ function drawTurnType(gameState) {
 
             if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
                 document.getElementById("turnStatusMessage").classList.remove("opacity0");
+                document.getElementById("turnStatusMessage").innerHTML = "Vote for a panel to open";
                 highlightturnStatusMessage();
 
                 document.getElementById("panelButtons").classList.remove("hidden");
-                document.getElementById("turnStatusMessage").innerHTML = "Vote for a panel to open";
                 document.getElementById("playerReadyButton").classList.remove("hidden");
             } else {
                 document.getElementById("turnStatusMessage").classList.add("opacity0");
                 document.getElementById("panelButtons").classList.add("hidden");
+                document.getElementById("playerReadyButton").classList.add("hidden");
             }
             break;
         case "MakeGuess":
