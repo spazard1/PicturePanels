@@ -227,16 +227,15 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
+            if (panelNumber > 0 && !gameState.RevealedPanels.Contains(panelNumber.ToString()) && !gameState.IsRoundOver())
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
             var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameStateId, gameState.RoundNumber);
             if (gameRoundEntity == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound);
-            }
-
-            if (!gameState.RevealedPanels.Contains(panelNumber.ToString()) && !gameState.IsRoundOver())
-            {
-                await this.imageTableStorage.GeneratePanelImageUrlAsync(gameRoundEntity.ImageId, 0);
-                return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(gameRoundEntity.ImageId, 0));
             }
 
             imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
@@ -247,19 +246,6 @@ namespace PicturePanels.Controllers
 
             await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, panelNumber);
             return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(gameRoundEntity.ImageId, panelNumber));
-        }
-
-        [HttpGet("{blobContainer}/{imageId}")]
-        public async Task<IActionResult> GetAsync(string blobContainer, string imageId)
-        {
-            var imageTableEntity = await this.imageTableStorage.GetAsync(blobContainer, imageId);
-
-            if (imageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            return ImageRedirectResult(this.imageTableStorage.GetDownloadUrl(blobContainer, imageTableEntity));
         }
 
         private IActionResult ImageRedirectResult(string imageUrl)

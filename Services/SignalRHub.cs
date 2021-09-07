@@ -17,7 +17,7 @@ namespace PicturePanels.Services
         private readonly GameStateService gameStateService;
 
         public SignalRHub(PlayerTableStorage playerTableStorage,
-            ChatTableStorage chatTableStorage, 
+            ChatTableStorage chatTableStorage,
             GameStateService gameStateService)
         {
             this.playerTableStorage = playerTableStorage;
@@ -40,17 +40,11 @@ namespace PicturePanels.Services
             return gameStateId + "_all";
         }
 
-        public async Task GameBoardPing(string gameStateId)
-        {
-            await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
-
-            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(gameStateId).ToListAsync();
-            await this.Clients.Caller.Players(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
-        }
-
         public async Task RegisterGameBoard(string gameStateId)
         {
             await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
+            await this.gameStateService.SetGameBoardActiveAsync(gameStateId);
+
             await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup(gameStateId));
             await Groups.AddToGroupAsync(Context.ConnectionId, AllGroup(gameStateId));
         }

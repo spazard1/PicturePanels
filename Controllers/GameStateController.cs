@@ -133,6 +133,16 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
+        [HttpPut("{id}/gameBoardPing")]
+        public async Task<IActionResult> GameBoardPingAsync(string id)
+        {
+            await this.gameStateService.QueueNextTurnIfNeeded(id);
+            await this.gameStateService.SetGameBoardActiveAsync(id);
+
+            var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(id).ToListAsync();
+            return Json(allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToList());
+        }
+
         [HttpPut("{id}/{playerId}/start")]
         public async Task<IActionResult> PutStartAsync(string id, string playerId)
         {
