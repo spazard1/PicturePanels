@@ -313,15 +313,15 @@ function drawMostVotesPanels(resetPanels) {
 }
 
 function drawWelcome(gameState) {
+    stopWelcomeAnimation();
+
     if (gameState.turnType === "Welcome") {
         document.getElementById("welcomeJoinGame").classList.remove("hidden");
-
         document.getElementById("teamOnePlayerNames").classList.add("welcomePlayerNames");
         document.getElementById("teamTwoPlayerNames").classList.add("welcomePlayerNames");
         document.getElementById("welcomeGameStateId").innerHTML = gameState.gameStateId;
     } else {
         document.getElementById("welcomeJoinGame").classList.add("hidden");
-
         document.getElementById("teamOnePlayerNames").classList.remove("welcomePlayerNames");
         document.getElementById("teamTwoPlayerNames").classList.remove("welcomePlayerNames");
     }
@@ -1072,7 +1072,7 @@ async function handleGameState(gameState, updateType, firstLoad) {
         await resetPanelsAsync(gameState);
     }
 
-    stopWelcomeAnimation();
+    
     drawWelcome(gameState);
     drawGameState(gameState);
     drawRoundNumber(gameState);
@@ -1160,16 +1160,14 @@ async function tryStartGameAsync() {
     return false;
 }
 
-var gameBoardPingInterval;
+function gameBoardPing() {
+    connection.invoke("GameBoardPing", localStorage.getItem("gameStateId"));
+}
+
 async function startGameAsync(gameState) {
     startSignalRAsync("gameboard").then(function () {
         connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"))
     });
-
-    clearInterval(gameBoardPingInterval);
-    gameBoardPingInterval = setInterval(() => {
-        connection.invoke("GameBoardPing", localStorage.getItem("gameStateId"));
-    }, 30000)
 
     handleGameState(gameState, null, true);
 
@@ -1178,6 +1176,7 @@ async function startGameAsync(gameState) {
     });
 
     setupHideCursor();
+    setupPing(gameBoardPing);
 }
 
 async function startGameboardAsync() {
@@ -1217,7 +1216,10 @@ window.onload = async function () {
 
         await postGameStateAsync().then(gameState => {
             localStorage.setItem("gameStateId", gameState.gameStateId);
+
+            document.getElementById("startGameButton").innerHTML = "Create Game";
             document.getElementById("startGameButtons").classList.remove("hidden");
+
             document.getElementById("welcomeGameStateTeamOneName").value = gameState.teamOneName;
             document.getElementById("welcomeGameStateTeamTwoName").value = gameState.teamTwoName;
             document.getElementById("welcomeCreateGameMessage").innerHTML = "Your game is ready, make changes if you want!";
@@ -1228,10 +1230,11 @@ window.onload = async function () {
     document.getElementById("welcomeJoinGameButton").onclick = () => {
         document.getElementById("gameStateIdInput").value = localStorage.getItem("gameStateId");
 
-        document.getElementById("welcomeStartGame").classList.add("hidden");
-
-        document.getElementById("welcomeExistingGame").classList.remove("hidden");
+        document.getElementById("startGameButton").innerHTML = "Join Game";
         document.getElementById("startGameButtons").classList.remove("hidden");
+
+        document.getElementById("welcomeStartGame").classList.add("hidden");
+        document.getElementById("welcomeExistingGame").classList.remove("hidden");
     };
 
     document.getElementById("welcomeCancelButton").onclick = () => {
@@ -1247,19 +1250,26 @@ window.onload = async function () {
         var welcomeErrorMessageElement = document.getElementById("welcomeErrorMessage");
 
         if (document.getElementById("welcomeCreateGame").classList.contains("hidden")) {
-            localStorage.setItem("gameStateId", document.getElementById("gameStateIdInput").value);
+            document.getElementById("startGameButton").innerHTML = "Joining...";
+
+            localStorage.setItem("gameStateId", document.getElementById("gameStateIdInput").value.toUpperCase());
 
             tryStartGameAsync().then(result => {
                 if (!result) {
+                    document.getElementById("startGameButton").innerHTML = "Join Game";
                     welcomeErrorMessageElement.classList.remove("hidden");
                     welcomeErrorMessageElement.innerHTML = "Could not join the game. Double check your game id.";
                 }
             });
         } else {
+            document.getElementById("startGameButton").innerHTML = "Creating...";
+
             await putGameStateAsync().then(result => {
                 if (!result) {
+                    document.getElementById("startGameButton").innerHTML = "Create Game";
+
                     welcomeErrorMessageElement.classList.remove("hidden");
-                    welcomeErrorMessageElement.innerHTML = "Could not start the game. Refresh the page and try again.";
+                    welcomeErrorMessageElement.innerHTML = "Could not create the game. Refresh the page and try again.";
                 }
             });
             await tryStartGameAsync();

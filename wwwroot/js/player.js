@@ -254,7 +254,7 @@ async function choosePlayerNameButtonOnClickAsync() {
     }
 
     if (document.getElementById("gameStateId").value) {
-        localStorage.setItem("gameStateId", document.getElementById("gameStateId").value);
+        localStorage.setItem("gameStateId", document.getElementById("gameStateId").value.toUpperCase());
     }
 
     playerNameChosen({
@@ -294,6 +294,38 @@ var playerIsReadyToPlay = false;
 
 function teamChosen(teamNumber) {
     localStorage.setItem("teamNumber", teamNumber);
+    document.getElementById("turnStatusMessage").classList.remove("hidden");
+
+    if (teamNumber === 1) {
+        document.getElementById("teamOneName").classList.remove("hidden");
+        document.getElementById("teamTwoName").classList.add("hidden");
+    } else {
+        document.getElementById("teamOneName").classList.add("hidden");
+        document.getElementById("teamTwoName").classList.remove("hidden");
+    }
+
+    document.getElementById("playerName").classList.remove("hidden");
+    document.getElementById("teamOneName").classList.remove("chooseTeamName");
+    document.getElementById("teamOneName").onclick = null;
+    document.getElementById("teamTwoName").classList.remove("chooseTeamName");
+    document.getElementById("teamTwoName").onclick = null;
+    document.getElementById("chooseSmallestTeam").onclick = null;
+    document.getElementById("chooseSmallestTeam").classList.add("hidden");
+
+    document.getElementById("chooseTeam").classList.add("hidden");
+
+    document.getElementById("chats").classList.remove("hidden");
+    document.getElementById("chats_input").classList.remove("hidden");
+
+    document.getElementById("playerName").style.color = localStorage.getItem("playerColor");
+    document.getElementById("playerBanner").classList.remove("playerBannerChooseTeam");
+    document.getElementById("playerBanner").classList.add("playerBannerPlaying");
+
+    document.getElementById("teamOneName").classList.add("teamOneColor");
+    document.getElementById("teamOneName").classList.remove("teamOneBox");
+
+    document.getElementById("teamTwoName").classList.add("teamTwoColor");
+    document.getElementById("teamTwoName").classList.remove("teamTwoBox");
 }
 
 function shouldPlayerLoadFromCache() {
@@ -354,41 +386,6 @@ async function smallestTeamChosenAsync() {
             teamChosen(Math.ceil(Math.random() * 2));
         }
     });
-}
-
-function drawTeam(teamNumber) {
-    document.getElementById("turnStatusMessage").classList.remove("hidden");
-
-    if (teamNumber === 1) {
-        document.getElementById("teamOneName").classList.remove("hidden");
-        document.getElementById("teamTwoName").classList.add("hidden");
-    } else {
-        document.getElementById("teamOneName").classList.add("hidden");
-        document.getElementById("teamTwoName").classList.remove("hidden");
-    }
-
-    document.getElementById("playerName").classList.remove("hidden");
-    document.getElementById("teamOneName").classList.remove("chooseTeamName");
-    document.getElementById("teamOneName").onclick = null;
-    document.getElementById("teamTwoName").classList.remove("chooseTeamName");
-    document.getElementById("teamTwoName").onclick = null;
-    document.getElementById("chooseSmallestTeam").onclick = null;
-    document.getElementById("chooseSmallestTeam").classList.add("hidden");
-
-    document.getElementById("chooseTeam").classList.add("hidden");
-
-    document.getElementById("chats").classList.remove("hidden");
-    document.getElementById("chats_input").classList.remove("hidden");
-
-    document.getElementById("playerName").style.color = localStorage.getItem("playerColor");
-    document.getElementById("playerBanner").classList.remove("playerBannerChooseTeam");
-    document.getElementById("playerBanner").classList.add("playerBannerPlaying");
-
-    document.getElementById("teamOneName").classList.add("teamOneColor");
-    document.getElementById("teamOneName").classList.remove("teamOneBox");
-
-    document.getElementById("teamTwoName").classList.add("teamTwoColor");
-    document.getElementById("teamTwoName").classList.remove("teamTwoBox");
 }
 
 function drawTurnType(gameState) {
@@ -681,8 +678,8 @@ function registerConnections() {
 async function finalizePlayerAsync() {
     await startSignalRAsync("player");
     var player = await putPlayerAsync();
+
     drawPlayer(player);
-    drawTeam(player.teamNumber);
 
     playerIsReadyToPlay = true;
     localStorage.setItem("createdTime", new Date());
@@ -719,6 +716,8 @@ async function finalizePlayerAsync() {
 
     scrollChats("chats", true);
     sortChats("chats");
+
+    setupPing(putPlayerPingAsync);
 }
 
 window.onresize = function () {
@@ -748,6 +747,4 @@ window.onload = async function () {
     drawPanelButtons();
     setupPlayerMenu();
     setupPlayerAsync();
-
-    setInterval(putPlayerPingAsync, 30000);
 }

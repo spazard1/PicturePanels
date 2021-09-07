@@ -93,7 +93,7 @@ namespace PicturePanels.Services
         {
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
-                gs.TurnType = GameStateTableEntity.TurnTypeOpenPanel;
+                gs.StartGame();
             });
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
