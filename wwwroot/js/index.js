@@ -390,6 +390,12 @@ async function createSignalRConnectionAsync(playerIdSuffix) {
     await connection.start();
 }
 
+var pingInterval;
+function setupPing(pingFunction) {
+    clearInterval(pingInterval);
+    pingInterval = setInterval(pingFunction, 30000);
+}
+
 var reconnectingCount = 0;
 function signalRMonitor() {
     if (!connection) {
@@ -406,6 +412,8 @@ function signalRMonitor() {
     document.getElementById("signalRConnectionState").classList.remove("hidden");
 
     if (connection.state === "Disconnecting" || connection.state === "Disconnected") {
+        clearInterval(pingInterval);
+
         document.getElementById("signalRConnectionState").innerHTML = "Disconnected from server. <a href='javascript: window.location.reload(true);'>Reload Page</a>";
         return;
     }
