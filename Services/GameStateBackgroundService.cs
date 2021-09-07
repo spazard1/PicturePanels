@@ -16,14 +16,17 @@ namespace PicturePanels.Services
     {
         private readonly GameStateQueueService gameStateQueueService;
         private readonly GameStateTableStorage gameStateTableStorage;
+        private readonly ActiveGameBoardTableStorage activeGameBoardTableStorage;
         private readonly GameStateService gameStateService;
 
         public GameStateBackgroundService(GameStateQueueService gameStateQueueService,
             GameStateTableStorage gameStateTableStorage,
+            ActiveGameBoardTableStorage activeGameBoardTableStorage,
             GameStateService gameStateService)
         {
             this.gameStateQueueService = gameStateQueueService;
             this.gameStateTableStorage = gameStateTableStorage;
+            this.activeGameBoardTableStorage = activeGameBoardTableStorage;
             this.gameStateService = gameStateService;
         }
 
@@ -43,6 +46,12 @@ namespace PicturePanels.Services
                     var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
                     var gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
                     if (gameState == null)
+                    {
+                        continue;
+                    }
+
+                    var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
+                    if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
                     {
                         continue;
                     }

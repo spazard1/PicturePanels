@@ -873,6 +873,20 @@ async function openAllPanelsAsync() {
 
 var allPlayers = [];
 
+function drawGameStateId(gameState) {
+    if (gameState.revealedPanels.length === 0 && gameState.turnType === "OpenPanel") {
+        document.getElementById("gameStateIdDisplayText").innerHTML = "Join the game!&nbsp;&nbsp;&nbsp;https://picturepanels.net/&nbsp;&nbsp;&nbsp;" + gameState.gameStateId;
+    } else {
+        document.getElementById("gameStateIdDisplayText").innerHTML = gameState.gameStateId;
+    }
+
+    if (gameState.turnType !== "Welcome") {
+        animateCSS("#gameStateIdDisplay", ["backInLeft"], ["backOutRight", "hidden"]);
+    } else {
+        animateCSS("#gameStateIdDisplay", ["backOutRight"], ["backInLeft"]);
+    }
+}
+
 function drawRoundNumber(gameState) {
     if (gameState.turnType === "Welcome") {
         document.getElementById("roundNumberCorner").classList.add("hidden");
@@ -889,8 +903,8 @@ function drawRoundNumber(gameState) {
     }
 }
 
-async function drawImageEntityAsync(gameState) {
-    if (gameState.turnType === "Welcome") {
+async function drawImageEntityAsync(gameState, updateType) {
+    if (updateType !== "NewRound" && gameState.turnType !== "EndRound" && !gameState.teamOneCorrect && !gameState.teamTwoCorrect) {
         return;
     }
 
@@ -912,7 +926,7 @@ async function drawImageEntityAsync(gameState) {
 }
 
 async function drawRevealedPanelsAsync(gameState) {
-    if (gameState.turnType === "Welcome" || gameState.turnType === "EndRound") {
+    if (gameState.turnType === "EndRound") {
         return openAllPanelsAsync();
     }
 
@@ -1072,14 +1086,14 @@ async function handleGameState(gameState, updateType, firstLoad) {
         await resetPanelsAsync(gameState);
     }
 
-    
     drawWelcome(gameState);
     drawGameState(gameState);
+    drawGameStateId(gameState);
     drawRoundNumber(gameState);
     drawTeamStatus(gameState);
     drawTeamGuesses(gameState);
     await drawRevealedPanelsAsync(gameState);
-    await drawImageEntityAsync(gameState);
+    await drawImageEntityAsync(gameState, updateType);
     drawTeamGuessHighlights(gameState);
     drawTeamScoreChange(gameState);
     drawIncorrectGuesses(gameState);
@@ -1160,8 +1174,21 @@ async function tryStartGameAsync() {
     return false;
 }
 
-function gameBoardPing() {
-    connection.invoke("GameBoardPing", localStorage.getItem("gameStateId"));
+async function putGameBoardPingAsync() {
+    await fetch("/api/gameState/" + localStorage.getItem("gameStateId") + "/gameBoardPing",
+        {
+            method: "PUT"
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return;
+        }).then(players => {
+            if (players) {
+                handlePlayers(players);
+            }
+        });
 }
 
 async function startGameAsync(gameState) {
@@ -1176,7 +1203,7 @@ async function startGameAsync(gameState) {
     });
 
     setupHideCursor();
-    setupPing(gameBoardPing);
+    setupPing(putGameBoardPingAsync);
 }
 
 async function startGameboardAsync() {

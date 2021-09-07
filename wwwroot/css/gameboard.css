@@ -447,6 +447,12 @@ body::-webkit-scrollbar {
     right: 10vw;
 }
 
+.gameStateIdDisplayContainer {
+    font-size: 3vh;
+    bottom: 1vh;
+    left: .5vw;
+}
+
 .fadedDisplayBox {
     position: absolute;
     z-index: 1000;
@@ -459,7 +465,7 @@ body::-webkit-scrollbar {
     height: 100%;
     background-color: rgba(0, 0, 0, .6);
     border: 3px solid rgba(50, 50, 50, 1);
-    padding: .1em .2em .1em .2em;
+    padding: .1em .3em .1em .3em;
 }
 
 .fadedDisplayBoxTitle * {

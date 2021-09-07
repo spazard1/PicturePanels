@@ -22,8 +22,10 @@ namespace PicturePanels.Models
         public const string UpdateTypeNewRound = "NewRound";
         public const string UpdateTypeNewTurn = "NewTurn";
 
-        public static int RoundStartDelayTime = 10;
-        public static int TurnStartDelayTime = 5;
+        public const int RoundStartDelayTime = 10;
+        public const int TurnStartDelayTime = 5;
+
+        public const int TurnEndTimeGracePeriod = 15;
 
         public static readonly IEnumerable<string> OuterPanels = new List<string>() { "1", "2", "3", "4", "5", "6", "10", "11", "15", "16", "17", "18", "19", "20" };
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
