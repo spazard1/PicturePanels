@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace PicturePanels.Models
@@ -116,17 +117,44 @@ namespace PicturePanels.Models
                 TurnEndTime == gameStateUpdate.TurnEndTime;
         }
 
-        public void NewGame()
+        public static GameStateTableEntity NewGameState()
         {
-            this.RoundNumber = 1;
-            this.TeamOneScore = 0;
-            this.TeamTwoScore = 0;
-            this.TeamOneIncorrectGuesses = 0;
-            this.TeamTwoIncorrectGuesses = 0;
-            this.TeamOneInnerPanels = 5;
-            this.TeamTwoInnerPanels = 5;
-            this.RevealedPanels = new List<string>();
-            this.ClearGuesses();
+            return new GameStateTableEntity()
+            {
+                GameStateId = GenerateGameStateId(),
+                TurnType = GameStateTableEntity.TurnTypeSetup,
+                TurnStartTime = DateTime.UtcNow,
+                TeamOneName = "Team 1",
+                TeamTwoName = "Team 2",
+                RoundNumber = 1,
+                TeamOneScore = 0,
+                TeamTwoScore = 0,
+                TeamOneIncorrectGuesses = 0,
+                TeamTwoIncorrectGuesses = 0,
+                TeamOneInnerPanels = 5,
+                TeamTwoInnerPanels = 5,
+                RevealedPanels = new List<string>()
+            };
+        }
+
+
+        private static char[] gameStateIdLetters = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Z' };
+
+        private static string GenerateGameStateId()
+        {
+            var rand = new Random();
+            var stringBuilder = new StringBuilder();
+
+            for (var i = 0; i < 4; i++)
+            {
+                stringBuilder.Append(gameStateIdLetters[rand.Next(0, gameStateIdLetters.Length)]);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public void Welcome()
+        {
             this.NewTurnType(GameStateTableEntity.TurnTypeWelcome);
             this.TurnNumber = 1;
             this.TeamTurn = 1;
