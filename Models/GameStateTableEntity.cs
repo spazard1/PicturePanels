@@ -134,7 +134,16 @@ namespace PicturePanels.Models
         {
             this.RoundNumber++;
             this.TeamTurn = this.RoundNumber % 2 == 0 ? 2 : 1;
-            this.TurnStartTime = DateTime.UtcNow;
+            this.RevealedPanels = new List<string>();
+            this.ClearGuesses();
+            this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            this.TurnNumber = 1;
+        }
+
+        public void StartGame()
+        {
+            this.RoundNumber = 1;
+            this.TeamTurn = 1;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
             this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
