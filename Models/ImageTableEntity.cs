@@ -28,6 +28,8 @@ namespace PicturePanels.Models
 
         public string Name { get; set; }
 
+        public List<string> AlternativeNames { get; set; }
+
         public List<string> Answers { get; set; }
 
         public List<string> Tags { get; set; }
@@ -49,6 +51,11 @@ namespace PicturePanels.Models
         {
             base.ReadEntity(properties, operationContext);
 
+            if (properties.ContainsKey(nameof(this.AlternativeNames)))
+            {
+                this.AlternativeNames = properties[nameof(this.AlternativeNames)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
             if (properties.ContainsKey(nameof(this.Answers)))
             {
                 this.Answers = properties[nameof(this.Answers)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -63,6 +70,11 @@ namespace PicturePanels.Models
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
             var result = base.WriteEntity(operationContext);
+
+            if (this.AlternativeNames != null)
+            {
+                result[nameof(this.AlternativeNames)] = new EntityProperty(string.Join(",", this.AlternativeNames));
+            }
 
             if (this.Answers != null)
             {

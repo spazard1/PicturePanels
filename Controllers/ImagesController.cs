@@ -272,24 +272,6 @@ namespace PicturePanels.Controllers
 
         private readonly Regex alphanumericRegex = new Regex(@"[^\w\s\-]g");
 
-        [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] ImageEntity imageEntity)
-        {
-            if (string.IsNullOrWhiteSpace(imageEntity.Id))
-            {
-                imageEntity.Id = Guid.NewGuid().ToString();
-            }
-
-            imageEntity.BlobName = alphanumericRegex.Replace(imageEntity.Name, string.Empty) + "-" + imageEntity.Id + ".png";
-            if (string.IsNullOrWhiteSpace(imageEntity.BlobContainer) || !(bool)this.HttpContext.Items[AuthorizationFilter.AuthorizedKey])
-            {
-                imageEntity.BlobContainer = ImageTableStorage.DefaultBlobContainer;
-            }
-
-            var imageTableEntity = await imageTableStorage.InsertAsync(imageEntity.ToTableEntity());
-            return Json(new ImageEntity(imageTableEntity));
-        }
-
         [HttpPut("{blobContainer}/{imageId}")]
         public async Task<IActionResult> PutEditAsync(string blobContainer, string imageId, [FromBody] ImageEntity imageEntity)
         {
@@ -341,21 +323,43 @@ namespace PicturePanels.Controllers
             }
         }
 
-        [HttpPost("{blobContainer}/{imageId}")]
-        public async Task<IActionResult> UploadAsync(string blobContainer, string imageId)
+        [HttpPut]
+        public async Task<IActionResult> PutAsync([FromBody] ImageEntity imageEntity)
         {
-            if (!(bool)this.HttpContext.Items[AuthorizationFilter.AuthorizedKey])
+            if (string.IsNullOrWhiteSpace(imageEntity.Id))
             {
-                blobContainer = ImageTableStorage.DefaultBlobContainer;
+                imageEntity.Id = Guid.NewGuid().ToString();
             }
 
-            var imageTableEntity = await imageTableStorage.GetAsync(blobContainer, imageId);
+            var imageTableEntity = imageEntity.ToTableEntity();
+
+            imageTableEntity.BlobName = alphanumericRegex.Replace(imageEntity.Name, string.Empty) + "-" + imageEntity.Id + ".png";
+
+            // get uploaded by from the token
+            imageTableEntity.BlobContainer = imageEntity.UploadedBy;
+
+            var answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
+            answers = answers.Concat(GuessChecker.Prepare(imageTableEntity.AlternativeNames)).ToList();
+
+            imageTableEntity = await this.imageTableStorage.ReplaceAsync(imageTableEntity, i =>
+            {
+                i.Answers = answers;
+            });
+
+            await this.imageTableStorage.InsertAsync(imageTableEntity);
+            return Json(new ImageEntity(imageTableEntity));
+        }
+
+        [HttpPost("{imageId}")]
+        public async Task<IActionResult> UploadAsync(string imageId)
+        {
+            var imageTableEntity = await imageTableStorage.GetAsync(imageId);
             if (imageTableStorage == null)
             {
                 return StatusCode((int) HttpStatusCode.NotFound);
             }
 
-            await imageTableStorage.UploadFromStream(blobContainer, imageTableEntity.BlobName, this.Request.BodyReader.AsStream());
+            await imageTableStorage.UploadFromStream(imageTableEntity.BlobContainer, imageTableEntity.BlobName, this.Request.BodyReader.AsStream());
 
             imageTableEntity = await imageTableStorage.ReplaceAsync(imageTableEntity, i =>
             {
