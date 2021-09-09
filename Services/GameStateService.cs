@@ -390,14 +390,6 @@ namespace PicturePanels.Services
                 var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
                 var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
 
-                if (imageTableEntity.Answers == null || !imageTableEntity.Answers.Any())
-                {
-                    imageTableEntity = await this.imageTableStorage.ReplaceAsync(imageTableEntity, i =>
-                    {
-                        i.Answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
-                    });
-                }
-
                 gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
                 {
                     gs.TeamOneCorrect = gameState.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsCorrect(gs.TeamOneGuess, imageTableEntity.Answers);

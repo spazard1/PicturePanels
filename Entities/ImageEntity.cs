@@ -1,5 +1,6 @@
 ﻿using PicturePanels.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -14,26 +15,26 @@ namespace PicturePanels.Entities
 
         public ImageEntity(ImageTableEntity tableEntity)
         {
-            BlobContainer = tableEntity.BlobContainer;
             Id = tableEntity.Id;
-            BlobName = tableEntity.BlobName;
             Name = tableEntity.Name;
+            AlternativeNames = tableEntity.AlternativeNames;
+            Tags = tableEntity.AlternativeNames;
             UploadedBy = tableEntity.UploadedBy;
             UploadComplete = tableEntity.UploadComplete;
             UploadCompleteTime = tableEntity.UploadCompleteTime;
         }
 
-        public string BlobContainer { get; set; }
-
         public string Id { get; set; }
 
-
-        public string BlobName { get; internal set; }
 
         [Required]
         [MinLength(2)]
         [MaxLength(100)]
         public string Name { get; set; }
+
+        public List<string> AlternativeNames { get; set; }
+
+        public List<string> Tags { get; set; }
 
         [Required]
         [MinLength(2)]
@@ -50,10 +51,10 @@ namespace PicturePanels.Entities
         {
             return new ImageTableEntity()
             {
-                BlobContainer = this.BlobContainer,
                 Id = this.Id,
-                BlobName = this.BlobName,
                 Name = this.Name,
+                AlternativeNames = this.AlternativeNames,
+                Tags = this.AlternativeNames,
                 UploadedBy = this.UploadedBy,
                 UploadComplete = this.UploadComplete,
                 UploadCompleteTime = this.UploadCompleteTime

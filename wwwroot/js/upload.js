@@ -162,7 +162,7 @@ async function uploadImage() {
         return;
     }
 
-    return await fetch("api/images/" + imageEntity.blobContainer + "/" + imageEntity.id,
+    return await fetch("api/images/" + imageEntity.id,
         {
             method: "POST",
             headers: {
@@ -287,17 +287,12 @@ function setupCroppie() {
 }
 
 window.onload = async () => {
-    if (await isAuthorized()) {
-        setupAdminMenu();
-        document.getElementById("blobContainerDiv").classList.remove("hidden");
-        await drawBlobContainers(await getBlobContainers(), "blobContainer");
+
+    if (localStorage.getItem("userToken")) {
+        document.getElementById("uploadInputPanel").remove("hidden");
+    } else {
+        document.getElementById("loginPanel").remove("hidden");
     }
-
-    document.getElementById("blobContainer").value = localStorage.getItem("blobContainer");
-    document.getElementById("blobContainer").onchange = saveSettings;
-
-    setupInputDefaultText("uploadedBy", "your name", localStorage.getItem("uploadUploadedBy"));
-    document.getElementById("uploadedBy").onchange = saveSettings;
 
     document.getElementById("saveButton").disabled = "disabled";
 

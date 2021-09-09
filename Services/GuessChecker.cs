@@ -60,6 +60,11 @@ namespace PicturePanels.Services
             return false;
         }
 
+        public static IEnumerable<string> Prepare(IEnumerable<string> strings)
+        {
+            return strings.Select(s => Prepare(s));
+        }
+
         public static string Prepare(string s)
         {
             s = s.Trim();
