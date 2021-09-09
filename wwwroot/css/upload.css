@@ -31,7 +31,7 @@ select {
     font-size: 1.4em;
 }
 
-.inputPanel {
+.uploadInputPanel {
     padding: 1em;
     padding-top: 1vh;
     width: 100%;
@@ -43,8 +43,12 @@ select {
     width: 100%;
 }
 
-.inputPanelElement {
-    margin-bottom: 2vh;
+.uploadInstructions {
+    margin-bottom: 8vh;
+}
+
+.imageFileDiv {
+    margin-bottom: 1vh;
 }
 
 .imageInfo {
@@ -73,10 +77,6 @@ select {
     border: 3px solid dodgerblue;
     border-radius: 3px;
     cursor: pointer;
-}
-
-.imageFileDiv {
-    margin-top: 3vh;
 }
 
 .imageUrlDiv {
@@ -130,16 +130,8 @@ select {
         flex-direction: row;
     }
 
-    .inputPanelElement {
-        margin-bottom: 2.5vh;
-    }
-
-    .imageFileDiv {
-        margin-top: 10vh;
-    }
-
-    .inputPanel {
-        padding-top: 5vh;
+    .uploadInputPanel {
+        padding-top: 4vh;
         height: 100%;
         flex: 3;
     }

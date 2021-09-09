@@ -13,35 +13,34 @@
 }
 
 <div id="mainDiv" class="center">
-    <div class="inputPanel">
-        <div class="inputPanelElement">
+
+    <div id="loginPanel" class="loginPanel hidden">
+        <div>You must be logged in to upload an image.</div>
+
+        Username: <input type="text" id="username" class="username" />
+        Password: <input type="password" id="password" class="password" />
+    </div>
+
+    <div id="uploadInputPanel" class="uploadInputPanel hidden">
+        <div class="inputPanelElement uploadInstructions">
             Choose an image from your computer or paste an image or URL.
             Images must be at least 1000px wide, so choose images that are large or high resolution.<br />
             <a target="_blank" href="https://www.google.com/search?q=sound%20of%20music%20movie&tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731">Example 'Large' image search</a>
         </div>
-        <div id="imageFileDiv" class="imageFileDiv inputPanelElement">
+        <div id="imageFileDiv" class="inputPanelElement imageFileDiv">
             <input type="file" id="imageFile" class="imageFile hidden" accept="image/*" />
             <label for="imageFile" class="uploadButton">Image from computer</label> or
         </div>
         <div id="imageUrlDiv" class="inputPanelElement imageUrlDiv">
             <input type="text" id="imageUrl" class="imageUrl" autocomplete="off" />
         </div>
-        <div id="blobContainerDiv" class="blobContainerDiv inputPanelElement hidden">
-            Blob Container:<br />
-            <select id="blobContainer"></select>
-        </div>
-        <div class="inputPanelElement">
+        <div id="imageName" class="inputPanelElement imageName">
             Movie/TV Show Name:<br />
             <input type="text" id="imageName" autocomplete="off" maxlength="100" />
         </div>
-        <div class="inputPanelElement">
-            Uploaded By:<br />
-            <input type="text" id="uploadedBy" maxlength="14" /><br />
-        </div>
-        <div class="inputPanelElement">
+        <div id="saveButtonContainer" class="inputPanelElement saveButtonContainer">
             <input type="button" id="saveButton" class="uploadButton" value="Save" onclick="uploadImage()" />
         </div>
-
         <div id="results" class="inputPanelElement"></div>
     </div>
 
@@ -55,8 +54,8 @@
         </div>
     </div>
 
-    <div id="croppieContainer" class="center hidden imageContainer" draggable="false"></div>
-    <div id="imagePreviewContainer" class="center hidden imageContainer" draggable="false"></div>
+    <div id="croppieContainer" class="center imageContainer hidden" draggable="false"></div>
+    <div id="imagePreviewContainer" class="center imageContainer hidden" draggable="false"></div>
     <div id="helpMessageContainer" class="center imageContainer" draggable="false">
         <span class="helpMessage">Welcome to the Picture Panels upload page!</span><br />
         <span class="helpMessage">Here are some example images to get you thinking.</span><br /><br />
@@ -76,5 +75,3 @@
     <div id="loadingMessage" class="loadingMessage">Uploading image...</div>
     <img id="loadingGif" src="img/loading.gif" />
 </div>
-
-<div id="adminMenu" class="adminMenu"></div>
