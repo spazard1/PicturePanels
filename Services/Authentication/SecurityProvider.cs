@@ -9,6 +9,8 @@ namespace PicturePanels.Services.Authentication
 {
 	public class SecurityProvider
 	{
+		public const string UserNameKey = "username";
+
         private readonly CertificateProvider certificateProvider;
 
         public SecurityProvider(CertificateProvider certificateProvider)
@@ -18,7 +20,7 @@ namespace PicturePanels.Services.Authentication
 
 		public string GetToken(string username)
         {
-			return this.GetToken(new List<Claim>() { new Claim("username", username) });
+			return this.GetToken(new List<Claim>() { new Claim(UserNameKey, username) });
         }
 
         public string GetToken(List<Claim> claims)
