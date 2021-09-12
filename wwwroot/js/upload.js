@@ -27,7 +27,7 @@ function prepareForUpload(message) {
     document.getElementById("imagePreviewContainer").classList.add("hidden");
     document.getElementById("helpMessageContainer").classList.add("hidden");
     document.getElementById("croppieContainer").classList.remove("hidden");
-    document.getElementById("imageInfo").classList.remove("hidden");
+    document.getElementById("croppedImageInfo").classList.remove("hidden");
     setupCroppie();
 }
 
@@ -204,12 +204,17 @@ var imageHeight;
 var isImageSelected = false;
 
 function showMessage(message, isError) {
+    if (!message) {
+        document.getElementById("results").classList.add("hidden");
+        return;
+    }
+    document.getElementById("results").classList.remove("hidden");
+    document.getElementById("results").innerHTML = message;
+
     if (isError) {
-        document.getElementById("results").classList.add("invalidImage");
-        document.getElementById("results").innerHTML = message;
+        document.getElementById("results").classList.add("uploadErrorMessage");
     } else {
-        document.getElementById("results").classList.remove("invalidImage");
-        document.getElementById("results").innerHTML = message;
+        document.getElementById("results").classList.remove("uploadErrorMessage");
     }
 }
 
@@ -263,15 +268,15 @@ function setupCroppie() {
 }
 
 function startLogin() {
-    document.getElementById("failedLogin").classList.add("hidden");
+    showMessage();
 }
 
 function uploadLoginCallback(result) {
     if (result) {
         document.getElementById("loginPanel").classList.add("hidden");
-        document.getElementById("uploadInputPanel").classList.remove("hidden");
+        document.getElementById("chooseImagePanel").classList.remove("hidden");
     } else {
-        document.getElementById("failedLogin").classList.remove("hidden");
+        showMessage("That login didn't work. Try again.", true);
     }
 }
 
@@ -282,15 +287,11 @@ window.onload = async () => {
     }
 
     if (authorizeResult) {
-        document.getElementById("uploadInputPanel").classList.remove("hidden");
+        document.getElementById("chooseImagePanel").classList.remove("hidden");
     } else {
         localStorage.removeItem("userToken");
         document.getElementById("loginPanel").classList.remove("hidden");
     }
-
-    document.getElementById("saveButton").disabled = "disabled";
-
-    //setupInputDefaultText("imageUrl", "paste an image or url");
 
     document.getElementById("imageUrl").onpaste = onPasteUrl;
     document.getElementById("imageUrl").onfocus = function (event) {

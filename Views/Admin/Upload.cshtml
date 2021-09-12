@@ -13,38 +13,42 @@
 }
 
 <div id="mainDiv" class="center">
+    <div id="uploadInputPanel" class="uploadInputPanel">
+        <div id="loginPanel" class="loginPanel hidden">
+            <div>You must be logged in to upload an image.</div>
 
-    <div id="loginPanel" class="loginPanel hidden">
-        <div>You must be logged in to upload an image.</div>
+            <input type="button" id="loginButton" value="Login" />
+        </div>
 
-        <input type="button" id="loginButton" value="Login"/>
-        <div id="failedLogin" class="error hidden">That login didn't work. Try again.</div>
+        <div id="chooseImagePanel" class="chooseImagePanel hidden">
+            <div class="uploadInstructions inputPanelElement">
+                Choose an image from your computer or paste an image or URL.
+                Images must be at least 1000px wide, so choose images that are large or high resolution.<br />
+                <a target="_blank" href="https://www.google.com/search?q=sound%20of%20music%20movie&tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731">Example 'Large' image search</a>
+            </div>
+            <div id="imageFileDiv" class="imageFileDiv inputPanelElement">
+                <input type="file" id="imageFile" class="imageFile hidden" accept="image/*" />
+                <label for="imageFile" class="uploadButton">Image from computer</label> or
+            </div>
+            <div id="imageUrlDiv" class="imageUrlDiv inputPanelElement">
+                <input type="text" id="imageUrl" class="imageUrl" autocomplete="off" placeholder="paste an image or url" />
+            </div>
+        </div>
+
+        <div id="imageInfoPanel" class="imageInfoPanel hidden">
+            <div id="imageName" class="inputPanelElement imageName">
+                Movie/TV Show Name:<br />
+                <input type="text" id="imageName" autocomplete="off" maxlength="100" placeholder="e.g. Star Wars: The Empire Strikes Back"/>
+            </div>
+            <div id="saveButtonContainer" class="inputPanelElement saveButtonContainer">
+                <input type="button" id="saveButton" class="uploadButton" value="Save" disabled="disabled" onclick="uploadImage()" />
+            </div>
+        </div>
+
+        <div id="results" class="results hidden"></div>
     </div>
 
-    <div id="uploadInputPanel" class="uploadInputPanel hidden">
-        <div class="inputPanelElement uploadInstructions">
-            Choose an image from your computer or paste an image or URL.
-            Images must be at least 1000px wide, so choose images that are large or high resolution.<br />
-            <a target="_blank" href="https://www.google.com/search?q=sound%20of%20music%20movie&tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731">Example 'Large' image search</a>
-        </div>
-        <div id="imageFileDiv" class="inputPanelElement imageFileDiv">
-            <input type="file" id="imageFile" class="imageFile hidden" accept="image/*" />
-            <label for="imageFile" class="uploadButton">Image from computer</label> or
-        </div>
-        <div id="imageUrlDiv" class="inputPanelElement imageUrlDiv">
-            <input type="text" id="imageUrl" class="imageUrl" autocomplete="off" placeholder="paste an image or url" />
-        </div>
-        <div id="imageName" class="inputPanelElement imageName">
-            Movie/TV Show Name:<br />
-            <input type="text" id="imageName" autocomplete="off" maxlength="100" />
-        </div>
-        <div id="saveButtonContainer" class="inputPanelElement saveButtonContainer">
-            <input type="button" id="saveButton" class="uploadButton" value="Save" onclick="uploadImage()" />
-        </div>
-        <div id="results" class="inputPanelElement"></div>
-    </div>
-
-    <div id="imageInfo" class="center hidden imageInfo">
+    <div id="croppedImageInfo" class="croppedImageInfo center hidden">
         <div id="imageSizeContainer">
             Cropped Image Size: <span id="imageWidth" class="imageDimension imageWidth"></span> X
             <span id="imageHeight" class=" imageDimension imageHeight"></span>

@@ -70,10 +70,6 @@ function setupPlayerMenu() {
         document.getElementById("playerNameInput").style.color = color.hslString;
         document.getElementById("gameStateId").style.color = color.hslString;
     });
-
-    setupInputDefaultText("playerNameInput", "your name", localStorage.getItem("playerName"));
-
-    setupInputDefaultText("gameStateId", "4-letter game code", localStorage.getItem("gameStateId"));
 }
 
 var playerLoaded = false;
