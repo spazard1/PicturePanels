@@ -9,7 +9,7 @@ namespace PicturePanels.Filters
 {
     public class AuthorizationFilter : IAuthorizationFilter
     {
-        public const string UserKey = "User";
+        public const string UserNameKey = "Username";
         private readonly SecurityProvider securityProvider;
 
         public AuthorizationFilter(SecurityProvider securityProvider)
@@ -23,7 +23,7 @@ namespace PicturePanels.Filters
             {
                 if (this.securityProvider.TryValidateToken(authorization, out SecurityToken securityToken))
                 {
-                    context.HttpContext.Items[AuthorizedKey] = true;
+                    context.HttpContext.Items[UserNameKey] = securityToken.;
                     return;
                 }
             }
