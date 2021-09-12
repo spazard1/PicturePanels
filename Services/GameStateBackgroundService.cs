@@ -1,8 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using PicturePanels.Entities;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
 using System;

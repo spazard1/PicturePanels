@@ -51,7 +51,7 @@ select {
     margin-bottom: 1vh;
 }
 
-.imageInfo {
+.croppedImageInfo {
     display: flex;
     flex-wrap: wrap;
     flex: 1;
@@ -61,7 +61,13 @@ select {
     margin-bottom: 1vh;
 }
 
-.invalidImage {
+.croppedImageInfo div {
+    flex: 1;
+    min-width: 50%;
+    margin-top: 1vh;
+}
+
+.uploadErrorMessage {
     color: red;
     border: 2px solid red;
 }
@@ -86,12 +92,6 @@ select {
 .imagePreview {
     object-fit: contain;
     max-width: 100%;
-}
-
-.imageInfo div {
-    flex: 1;  
-    min-width: 50%;
-    margin-top: 1vh;
 }
 
 .loading {
@@ -141,7 +141,7 @@ select {
         flex: 7;
     }
 
-    .imageInfo {
+    .croppedImageInfo {
         position: absolute;
         top: 0;
         right: 5%;

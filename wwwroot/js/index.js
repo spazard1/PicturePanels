@@ -370,39 +370,6 @@ function setInputDefaultText(elementId, defaultValue) {
     inputElement.defaultValue = defaultValue;
 }
 
-function setupInputDefaultText(elementId, defaultValue, currentValue) {
-    var inputElement = document.getElementById(elementId);
-
-    inputElement.defaultValue = defaultValue;
-
-    if (currentValue) {
-        inputElement.value = currentValue;
-    } else {
-        inputElement.classList.add("inputDefaultText");
-        inputElement.value = inputElement.defaultValue;
-    }
-
-    inputElement.onfocus = (event) => {
-        if (event.target.value === event.target.defaultValue) {
-            event.target.value = "";
-            event.target.classList.remove("inputDefaultText");
-        }
-    }
-
-    inputElement.onblur = (event) => {
-        if (!event.target.value) {
-            event.target.value = event.target.defaultValue;
-            event.target.classList.add("inputDefaultText");
-        }
-    }
-
-    inputElement.onchange = (event) => {
-        if (!event || !event.target.value || event.target.value === event.target.defaultValue) {
-            event.target.value = event.target.defaultValue;
-            event.target.classList.add("inputDefaultText");
-        }
-    }
-}
 
 function setupAdminMenu() {
     var menuDiv = document.getElementById("adminMenu");
