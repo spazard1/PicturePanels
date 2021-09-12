@@ -17,8 +17,8 @@
     <div id="loginPanel" class="loginPanel hidden">
         <div>You must be logged in to upload an image.</div>
 
-        Username: <input type="text" id="username" class="username" />
-        Password: <input type="password" id="password" class="password" />
+        <input type="button" id="loginButton" value="Login"/>
+        <div id="failedLogin" class="error hidden">That login didn't work. Try again.</div>
     </div>
 
     <div id="uploadInputPanel" class="uploadInputPanel hidden">
@@ -32,7 +32,7 @@
             <label for="imageFile" class="uploadButton">Image from computer</label> or
         </div>
         <div id="imageUrlDiv" class="inputPanelElement imageUrlDiv">
-            <input type="text" id="imageUrl" class="imageUrl" autocomplete="off" />
+            <input type="text" id="imageUrl" class="imageUrl" autocomplete="off" placeholder="paste an image or url" />
         </div>
         <div id="imageName" class="inputPanelElement imageName">
             Movie/TV Show Name:<br />

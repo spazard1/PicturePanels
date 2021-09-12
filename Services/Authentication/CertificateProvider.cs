@@ -1,0 +1,40 @@
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using System;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+
+namespace PicturePanels.Services.Authentication
+{
+    public class CertificateProvider
+    {
+        private X509Certificate2 certificate;
+
+        private async Task<X509Certificate2> LoadCertificateAsync()
+        {
+            var client = new SecretClient(vaultUri: new Uri("https://picturepanels.vault.azure.net/"), credential: new ClientSecretCredential("f6c0e524-fbeb-44d7-851f-48fcaa6c6044", "2cb24ffa-26ce-4134-b341-f7340beae4fd", "J.-7jlLVwx83xA-OSh.zAeJdHH93WMkTc6"));
+            var certificateWithPolicy = await client.GetSecretAsync("tokensigning");
+            var cert = new X509Certificate2(
+                Convert.FromBase64String(certificateWithPolicy.Value.Value),
+                (string)null,
+                X509KeyStorageFlags.MachineKeySet);
+            return cert;
+        }
+
+        public X509Certificate2 GetCertificate()
+        {
+            if (certificate == null)
+            {
+                lock (this)
+                {
+                    if (certificate == null)
+                    {
+                        certificate = LoadCertificateAsync().Result;
+                    }
+                }
+            }
+
+            return certificate;
+        }
+    }
+}

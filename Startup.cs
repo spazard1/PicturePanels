@@ -13,6 +13,7 @@ using Microsoft.Net.Http.Headers;
 using PicturePanels.Filters;
 using Microsoft.AspNetCore.Http;
 using PicturePanels.Services.Storage;
+using PicturePanels.Services.Authentication;
 
 namespace PicturePanels
 {
@@ -59,6 +60,8 @@ namespace PicturePanels
             services.AddSingleton<SignalRHelper>();
             services.AddSingleton<GameStateService>();
             services.AddSingleton<ChatService>();
+            services.AddSingleton<CertificateProvider>();
+            services.AddSingleton<SecurityProvider>();
 
             services.AddScoped<AuthorizationFilter>();
 
