@@ -131,7 +131,7 @@ async function postTeamGuessAsync(guess) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"),
+    await fetch("api/teamGuesses/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"),
         {
             method: "POST",
             headers: {
@@ -144,7 +144,7 @@ async function postTeamGuessAsync(guess) {
 }
 
 async function getTeamGuessesAsync() {
-    return await fetch("/api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"))
+    return await fetch("/api/teamGuesses/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"))
         .then(response => response.json())
         .then(responseJson => {
             return responseJson;
@@ -178,7 +178,7 @@ async function deleteTeamGuessAsync(ticks) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/" + ticks,
+    await fetch("api/teamGuesses/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/" + ticks,
         {
             method: "DELETE"
         });
@@ -189,7 +189,7 @@ async function putTeamGuessVoteAsync(ticks) {
         return;
     }
 
-    await fetch("api/teamGuess/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/" + ticks,
+    await fetch("api/teamGuesses/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId") + "/" + ticks,
         {
             method: "PUT"
         }).then((response) => {

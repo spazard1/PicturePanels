@@ -10,14 +10,14 @@ namespace PicturePanels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TeamGuessController : Controller
+    public class TeamGuessesController : Controller
     {
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly SignalRHelper signalRHelper;
         private readonly ChatService chatService;
 
-        public TeamGuessController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper, ChatService chatService)
+        public TeamGuessesController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper, ChatService chatService)
         {
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.playerTableStorage = playerTableStorage;

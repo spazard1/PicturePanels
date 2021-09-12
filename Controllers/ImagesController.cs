@@ -10,6 +10,10 @@ using System;
 using System.Text.RegularExpressions;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
+using Azure.Security.KeyVault.Certificates;
+using Azure.Identity;
+using PicturePanels.Services.Authentication;
+using System.Security.Claims;
 
 namespace PicturePanels.Controllers
 {
@@ -23,6 +27,7 @@ namespace PicturePanels.Controllers
         private readonly ImageTagTableStorage imageTagTableStorage;
         private readonly ImageNumberTableStorage imageNumberTableStorage;
         private readonly UserTableStorage userTableStorage;
+        private readonly SecurityProvider securityProvider;
 
         public ImagesController(
             GameStateTableStorage gameStateTableStorage,
@@ -30,7 +35,8 @@ namespace PicturePanels.Controllers
             ImageTableStorage imageTableStorage,
             ImageTagTableStorage imageTagTableStorage,
             ImageNumberTableStorage imageNumberTableStorage,
-            UserTableStorage userTableStorage)
+            UserTableStorage userTableStorage,
+            SecurityProvider securityProvider)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
@@ -38,6 +44,7 @@ namespace PicturePanels.Controllers
             this.imageTagTableStorage = imageTagTableStorage;
             this.imageNumberTableStorage = imageNumberTableStorage;
             this.userTableStorage = userTableStorage;
+            this.securityProvider = securityProvider;
         }
 
         [HttpPatch("migrate")]

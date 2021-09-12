@@ -103,11 +103,6 @@ async function uploadTemporary(uploadUrl) {
 async function putImage() {
     showLoadingMessage("Uploading image...");
 
-    var blobContainer = document.getElementById("blobContainer").value;
-    if (!blobContainer) {
-        blobContainer = "pending";
-    }
-
     return await fetch("api/images",
         {
             method: "PUT",
@@ -116,9 +111,7 @@ async function putImage() {
                 "Authorization": localStorage.getItem("Authorization")
             },
             body: JSON.stringify({
-                blobContainer: blobContainer,
-                name: document.getElementById("imageName").value,
-                uploadedBy: document.getElementById("uploadedBy").value
+                name: document.getElementById("imageName").value
             })
         })
         .then(response => {
@@ -141,13 +134,6 @@ async function putImage() {
 async function uploadImage() {
     if (document.getElementById("imageName").value.length < 2) {
         showMessage("The 'Movie/TV Show Name' field must be longer.", true);
-        return;
-    }
-
-    var uploadedByElement = document.getElementById("uploadedBy");
-    if (uploadedByElement.value.length < 2 ||
-        uploadedByElement.value === uploadedByElement.defaultValue) {
-        showMessage("The 'Uploaded By' field must be longer.", true);
         return;
     }
 
@@ -182,7 +168,7 @@ async function uploadImage() {
 
             showMessage("Upload complete! Here is the final image. If you have more images to upload, you can start those now.");
 
-            document.getElementById("imagePreviewContainer").innerHTML = "<img src='api/images/" + responseJson.blobContainer + "/" + responseJson.id +"' class='imagePreview' />";
+            document.getElementById("imagePreviewContainer").innerHTML = "<img src='api/images/" + responseJson.id + "' class='imagePreview' />";
 
             document.getElementById("imagePreviewContainer").classList.remove("hidden");
             document.getElementById("croppieContainer").classList.add("hidden");
@@ -200,18 +186,14 @@ async function uploadImage() {
 function showLoadingMessage(message) {
     if (!message) {
         document.getElementById("imageUrl").disabled = "";
-        document.getElementById("blobContainer").disabled = "";
         document.getElementById("imageName").disabled = "";
-        document.getElementById("uploadedBy").disabled = "";
         document.getElementById("saveButton").disabled = "";
         document.getElementById("loading").classList.add("hidden");
         return;
     }
 
     document.getElementById("imageUrl").disabled = "disabled";
-    document.getElementById("blobContainer").disabled = "disabled";
     document.getElementById("imageName").disabled = "disabled";
-    document.getElementById("uploadedBy").disabled = "disabled";
     document.getElementById("saveButton").disabled = "disabled";
     document.getElementById("loading").classList.remove("hidden");
     document.getElementById("loadingMessage").innerHTML = message;
@@ -257,13 +239,7 @@ function drawDetails(event) {
     }
 }
 
-function saveSettings() {
-    localStorage.setItem("uploadUploadedBy", document.getElementById("uploadedBy").value);
-    localStorage.setItem("blobContainer", document.getElementById("blobContainer").value);
-}
-
 var croppie;
-
 function setupCroppie() {
     if (croppie) {
         return;
@@ -286,21 +262,45 @@ function setupCroppie() {
     croppieContainer.addEventListener("update", drawDetails);
 }
 
-window.onload = async () => {
+function startLogin() {
+    document.getElementById("failedLogin").classList.add("hidden");
+}
 
-    if (localStorage.getItem("userToken")) {
-        document.getElementById("uploadInputPanel").remove("hidden");
+function uploadLoginCallback(result) {
+    if (result) {
+        document.getElementById("loginPanel").classList.add("hidden");
+        document.getElementById("uploadInputPanel").classList.remove("hidden");
     } else {
-        document.getElementById("loginPanel").remove("hidden");
+        document.getElementById("failedLogin").classList.remove("hidden");
+    }
+}
+
+window.onload = async () => {
+    var authorizeResult = false;
+    if (localStorage.getItem("userToken")) {
+        authorizeResult = await tryAuthorizeTokenAsync();
+    }
+
+    if (authorizeResult) {
+        document.getElementById("uploadInputPanel").classList.remove("hidden");
+    } else {
+        localStorage.removeItem("userToken");
+        document.getElementById("loginPanel").classList.remove("hidden");
     }
 
     document.getElementById("saveButton").disabled = "disabled";
 
-    setupInputDefaultText("imageUrl", "paste an image or url");
+    //setupInputDefaultText("imageUrl", "paste an image or url");
+
     document.getElementById("imageUrl").onpaste = onPasteUrl;
     document.getElementById("imageUrl").onfocus = function (event) {
         document.getElementById("imageUrl").value = "";
     };
 
     document.getElementById("imageFile").onchange = onFileSelection;
+
+    document.getElementById("loginButton").onclick = () => {
+        startLogin();
+        loginPrompt(uploadLoginCallback);
+    };
 }
