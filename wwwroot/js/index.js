@@ -1,12 +1,63 @@
 ﻿var across = 5;
 var down = 4;
 
-async function isAuthorized() {
-    return await fetch("/api/authorize",
+function loginPrompt(callback) {
+    bootbox.dialog({
+        message: $("#loginPrompt").html().replaceAll("-modal", ""),
+        title: "Login to Picture Panels",
+        buttons: [
+            {
+                label: "Cancel",
+                className: "btn btn-default pull-left"
+            },
+            {
+                label: "Login",
+                className: "btn btn-primary pull-left",
+                callback: () => {
+                    tryLoginAsync(document.getElementById("username").value, document.getElementById("password").value).then(callback)
+                }
+            }
+        ]
+    });
+
+    document.getElementById("username").value = localStorage.getItem("username");
+}
+
+async function tryLoginAsync(username, password) {
+    localStorage.setItem("username", username);
+
+    return await fetch("/api/users/login",
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                UserName: username,
+                Password: password
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return false;
+        })
+        .then(responseJson => {
+            if (responseJson && responseJson.token) {
+                localStorage.setItem("userToken", responseJson.token);
+                return true;
+            }
+            return false;
+        });
+}
+
+async function tryAuthorizeTokenAsync() {
+    return await fetch("/api/users/authorize",
         {
             method: "GET",
             headers: {
-                "Authorization": localStorage.getItem("Authorization")
+                "Authorization": localStorage.getItem("userToken")
             }
         })
         .then(response => {
