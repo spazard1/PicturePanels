@@ -39,6 +39,10 @@ select {
     box-sizing: border-box;
 }
 
+.inputPanelElement {
+    margin-bottom: 2vh;
+}
+
 .imageContainer {
     width: 100%;
 }
