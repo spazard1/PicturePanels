@@ -15,9 +15,11 @@
 <div id="mainDiv" class="center">
     <div id="uploadInputPanel" class="uploadInputPanel">
         <div id="loginPanel" class="loginPanel hidden">
-            <div>You must be logged in to upload an image.</div>
+            <div class="inputPanelElement">You must be logged in to upload an image.</div>
 
-            <input type="button" id="loginButton" value="Login" />
+            <div class="inputPanelElement">
+                <input type="button" id="loginButton" value="Login" />
+            </div>
         </div>
 
         <div id="chooseImagePanel" class="chooseImagePanel hidden">
@@ -45,7 +47,7 @@
             </div>
         </div>
 
-        <div id="results" class="results hidden"></div>
+        <div id="results" class="results imageInfoPanel hidden"></div>
     </div>
 
     <div id="croppedImageInfo" class="croppedImageInfo center hidden">

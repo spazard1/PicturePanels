@@ -267,12 +267,9 @@ function setupCroppie() {
     croppieContainer.addEventListener("update", drawDetails);
 }
 
-function startLogin() {
-    showMessage();
-}
-
 function uploadLoginCallback(result) {
     if (result) {
+        showMessage();
         document.getElementById("loginPanel").classList.add("hidden");
         document.getElementById("chooseImagePanel").classList.remove("hidden");
     } else {
@@ -301,7 +298,6 @@ window.onload = async () => {
     document.getElementById("imageFile").onchange = onFileSelection;
 
     document.getElementById("loginButton").onclick = () => {
-        startLogin();
         loginPrompt(uploadLoginCallback);
     };
 }
