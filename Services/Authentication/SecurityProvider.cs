@@ -11,19 +11,21 @@ namespace PicturePanels.Services.Authentication
 	{
 		public const string UserNameKey = "username";
 
-        private readonly CertificateProvider certificateProvider;
+		public const string UserIdKey = "userid";
+
+		private readonly CertificateProvider certificateProvider;
 
         public SecurityProvider(CertificateProvider certificateProvider)
         {
             this.certificateProvider = certificateProvider;
         }
 
-		public string GetToken(string username)
+		public string GetToken(string username, string userId)
         {
-			return this.GetToken(new List<Claim>() { new Claim(UserNameKey, username) });
+			return this.GetToken(new List<Claim>() { new Claim(UserNameKey, username), new Claim(UserIdKey, userId) });
         }
 
-        public string GetToken(List<Claim> claims)
+        private string GetToken(List<Claim> claims)
 		{
 			var cert = this.certificateProvider.GetCertificate();
 

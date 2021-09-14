@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
@@ -19,12 +20,22 @@ namespace PicturePanels.Services.Storage
             return this.GetAsync(ImageTagTableEntity.DefaultPartitionKey, rowKey);
         }
 
-        public async Task<Dictionary<string, ImageTagTableEntity>> GetAllDictionaryAsync()
+        public IAsyncEnumerable<ImageTagTableEntity> GetAllTagsAsync()
+        {
+            var imageTags = this.GetAllAsync();
+            return imageTags.Where(it => !it.IsHidden);
+        }
+
+        public async Task<Dictionary<string, ImageTagTableEntity>> GetAllTagsDictionaryAsync()
         {
             var imageTagDictionary = new Dictionary<string, ImageTagTableEntity>();
 
             await foreach (var imageTag in GetAllAsync())
             {
+                if (imageTag.IsHidden)
+                {
+                    continue;
+                }
                 imageTagDictionary[imageTag.Tag] = imageTag;
             }
 

@@ -23,7 +23,8 @@ namespace PicturePanels.Filters
             {
                 if (this.securityProvider.TryValidateToken(authorization, out SecurityToken securityToken, out ClaimsPrincipal claimsPrincipal))
                 {
-                    context.HttpContext.Items[SecurityProvider.UserNameKey] = claimsPrincipal.Claims.First(c => c.Type == SecurityProvider.UserNameKey);
+                    context.HttpContext.Items[SecurityProvider.UserNameKey] = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SecurityProvider.UserNameKey)?.Value;
+                    context.HttpContext.Items[SecurityProvider.UserIdKey] = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SecurityProvider.UserIdKey)?.Value;
                     return;
                 }
             }

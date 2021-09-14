@@ -1,11 +1,18 @@
 ﻿@section css {
-    <link rel="stylesheet" type="text/css" href="~/external/croppie.css" asp-append-version="true" />
+    <link href="https://unpkg.com/@@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="~/external/tagify.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/css/upload.css" asp-append-version="true" />
 }
 
 @section scripts {
-    <script src="~/external/croppie.min.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/@@yaireo/tagify"></script>
+    <script src="https://unpkg.com/@@yaireo/tagify@4.7.2/dist/tagify.polyfills.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="~/js/index.js" asp-append-version="true"></script>
     <script src="~/js/setup.js" asp-append-version="true"></script>
@@ -14,9 +21,9 @@
 
 <div id="mainDiv" class="center">
     <div id="uploadInputPanel" class="uploadInputPanel">
-        <div id="loginPanel" class="loginPanel hidden">
-            <div class="inputPanelElement">You must be logged in to upload an image.</div>
+        <div id="uploadResults" class="uploadResults imageInfoPanel hidden"></div>
 
+        <div id="loginPanel" class="loginPanel hidden">
             <div class="inputPanelElement">
                 <input type="button" id="loginButton" value="Login" />
             </div>
@@ -37,32 +44,61 @@
             </div>
         </div>
 
+        <div id="cropperInstructions" class="cropperInstructions inputPanelElement hidden">
+            Select either 16x9 or 4x3 aspect ratio, then crop the image if needed. For most images it is best to use 16x9.
+        </div>
+
         <div id="imageInfoPanel" class="imageInfoPanel hidden">
-            <div id="imageName" class="inputPanelElement imageName">
-                Movie/TV Show Name:<br />
-                <input type="text" id="imageName" autocomplete="off" maxlength="100" placeholder="e.g. Star Wars: The Empire Strikes Back"/>
+            <div class="inputPanelElement">
+                Often there will be more than one correct answer.
+                Enter other names that are also correct.
+                For example, for "Star Wars: The Empire Strikes Back," other names would include "Star Wars: Episode 5" and "The Empire Strikes Back."
             </div>
-            <div id="saveButtonContainer" class="inputPanelElement saveButtonContainer">
-                <input type="button" id="saveButton" class="uploadButton" value="Save" disabled="disabled" onclick="uploadImage()" />
+            <div class="inputPanelElement">
+                Correct Movie/TV Show Name:<br />
+                This is the name displayed when an image is solved.<br />
+                <input type="text" id="imageName" autocomplete="off" maxlength="100" />
+            </div>
+
+            <div class="imageAlternativeName">
+                Other Correct Names: <br />
+                <input type="text" id="imageAlternativeName1" autocomplete="off" maxlength="100" />
+            </div>
+            <div class="imageAlternativeName">
+                <input type="text" id="imageAlternativeName2" autocomplete="off" maxlength="100" />
+            </div>
+            <div class="inputPanelElement">
+                <input type="text" id="imageAlternativeName3" autocomplete="off" maxlength="100" />
+            </div>
+
+            <div class="inputPanelElement">
+                Tags:
+                <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
             </div>
         </div>
 
-        <div id="results" class="results imageInfoPanel hidden"></div>
+        <div id="uploadButtonsContainer" class="inputPanelElement uploadButtonsContainer hidden">
+            <input type="button" id="uploadActionButton" class="uploadButton" value="Action" />
+            <input type="button" id="uploadStartOverButton" class="uploadButton" value="Start Over" />
+        </div>
     </div>
 
     <div id="croppedImageInfo" class="croppedImageInfo center hidden">
         <div id="imageSizeContainer">
-            Cropped Image Size: <span id="imageWidth" class="imageDimension imageWidth"></span> X
-            <span id="imageHeight" class=" imageDimension imageHeight"></span>
+            Cropped Image Size:
+            <span id="imageWidth" class="imageDimension imageWidth"></span> X <span id="imageHeight" class=" imageDimension imageHeight"></span>
         </div>
-        <div id="aspectRatioContainer">
-            Cropped Aspect Ratio: <span id="aspectRatio" class="imageDimension"></span>
+        <div>
+            Aspect Ratio:
+            <input type="button" id="16x9Button" class="aspectRatioButton" value="16x9" />
+            <input type="button" id="4x3Button" class="aspectRatioButton" value="4x3" />
         </div>
+        <div id="imageSizeError" class="uploadErrorMessage hideIfEmpty"></div>
     </div>
 
-    <div id="croppieContainer" class="center imageContainer hidden" draggable="false"></div>
-    <div id="imagePreviewContainer" class="center imageContainer hidden" draggable="false"></div>
-    <div id="helpMessageContainer" class="center imageContainer" draggable="false">
+    <div id="cropperContainer" class="imageContainer center hidden" draggable="false"></div>
+    <div id="imagePreviewContainer" class="imageContainer center hidden" draggable="false"></div>
+    <div id="helpMessageContainer" class="imageContainer center" draggable="false">
         <span class="helpMessage">Welcome to the Picture Panels upload page!</span><br />
         <span class="helpMessage">Here are some example images to get you thinking.</span><br /><br />
 

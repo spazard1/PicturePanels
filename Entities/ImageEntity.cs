@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace PicturePanels.Entities
 {
@@ -17,11 +18,8 @@ namespace PicturePanels.Entities
         {
             Id = tableEntity.Id;
             Name = tableEntity.Name;
-            AlternativeNames = tableEntity.AlternativeNames;
-            Tags = tableEntity.AlternativeNames;
-            UploadedBy = tableEntity.UploadedBy;
-            UploadComplete = tableEntity.UploadComplete;
-            UploadCompleteTime = tableEntity.UploadCompleteTime;
+            AlternativeNames = string.Join(",", tableEntity.AlternativeNames ?? new List<string>());
+            Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
         }
 
         public string Id { get; set; }
@@ -32,33 +30,18 @@ namespace PicturePanels.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
-        public List<string> AlternativeNames { get; set; }
+        public string AlternativeNames { get; set; }
 
-        public List<string> Tags { get; set; }
+        public string Tags { get; set; }
 
-        [Required]
-        [MinLength(2)]
-        [MaxLength(14)]
-        public string UploadedBy { get; set; }
+        public string UploadedBy { get; internal set; }
 
-        public bool UploadComplete { get; internal set; }
-
-        public DateTime? UploadCompleteTime { get; internal set; }
-
-        public string PlayedTime { get; internal set; }
-
-        public ImageTableEntity ToTableEntity()
+        public void CopyProperties(ImageTableEntity tableEntity)
         {
-            return new ImageTableEntity()
-            {
-                Id = this.Id,
-                Name = this.Name,
-                AlternativeNames = this.AlternativeNames,
-                Tags = this.AlternativeNames,
-                UploadedBy = this.UploadedBy,
-                UploadComplete = this.UploadComplete,
-                UploadCompleteTime = this.UploadCompleteTime
-            };
+            tableEntity.Id = this.Id;
+            tableEntity.Name = this.Name;
+            tableEntity.AlternativeNames = this.AlternativeNames?.Split(",").ToList();
+            tableEntity.Tags = this.Tags?.Split(",").ToList();
         }
 
         public int CompareTo([AllowNull] ImageEntity other)
