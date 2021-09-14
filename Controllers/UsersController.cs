@@ -59,7 +59,7 @@ namespace PicturePanels.Controllers
 
             if (this.securityProvider.ValidatePassword(userEntity.Password, user.Salt, user.Password))
             {
-                return Json(new TokenEntity() { Token = this.securityProvider.GetToken(user.UserName) });
+                return Json(new TokenEntity() { Token = this.securityProvider.GetToken(user.UserName, user.UserId) });
             }
 
             return StatusCode((int)HttpStatusCode.Unauthorized);

@@ -141,25 +141,13 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        [HttpGet("all/{blobContainer}")]
-        [RequireAuthorization]
-        public async Task<IEnumerable<ImageEntity>> GetAllByBlobContainerAsync(string blobContainer)
+        [HttpGet("tags")]
+        public IActionResult GetAllTags()
         {
-            var results = await imageTableStorage.GetAllImagesAsync(blobContainer).Select(image => new ImageEntity(image)).ToListAsync();
-            results.Sort();
-            return results;
+            var images = this.imageTagTableStorage.GetAllTagsAsync();
+            return Json(images.Select((tag) => tag.Tag));
         }
 
-        [HttpGet("blobContainers")]
-        [RequireAuthorization]
-        public async Task<IEnumerable<BlobContainerEntity>> GetAllBlobContainersAsync()
-        {
-            var results = (await imageTableStorage.GetAllBlobContainersAsync())
-                .Select(blobContainer => new BlobContainerEntity() { Name = blobContainer }).ToList();
-            results.Sort();
-
-            return results;
-        }
 
         [HttpGet("entity/{gameStateId}")]
         public async Task<IActionResult> GetEntityAsync(string gameStateId)
@@ -209,7 +197,7 @@ namespace PicturePanels.Controllers
             }
             return Json(imageEntity);
         }
-        
+
 
         [HttpGet("panels/{gameStateId}/{roundNumber:int}/{panelNumber:int}")]
         public async Task<IActionResult> GetPanelImageAsync(string gameStateId, int roundNumber, int panelNumber)
@@ -227,7 +215,7 @@ namespace PicturePanels.Controllers
                 await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, panelNumber);
                 return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(imageTableEntity.Id, panelNumber));
             }
-            
+
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
             if (gameState == null)
             {
@@ -277,6 +265,25 @@ namespace PicturePanels.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
+        [HttpGet("{imageId}")]
+        public async Task<IActionResult> GetAsync(string imageId)
+        {
+            var imageTableEntity = await this.imageTableStorage.GetAsync(imageId);
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
+            }
+
+            if (imageTableEntity.UploadComplete)
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden, "Images that have been finished uploading can no longer be seen.");
+            }
+
+            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(ImageTableStorage.ScratchBlobContainer, imageTableEntity.Id);
+            Response.Headers["Cache-Control"] = "max-age=" + 3600;
+            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
+        }
+
         private readonly Regex alphanumericRegex = new Regex(@"[^\w\s\-]g");
 
         [HttpPut("{blobContainer}/{imageId}")]
@@ -291,7 +298,6 @@ namespace PicturePanels.Controllers
             imageTableEntity = await imageTableStorage.ReplaceAsync(imageTableEntity, i =>
             {
                 i.Name = imageEntity.Name;
-                i.UploadedBy = imageEntity.UploadedBy;
             });
 
             return Json(new ImageEntity(imageTableEntity));
@@ -309,11 +315,11 @@ namespace PicturePanels.Controllers
 
             await this.imageTableStorage.DeleteAsync(imageTableEntity);
 
-            return StatusCode((int) HttpStatusCode.NoContent);
+            return StatusCode((int)HttpStatusCode.NoContent);
         }
 
-        [HttpPost("uploadTemporary")]
-        public async Task<IActionResult> UploadTemporaryAsync([FromBody] UrlEntity urlEntity)
+        [HttpPost("uploadTemporaryUrl")]
+        public async Task<IActionResult> UploadTemporaryUrlAsync([FromBody] UrlEntity urlEntity)
         {
             try
             {
@@ -330,20 +336,59 @@ namespace PicturePanels.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] ImageEntity imageEntity)
+        [HttpPost("uploadTemporaryBlob")]
+        public async Task<IActionResult> UploadTemporaryBlobAsync()
         {
-            if (string.IsNullOrWhiteSpace(imageEntity.Id))
+            try
             {
-                imageEntity.Id = Guid.NewGuid().ToString();
+                var imageUrlOrError = await imageTableStorage.UploadTemporaryAsync(this.Request.BodyReader.AsStream());
+
+                if (!imageUrlOrError.StartsWith("https"))
+                {
+                    return StatusCode((int)HttpStatusCode.BadRequest, imageUrlOrError);
+                }
+                return Json(new UrlEntity() { Url = imageUrlOrError });
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, "That URL didn't seem to be an image.");
+            }
+        }
+
+        [HttpPost]
+        [RequireAuthorization]
+        public async Task<IActionResult> PostAsync()
+        {
+            var imageTableEntity = new ImageTableEntity()
+            {
+                Id = Guid.NewGuid().ToString()
+            };
+
+            await imageTableStorage.UploadFromStream(ImageTableStorage.ScratchBlobContainer, imageTableEntity.Id, this.Request.BodyReader.AsStream());
+
+            await this.imageTableStorage.InsertAsync(imageTableEntity);
+
+            return Json(new ImageEntity(imageTableEntity));
+        }
+
+        [HttpPut("{imageId}")]
+        [RequireAuthorization]
+        public async Task<IActionResult> PutAsync(string imageId, [FromBody] ImageEntity imageEntity)
+        {
+            var imageTableEntity = await this.imageTableStorage.GetAsync(imageId);
+            if (imageTableEntity == null || imageTableEntity.UploadComplete)
+            {
+                return StatusCode(400);
             }
 
-            var imageTableEntity = imageEntity.ToTableEntity();
+            imageEntity.CopyProperties(imageTableEntity);
 
+            imageTableEntity.Id = imageId;
+            imageTableEntity.UploadedBy = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
             imageTableEntity.BlobName = alphanumericRegex.Replace(imageEntity.Name, string.Empty) + "-" + imageEntity.Id + ".png";
+            imageTableEntity.BlobContainer = imageTableEntity.UploadedBy;
 
-            // get uploaded by from the token
-            imageTableEntity.BlobContainer = imageEntity.UploadedBy;
+            await this.imageTableStorage.CopyImageFromScratchAsync(imageTableEntity);
 
             var answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
             answers = answers.Concat(GuessChecker.Prepare(imageTableEntity.AlternativeNames)).ToList();
@@ -351,25 +396,6 @@ namespace PicturePanels.Controllers
             imageTableEntity = await this.imageTableStorage.ReplaceAsync(imageTableEntity, i =>
             {
                 i.Answers = answers;
-            });
-
-            await this.imageTableStorage.InsertAsync(imageTableEntity);
-            return Json(new ImageEntity(imageTableEntity));
-        }
-
-        [HttpPost("{imageId}")]
-        public async Task<IActionResult> UploadAsync(string imageId)
-        {
-            var imageTableEntity = await imageTableStorage.GetAsync(imageId);
-            if (imageTableStorage == null)
-            {
-                return StatusCode((int) HttpStatusCode.NotFound);
-            }
-
-            await imageTableStorage.UploadFromStream(imageTableEntity.BlobContainer, imageTableEntity.BlobName, this.Request.BodyReader.AsStream());
-
-            imageTableEntity = await imageTableStorage.ReplaceAsync(imageTableEntity, i =>
-            {
                 i.UploadComplete = true;
                 i.UploadCompleteTime = DateTime.UtcNow;
             });

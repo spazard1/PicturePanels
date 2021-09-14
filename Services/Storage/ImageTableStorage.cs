@@ -45,14 +45,6 @@ namespace PicturePanels.Services.Storage
             return await this.GetAsync(ImageTableEntity.DefaultPartitionKey, imageId);
         }
 
-        public override async Task<ImageTableEntity> InsertAsync(ImageTableEntity image)
-        {
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(image.BlobContainer);
-            await blobContainerClient.CreateIfNotExistsAsync();
-
-            return await base.InsertAsync(image);
-        }
-
         public override async Task DeleteAsync(ImageTableEntity tableEntity)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(tableEntity.BlobContainer);
@@ -74,6 +66,11 @@ namespace PicturePanels.Services.Storage
 
         public string GetDownloadUrl(string blobContainer, string imageId)
         {
+            return GetDownloadUrl(blobContainer, imageId, DateTime.UtcNow.AddHours(1));
+        }
+
+        public string GetDownloadUrl(string blobContainer, string imageId, DateTime expirationTime)
+        {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobContainer);
 
             BlobSasBuilder sasBuilderBlob = new BlobSasBuilder()
@@ -83,7 +80,7 @@ namespace PicturePanels.Services.Storage
                 Resource = "b",
             };
             sasBuilderBlob.StartsOn = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(15));
-            sasBuilderBlob.ExpiresOn = DateTimeOffset.UtcNow.AddYears(10);
+            sasBuilderBlob.ExpiresOn = expirationTime;
             sasBuilderBlob.SetPermissions(BlobSasPermissions.Read);
 
             // Use the key to get the SAS token.
@@ -128,6 +125,20 @@ namespace PicturePanels.Services.Storage
             await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(imageTableEntity)));
         }
 
+        public async Task CopyImageFromScratchAsync(ImageTableEntity imageTableEntity)
+        {
+            var targetBlobContainerClient = blobServiceClient.GetBlobContainerClient(imageTableEntity.BlobContainer);
+            await targetBlobContainerClient.CreateIfNotExistsAsync();
+            var targetCloudBlob = targetBlobContainerClient.GetBlobClient(imageTableEntity.BlobName);
+
+            if (await targetCloudBlob.ExistsAsync())
+            {
+                return;
+            }
+
+            await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(ScratchBlobContainer, imageTableEntity.Id)));
+        }
+
         public async Task<string> UploadFromStream(string blobContainer, string blobName, Stream imageStream)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobContainer);
@@ -137,6 +148,19 @@ namespace PicturePanels.Services.Storage
             await blob.UploadAsync(imageStream, new BlobHttpHeaders() { ContentType = "image/png" });
 
             return GetDownloadUrl(blobContainer, blobName);
+        }
+
+        public async Task<string> UploadTemporaryAsync(Stream imageStream)
+        {
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(ScratchBlobContainer);
+            await blobContainerClient.CreateIfNotExistsAsync();
+
+            var imageId = Guid.NewGuid().ToString();
+            var blob = blobContainerClient.GetBlobClient(imageId);
+
+            await blob.UploadAsync(imageStream, new BlobHttpHeaders() { ContentType = "image/png" });
+
+            return GetDownloadUrl(ScratchBlobContainer, imageId);
         }
 
         public async Task<string> UploadTemporaryAsync(Uri url)

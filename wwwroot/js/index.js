@@ -170,7 +170,7 @@ async function getBlobContainers() {
     return await fetch("/api/images/blobContainers", {
         method: "GET",
         headers: {
-            "Authorization": localStorage.getItem("Authorization")
+            "Authorization": localStorage.getItem("userToken")
         },
     })
         .then(response => response.json())
