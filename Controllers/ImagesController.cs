@@ -385,8 +385,10 @@ namespace PicturePanels.Controllers
 
             imageTableEntity.Id = imageId;
             imageTableEntity.UploadedBy = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
-            imageTableEntity.BlobName = alphanumericRegex.Replace(imageEntity.Name, string.Empty) + "-" + imageEntity.Id + ".png";
+            imageTableEntity.BlobName = alphanumericRegex.Replace(imageEntity.Name, string.Empty) + "-" + imageTableEntity.Id + ".png";
             imageTableEntity.BlobContainer = imageTableEntity.UploadedBy;
+            imageTableEntity.AlternativeNames.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            imageTableEntity.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
 
             await this.imageTableStorage.CopyImageFromScratchAsync(imageTableEntity);
 
