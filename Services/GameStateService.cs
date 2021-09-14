@@ -454,7 +454,7 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> PopulateGameRoundsAsync(GameStateTableEntity gameState)
         {
-            var imageTags = await this.imageTagTableStorage.GetAllDictionaryAsync();
+            var imageTags = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
             var populatedImages = new HashSet<string>();
 
             while (populatedImages.Count < GameStateTableEntity.MaxRounds)

@@ -22,5 +22,7 @@ namespace PicturePanels.Models
         }
 
         public int Count { get; set; }
+
+        public bool IsHidden { get; set; }
     }
 }
