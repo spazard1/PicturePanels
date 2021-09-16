@@ -14,6 +14,7 @@ using Azure.Security.KeyVault.Certificates;
 using Azure.Identity;
 using PicturePanels.Services.Authentication;
 using System.Security.Claims;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace PicturePanels.Controllers
 {
@@ -47,102 +48,68 @@ namespace PicturePanels.Controllers
             this.securityProvider = securityProvider;
         }
 
-        /*
-        [HttpPatch("migrate")]
+        
+        [HttpGet("migrate")]
         public async Task<IActionResult> MigrateAsync()
         {
-            await foreach (var imageEntity in this.imageTableStorage.GetAllAsync())
+            var tagCounts = new Dictionary<string, int>();
+            var tagBatches = new Dictionary<string, TableBatchOperation>();
+
+            await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
             {
-                if (imageEntity.PartitionKey == "images")
+                foreach (var tag in imageTableEntity.Tags)
                 {
-                    continue;
-                }
-
-                if (imageEntity.UploadedBy == "admin")
-                {
-                    imageEntity.UploadedBy = "spazard1";
-                }
-
-                var migratedImageEntity = new ImageTableEntity()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    BlobName = imageEntity.BlobName,
-                    Name = imageEntity.Name,
-                    UploadComplete = imageEntity.UploadComplete,
-                    UploadCompleteTime = imageEntity.UploadCompleteTime,
-                    ThumbnailId = imageEntity.ThumbnailId,
-                    Approved = true
-                };
-
-                if (imageEntity.BlobContainer.Contains("guysweekend"))
-                {
-                    migratedImageEntity.Tags = new List<string> { "guysweekend", "all" };
-                }
-                else if (imageEntity.BlobContainer.Contains("benji"))
-                {
-                    migratedImageEntity.Tags = new List<string> { "benji" };
-                }
-                else if (imageEntity.BlobContainer.Contains("welcome"))
-                {
-                    migratedImageEntity.Tags = new List<string> { "welcome" };
-                }
-                else if (imageEntity.BlobContainer.Contains("christmas"))
-                {
-                    migratedImageEntity.Tags = new List<string> { "christmas" };
-                }
-                else
-                {
-                    migratedImageEntity.Tags = new List<string> { "all" };
-                }
-
-                int imageNumber;
-                foreach (var tag in migratedImageEntity.Tags)
-                {
-                    var imageTagEntity = await this.imageTagTableStorage.GetAsync(tag);
-                    if (imageTagEntity == null)
+                    if (!tagCounts.ContainsKey(tag))
                     {
-                        imageTagEntity = new ImageTagTableEntity()
-                        {
-                            Tag = tag,
-                            Count = 1
-                        };
-                        imageNumber = 1;
-                    }
-                    else
-                    {
-                        imageTagEntity.Count++;
-                        imageNumber = imageTagEntity.Count;
+                        tagCounts[tag] = 0;
                     }
 
-                    var imageNumberEntity = new ImageNumberTableEntity()
+                    if (!tagBatches.ContainsKey(tag))
                     {
-                        ImageId = migratedImageEntity.Id,
-                        Number = imageNumber,
+                        tagBatches[tag] = new TableBatchOperation();
+                    }
+
+                    tagBatches[tag].Add(TableOperation.InsertOrReplace(new ImageNumberTableEntity()
+                    {
+                        ImageId = imageTableEntity.Id,
+                        Number = tagCounts[tag],
                         Tag = tag
-                    };
+                    }));
 
-                    await this.imageTagTableStorage.InsertOrReplaceAsync(imageTagEntity);
-                    await this.imageNumberTableStorage.InsertOrReplaceAsync(imageNumberEntity);
+                    if (tagBatches[tag].Count >= 100)
+                    {
+                        await this.imageNumberTableStorage.ExecuteBatchAsync(tagBatches[tag]);
+                        tagBatches[tag].Clear();
+                    }
+
+                    tagCounts[tag]++;
                 }
+            }
 
-                var userName = imageEntity.UploadedBy.ToLowerInvariant().Replace(" ", "");
-                var user = await this.userTableStorage.GetAsync(userName);
-                if (user == null)
+            foreach (var batchOperation in tagBatches)
+            {
+                if (batchOperation.Value.Count > 0)
                 {
-                    user = await this.userTableStorage.NewUserAsync(userName, migratedImageEntity.UploadedBy);
+                    await this.imageNumberTableStorage.ExecuteBatchAsync(batchOperation.Value);
+                    batchOperation.Value.Clear();
                 }
+            }
 
-                await this.imageTableStorage.CopyToBlobContainerAsync(imageEntity, user.UserId);
-
-                migratedImageEntity.UploadedBy = user.UserId;
-                migratedImageEntity.BlobContainer = user.UserId;
-                await this.imageTableStorage.InsertAsync(migratedImageEntity);
+            foreach (var tagCount in tagCounts)
+            {
+                var tagCountTableEntity = await this.imageTagTableStorage.GetAsync(tagCount.Key);
+                await this.imageTagTableStorage.InsertOrReplaceAsync(new ImageTagTableEntity()
+                {
+                    Tag = tagCount.Key,
+                    Count = tagCount.Value,
+                    IsHidden = tagCountTableEntity?.IsHidden ?? true
+                });
             }
 
             return StatusCode(200);
         }
-        */
 
+        /*
         [HttpGet("migrate")]
         public async Task<IActionResult> MigrateAsync()
         {
@@ -167,6 +134,7 @@ namespace PicturePanels.Controllers
 
             return Json(ids);
         }
+        */
 
         [HttpGet("tags")]
         public IActionResult GetAllTags()
