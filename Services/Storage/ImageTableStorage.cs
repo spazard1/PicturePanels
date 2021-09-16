@@ -7,15 +7,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using PicturePanels.Entities;
 using PicturePanels.Models;
-using Microsoft.Azure.Cosmos.Table;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage;
 using Azure.Storage.Blobs.Models;
 using System.Drawing.Drawing2D;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace PicturePanels.Services.Storage
 {
@@ -32,7 +31,6 @@ namespace PicturePanels.Services.Storage
         public const string PanelsBlobContainer = "panels";
         public const string WelcomeBlobContainer = "welcome";
         public const string WelcomeImageId = "soundofmusic";
-
 
         public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider) : base(cloudStorageAccountProvider, "images")
         {
@@ -89,13 +87,6 @@ namespace PicturePanels.Services.Storage
             return blobContainerClient.GetBlockBlobClient(imageId).Uri + "?" + sasToken;
         }
 
-        public IAsyncEnumerable<ImageTableEntity> GetAllImagesAsync(string blobContainer)
-        {
-            var allImages = this.GetAllAsync();
-            allImages = allImages.Where(result => result.UploadComplete && result.BlobContainer == blobContainer);
-            return allImages;
-        }
-
         public async Task<List<string>> GetAllBlobContainersAsync()
         {
             var blobContainers = new List<string>();
@@ -123,6 +114,37 @@ namespace PicturePanels.Services.Storage
             }
 
             await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(imageTableEntity)));
+        }
+
+        public async Task<bool> MoveToBlobContainerAsync(string sourceBlobContainer, string sourceBlobName, string targetBlobContainer, string targetBlobName)
+        {
+            var targetBlobContainerClient = blobServiceClient.GetBlobContainerClient(targetBlobContainer);
+            await targetBlobContainerClient.CreateIfNotExistsAsync();
+            var targetCloudBlob = targetBlobContainerClient.GetBlobClient(targetBlobName);
+
+            var sourceBlobContainerClient = blobServiceClient.GetBlobContainerClient(sourceBlobContainer);
+            var sourceCloudBlob = sourceBlobContainerClient.GetBlobClient(sourceBlobName);
+
+            if (!await sourceCloudBlob.ExistsAsync())
+            {
+                return false;
+            }
+
+            if (await targetCloudBlob.ExistsAsync())
+            {
+                return true;
+            }
+
+            if (sourceBlobName == targetBlobName)
+            {
+                return true;
+            }
+
+            await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(sourceBlobContainer, sourceBlobName)));
+
+            await sourceCloudBlob.DeleteIfExistsAsync();
+
+            return true;
         }
 
         public async Task CopyImageFromScratchAsync(ImageTableEntity imageTableEntity)

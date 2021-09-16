@@ -47,6 +47,7 @@ namespace PicturePanels.Controllers
             this.securityProvider = securityProvider;
         }
 
+        /*
         [HttpPatch("migrate")]
         public async Task<IActionResult> MigrateAsync()
         {
@@ -139,6 +140,32 @@ namespace PicturePanels.Controllers
             }
 
             return StatusCode(200);
+        }
+        */
+
+        [HttpGet("migrate")]
+        public async Task<IActionResult> MigrateAsync()
+        {
+
+            var ids = new List<string>();
+
+            await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
+            {
+                var oldBlobName = imageTableEntity.BlobName;
+
+                imageTableEntity.BlobName = alphanumericRegex.Replace(imageTableEntity.Name, string.Empty) + "-" + imageTableEntity.Id + ".png";
+
+                var result = await this.imageTableStorage.MoveToBlobContainerAsync(imageTableEntity.BlobContainer, oldBlobName, imageTableEntity.BlobContainer, imageTableEntity.BlobName);
+
+                if (!result)
+                {
+                    return Json(imageTableEntity.Id);
+                }
+
+                await this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
+            }
+
+            return Json(ids);
         }
 
         [HttpGet("tags")]
