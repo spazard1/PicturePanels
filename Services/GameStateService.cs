@@ -485,6 +485,12 @@ namespace PicturePanels.Services
                         continue;
                     }
 
+                    var imageTableEntity = await this.imageTableStorage.GetAsync(imageNumberEntity.ImageId);
+                    if (imageTableEntity == null)
+                    {
+                        continue;
+                    }
+
                     foundImageId = imageNumberEntity.ImageId;
                     break;
                 }
