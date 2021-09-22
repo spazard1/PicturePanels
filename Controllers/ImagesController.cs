@@ -26,6 +26,7 @@ namespace PicturePanels.Controllers
         private readonly ImageNumberTableStorage imageNumberTableStorage;
         private readonly UserTableStorage userTableStorage;
         private readonly ImageNotApprovedTableStorage imageNotApprovedTableStorage;
+        private readonly ImageUploadedByTableStorage imageUploadedByTableStorage;
 
         public ImagesController(
             GameStateTableStorage gameStateTableStorage,
@@ -34,7 +35,8 @@ namespace PicturePanels.Controllers
             ImageTagTableStorage imageTagTableStorage,
             ImageNumberTableStorage imageNumberTableStorage,
             UserTableStorage userTableStorage,
-            ImageNotApprovedTableStorage imageNotApprovedTableStorage)
+            ImageNotApprovedTableStorage imageNotApprovedTableStorage,
+            ImageUploadedByTableStorage imageUploadedByTableStorage)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
@@ -43,6 +45,7 @@ namespace PicturePanels.Controllers
             this.imageNumberTableStorage = imageNumberTableStorage;
             this.userTableStorage = userTableStorage;
             this.imageNotApprovedTableStorage = imageNotApprovedTableStorage;
+            this.imageUploadedByTableStorage = imageUploadedByTableStorage;
         }
         
         [HttpGet("migrate")]
@@ -110,32 +113,25 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        /*
-        [HttpGet("migrate")]
-        public async Task<IActionResult> MigrateAsync()
+        
+        [HttpGet("populate")]
+        public async Task<IActionResult> PopulateAsync()
         {
-
-            var ids = new List<string>();
-
             await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
             {
-                var oldBlobName = imageTableEntity.BlobName;
-
-                imageTableEntity.BlobName = alphanumericRegex.Replace(imageTableEntity.Name, string.Empty) + "-" + imageTableEntity.Id + ".png";
-
-                var result = await this.imageTableStorage.MoveToBlobContainerAsync(imageTableEntity.BlobContainer, oldBlobName, imageTableEntity.BlobContainer, imageTableEntity.BlobName);
-
-                if (!result)
+                if (!string.IsNullOrWhiteSpace(imageTableEntity.UploadedBy))
                 {
-                    return Json(imageTableEntity.Id);
+                    await this.imageUploadedByTableStorage.InsertOrReplaceAsync(new ImageUploadedByTableEntity()
+                    {
+                        UploadedBy = imageTableEntity.UploadedBy,
+                        ImageId = imageTableEntity.Id
+                    });
                 }
-
-                await this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
             }
 
-            return Json(ids);
+            return StatusCode(200);
         }
-        */
+        
 
         [HttpGet("tags")]
         public IActionResult GetAllTags()
@@ -148,6 +144,17 @@ namespace PicturePanels.Controllers
         public IActionResult GetNotApprovedImages()
         {
             var images = this.imageNotApprovedTableStorage.GetAllAsync();
+            return Json(images);
+        }
+
+        [HttpGet("uploadedBy")]
+        [RequireAuthorization]
+        public IActionResult GetUploadedByImages()
+        {
+            var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(HttpContext.Items[SecurityProvider.UserIdKey].ToString());
+
+            var images = uploadedByImages.Select(image => new ImageIdEntity(image));
+
             return Json(images);
         }
 
@@ -252,18 +259,32 @@ namespace PicturePanels.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
-        [HttpGet("{blobContainer}/{imageId}/thumbnail")]
-        public async Task<IActionResult> GetThumbnailAsync(string blobContainer, string imageId)
+        [HttpGet("{imageId}/thumbnail")]
+        [RequireAuthorization]
+        public async Task<IActionResult> GetThumbnailAsync(string imageId)
         {
-            var imageTableEntity = await this.imageTableStorage.GetAsync(blobContainer, imageId);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(imageId);
 
             if (imageTableEntity == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
+            //HttpContext.Items[SecurityProvider.UserIdKey].ToString()
+
+            if (!HttpContext.Items.TryGetValue(SecurityProvider.UserIdKey, out object userIdObject))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var userId = userIdObject as string;
+            if (imageTableEntity.UploadedBy != userId)
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
             Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
+            Response.Headers["Cache-Control"] = "max-age=" + 3600;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -426,6 +447,12 @@ namespace PicturePanels.Controllers
 
             var answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
             answers = answers.Concat(GuessChecker.Prepare(imageTableEntity.AlternativeNames)).ToList();
+
+            await this.imageUploadedByTableStorage.InsertAsync(new ImageUploadedByTableEntity()
+            {
+                UploadedBy = imageTableEntity.UploadedBy,
+                ImageId = imageTableEntity.Id
+            });
 
             imageTableEntity = await this.imageTableStorage.ReplaceAsync(imageTableEntity, i =>
             {

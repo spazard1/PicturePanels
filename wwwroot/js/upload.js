@@ -1,4 +1,30 @@
-﻿function onPasteUrl(event) {
+﻿async function getUploadedByImagesAsync() {
+    return await fetch("api/images/uploadedBy",
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("userToken")
+            }
+        }).then(async (response) => {
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+            return response.json();
+        }).then(images => {
+
+            for (var image of images) {
+                var imagesContainer = document.getElementById("uploadedByImages");
+
+                var imageElement = document.createElement("img");
+                imageElement.src = "api/images/" + image.imageId + "/thumbnail";
+
+                imagesContainer.appendChild(imageElement);
+            }
+        });
+}
+
+function onPasteUrl(event) {
     var pastedUrl = (event.clipboardData || window.clipboardData).getData('text');
 
     if (pastedUrl) {
@@ -394,4 +420,6 @@ window.onload = async () => {
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
+
+    getUploadedByImagesAsync();
 }
