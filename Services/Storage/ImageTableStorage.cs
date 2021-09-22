@@ -400,5 +400,17 @@ namespace PicturePanels.Services.Storage
 
             return Task.WhenAll(tasks);
         }
+
+        public async IAsyncEnumerable<ImageTableEntity> PopulateImageDetails(IAsyncEnumerable<IImageIdTableEntity> imageIdTableEntities)
+        {
+            await foreach (var imageIdTableEntity in imageIdTableEntities)
+            {
+                var imageEntity = await this.GetAsync(imageIdTableEntity.ImageId);
+                if (imageEntity != null)
+                {
+                    yield return imageEntity;
+                }
+            }
+        }
     }
 }

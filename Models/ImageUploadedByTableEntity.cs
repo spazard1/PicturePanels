@@ -3,13 +3,13 @@ using System;
 
 namespace PicturePanels.Models
 {
-    public class ImageNotApprovedTableEntity : TableEntity, IImageIdTableEntity
+    public class ImageUploadedByTableEntity : TableEntity, IImageIdTableEntity
     {
-        public const string DefaultPartitionKey = "images";
 
-        public ImageNotApprovedTableEntity()
+        public string UploadedBy
         {
-            this.PartitionKey = DefaultPartitionKey;
+            get { return this.PartitionKey; }
+            set { this.PartitionKey = value; }
         }
 
         public string ImageId
