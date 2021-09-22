@@ -11,6 +11,7 @@ namespace PicturePanels.Services.Storage
         {
 
         }
+
         public async Task<ActiveGameBoardTableEntity> GetAsync(string id)
         {
             return await this.GetAsync(id, id);
