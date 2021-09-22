@@ -1,13 +1,10 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PicturePanels.Models
 {
     public class ImageTagTableEntity : TableEntity
     {
+        public const string AllTag = "all";
         public const string DefaultPartitionKey = "imagetags";
 
         public ImageTagTableEntity()

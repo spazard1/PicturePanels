@@ -55,6 +55,10 @@ input:focus {
     text-transform: uppercase;
 }
 
+[data-toggle="tooltip"]:before {
+    content: "\1f6c8";
+}
+
 .defaultButton {
     height: fit-content;
     cursor: pointer;
