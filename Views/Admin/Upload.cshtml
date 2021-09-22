@@ -15,7 +15,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="~/js/index.js" asp-append-version="true"></script>
-    <script src="~/js/setup.js" asp-append-version="true"></script>
     <script src="~/js/upload.js" asp-append-version="true"></script>
 }
 
@@ -50,18 +49,17 @@
 
         <div id="imageInfoPanel" class="imageInfoPanel hidden">
             <div class="inputPanelElement">
-                Often there will be more than one correct answer.
-                Enter other names that are also correct.
-                For example, for "Star Wars: The Empire Strikes Back," other names would include "Star Wars: Episode 5" and "The Empire Strikes Back."
-            </div>
-            <div class="inputPanelElement">
-                Correct Movie/TV Show Name:<br />
-                This is the name displayed when an image is solved.<br />
+                Image Name: <span data-toggle="tooltip" title="This is the name displayed when an image is solved, and will be considered correct when submitted by a player"></span><br />
                 <input type="text" id="imageName" autocomplete="off" maxlength="100" />
             </div>
 
+            <div class="inputPanelElement">
+                Often there will be more than one correct answer.
+                For example, for an image from "Star Wars: The Empire Strikes Back," other names would include "Star Wars: Episode 5" and "The Empire Strikes Back."
+            </div>
+
             <div class="imageAlternativeName">
-                Other Correct Names: <br />
+                Other Correct Names: <span data-toggle="tooltip" title="Other names that should be considered correct for this image"></span><br />
                 <input type="text" id="imageAlternativeName1" autocomplete="off" maxlength="100" />
             </div>
             <div class="imageAlternativeName">
@@ -98,18 +96,9 @@
 
     <div id="cropperContainer" class="imageContainer center hidden" draggable="false"></div>
     <div id="imagePreviewContainer" class="imageContainer center hidden" draggable="false"></div>
-    <div id="helpMessageContainer" class="imageContainer center" draggable="false">
+    <div id="helpMessageContainer" class="imageContainer center hidden" draggable="false">
         <span class="helpMessage">Welcome to the Picture Panels upload page!</span><br />
-        <span class="helpMessage">Here are some example images to get you thinking.</span><br /><br />
-
-        <img class="helpImage" src="api/images/welcome/soundofmusic" />
-        <img class="helpImage" src="api/images/welcome/strangerthings" />
-
-        <br />
-        <img class="helpImage" src="api/images/welcome/upload" />
-        <img class="helpImage" src="api/images/welcome/thehelp" />
-        <br /><br />
-        <span>Sound of Music, Stranger Things, Upload, The Help</span>
+        <span class="helpMessage">After you choose an image to upload, it will show up here.</span>
     </div>
 </div>
 

@@ -107,6 +107,8 @@ async function putImageAsync(imageEntity) {
             showLoadingMessage();
             document.getElementById("imageInfoPanel").classList.add("hidden");
 
+            setupActionButton();
+            showMessage("All done! If you have more images to upload, click \"Start Over.\"");
 
             return responseJson;
         }).catch(function (error) {
@@ -149,7 +151,7 @@ async function postImageAsync() {
         .then(imageEntity => {
             showLoadingMessage();
 
-            showMessage("Step 3 of 3. Enter the image details.")
+            showMessage("Step 3 of 3.<br/>Enter the image details.")
 
             document.getElementById("imagePreviewContainer").innerHTML = "<img src='api/images/" + imageEntity.id + "' class='imagePreview' />";
 
@@ -260,7 +262,7 @@ function setupCropper(url) {
 
     cropperImage.addEventListener('ready', function () {
         showLoadingMessage();
-        showMessage("Step 2 of 3. Crop the image if needed.")
+        showMessage("Step 2 of 3.<br/>Crop the image if needed.")
         document.getElementById("chooseImagePanel").classList.add("hidden");
         document.getElementById("cropperInstructions").classList.remove("hidden");
         document.getElementById("uploadButtonsContainer").classList.remove("hidden");
@@ -270,8 +272,14 @@ function setupCropper(url) {
 
 function setupActionButton(value, callback) {
     var uploadActionButton = document.getElementById("uploadActionButton");
-    uploadActionButton.value = value;
-    uploadActionButton.onclick = callback;
+
+    if (value) {
+        uploadActionButton.classList.remove("hidden");
+        uploadActionButton.value = value;
+        uploadActionButton.onclick = callback;
+    } else {
+        uploadActionButton.classList.add("hidden");
+    }
 }
 
 function uploadLoginCallback(result) {
@@ -284,6 +292,8 @@ function uploadLoginCallback(result) {
     }
 }
 
+const defaultTags = urlParams.get('tags');
+
 async function setupTagsAsync() {
     var input = document.getElementById("tagsInput");
 
@@ -295,13 +305,11 @@ async function setupTagsAsync() {
             return response.json();
         });
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const defaultTags = urlParams.get('tags');
-
     input.value = defaultTags;
 
     // init Tagify script on the above inputs
     tagify = new Tagify(input, {
+        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
         whitelist: safeTags,
         maxTags: 10,
         userInput: false,
@@ -324,6 +332,7 @@ window.onload = async () => {
         dragMode: 'move',
         autoCropArea: 1,
         zoomable: false,
+        movable: false,
         rotatable: false
     });
 
@@ -334,12 +343,13 @@ window.onload = async () => {
 
     if (authorizeResult) {
         document.getElementById("chooseImagePanel").classList.remove("hidden");
-        showMessage("Step 1 of 3. Choose an image to upload.")
+        showMessage("Step 1 of 3.<br/>Choose an image to upload.")
     } else {
         localStorage.removeItem("userToken");
         document.getElementById("loginPanel").classList.remove("hidden");
         showMessage("You must be logged in to upload an image.");
     }
+    document.getElementById("helpMessageContainer").classList.remove("hidden");
 
     document.getElementById("imageUrl").onpaste = onPasteUrl;
     document.getElementById("imageUrl").onfocus = function (event) {
@@ -360,6 +370,13 @@ window.onload = async () => {
         document.getElementById("cropperContainer").classList.add("hidden");
         document.getElementById("imagePreviewContainer").classList.add("hidden");
         document.getElementById("helpMessageContainer").classList.remove("hidden");
+
+        document.getElementById("imageFile").value = "";
+        document.getElementById("imageName").value = "";
+        document.getElementById("imageAlternativeName1").value = "";
+        document.getElementById("imageAlternativeName2").value = "";
+        document.getElementById("imageAlternativeName3").value = "";
+        document.getElementById("tagsInput").value = defaultTags;
     }
 
     document.getElementById("16x9Button").onclick = () => {
@@ -373,4 +390,8 @@ window.onload = async () => {
             cropper.setAspectRatio(4 / 3);
         }
     };
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 }
