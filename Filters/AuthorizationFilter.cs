@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using PicturePanels.Services.Authentication;
+using System;
 using System.Linq;
 using System.Security.Claims;
 
@@ -19,6 +20,25 @@ namespace PicturePanels.Filters
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            if (context.HttpContext.Request.Query.TryGetValue("uid", out StringValues userId) == true &&
+                context.HttpContext.Request.Query.TryGetValue("ct", out StringValues createdTime) == true &&
+                context.HttpContext.Request.Query.TryGetValue("sig", out StringValues signature) == true)
+            {
+                if (DateTime.TryParse(createdTime, out DateTime createdDateTime))
+                {
+                    if (createdDateTime.AddDays(1) >= DateTime.UtcNow)
+                    {
+                        var queryString = this.securityProvider.GetUserQueryString(context.HttpContext.Request.Query);
+                        var result = this.securityProvider.VerifyString(this.securityProvider.GetUserQueryString(context.HttpContext.Request.Query), signature);
+                        if (result)
+                        {
+                            context.HttpContext.Items[SecurityProvider.UserIdKey] = userId;
+                            return;
+                        }
+                    }
+                }
+            }
+
             if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues authorization) == true)
             {
                 if (this.securityProvider.TryValidateToken(authorization, out SecurityToken securityToken, out ClaimsPrincipal claimsPrincipal))
@@ -31,10 +51,10 @@ namespace PicturePanels.Filters
 
             context.HttpContext.Items[SecurityProvider.UserNameKey] = string.Empty;
 
-            var aequireAuthorizationAttribute = context.ActionDescriptor.FilterDescriptors
+            var requireAuthorizationAttribute = context.ActionDescriptor.FilterDescriptors
             .Select(x => x.Filter).OfType<RequireAuthorization>().FirstOrDefault();
 
-            if (aequireAuthorizationAttribute != null)
+            if (requireAuthorizationAttribute != null)
             {
                 context.Result = new StatusCodeResult(401);
             }
