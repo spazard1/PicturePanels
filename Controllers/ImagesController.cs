@@ -27,6 +27,7 @@ namespace PicturePanels.Controllers
         private readonly UserTableStorage userTableStorage;
         private readonly ImageNotApprovedTableStorage imageNotApprovedTableStorage;
         private readonly ImageUploadedByTableStorage imageUploadedByTableStorage;
+        private readonly SecurityProvider securityProvider;
 
         public ImagesController(
             GameStateTableStorage gameStateTableStorage,
@@ -36,7 +37,8 @@ namespace PicturePanels.Controllers
             ImageNumberTableStorage imageNumberTableStorage,
             UserTableStorage userTableStorage,
             ImageNotApprovedTableStorage imageNotApprovedTableStorage,
-            ImageUploadedByTableStorage imageUploadedByTableStorage)
+            ImageUploadedByTableStorage imageUploadedByTableStorage,
+            SecurityProvider securityProvider)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
@@ -46,6 +48,7 @@ namespace PicturePanels.Controllers
             this.userTableStorage = userTableStorage;
             this.imageNotApprovedTableStorage = imageNotApprovedTableStorage;
             this.imageUploadedByTableStorage = imageUploadedByTableStorage;
+            this.securityProvider = securityProvider;
         }
         
         [HttpGet("migrate")]
@@ -149,13 +152,20 @@ namespace PicturePanels.Controllers
 
         [HttpGet("uploadedBy")]
         [RequireAuthorization]
-        public IActionResult GetUploadedByImages()
+        public async Task<IActionResult> GetUploadedByImagesAsync()
         {
-            var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(HttpContext.Items[SecurityProvider.UserIdKey].ToString());
+            var userId = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
+            var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(userId);
 
-            var images = uploadedByImages.Select(image => new ImageIdEntity(image));
+            var images = await uploadedByImages.Select(image => new ImageIdEntity(image)).ToListAsync();
 
-            return Json(images);
+            var queryString = this.securityProvider.GetSignedQueryStringUrlEncoded(userId);
+
+            return Json(new ImageIdListEntity()
+            {
+                QueryString = queryString,
+                ImageIds = images
+            });
         }
 
         [HttpGet("entity/{gameStateId}")]
@@ -259,7 +269,7 @@ namespace PicturePanels.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
-        [HttpGet("{imageId}/thumbnail")]
+        [HttpGet("thumbnails/{imageId}")]
         [RequireAuthorization]
         public async Task<IActionResult> GetThumbnailAsync(string imageId)
         {
@@ -270,14 +280,12 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            //HttpContext.Items[SecurityProvider.UserIdKey].ToString()
-
             if (!HttpContext.Items.TryGetValue(SecurityProvider.UserIdKey, out object userIdObject))
             {
                 return StatusCode((int)HttpStatusCode.Forbidden);
             }
 
-            var userId = userIdObject as string;
+            var userId = userIdObject?.ToString();
             if (imageTableEntity.UploadedBy != userId)
             {
                 return StatusCode((int)HttpStatusCode.Forbidden);

@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using PicturePanels.Models;
 
 namespace PicturePanels.Services.Authentication
 {
@@ -90,5 +95,48 @@ namespace PicturePanels.Services.Authentication
         {
 			return GetPasswordHash(password, salt) == hash;
         }
+
+		public string SignString(string data)
+        {
+			var cert = this.certificateProvider.GetCertificate();
+			var rsa = cert.GetRSAPrivateKey();
+
+			var dataToSignBytes = Encoding.UTF8.GetBytes(data);
+			var signature = rsa.SignData(dataToSignBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+			return Convert.ToBase64String(signature);
+		}
+
+		public bool VerifyString(string data, string signature)
+        {
+			var cert = this.certificateProvider.GetCertificate();
+			var rsa = cert.GetRSAPrivateKey();
+
+			byte[] dataToSignBytes = Encoding.UTF8.GetBytes(data);
+			var signatureBytes = Convert.FromBase64String(signature);
+			return rsa.VerifyData(dataToSignBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+		}
+
+		public string GetSignedQueryStringUrlEncoded(string userId)
+		{
+			var now = DateTime.UtcNow;
+			var userQueryString = GetUserQueryStringToSign(userId, now);
+			var signature = SignString(userQueryString);
+			return GetUserQueryStringEncoded(userId, now) + "&sig=" + HttpUtility.UrlEncode(signature);
+		}
+
+		public string GetUserQueryStringToSign(string userId, DateTime now)
+        {
+			return "uid=" + userId + "&ct=" + now.ToString("o");
+		}
+
+		public string GetUserQueryStringEncoded(string userId, DateTime now)
+		{
+			return "uid=" + userId + "&ct=" + HttpUtility.UrlEncode(now.ToString("o"));
+		}
+
+		public string GetUserQueryString(IQueryCollection query)
+		{
+			return "uid=" + query["uid"] + "&ct=" + HttpUtility.UrlDecode(query["ct"]);
+		}
 	}
 }
