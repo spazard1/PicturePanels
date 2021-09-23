@@ -11,13 +11,12 @@
                 throw new Error(await response.text());
             }
             return response.json();
-        }).then(images => {
-
-            for (var image of images) {
+        }).then(responseJson => {
+            for (var imageId of responseJson.imageIds) {
                 var imagesContainer = document.getElementById("uploadedByImages");
 
                 var imageElement = document.createElement("img");
-                imageElement.src = "api/images/" + image.imageId + "/thumbnail";
+                imageElement.src = "api/images/thumbnails/" + imageId.imageId + "?" + responseJson.queryString;
 
                 imagesContainer.appendChild(imageElement);
             }
