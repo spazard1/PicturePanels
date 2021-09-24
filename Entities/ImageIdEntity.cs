@@ -13,9 +13,12 @@ namespace PicturePanels.Entities
         public ImageIdEntity(IImageIdTableEntity tableEntity)
         {
             this.ImageId = tableEntity.ImageId;
+            this.Name = tableEntity.Name;
         }
 
         public string ImageId { get; set; }
+
+        public string Name { get; set; }
 
     }
 }

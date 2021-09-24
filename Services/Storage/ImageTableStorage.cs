@@ -14,7 +14,6 @@ using Azure.Storage.Blobs.Specialized;
 using Azure.Storage;
 using Azure.Storage.Blobs.Models;
 using System.Drawing.Drawing2D;
-using Microsoft.Azure.Cosmos.Table;
 
 namespace PicturePanels.Services.Storage
 {
@@ -23,6 +22,7 @@ namespace PicturePanels.Services.Storage
         private readonly IConnectionStringProvider connectionStringProvider;
         private BlobServiceClient blobServiceClient;
 
+        public const int ThumbnailCacheDays = 90;
         public const int Across = 5;
         public const int Down = 4;
         public const string DefaultBlobContainer = "pending";
@@ -222,19 +222,19 @@ namespace PicturePanels.Services.Storage
         {
             if (entity.ThumbnailId?.StartsWith("skip") == true)
             {
-                return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
             }
 
             if (!string.IsNullOrWhiteSpace(entity.ThumbnailId))
             {
-                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
             }
 
             var blobContainerThumbnail = blobServiceClient.GetBlobContainerClient(ThumbnailsBlobContainer);
             var blobThumbnail = blobContainerThumbnail.GetBlobClient(entity.ThumbnailId);
             if (await blobThumbnail.ExistsAsync())
             {
-                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
             }
 
             try
@@ -253,7 +253,7 @@ namespace PicturePanels.Services.Storage
                     {
                         i.ThumbnailId = "skip - too small";
                     });
-                    return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
+                    return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
                 }
 
                 var ratio = 400.0 / image.Width;
@@ -270,7 +270,7 @@ namespace PicturePanels.Services.Storage
                     i.ThumbnailId = entity.Id;
                 });
 
-                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId);
+                return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
             }
             catch
             {
@@ -278,13 +278,13 @@ namespace PicturePanels.Services.Storage
                 {
                     i.ThumbnailId = "skip - failed";
                 });
-                return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName);
+                return this.GetDownloadUrl(entity.BlobContainer, entity.BlobName, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
             }
         }
 
         public string GetPanelImageUrl(string imageId, int panelNumber)
         {
-            return this.GetDownloadUrl(PanelsBlobContainer, imageId + "_panel_" + panelNumber);
+            return this.GetDownloadUrl(PanelsBlobContainer, imageId + "_panel_" + panelNumber, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
         }
 
         public async Task GeneratePanelImageUrlAsync(string imageId, int panelNumber)

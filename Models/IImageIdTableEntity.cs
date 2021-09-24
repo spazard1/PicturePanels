@@ -8,5 +8,7 @@ namespace PicturePanels.Models
     public interface IImageIdTableEntity
     {
         string ImageId { get; }
+
+        string Name { get; set; }
     }
 }
