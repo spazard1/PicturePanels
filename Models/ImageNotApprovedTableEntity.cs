@@ -3,7 +3,7 @@ using System;
 
 namespace PicturePanels.Models
 {
-    public class ImageNotApprovedTableEntity : TableEntity, IImageIdTableEntity
+    public class ImageNotApprovedTableEntity : TableEntity
     {
         public const string DefaultPartitionKey = "images";
 

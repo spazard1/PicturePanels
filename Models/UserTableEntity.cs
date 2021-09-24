@@ -24,5 +24,9 @@ namespace PicturePanels.Models
         public string Password { get; set; }
 
         public string Salt { get; set; }
+
+        public string QueryString { get; set; }
+
+        public DateTime? QueryStringCreateTime { get; set; }
     }
 }
