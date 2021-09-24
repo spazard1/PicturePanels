@@ -45,9 +45,12 @@ namespace PicturePanels.Services.Storage
 
         public override async Task DeleteAsync(ImageTableEntity tableEntity)
         {
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(tableEntity.BlobContainer);
-            var blobClient = blobContainerClient.GetBlobClient(tableEntity.BlobName);
-            await blobClient.DeleteIfExistsAsync();
+            if (!string.IsNullOrWhiteSpace(tableEntity.BlobContainer) && !string.IsNullOrWhiteSpace(tableEntity.BlobName))
+            {
+                var blobContainerClient = blobServiceClient.GetBlobContainerClient(tableEntity.BlobContainer);
+                var blobClient = blobContainerClient.GetBlobClient(tableEntity.BlobName);
+                await blobClient.DeleteIfExistsAsync();
+            }
 
             await base.DeleteAsync(tableEntity);
         }
@@ -235,6 +238,11 @@ namespace PicturePanels.Services.Storage
             if (await blobThumbnail.ExistsAsync())
             {
                 return this.GetDownloadUrl(ThumbnailsBlobContainer, entity.ThumbnailId, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
+            }
+
+            if (entity.BlobContainer == null)
+            {
+                return string.Empty;
             }
 
             try

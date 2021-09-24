@@ -20,11 +20,12 @@
 
 <div id="mainDiv" class="center">
     <div id="uploadInputPanel" class="uploadInputPanel">
-        <div id="uploadResults" class="uploadResults imageInfoPanel hidden"></div>
+        <div id="messageResults" class="uploadResults imageInfoPanel hidden"></div>
 
         <div id="loginPanel" class="loginPanel hidden">
             <div class="inputPanelElement">
-                <input type="button" id="loginButton" value="Login" />
+                <input type="button" id="loginButton" value="Login" /><br /><br />
+                <a href="newuser">Create a new user</a>
             </div>
         </div>
 
@@ -97,8 +98,8 @@
     <div id="cropperContainer" class="imageContainer center hidden" draggable="false"></div>
     <div id="imagePreviewContainer" class="imageContainer center hidden" draggable="false"></div>
     <div id="helpMessageContainer" class="helpMessageContainer center hidden" draggable="false">
-        <div class="helpMessage">Welcome to the Picture Panels upload page!</div>
-        <div class="helpMessage">These are the images you have uploaded so far.</div>
+        <div id="userWelcomeMessage" class="helpMessage">Welcome to the Picture Panels upload page!</div>
+        <div id="uploadedByImagesMessage" class="helpMessage hidden">Your display name: <span id="displayName"></span>&nbsp;&nbsp;<a href='editUser'>Edit password or display name</a>&nbsp;&nbsp;<input type="button" id="logoutButton" value="Logout" class="logoutButton" /></div>
         <div id="uploadedByImages" class="thumbnailsContainer"></div>
     </div>
 </div>

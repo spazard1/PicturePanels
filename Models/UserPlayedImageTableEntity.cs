@@ -4,16 +4,17 @@ namespace PicturePanels.Models
 {
     public class UserPlayedImageTableEntity : TableEntity
     {
-        public string UserId
+
+        public string ImageId
         {
             get { return this.PartitionKey; }
             set { this.PartitionKey = value; }
         }
 
-        public int ImageId
+        public string UserId
         {
-            get { return int.Parse(this.RowKey); }
-            set { this.RowKey = value.ToString(); }
+            get { return this.RowKey; }
+            set { this.RowKey = value; }
         }
     }
 }

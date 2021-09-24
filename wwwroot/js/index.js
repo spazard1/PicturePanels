@@ -1,6 +1,21 @@
 ﻿var across = 5;
 var down = 4;
 
+function showMessage(message, isError) {
+    if (!message) {
+        document.getElementById("messageResults").classList.add("hidden");
+        return;
+    }
+    document.getElementById("messageResults").classList.remove("hidden");
+    document.getElementById("messageResults").innerHTML = message;
+
+    if (isError) {
+        document.getElementById("messageResults").classList.add("errorMessage");
+    } else {
+        document.getElementById("messageResults").classList.remove("errorMessage");
+    }
+}
+
 function loginPrompt(callback) {
     bootbox.dialog({
         message: $("#loginPrompt").html().replaceAll("-modal", ""),
@@ -44,16 +59,21 @@ async function tryLoginAsync(username, password) {
             return false;
         })
         .then(responseJson => {
-            if (responseJson && responseJson.token) {
-                localStorage.setItem("userToken", responseJson.token);
-                return true;
+            if (responseJson && responseJson.userToken) {
+                localStorage.setItem("userToken", responseJson.userToken);
+                return responseJson.user;
             }
             return false;
         });
 }
 
-async function tryAuthorizeTokenAsync() {
-    return await fetch("/api/users/authorize",
+function logout() {
+    localStorage.removeItem("userToken");
+    window.location.reload();
+}
+
+async function getUserAsync() {
+    return await fetch("/api/users",
         {
             method: "GET",
             headers: {
@@ -61,7 +81,10 @@ async function tryAuthorizeTokenAsync() {
             }
         })
         .then(response => {
-            return response.ok;
+            if (response.ok) {
+                return response.json();
+            }
+            return false;
         });
 }
 

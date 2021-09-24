@@ -77,6 +77,10 @@ input:focus {
     border: 3px inset rgb(118, 118, 118);
 }
 
+.logoutButton {
+    font-size: 1.5rem;
+}
+
 .center {
     text-align: center;
     margin: auto;
@@ -92,6 +96,19 @@ input:focus {
     border: 3px solid red;
     text-align: center;
     width: 100%;
+}
+
+.newUser {
+    font-size: 2.5rem;
+}
+
+.userResults {
+    margin-bottom: 3vh;
+}
+
+.errorMessage {
+    color: red;
+    border: 2px solid red;
 }
 
 .adminMenu {
