@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PicturePanels.Entities;
 using PicturePanels.Filters;
-using PicturePanels.Models;
-using PicturePanels.Services;
 using PicturePanels.Services.Authentication;
 using PicturePanels.Services.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -29,21 +24,47 @@ namespace PicturePanels.Controllers
             this.securityProvider = securityProvider;
         }
 
-        [HttpGet("authorize")]
-        [RequireAuthorization]
-        public IActionResult Get()
+        [Route("/newUser")]
+        public IActionResult NewUser()
         {
-            return StatusCode(200);
+            ViewData["Title"] = "New User";
+            return View();
         }
 
-        [HttpGet("steven")]
+        [Route("/editUser")]
+        public IActionResult EditUser()
+        {
+            ViewData["Title"] = "Edit User";
+            return View();
+        }
+
+        [Route("/upload")]
+        public IActionResult Upload()
+        {
+            ViewData["Title"] = "Upload";
+            return View();
+        }
+
+        [RequireAuthorization]
+        public async Task<IActionResult> GetAsync()
+        {
+            var userModel = await this.userTableStorage.GetAsync(HttpContext.Items[SecurityProvider.UserIdKey].ToString());
+            if (userModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            return Json(new UserEntity(userModel));
+        }
+
+        [HttpGet("add")]
         public async Task<IActionResult> StevenAsync()
         {
-            var user = await this.userTableStorage.GetAsync("spazard1");
-            user.Salt = this.securityProvider.GetSalt();
-            user.Password = this.securityProvider.GetPasswordHash("Aldeth83!", user.Salt);
+            var userModel = await this.userTableStorage.GetAsync("sameisele");
+            userModel.Salt = this.securityProvider.GetSalt();
+            userModel.Password = this.securityProvider.GetPasswordHash("123456", userModel.Salt);
 
-            await this.userTableStorage.InsertOrReplaceAsync(user);
+            await this.userTableStorage.InsertOrReplaceAsync(userModel);
 
             return StatusCode((int)HttpStatusCode.OK);
         }
@@ -51,15 +72,18 @@ namespace PicturePanels.Controllers
         [HttpPut("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserEntity userEntity)
         {
-            var user = await this.userTableStorage.GetAsync(userEntity.UserName);
-            if (user == null)
+            var userModel = await this.userTableStorage.GetAsync(userEntity.UserName);
+            if (userModel == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            if (this.securityProvider.ValidatePassword(userEntity.Password, user.Salt, user.Password))
+            if (this.securityProvider.ValidatePassword(userEntity.Password, userModel.Salt, userModel.Password))
             {
-                return Json(new TokenEntity() { Token = this.securityProvider.GetToken(user.UserName, user.UserId) });
+                return Json(new UserTokenEntity() { 
+                    User = new UserEntity(userModel),
+                    UserToken = this.securityProvider.GetToken(userModel.UserName, userModel.UserId) 
+                });
             }
 
             return StatusCode((int)HttpStatusCode.Unauthorized);
@@ -67,19 +91,34 @@ namespace PicturePanels.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] UserEntity userEntity)
+        public async Task<IActionResult> PostAsync([FromBody] NewUserEntity userEntity)
         {
-            var user = await this.userTableStorage.GetAsync(userEntity.UserName);
-            if (user != null)
+            var userModel = await this.userTableStorage.GetAsync(userEntity.UserName);
+            if (userModel != null)
             {
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
 
-            var userModel = userEntity.ToModel();
-            userModel.UserId = Guid.NewGuid().ToString();
-            userModel.Salt = this.securityProvider.GetSalt();
-            userModel.Password = this.securityProvider.GetPasswordHash(userEntity.Password, userModel.Salt);
-            userModel = await this.userTableStorage.InsertAsync(userModel);
+            userModel = await this.userTableStorage.NewUserAsync(userEntity.UserName, userEntity.DisplayName, userEntity.Password);
+
+            return Json(new UserEntity(userModel));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutAsync([FromBody] EditUserEntity userEntity)
+        {
+            var userModel = await this.userTableStorage.GetAsync(userEntity.UserName);
+            if (userModel == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            if (!this.securityProvider.ValidatePassword(userEntity.ExistingPassword, userModel.Salt, userModel.Password))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            userModel = await this.userTableStorage.EditUserAsync(userModel, userEntity.DisplayName, userEntity.Password);
 
             return Json(new UserEntity(userModel));
         }

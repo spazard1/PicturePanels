@@ -84,11 +84,6 @@ input {
     margin-top: .5vh;
 }
 
-.uploadErrorMessage {
-    color: red;
-    border: 2px solid red;
-}
-
 .imageUrl {
     width: 80%;
     text-align: center;

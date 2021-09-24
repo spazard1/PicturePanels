@@ -16,39 +16,63 @@ namespace PicturePanels.Services.Storage
             this.securityProvider = securityProvider;
         }
 
-        public async Task<UserTableEntity> NewUserAsync(string userName, string name)
+        public async Task<UserTableEntity> NewUserAsync(string userName, string displayName, string password)
         {
             var userId = Guid.NewGuid().ToString();
             
-            await this.InsertOrReplaceAsync(new UserTableEntity()
+            await this.InsertAsync(new UserTableEntity()
             {
                 UserId = userName,
                 UserName = userId
             });
 
-            return await this.InsertOrReplaceAsync(new UserTableEntity()
+            var salt = this.securityProvider.GetSalt();
+
+            return await this.InsertAsync(new UserTableEntity
             {
-                UserId = userId,
                 UserName = userName,
-                Name = name
+                UserId = userId,
+                DisplayName = displayName,
+                Salt = salt,
+                Password = this.securityProvider.GetPasswordHash(password, salt),
             });
+        }
+
+        public async Task<UserTableEntity> EditUserAsync(UserTableEntity userModel, string displayName, string password)
+        {
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                var salt = this.securityProvider.GetSalt();
+                userModel.Salt = salt;
+                userModel.Password = this.securityProvider.GetPasswordHash(password, salt);
+            }
+
+            if (!string.IsNullOrWhiteSpace(displayName))
+            {
+                userModel.DisplayName = displayName;
+            }
+
+            return await this.InsertOrReplaceAsync(userModel);
         }
 
         public async Task<UserTableEntity> GetAsync(string userIdOrUserName)
         {
-            var user = await this.GetAllFromPartitionAsync(userIdOrUserName).FirstOrDefaultAsync();
+            UserTableEntity user;
+            if (Guid.TryParse(userIdOrUserName, out Guid result))
+            {
+                user = await this.GetAllFromPartitionAsync(userIdOrUserName).FirstOrDefaultAsync();
+                return user;
+            }
+
+            user = await this.GetAllFromPartitionAsync(userIdOrUserName).FirstOrDefaultAsync();
 
             if (user == null)
             {
                 return null;
-            }
+            }      
 
-            if (Guid.TryParse(userIdOrUserName, out Guid result))
-            {
-                return user;
-            }
-
-            return await this.GetAsync(user.UserName, user.UserId);
+            // username has the guid here
+            return await this.GetAllFromPartitionAsync(user.UserName).FirstOrDefaultAsync();
         }
 
         public async Task<UserTableEntity> GetOrSaveQueryStringAsync(UserTableEntity userTableEntity)

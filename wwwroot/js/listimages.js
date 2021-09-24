@@ -1,11 +1,9 @@
 ﻿var maxRatio = 1.9;
 
 function listImages() {
-    localStorage.setItem("blobContainer", document.getElementById("sourceBlobContainer").value);
-
-    fetch("api/images/all/" + document.getElementById("sourceBlobContainer").value, {
+    fetch("api/images/notApproved", {
         headers: {
-            "Authorization": localStorage.getItem("Authorization")
+            "Authorization": localStorage.getItem("userToken")
         }
         })
         .then(response => response.json())
@@ -13,24 +11,21 @@ function listImages() {
             var imageContainerElement = document.getElementById("imageContainer");
             imageContainerElement.innerHTML = "";
 
-            responseJson.forEach(imageEntity => {
+            for (var image of responseJson.images) {
                 var imageInfo = document.createElement("div");
-                imageInfo.id = imageEntity.id;
-                imageInfo.imageEntity = imageEntity;
+                imageInfo.id = image.id;
                 imageInfo.classList.add("imageInfo");
                 var nameInfoElement = document.createElement("div");
                 imageInfo.appendChild(nameInfoElement);
 
                 var img = document.createElement("img");
-                img.src = "api/images/" + imageEntity.blobContainer + "/" + imageEntity.id + "/thumbnail";
+                img.src = "api/images/thumbnails/" + image.id + "?" + responseJson.queryString;
 
                 imageInfo.appendChild(img);
                 imageContainerElement.appendChild(imageInfo);
 
-                drawImageInfo(img, imageEntity, nameInfoElement);
-            });
-
-            document.getElementById("imageCount").innerHTML = document.getElementById("imageContainer").children.length;
+                drawImageInfo(img, image, nameInfoElement);
+            };
         });
 }
 
@@ -62,11 +57,16 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     imageUploadedBy.id = imageEntity.id + "_uploadedBy";
     imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
     nameInfoElement.appendChild(imageUploadedBy);
-    
 
-    var imagePlayedTime = document.createElement("div");
-    imagePlayedTime.appendChild(document.createTextNode(imageEntity.playedTime));
-    nameInfoElement.appendChild(imagePlayedTime);
+    var imageTags = document.createElement("div");
+    imageTags.id = imageEntity.id + "_tags";
+    imageTags.appendChild(document.createTextNode(imageEntity.tags));
+    nameInfoElement.appendChild(imageTags);
+
+    var imageAlternativeNames = document.createElement("div");
+    imageAlternativeNames.id = imageEntity.id + "_alternativeNames";
+    imageAlternativeNames.appendChild(document.createTextNode(imageEntity.alternativeNames));
+    nameInfoElement.appendChild(imageAlternativeNames);
 
     var actionLinks = document.createElement("div");
 
@@ -214,11 +214,11 @@ async function deleteImage(imageId) {
         return;
     }
 
-    return await fetch("api/images/" + document.getElementById("sourceBlobContainer").value + "/" + imageId,
+    return await fetch("api/images/" + imageId,
         {
             method: "DELETE",
             headers: {
-                "Authorization": localStorage.getItem("Authorization")
+                "Authorization": localStorage.getItem("userToken")
             }
         })
         .then(response => {
@@ -226,27 +226,11 @@ async function deleteImage(imageId) {
                 throw new Error("got bad response on delete image: " + response.text());
             }
             document.getElementById(imageId).remove();
-            document.getElementById("imageCount").innerHTML = document.getElementById("imageContainer").children.length;
         }).catch(error => {
             alert(error);
         });
 }
 
 window.onload = async function () {
-    setupAdminMenu();
-
-    var blobContainers = await getBlobContainers();
-    drawBlobContainers(blobContainers, "sourceBlobContainer");
-    drawBlobContainers(blobContainers, "targetBlobContainer");
-
-    document.getElementById("sourceBlobContainer").value = localStorage.getItem("blobContainer");
-    document.getElementById("sourceBlobContainer").onchange = listImages;
-
-    document.getElementById("cancelSaveButton").onclick = function (event) {
-        document.getElementById("editImageMenu").classList.add("hidden");
-    };
-    document.getElementById("saveButton").onclick = saveImage;
-
-
     listImages();
 };

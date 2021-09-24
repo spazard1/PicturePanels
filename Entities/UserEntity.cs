@@ -20,13 +20,14 @@ namespace PicturePanels.Entities
         {
             this.UserId = userModel.UserId;
             this.UserName = userModel.UserName;
+            this.DisplayName = userModel.DisplayName;
         }
 
         public string UserId { get; set; }
 
-        [Required]
-        [MinLength(6)]
         public string UserName { get; set; }
+
+        public string DisplayName { get; set; }
 
         [Required]
         [MinLength(6)]

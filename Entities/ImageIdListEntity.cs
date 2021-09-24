@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace PicturePanels.Entities
 {
-    public class ImageIdListEntity
+    public class ImageIdNameListEntity
     {
         public string QueryString { get; set; }
 
-        public IEnumerable<ImageIdEntity> ImageIds { get; set; }
+        public IEnumerable<ImageIdNameEntity> ImageIds { get; set; }
 
     }
 }

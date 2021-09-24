@@ -13,13 +13,6 @@ namespace PicturePanels.Controllers
             return View();
         }
 
-        [Route("/upload")]
-        public IActionResult Upload()
-        {
-            ViewData["Title"] = "Upload";
-            return View();
-        }
-
         [Route("/listimages")]
         public IActionResult ListImages()
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PicturePanels.Models
 {
-    public class ImagePlayedTableEntity : TableEntity
+    public class ImagePlayedTableEntity : TableEntity, IImageIdTableEntity
     {
         public string UserName
         {

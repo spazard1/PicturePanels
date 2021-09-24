@@ -1,4 +1,4 @@
-﻿async function getUploadedByImagesAsync() {
+﻿async function drawUploadedByImagesAsync() {
     return await fetch("api/images/uploadedBy",
         {
             method: "GET",
@@ -12,6 +12,8 @@
             }
             return response.json();
         }).then(responseJson => {
+            document.getElementById("uploadedByImagesMessage").classList.remove("hidden");
+
             for (var imageId of responseJson.imageIds) {
                 var imagesContainer = document.getElementById("uploadedByImages");
 
@@ -229,21 +231,6 @@ function showLoadingMessage(message) {
     document.getElementById("loadingMessage").innerHTML = message;
 }
 
-function showMessage(message, isError) {
-    if (!message) {
-        document.getElementById("uploadResults").classList.add("hidden");
-        return;
-    }
-    document.getElementById("uploadResults").classList.remove("hidden");
-    document.getElementById("uploadResults").innerHTML = message;
-
-    if (isError) {
-        document.getElementById("uploadResults").classList.add("uploadErrorMessage");
-    } else {
-        document.getElementById("uploadResults").classList.remove("uploadErrorMessage");
-    }
-}
-
 function drawDetails(event) {
     var aspectRatio = (event.detail.width / event.detail.height).toFixed(2);
 
@@ -319,11 +306,13 @@ function setupActionButton(value, callback) {
     }
 }
 
-function uploadLoginCallback(result) {
-    if (result) {
-        showMessage();
+function uploadLoginCallback(user) {
+    if (user) {
+        showMessage("Step 1 of 3.<br/>Choose an image to upload.");
         document.getElementById("loginPanel").classList.add("hidden");
         document.getElementById("chooseImagePanel").classList.remove("hidden");
+        document.getElementById("displayName").innerHTML = user.displayName;
+        drawUploadedByImagesAsync();
     } else {
         showMessage("That login didn't work. Try again.", true);
     }
@@ -373,14 +362,13 @@ window.onload = async () => {
         rotatable: false
     });
 
-    var authorizeResult = false;
+    var user = null;
     if (localStorage.getItem("userToken")) {
-        authorizeResult = await tryAuthorizeTokenAsync();
+        user = await getUserAsync();
     }
 
-    if (authorizeResult) {
-        document.getElementById("chooseImagePanel").classList.remove("hidden");
-        showMessage("Step 1 of 3.<br/>Choose an image to upload.");
+    if (user) {
+        uploadLoginCallback(user);
     } else {
         localStorage.removeItem("userToken");
         document.getElementById("loginPanel").classList.remove("hidden");
@@ -397,6 +385,10 @@ window.onload = async () => {
 
     document.getElementById("loginButton").onclick = () => {
         loginPrompt(uploadLoginCallback);
+    };
+
+    document.getElementById("logoutButton").onclick = () => {
+        logout();
     };
 
     document.getElementById("uploadStartOverButton").onclick = () => {
@@ -433,6 +425,4 @@ window.onload = async () => {
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
-
-    getUploadedByImagesAsync();
 }

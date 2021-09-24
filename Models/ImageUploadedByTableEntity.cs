@@ -3,7 +3,7 @@ using System;
 
 namespace PicturePanels.Models
 {
-    public class ImageUploadedByTableEntity : TableEntity, IImageIdTableEntity
+    public class ImageUploadedByTableEntity : TableEntity, IImageIdNameTableEntity
     {
 
         public string UploadedBy

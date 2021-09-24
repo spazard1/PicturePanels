@@ -11,5 +11,10 @@ namespace PicturePanels.Services.Storage
         {
 
         }
+
+        public async Task<ImageNotApprovedTableEntity> GetAsync(string imageId)
+        {
+            return await this.GetAsync(ImageNotApprovedTableEntity.DefaultPartitionKey, imageId);
+        }
     }
 }
