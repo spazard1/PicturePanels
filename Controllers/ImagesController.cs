@@ -127,7 +127,8 @@ namespace PicturePanels.Controllers
                     await this.imageUploadedByTableStorage.InsertOrReplaceAsync(new ImageUploadedByTableEntity()
                     {
                         UploadedBy = imageTableEntity.UploadedBy,
-                        ImageId = imageTableEntity.Id
+                        ImageId = imageTableEntity.Id,
+                        Name = imageTableEntity.Name
                     });
                 }
             }
@@ -155,15 +156,21 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> GetUploadedByImagesAsync()
         {
             var userId = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
+            var userTableEntity = await this.userTableStorage.GetAsync(userId);
+            if (userTableEntity == null)
+            {
+                return StatusCode(404);
+            }
+
             var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(userId);
 
             var images = await uploadedByImages.Select(image => new ImageIdEntity(image)).ToListAsync();
 
-            var queryString = this.securityProvider.GetSignedQueryStringUrlEncoded(userId);
+            userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
 
             return Json(new ImageIdListEntity()
             {
-                QueryString = queryString,
+                QueryString = userTableEntity.QueryString,
                 ImageIds = images
             });
         }
@@ -265,7 +272,7 @@ namespace PicturePanels.Controllers
         private IActionResult ImageRedirectResult(string imageUrl)
         {
             Response.Headers["Location"] = imageUrl;
-            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 365 * 10;
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * ImageTableStorage.ThumbnailCacheDays;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -292,7 +299,7 @@ namespace PicturePanels.Controllers
             }
 
             Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600;
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * ImageTableStorage.ThumbnailCacheDays;
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
@@ -459,7 +466,8 @@ namespace PicturePanels.Controllers
             await this.imageUploadedByTableStorage.InsertAsync(new ImageUploadedByTableEntity()
             {
                 UploadedBy = imageTableEntity.UploadedBy,
-                ImageId = imageTableEntity.Id
+                ImageId = imageTableEntity.Id,
+                Name = imageTableEntity.Name
             });
 
             imageTableEntity = await this.imageTableStorage.ReplaceAsync(imageTableEntity, i =>

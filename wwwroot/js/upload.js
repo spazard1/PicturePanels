@@ -15,10 +15,22 @@
             for (var imageId of responseJson.imageIds) {
                 var imagesContainer = document.getElementById("uploadedByImages");
 
-                var imageElement = document.createElement("img");
-                imageElement.src = "api/images/thumbnails/" + imageId.imageId + "?" + responseJson.queryString;
+                var thumbnailContainer = document.createElement("div");
+                thumbnailContainer.classList = "thumbnailContainer";
 
-                imagesContainer.appendChild(imageElement);
+                var imageNameElement = document.createElement("div");
+                imageNameElement.classList = "imageName"
+                imageNameElement.appendChild(document.createTextNode(imageId.name));
+                thumbnailContainer.appendChild(imageNameElement);
+
+                var imageContainer = document.createElement("div");
+                var imageElement = document.createElement("img");
+                imageElement.classList = "thumbnail";
+                imageElement.src = "api/images/thumbnails/" + imageId.imageId + "?" + responseJson.queryString;
+                imageContainer.appendChild(imageElement);
+                thumbnailContainer.appendChild(imageContainer);
+
+                imagesContainer.appendChild(thumbnailContainer);
             }
         });
 }
@@ -368,7 +380,7 @@ window.onload = async () => {
 
     if (authorizeResult) {
         document.getElementById("chooseImagePanel").classList.remove("hidden");
-        showMessage("Step 1 of 3.<br/>Choose an image to upload.")
+        showMessage("Step 1 of 3.<br/>Choose an image to upload.");
     } else {
         localStorage.removeItem("userToken");
         document.getElementById("loginPanel").classList.remove("hidden");
@@ -388,6 +400,8 @@ window.onload = async () => {
     };
 
     document.getElementById("uploadStartOverButton").onclick = () => {
+        showMessage("Step 1 of 3.<br/>Choose an image to upload.");
+
         document.getElementById("chooseImagePanel").classList.remove("hidden");
         document.getElementById("imageInfoPanel").classList.add("hidden");
         document.getElementById("uploadButtonsContainer").classList.add("hidden");

@@ -17,5 +17,7 @@ namespace PicturePanels.Models
             get { return this.RowKey; }
             set { this.RowKey = value; }
         }
+
+        public string Name { get; set; }
     }
 }

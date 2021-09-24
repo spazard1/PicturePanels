@@ -51,6 +51,10 @@ input {
     width: 100%;
 }
 
+.helpMessageContainer {
+    width: 100%;
+}
+
 .uploadResults {
     font-size: 1.4em;
     margin-bottom: 3vh;
@@ -143,6 +147,7 @@ input {
 
 .helpMessage {
     font-size: 2em;
+    margin-bottom: .5vh;
 }
 
 .helpImage {
@@ -164,6 +169,11 @@ input {
 
     .imageContainer {
         height: 80vh;
+        flex: 7;
+    }
+
+    .helpMessageContainer {
+        height: 99vh;
         flex: 7;
     }
 
