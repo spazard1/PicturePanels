@@ -40,6 +40,30 @@ namespace PicturePanels.Services.Storage
             return (T)retrievedResult.Result;
         }
 
+        public async IAsyncEnumerable<T> GetAllAsync(int take)
+        {
+            var count = 0;
+            TableQuery<T> tableQuery = new TableQuery<T>();
+            TableContinuationToken continuationToken = null;
+
+            do
+            {
+                TableQuerySegment<T> tableQueryResult = await cloudTable.ExecuteQuerySegmentedAsync(tableQuery, continuationToken);
+                continuationToken = tableQueryResult.ContinuationToken;
+
+                foreach (var result in tableQueryResult.Results)
+                {
+                    if (count >= take)
+                    {
+                        yield break;
+                    }
+
+                    yield return result;
+                    count++;
+                }
+            } while (continuationToken != null);
+        }
+
         public async IAsyncEnumerable<T> GetAllAsync()
         {
             TableQuery<T> tableQuery = new TableQuery<T>();
@@ -172,6 +196,10 @@ namespace PicturePanels.Services.Storage
 
         public virtual async Task DeleteAsync(T tableEntity)
         {
+            if (tableEntity == null)
+            {
+                return;
+            }
             await cloudTable.ExecuteAsync(TableOperation.Delete(tableEntity));
         }
 

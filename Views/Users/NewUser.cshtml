@@ -1,0 +1,21 @@
+﻿@section css {
+	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/index.js" asp-append-version="true"></script>
+    <script src="~/js/user.js" asp-append-version="true"></script>
+}
+
+<div id="mainDiv" class="center newUser">
+    <div class="newUser">Create a new user</div><br />
+
+    <div id="messageResults" class="userResults hidden"></div>
+
+    <div>Username: <input type="text" id="username" /></div><br />
+    <div>Password: <input type="password" id="password" /></div><br />
+    <div>Display Name: <input type="text" id="displayName" /></div>
+    (this is displayed on an image as "Uploaded By:")
+    <br /><br />
+    <div><input type="button" id="newUserButton" value="Create" /></div>
+</div>

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace PicturePanels.Entities
 {
-    public class TokenEntity
+    public class UserTokenEntity
     {
-        public string Token { get; set; }
+        public UserEntity User { get; set; }
+
+        public string UserToken { get; set; }
     }
 }

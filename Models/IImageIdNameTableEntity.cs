@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace PicturePanels.Models
 {
-    public interface IImageIdTableEntity
+    public interface IImageIdNameTableEntity : IImageIdTableEntity
     {
-        string ImageId { get; }
+        string Name { get; set; }
     }
 }

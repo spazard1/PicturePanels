@@ -19,7 +19,7 @@ namespace PicturePanels.Models
             set { this.RowKey = value; }
         }
 
-        public string Name { get; set; }
+        public string DisplayName { get; set; }
 
         public string Password { get; set; }
 
