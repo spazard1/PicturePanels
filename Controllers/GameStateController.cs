@@ -47,7 +47,7 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> GetAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
-            if (gameState == null)
+            if (gameState == null || gameState.TurnType == GameStateTableEntity.TurnTypeSetup)
             {
                 return StatusCode(404);
             }
@@ -104,6 +104,11 @@ namespace PicturePanels.Controllers
             });
 
             gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
+
+            if (gameState.FinalRoundNumber == 0)
+            {
+                return StatusCode(400);
+            }
 
             return Json(new GameStateEntity(gameState));
         }
@@ -247,7 +252,7 @@ namespace PicturePanels.Controllers
         */
 
         [HttpPut("{id}/nextTurn")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> PutNextTurnAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -269,7 +274,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{id}/teamPass/{teamNumber:int}")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> PutTeamPassAsync(string id, int teamNumber)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -285,7 +290,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{id}/teamCorrect/{teamNumber:int}")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> PutTeamCorrectAsync(string id, int teamNumber)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -313,7 +318,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{id}/teamIncorrect/{teamNumber:int}")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> PutTeamIncorrectAsync(string id, int teamNumber)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -328,7 +333,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{id}/endRound")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> PutEndRoundAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -349,7 +354,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{id}/randomizeTeams")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> RandomizeTeamsAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -377,7 +382,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPost("{id}/openPanel/{panelId}/force")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> PostForceOpenPanelAsync(string id, string panelId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);

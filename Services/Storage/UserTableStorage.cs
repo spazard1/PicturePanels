@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
+using PicturePanels.Entities;
 using PicturePanels.Models;
 using PicturePanels.Services.Authentication;
 
@@ -86,6 +88,19 @@ namespace PicturePanels.Services.Storage
             }
 
             return userTableEntity;
+        }
+
+        public async IAsyncEnumerable<ImageTableEntity> PopulateUploadedBy(IAsyncEnumerable<ImageTableEntity> imageTableEntities)
+        {
+            await foreach (var imageTableEntity in imageTableEntities)
+            {
+                var userModel = await this.GetAsync(imageTableEntity.UploadedBy);
+                if (userModel != null)
+                {
+                    imageTableEntity.UploadedBy = userModel.DisplayName;
+                    yield return imageTableEntity;
+                }
+            }
         }
     }
 }

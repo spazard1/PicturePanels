@@ -77,6 +77,11 @@ input:focus {
     border: 3px inset rgb(118, 118, 118);
 }
 
+.modal-title,
+.loginPrompt {
+    color: black;
+}
+
 .logoutButton {
     font-size: 1.5rem;
 }

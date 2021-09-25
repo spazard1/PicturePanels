@@ -45,30 +45,6 @@ namespace PicturePanels.Controllers
             return View();
         }
 
-        [RequireAuthorization]
-        public async Task<IActionResult> GetAsync()
-        {
-            var userModel = await this.userTableStorage.GetAsync(HttpContext.Items[SecurityProvider.UserIdKey].ToString());
-            if (userModel == null)
-            {
-                return StatusCode(404);
-            }
-
-            return Json(new UserEntity(userModel));
-        }
-
-        [HttpGet("add")]
-        public async Task<IActionResult> StevenAsync()
-        {
-            var userModel = await this.userTableStorage.GetAsync("sameisele");
-            userModel.Salt = this.securityProvider.GetSalt();
-            userModel.Password = this.securityProvider.GetPasswordHash("123456", userModel.Salt);
-
-            await this.userTableStorage.InsertOrReplaceAsync(userModel);
-
-            return StatusCode((int)HttpStatusCode.OK);
-        }
-
         [HttpPut("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserEntity userEntity)
         {
@@ -80,15 +56,15 @@ namespace PicturePanels.Controllers
 
             if (this.securityProvider.ValidatePassword(userEntity.Password, userModel.Salt, userModel.Password))
             {
-                return Json(new UserTokenEntity() { 
+                return Json(new UserTokenEntity()
+                {
                     User = new UserEntity(userModel),
-                    UserToken = this.securityProvider.GetToken(userModel.UserName, userModel.UserId) 
+                    UserToken = this.securityProvider.GetToken(userModel.UserName, userModel.UserId)
                 });
             }
 
             return StatusCode((int)HttpStatusCode.Unauthorized);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] NewUserEntity userEntity)
@@ -104,7 +80,21 @@ namespace PicturePanels.Controllers
             return Json(new UserEntity(userModel));
         }
 
+        [HttpGet]
+        [RequireAuthorization]
+        public async Task<IActionResult> GetAsync()
+        {
+            var userModel = await this.userTableStorage.GetAsync(HttpContext.Items[SecurityProvider.UserIdKey].ToString());
+            if (userModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            return Json(new UserEntity(userModel));
+        }
+
         [HttpPut]
+        [RequireAuthorization]
         public async Task<IActionResult> PutAsync([FromBody] EditUserEntity userEntity)
         {
             var userModel = await this.userTableStorage.GetAsync(userEntity.UserName);

@@ -88,6 +88,36 @@ async function getUserAsync() {
         });
 }
 
+async function setupTagsAsync(defaultTags) {
+    var input = document.getElementById("tagsInput");
+
+    var safeTags = await fetch("api/images/tags")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("The image failed to be uploaded.")
+            }
+            return response.json();
+        });
+
+    if (defaultTags) {
+        input.value = defaultTags;
+    }
+
+    // init Tagify script on the above inputs
+    tagify = new Tagify(input, {
+        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
+        whitelist: safeTags,
+        maxTags: 10,
+        userInput: false,
+        dropdown: {
+            maxItems: 20,           // <- mixumum allowed rendered suggestions
+            classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
+            enabled: 0,             // <- show suggestions on focus
+            closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+        }
+    })
+}
+
 async function getGameStateAsync(gameStateId) {
     if (!gameStateId && localStorage.getItem("gameStateId")) {
         gameStateId = localStorage.getItem("gameStateId");

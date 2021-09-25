@@ -13,15 +13,23 @@ function listImages() {
 
             for (var image of responseJson.images) {
                 var imageInfo = document.createElement("div");
+
+                imageInfo.imageEntity = image;
                 imageInfo.id = image.id;
-                imageInfo.classList.add("imageInfo");
+                imageInfo.classList = "imageInfo imageInfoHidden";
                 var nameInfoElement = document.createElement("div");
                 imageInfo.appendChild(nameInfoElement);
 
                 var img = document.createElement("img");
                 img.src = "api/images/thumbnails/" + image.id + "?" + responseJson.queryString;
+                img.classList = "privateInfo";
+                let imageId = image.id;
+                img.onclick = (event) => {
+                    document.getElementById(imageId).classList.toggle("imageInfoHidden");
+                }
 
                 imageInfo.appendChild(img);
+
                 imageContainerElement.appendChild(imageInfo);
 
                 drawImageInfo(img, image, nameInfoElement);
@@ -50,54 +58,48 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
 
     var imageName = document.createElement("div");
     imageName.id = imageEntity.id + "_name";
+    imageName.classList = "privateInfo";
     imageName.appendChild(document.createTextNode(imageEntity.name));
     nameInfoElement.appendChild(imageName);
 
-    var imageUploadedBy = document.createElement("div");
-    imageUploadedBy.id = imageEntity.id + "_uploadedBy";
-    imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
-    nameInfoElement.appendChild(imageUploadedBy);
+    var imageAlternativeNames = document.createElement("div");
+    imageAlternativeNames.id = imageEntity.id + "_alternativeNames";
+    imageAlternativeNames.classList = "privateInfo";
+    imageAlternativeNames.appendChild(document.createTextNode(imageEntity.alternativeNames));
+    nameInfoElement.appendChild(imageAlternativeNames);
 
     var imageTags = document.createElement("div");
     imageTags.id = imageEntity.id + "_tags";
     imageTags.appendChild(document.createTextNode(imageEntity.tags));
     nameInfoElement.appendChild(imageTags);
 
-    var imageAlternativeNames = document.createElement("div");
-    imageAlternativeNames.id = imageEntity.id + "_alternativeNames";
-    imageAlternativeNames.appendChild(document.createTextNode(imageEntity.alternativeNames));
-    nameInfoElement.appendChild(imageAlternativeNames);
+    var imageUploadedBy = document.createElement("div");
+    imageUploadedBy.id = imageEntity.id + "_uploadedBy";
+    imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
+    nameInfoElement.appendChild(imageUploadedBy);
 
     var actionLinks = document.createElement("div");
 
     var editLink = document.createElement("span");
     editLink.classList = "actionLink";
     editLink.onclick = function (event) {
-        editImage(imageEntity.id);
+        editImageAsync(imageEntity.id);
     };
     editLink.appendChild(document.createTextNode("Edit"));
     actionLinks.appendChild(editLink);
 
-    var moveLink = document.createElement("span");
-    moveLink.classList = "actionLink";
-    moveLink.onclick = function (event) {
-        moveImage(imageEntity.id);
+    var aproveLink = document.createElement("span");
+    aproveLink.classList = "actionLink";
+    aproveLink.onclick = function (event) {
+        approveImageAsync(imageEntity.id);
     };
-    moveLink.appendChild(document.createTextNode("Move"));
-    actionLinks.appendChild(moveLink);
-
-    var copyLink = document.createElement("span");
-    copyLink.classList = "actionLink";
-    copyLink.onclick = function (event) {
-        copyImage(imageEntity.id);
-    };
-    copyLink.appendChild(document.createTextNode("Copy"));
-    actionLinks.appendChild(copyLink);
+    aproveLink.appendChild(document.createTextNode("Approve"));
+    actionLinks.appendChild(aproveLink);
 
     var deleteLink = document.createElement("span");
     deleteLink.classList = "actionLink";
     deleteLink.onclick = function (event) {
-        deleteImage(imageEntity.id);
+        deleteImageAsync(imageEntity.id);
     };
     deleteLink.appendChild(document.createTextNode("Delete"));
     actionLinks.appendChild(deleteLink);
@@ -105,110 +107,85 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     nameInfoElement.appendChild(actionLinks);
 }
 
-async function editImage(imageId) {
+function showAllImages() {
+    var imageInfos = document.getElementsByClassName("imageInfo");
+
+    for (var imageInfo of imageInfos) {
+        imageInfo.classList.remove("imageInfoHidden");
+    }
+}
+
+async function editImageAsync(imageId) {
     var imageEntity = document.getElementById(imageId).imageEntity;
+
+    var alternativeNames = imageEntity.alternativeNames.split(',');
 
     document.getElementById("editImageMenu").classList.remove("hidden");
     document.getElementById("imageId").value = imageId;
     document.getElementById("imageName").value = imageEntity.name;
-    document.getElementById("uploadedBy").value = imageEntity.uploadedBy;
+    document.getElementById("imageAlternativeName1").value = alternativeNames[0] ? alternativeNames[0] : "";
+    document.getElementById("imageAlternativeName2").value = alternativeNames[1] ? alternativeNames[1] : "";
+    document.getElementById("imageAlternativeName3").value = alternativeNames[2] ? alternativeNames[2] : "";
+    document.getElementById("tagsInput").value = imageEntity.tags;
 }
 
-async function saveImage() {
-    return await fetch("api/images/" + document.getElementById("sourceBlobContainer").value + "/" + document.getElementById("imageId").value,
+async function patchImageAsync() {
+    return await fetch("api/images/" + document.getElementById("imageId").value,
         {
-            method: "PUT",
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": localStorage.getItem("Authorization")
+                "Authorization": localStorage.getItem("userToken")
             },
             body: JSON.stringify({
                 name: document.getElementById("imageName").value,
-                uploadedBy: document.getElementById("uploadedBy").value
+                alternativeNames: document.getElementById("imageAlternativeName1").value + "," + document.getElementById("imageAlternativeName2").value + "," + document.getElementById("imageAlternativeName3").value,
+                tags: document.getElementById("tagsInput").value
             })
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("got bad response on edit image: " + response.text());
+                throw new Error("The image failed to be updated.")
             }
             return response.json();
-        }).then(responseJson => {
+        })
+        .then(responseJson => {
+            document.getElementById(document.getElementById("imageId").value).imageEntity = responseJson;
+
             document.getElementById("editImageMenu").classList.add("hidden");
 
-            document.getElementById(document.getElementById("imageId").value).imageEntity = responseJson;
-            document.getElementById(document.getElementById("imageId").value + "_name").innerHTML = document.getElementById("imageName").value;
-            document.getElementById(document.getElementById("imageId").value + "_uploadedBy").innerHTML = document.getElementById("uploadedBy").value;
+            document.getElementById(responseJson.id + "_name").innerHTML = responseJson.name;
+            document.getElementById(responseJson.id + "_tags").innerHTML = responseJson.tags;
+            document.getElementById(responseJson.id + "_alternativeNames").innerHTML = responseJson.alternativeNames;
+
             return responseJson;
-        }).catch(error => {
-            alert(error);
         });
 }
 
-async function moveImage(imageId) {
-    var result = confirm("Move image to " + document.getElementById("targetBlobContainer").value + "?");
+async function approveImageAsync(imageId) {
+    var result = confirm("Approve image?");
     if (!result) {
         return;
     }
 
-    return await fetch("api/images/move",
+    return await fetch("api/images/" + imageId + "/approve",
         {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": localStorage.getItem("Authorization")
-            },
-            body: JSON.stringify({
-                sourceBlobContainer: document.getElementById("sourceBlobContainer").value,
-                sourceImageId: imageId,
-                targetBlobContainer: document.getElementById("targetBlobContainer").value
-            })
+                "Authorization": localStorage.getItem("userToken")
+            }
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("got bad response on move image: " + response.text());
+                throw new Error("got bad response on delete image: " + response.text());
             }
-            return response.json();
-        }).then(responseJson => {
             document.getElementById(imageId).remove();
-            document.getElementById("imageCount").innerHTML = document.getElementById("imageContainer").children.length;
-            return responseJson;
-        }).catch (error => {
-            alert(error);
-        });
-}
-
-async function copyImage(imageId) {
-    var result = confirm("Copy image to " + document.getElementById("targetBlobContainer").value + "?");
-    if (!result) {
-        return;
-    }
-
-    return await fetch("api/images/copy",
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": localStorage.getItem("Authorization")
-            },
-            body: JSON.stringify({
-                sourceBlobContainer: document.getElementById("sourceBlobContainer").value,
-                sourceImageId: imageId,
-                targetBlobContainer: document.getElementById("targetBlobContainer").value
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("got bad response on copy image: " + response.text());
-            }
-            return response.json();
-        }).then(responseJson => {
-            return responseJson;
         }).catch(error => {
             alert(error);
         });
 }
 
-async function deleteImage(imageId) {
+async function deleteImageAsync(imageId) {
     var result = confirm("Delete image?");
     if (!result) {
         return;
@@ -233,4 +210,16 @@ async function deleteImage(imageId) {
 
 window.onload = async function () {
     listImages();
+
+    document.getElementById("saveButton").onclick = () => {
+        patchImageAsync();
+    };
+
+    document.getElementById("cancelSaveButton").onclick = () => {
+        document.getElementById("editImageMenu").classList.add("hidden");
+    };
+
+    document.getElementById("showAll").onclick = () => {
+        showAllImages();
+    };
 };
