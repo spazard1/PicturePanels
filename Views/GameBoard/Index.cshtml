@@ -1,11 +1,17 @@
 ﻿@section css {
+    <link href="https://unpkg.com/@@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="~/external/tagify.css" asp-append-version="true" />
+
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
-	<link rel="stylesheet" type="text/css" href="~/css/gameboard.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/gameboard.css" asp-append-version="true" />
 }
 
 @section scripts {
+    <script src="https://unpkg.com/@@yaireo/tagify"></script>
+    <script src="https://unpkg.com/@@yaireo/tagify@4.7.2/dist/tagify.polyfills.min.js"></script>
+
     <script src="~/js/index.js" asp-append-version="true"></script>
     <script src="~/js/gameboard.js" asp-append-version="true"></script>
 }
@@ -15,17 +21,19 @@
         Welcome to Picture Panels!<br />
         <div id="welcomeCreateGameButton" class="center defaultButton welcomeButton">Create New Game</div>
         <div id="welcomeJoinGameButton" class="center defaultButton welcomeButton">Join Existing Game</div>
+
+        <div type="button" class="center defaultButton welcomeButton" id="loginButton">Login</div>
     </div>
 
     <div id="welcomeCreateGame" class="welcomeText welcomeCreateGame hidden">
         <div id="welcomeCreateGameMessage" class="welcomeCreateGameMessage"></div>
         <div id="welcomeGameStateOptions" class="welcomeGameStateOptions hidden">
-            <input id="welcomeGameStateTeamOneName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/><br />
+            <input id="welcomeGameStateTeamOneName" class="welcomeGameStateInput" autocomplete="off" maxlength="30" /><br />
             VS. <br />
-            <input id="welcomeGameStateTeamTwoName" class="welcomeGameStateInput" autocomplete="off" maxlength="30"/><br /><br />
+            <input id="welcomeGameStateTeamTwoName" class="welcomeGameStateInput" autocomplete="off" maxlength="30" /><br /><br />
 
             Panel Voting Time:
-            <select id = "welcomeOpenPanelTime" >
+            <select id="welcomeOpenPanelTime">
                 <option value="15">15 seconds</option>
                 <option value="30" selected="selected">30 seconds</option>
                 <option value="45">45 seconds</option>
@@ -33,19 +41,24 @@
             </select>
 
             Guessing Time:
-            <select id = "welcomeGuessTime" >
+            <select id="welcomeGuessTime">
                 <option value="60">1 minute</option>
                 <option value="90">1.5 minute</option>
                 <option value="120" selected="selected">2 minutes</option>
                 <option value="150">2.5 minutes</option>
                 <option value="180">3 minutes</option>
             </select>
+
+            <div class="center">
+                Tags: <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
+            </div>
+
         </div>
     </div>
 
     <div id="welcomeExistingGame" class="welcomeText welcomeExistingGame hidden">
         What is the game code? <br />
-        <input id="gameStateIdInput" class="gameStateIdInput uppercase" maxlength="4"/>
+        <input id="gameStateIdInput" class="gameStateIdInput uppercase" maxlength="4" />
     </div>
     <div id="startGameButtons" class="hidden">
         <div id="startGameButton" class="center defaultButton welcomeButton">Start Game</div>
@@ -68,7 +81,7 @@
     </div>
 </div>
 
-<div class="teamInfos">  
+<div class="teamInfos">
     <div id="teamOneDiv" class="teamInfo teamNameBox activeTeam">
         <div id="teamOneCountdownDiv" class="teamInfo countdownDiv">
             <canvas id="teamOneCountdownCanvas" class="countdownCanvas"></canvas>

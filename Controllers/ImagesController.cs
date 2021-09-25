@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
 using PicturePanels.Services.Authentication;
-using Microsoft.Azure.Cosmos.Table;
 
 namespace PicturePanels.Controllers
 {
@@ -50,9 +49,10 @@ namespace PicturePanels.Controllers
             this.imageUploadedByTableStorage = imageUploadedByTableStorage;
             this.userPlayedImageTableStorage = userPlayedImageTableStorage;
         }
-        
+
         /*
         [HttpGet("migrate")]
+        [RequireAdmin]
         public async Task<IActionResult> MigrateAsync()
         {
             var tagCounts = new Dictionary<string, int>();
@@ -119,6 +119,7 @@ namespace PicturePanels.Controllers
 
         
         [HttpGet("populate")]
+        [RequireAdmin]
         public async Task<IActionResult> PopulateAsync()
         {
             await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
@@ -146,7 +147,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpGet("notApproved")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> GetNotApprovedImagesAsync()
         {
             var userId = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
@@ -159,6 +160,7 @@ namespace PicturePanels.Controllers
             var notApprovedImages = this.imageNotApprovedTableStorage.GetAllAsync();
 
             var imageModels = this.imageTableStorage.PopulateImageDetails(notApprovedImages);
+            imageModels = this.userTableStorage.PopulateUploadedBy(imageModels);
             var images = await imageModels.Select(image => new ImageEntity(image)).ToListAsync();
 
             userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
@@ -341,47 +343,10 @@ namespace PicturePanels.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
-        [HttpGet("welcome/{imageNumber:int}")]
-        public async Task<IActionResult> GetWelcomeImageAsync(int imageNumber)
-        {
-            var images = await this.imageNumberTableStorage.GetAllFromPartitionAsync(ImageTableStorage.WelcomeBlobContainer).ToListAsync();
-            if (imageNumber < 0 || imageNumber >= images.Count())
-            {
-                return StatusCode(404);
-            }
-
-            var imageTableEntity = await this.imageTableStorage.GetAsync(images[imageNumber].ImageId);
-            if (imageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
-            }
-
-            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(imageTableEntity);
-            Response.Headers["Cache-Control"] = "max-age=" + 3600;
-            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
-        }
-
         private readonly Regex alphanumericRegex = new Regex(@"[^\w\s\-]g");
 
-        [HttpPut("{blobContainer}/{imageId}")]
-        public async Task<IActionResult> PutEditAsync(string blobContainer, string imageId, [FromBody] ImageEntity imageEntity)
-        {
-            var imageTableEntity = await imageTableStorage.GetAsync(blobContainer, imageId);
-            if (imageTableEntity == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified blobcontainer/id");
-            }
-
-            imageTableEntity = await imageTableStorage.ReplaceAsync(imageTableEntity, i =>
-            {
-                i.Name = imageEntity.Name;
-            });
-
-            return Json(new ImageEntity(imageTableEntity));
-        }
-
         [HttpDelete("{imageId}")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> DeleteAsync(string imageId)
         {
             var imageTableEntity = await imageTableStorage.GetAsync(imageId);
@@ -403,6 +368,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPost("uploadTemporaryUrl")]
+        [RequireAuthorization]
         public async Task<IActionResult> UploadTemporaryUrlAsync([FromBody] UrlEntity urlEntity)
         {
             try
@@ -421,6 +387,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPost("uploadTemporaryBlob")]
+        [RequireAuthorization]
         public async Task<IActionResult> UploadTemporaryBlobAsync()
         {
             try
@@ -456,6 +423,35 @@ namespace PicturePanels.Controllers
             });
 
             await this.imageTableStorage.InsertAsync(imageTableEntity);
+
+            return Json(new ImageEntity(imageTableEntity));
+        }
+
+        [HttpPatch("{imageId}")]
+        [RequireAuthorization]
+        public async Task<IActionResult> PatchAsync(string imageId, [FromBody] ImageEntity imageEntity)
+        {
+            var imageTableEntity = await this.imageTableStorage.GetAsync(imageId);
+            if (imageTableEntity == null)
+            {
+                return StatusCode(404);
+            }
+
+            imageEntity.CopyProperties(imageTableEntity);
+
+            imageTableEntity.AlternativeNames.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            imageTableEntity.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            if (!imageTableEntity.Tags.Contains(ImageTagTableEntity.AllTag))
+            {
+                imageTableEntity.Tags.Add(ImageTagTableEntity.AllTag);
+            }
+            imageTableEntity.Tags = imageTableEntity.Tags.Select(tag => tag.ToLowerInvariant()).ToList();
+
+            var answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
+            answers = answers.Concat(GuessChecker.Prepare(imageTableEntity.AlternativeNames)).ToList();
+
+            imageTableEntity.Answers = answers;
+            imageTableEntity = await this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
 
             return Json(new ImageEntity(imageTableEntity));
         }
@@ -512,13 +508,18 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{imageId}/approve")]
-        [RequireAuthorization]
+        [RequireAdmin]
         public async Task<IActionResult> ApproveAsync(string imageId)
         {
             var imageTableEntity = await this.imageTableStorage.GetAsync(imageId);
             if (imageTableEntity == null)
             {
                 return StatusCode(404);
+            }
+
+            if (imageTableEntity.Approved)
+            {
+                return StatusCode(400);
             }
 
             foreach (var tag in imageTableEntity.Tags)
@@ -544,6 +545,8 @@ namespace PicturePanels.Controllers
             {
                 i.Approved = true;
             });
+
+            await this.imageNotApprovedTableStorage.DeleteAsync(await this.imageNotApprovedTableStorage.GetAsync(imageId));
 
             var generateTask = Task.Run(() =>
             {

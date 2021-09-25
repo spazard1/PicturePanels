@@ -20,6 +20,7 @@ namespace PicturePanels.Entities
             Name = tableEntity.Name;
             AlternativeNames = string.Join(",", tableEntity.AlternativeNames ?? new List<string>());
             Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
+            UploadedBy = tableEntity.UploadedBy;
         }
 
         public string Id { get; set; }
@@ -38,7 +39,6 @@ namespace PicturePanels.Entities
 
         public void CopyProperties(ImageTableEntity tableEntity)
         {
-            tableEntity.Id = this.Id;
             tableEntity.Name = this.Name;
             tableEntity.AlternativeNames = this.AlternativeNames?.Split(",").ToList();
             tableEntity.Tags = this.Tags?.Split(",").ToList();

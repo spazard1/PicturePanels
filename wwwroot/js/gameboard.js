@@ -1228,6 +1228,8 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
+    setupTagsAsync();
+
     createPanels();
     createMostVotesPanels();
     setupCanvases();
@@ -1309,6 +1311,10 @@ window.onload = async function () {
 
     document.getElementById("welcomeGameStateTeamTwoName").oninput = (event) => {
         document.getElementById("teamTwoName").innerHTML = event.target.value;
+    };
+
+    document.getElementById("loginButton").onclick = () => {
+        loginPrompt(() => { });
     };
 
     // full screen
