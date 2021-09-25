@@ -318,38 +318,8 @@ function uploadLoginCallback(user) {
     }
 }
 
-const defaultTags = urlParams.get('tags');
-
-async function setupTagsAsync() {
-    var input = document.getElementById("tagsInput");
-
-    var safeTags = await fetch("api/images/tags")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("The image failed to be uploaded.")
-            }
-            return response.json();
-        });
-
-    input.value = defaultTags;
-
-    // init Tagify script on the above inputs
-    tagify = new Tagify(input, {
-        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
-        whitelist: safeTags,
-        maxTags: 10,
-        userInput: false,
-        dropdown: {
-            maxItems: 20,           // <- mixumum allowed rendered suggestions
-            classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
-            enabled: 0,             // <- show suggestions on focus
-            closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
-        }
-    })
-}
-
 window.onload = async () => {
-    setupTagsAsync();
+    setupTagsAsync(urlParams.get('tags'));
 
     Cropper.setDefaults({
         viewMode: 0,
@@ -407,7 +377,7 @@ window.onload = async () => {
         document.getElementById("imageAlternativeName1").value = "";
         document.getElementById("imageAlternativeName2").value = "";
         document.getElementById("imageAlternativeName3").value = "";
-        document.getElementById("tagsInput").value = defaultTags;
+        document.getElementById("tagsInput").value = urlParams.get('tags');
     }
 
     document.getElementById("16x9Button").onclick = () => {

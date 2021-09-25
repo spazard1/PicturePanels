@@ -16,10 +16,15 @@ select {
     width: 31vw;
     overflow: hidden;
     margin: 5px;
+    border: 1px solid black;
 }
 
 .imageInfo img {
     max-width: 100%;
+}
+
+.imageInfoHidden .privateInfo {
+    opacity: 0;
 }
 
 .actionLink {

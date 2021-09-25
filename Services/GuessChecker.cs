@@ -67,20 +67,20 @@ namespace PicturePanels.Services
 
         public static string Prepare(string s)
         {
-            s = s.Trim();
-            s = s.ToLower();
-            s = LettersNumbersOnly.Replace(s, "");
-            s = MultipleSpaces.Replace(s, " ");
-            s = s.Split(' ').Where(x => !WordList.Contains(x)).DefaultIfEmpty().Select(next =>
+            var result = s.Trim();
+            result = result.ToLower();
+            result = LettersNumbersOnly.Replace(result, "");
+            result = MultipleSpaces.Replace(result, " ");
+            result = result.Split(' ').Where(x => !WordList.Contains(x)).DefaultIfEmpty().Select(next =>
             {
-                if (NumberDict.ContainsKey(next))
+                if (next != null && NumberDict.ContainsKey(next))
                 {
                     next = NumberDict[next];
                 }
                 return next;
             }).Aggregate((current, next) => current + " " + next);
 
-            return s ?? String.Empty;
+            return result ?? s;
         }
     }
 }

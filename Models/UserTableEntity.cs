@@ -28,5 +28,7 @@ namespace PicturePanels.Models
         public string QueryString { get; set; }
 
         public DateTime? QueryStringCreateTime { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 }

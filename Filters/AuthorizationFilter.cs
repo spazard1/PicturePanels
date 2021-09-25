@@ -3,23 +3,29 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using PicturePanels.Services.Authentication;
+using PicturePanels.Services.Storage;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PicturePanels.Filters
 {
-    public class AuthorizationFilter : IAuthorizationFilter
+    public class AuthorizationFilter : IAsyncAuthorizationFilter
     {
         private readonly SecurityProvider securityProvider;
+        private readonly UserTableStorage userTableStorage;
 
-        public AuthorizationFilter(SecurityProvider securityProvider)
+        public AuthorizationFilter(SecurityProvider securityProvider, UserTableStorage userTableStorage)
         {
             this.securityProvider = securityProvider;
+            this.userTableStorage = userTableStorage;
         }
 
-        public void OnAuthorization(AuthorizationFilterContext context)
+        public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
+            var authorized = false;
+
             if (context.HttpContext.Request.Query.TryGetValue("uid", out StringValues userId) == true &&
                 context.HttpContext.Request.Query.TryGetValue("ct", out StringValues createdTime) == true &&
                 context.HttpContext.Request.Query.TryGetValue("sig", out StringValues signature) == true)
@@ -33,30 +39,45 @@ namespace PicturePanels.Filters
                         if (result)
                         {
                             context.HttpContext.Items[SecurityProvider.UserIdKey] = userId;
-                            return;
+                            authorized = true;
                         }
                     }
                 }
             }
 
-            if (context.HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues authorization) == true)
+            if (!authorized && context.HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues authorization) == true)
             {
                 if (this.securityProvider.TryValidateToken(authorization, out SecurityToken securityToken, out ClaimsPrincipal claimsPrincipal))
                 {
                     context.HttpContext.Items[SecurityProvider.UserNameKey] = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SecurityProvider.UserNameKey)?.Value;
                     context.HttpContext.Items[SecurityProvider.UserIdKey] = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SecurityProvider.UserIdKey)?.Value;
-                    return;
+                    authorized = true;
                 }
             }
 
-            context.HttpContext.Items[SecurityProvider.UserNameKey] = string.Empty;
+            if (!authorized)
+            {
+                context.HttpContext.Items[SecurityProvider.UserNameKey] = string.Empty;
+            }
 
             var requireAuthorizationAttribute = context.ActionDescriptor.FilterDescriptors
-            .Select(x => x.Filter).OfType<RequireAuthorization>().FirstOrDefault();
+                .Select(x => x.Filter).OfType<RequireAuthorization>().FirstOrDefault();
+            var requireAdminAttribute = context.ActionDescriptor.FilterDescriptors
+                .Select(x => x.Filter).OfType<RequireAdmin>().FirstOrDefault();
 
-            if (requireAuthorizationAttribute != null)
+            if (!authorized && (requireAuthorizationAttribute != null || requireAdminAttribute != null))
             {
                 context.Result = new StatusCodeResult(401);
+                return;
+            }
+
+            if (requireAdminAttribute != null)
+            {
+                var user = await this.userTableStorage.GetAsync(context.HttpContext.Items[SecurityProvider.UserNameKey].ToString());
+                if (user == null || !user.IsAdmin)
+                {
+                    context.Result = new StatusCodeResult(403);
+                }
             }
         }
     }

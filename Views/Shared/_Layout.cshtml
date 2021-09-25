@@ -21,15 +21,15 @@
     <link id="themeCssLink" rel="stylesheet" type="text/css" href="themes/default.css" />
 </head>
 <body draggable="false" ondragstart="return false;" ondrop="return false;">
-   <div id="loginPrompt" class="form-content" style="display:none;">
+   <div id="loginPrompt" class="form-content" style="display:none; color:black;">
       <form class="form" role="form">
         <div class="form-group">
-          <label for="username-modal">Username</label>
+          <label class="loginPrompt" for="username-modal">Username</label>
           <input type="text" id="username-modal" class="form-control" name="username-modal" placeholder="Username" />
         </div>
         <br />
         <div class="form-group">
-          <label for="password-modal">Password</label>
+          <label class="loginPrompt" for="password-modal">Password</label>
           <input type="password" id="password-modal" class="form-control" name="password-modal" placeholder="Password" />
         </div>
       </form>

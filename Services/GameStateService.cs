@@ -469,11 +469,11 @@ namespace PicturePanels.Services
                 var foundImageId = string.Empty;
                 for (var i = 0; i < imageTag.Count; i++)
                 {
-                    var imageNumber = ((startIndex + i) % imageTag.Count) + 1;
+                    var imageNumber = (startIndex + i) % imageTag.Count;
                     var imageNumberEntity = await this.imageNumberTableStorage.GetAsync(imageTag.Tag, imageNumber);
                     if (!string.IsNullOrWhiteSpace(gameState.CreatedBy))
                     {
-                        var userPlayedImageEntity = await this.userPlayedImageTableStorage.GetAsync(gameState.CreatedBy, imageNumberEntity.ImageId);
+                        var userPlayedImageEntity = await this.userPlayedImageTableStorage.GetAsync(imageNumberEntity.ImageId, gameState.CreatedBy);
                         if (userPlayedImageEntity != null)
                         {
                             continue;
