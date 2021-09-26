@@ -49,7 +49,7 @@
                 <option value="180">3 minutes</option>
             </select>
 
-            <div class="center">
+            <div id="tagsInputContainer" class="tagsInputContainer center hidden">
                 Tags: <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
             </div>
 
@@ -60,9 +60,9 @@
         What is the game code? <br />
         <input id="gameStateIdInput" class="gameStateIdInput uppercase" maxlength="4" />
     </div>
-    <div id="startGameButtons" class="hidden">
-        <div id="startGameButton" class="center defaultButton welcomeButton">Start Game</div>
+    <div id="startGameButtons" class="startGameButtons center hidden">
         <div id="welcomeCancelButton" class="center defaultButton welcomeButton">Cancel</div>
+        <div id="startGameButton" class="center defaultButton welcomeButton">Start Game</div>
     </div>
     <div id="welcomeErrorMessage" class="welcomeErrorMessage hidden"></div>
 </div>
@@ -113,7 +113,7 @@
 </div>
 
 <div id="roundNumberCorner" class="roundNumberCorner hidden">
-    Round <span id="roundNumber"></span>
+    Round <span id="roundNumber"></span> of <span id="finalRoundNumber"></span>
 </div>
 
 <div class="roundNumberAnimateContainer fadedDisplayBox">
@@ -129,8 +129,8 @@
     </div>
 </div>
 
-<div id="teamOnePlayerNames" class="teamPlayerNames teamOnePlayerNames"></div>
-<div id="teamTwoPlayerNames" class="teamPlayerNames teamTwoPlayerNames"></div>
+<div id="teamOnePlayerNames" class="teamPlayerNames teamOnePlayerNames hideIfEmpty"></div>
+<div id="teamTwoPlayerNames" class="teamPlayerNames teamTwoPlayerNames hideIfEmpty"></div>
 
 <div class="uploadedByContainer fadedDisplayBox">
     <div id="uploadedBy" class="fadedDisplayBoxTitle animate__hidden">

@@ -12,8 +12,6 @@
             }
             return response.json();
         }).then(responseJson => {
-            document.getElementById("uploadedByImagesMessage").classList.remove("hidden");
-
             for (var imageId of responseJson.imageIds) {
                 var imagesContainer = document.getElementById("uploadedByImages");
 
@@ -306,7 +304,7 @@ function setupActionButton(value, callback) {
     }
 }
 
-function uploadLoginCallback(user) {
+function uploadLoginCallback(user, automatic) {
     if (user) {
         showMessage("Step 1 of 3.<br/>Choose an image to upload.");
         document.getElementById("loginPanel").classList.add("hidden");
@@ -314,7 +312,12 @@ function uploadLoginCallback(user) {
         document.getElementById("displayName").innerHTML = user.displayName;
         drawUploadedByImagesAsync();
     } else {
-        showMessage("That login didn't work. Try again.", true);
+        document.getElementById("loginPanel").classList.remove("hidden");
+        if (!automatic) {
+            showMessage("That login didn't work. Try again.", true);
+        } else {
+            showMessage("You must be logged in to upload an image.");
+        }
     }
 }
 
@@ -332,18 +335,8 @@ window.onload = async () => {
         rotatable: false
     });
 
-    var user = null;
-    if (localStorage.getItem("userToken")) {
-        user = await getUserAsync();
-    }
+    setupLoggedInUserAsync(uploadLoginCallback);
 
-    if (user) {
-        uploadLoginCallback(user);
-    } else {
-        localStorage.removeItem("userToken");
-        document.getElementById("loginPanel").classList.remove("hidden");
-        showMessage("You must be logged in to upload an image.");
-    }
     document.getElementById("helpMessageContainer").classList.remove("hidden");
 
     document.getElementById("imageUrl").onpaste = onPasteUrl;
@@ -352,14 +345,6 @@ window.onload = async () => {
     };
 
     document.getElementById("imageFile").onchange = onFileSelection;
-
-    document.getElementById("loginButton").onclick = () => {
-        loginPrompt(uploadLoginCallback);
-    };
-
-    document.getElementById("logoutButton").onclick = () => {
-        logout();
-    };
 
     document.getElementById("uploadStartOverButton").onclick = () => {
         showMessage("Step 1 of 3.<br/>Choose an image to upload.");

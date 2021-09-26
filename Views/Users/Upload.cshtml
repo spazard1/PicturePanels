@@ -4,7 +4,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-	<link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/css/index.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/css/upload.css" asp-append-version="true" />
 }
 
@@ -69,7 +69,7 @@
                 <input type="text" id="imageAlternativeName3" autocomplete="off" maxlength="100" />
             </div>
 
-            <div class="inputPanelElement">
+            <div id="tagsInputContainer" class="inputPanelElement">
                 Tags: <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
             </div>
         </div>
@@ -97,7 +97,6 @@
     <div id="imagePreviewContainer" class="imageContainer center hidden" draggable="false"></div>
     <div id="helpMessageContainer" class="helpMessageContainer center hidden" draggable="false">
         <div id="userWelcomeMessage" class="helpMessage">Welcome to the Picture Panels upload page!</div>
-        <div id="uploadedByImagesMessage" class="helpMessage hidden">Your display name: <span id="displayName"></span>&nbsp;&nbsp;<a href='editUser'>Edit password or display name</a>&nbsp;&nbsp;<input type="button" id="logoutButton" value="Logout" class="logoutButton" /></div>
         <div id="uploadedByImages" class="thumbnailsContainer"></div>
     </div>
 </div>
@@ -106,3 +105,5 @@
     <div id="loadingMessage" class="loadingMessage">Uploading image...</div>
     <img id="loadingGif" src="img/loading.gif" />
 </div>
+
+<partial name="~/Views/Common/LoggedInUser.cshtml" />

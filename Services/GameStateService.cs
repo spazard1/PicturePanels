@@ -454,7 +454,24 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> PopulateGameRoundsAsync(GameStateTableEntity gameState)
         {
-            var imageTags = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
+            Dictionary<string, ImageTagTableEntity> imageTags;
+            if (gameState.Tags?.Any() == true)
+            {
+                imageTags = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
+                foreach (var imageTag in imageTags)
+                {
+                    if (!gameState.Tags.Contains(imageTag.Key))
+                    {
+                        imageTags.Remove(imageTag.Key);
+                    }
+                }
+            }
+            else
+            {
+                var allImageTag = await this.imageTagTableStorage.GetAsync(ImageTagTableEntity.AllTag);
+                imageTags = new Dictionary<string, ImageTagTableEntity>() { { ImageTagTableEntity.AllTag, allImageTag } };
+            }
+
             var populatedImages = new HashSet<string>();
 
             while (populatedImages.Count < GameStateTableEntity.MaxRounds)

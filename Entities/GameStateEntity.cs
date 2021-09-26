@@ -16,6 +16,7 @@ namespace PicturePanels.Entities
         public GameStateEntity(GameStateTableEntity tableEntity)
         {
             this.GameStateId = tableEntity.GameStateId;
+            this.Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
             this.ThemeCss = tableEntity.ThemeCss;
             this.OpenPanelTime = tableEntity.OpenPanelTime;
             this.GuessTime = tableEntity.GuessTime;
@@ -52,6 +53,8 @@ namespace PicturePanels.Entities
         }
 
         public string GameStateId { get; set; }
+
+        public string Tags { get; set; }
 
         public string ThemeCss { get; set; }
 
