@@ -13,6 +13,13 @@ namespace PicturePanels.Controllers
             return View();
         }
 
+        [Route("/tags")]
+        public IActionResult Tags()
+        {
+            ViewData["Title"] = "Tags";
+            return View();
+        }
+
         [Route("/listimages")]
         public IActionResult ListImages()
         {

@@ -81,6 +81,7 @@ namespace PicturePanels.Controllers
             gameState.OpenPanelTime = entity.OpenPanelTime ?? GameStateTableEntity.DefaultOpenPanelTime;
             gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
             gameState.Tags = entity.Tags?.Split(",").ToList();
+            gameState.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 
@@ -231,6 +232,27 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
         */
+
+        [HttpGet("gameRounds/{gameStateId}")]
+        public async Task<IActionResult> GetGameRoundsAsync(string gameStateId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeEndGame)
+            {
+                return StatusCode(403);
+            }
+
+            var gameRoundTableEntities = this.gameRoundTableStorage.GetAllFromPartitionAsync(gameStateId);
+
+            var gameRounds = await gameRoundTableEntities.Select(gameRound => new GameRoundEntity(gameRound)).ToListAsync();
+
+            return Json(gameRounds);
+        }
 
         [HttpPut("{id}/nextTurn")]
         [RequireAdmin]

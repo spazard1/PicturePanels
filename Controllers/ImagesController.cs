@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
 using PicturePanels.Services.Authentication;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace PicturePanels.Controllers
 {
@@ -50,10 +51,10 @@ namespace PicturePanels.Controllers
             this.userPlayedImageTableStorage = userPlayedImageTableStorage;
         }
 
-        /*
-        [HttpGet("migrate")]
+        
+        [HttpPut("rebuildTags")]
         [RequireAdmin]
-        public async Task<IActionResult> MigrateAsync()
+        public async Task<IActionResult> RebuildTagsAsync()
         {
             var tagCounts = new Dictionary<string, int>();
             var tagBatches = new Dictionary<string, TableBatchOperation>();
@@ -103,6 +104,8 @@ namespace PicturePanels.Controllers
                 }
             }
 
+            var allTagDictionary = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
+
             foreach (var tagCount in tagCounts)
             {
                 var tagCountTableEntity = await this.imageTagTableStorage.GetAsync(tagCount.Key);
@@ -112,12 +115,18 @@ namespace PicturePanels.Controllers
                     Count = tagCount.Value,
                     IsHidden = tagCountTableEntity?.IsHidden ?? true
                 });
+
+                allTagDictionary.Remove(tagCount.Key);
+            }
+
+            foreach (var tag in allTagDictionary)
+            {
+                tag.Value.Count = 0;
+                await this.imageTagTableStorage.InsertOrReplaceAsync(tag.Value);
             }
 
             return StatusCode(200);
         }
-
-        */
 
         [HttpGet("populate")]
         public async Task<IActionResult> PopulateAsync()
@@ -159,10 +168,18 @@ namespace PicturePanels.Controllers
         }
 
         [HttpGet("tags")]
+        public IActionResult GetAllVisbileTags()
+        {
+            var tags = this.imageTagTableStorage.GetAllVisbileTags();
+            return Json(tags.Select((tag) => tag.Tag));
+        }
+
+        [HttpGet("alltags")]
+        [RequireAdmin]
         public IActionResult GetAllTags()
         {
-            var images = this.imageTagTableStorage.GetAllTagsAsync();
-            return Json(images.Select((tag) => tag.Tag));
+            var tags = this.imageTagTableStorage.GetAllAsync();
+            return Json(tags.Select((tag) => new ImageTagCountEntity(tag)));
         }
 
         [HttpGet("notApproved")]
@@ -369,6 +386,44 @@ namespace PicturePanels.Controllers
                 if (!user.IsAdmin) {
                     return StatusCode((int)HttpStatusCode.Forbidden);
                 }
+            }
+
+            Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * ImageTableStorage.ThumbnailCacheDays;
+            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
+        }
+
+        [HttpGet("thumbnails/{gameStateId}/{roundNumber:int}")]
+        [RequireAuthorization]
+        public async Task<IActionResult> GetThumbnailAsync(string gameStateId, int roundNumber)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeEndGame)
+            {
+                return StatusCode(403);
+            }
+
+            if (roundNumber < 1 || roundNumber > gameState.FinalRoundNumber)
+            {
+                return StatusCode(404);
+            }
+
+            var gameRound = await this.gameRoundTableStorage.GetAsync(gameStateId, roundNumber);
+            if (gameRound == null)
+            {
+                return StatusCode(404);
+            }
+
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRound.ImageId);
+
+            if (imageTableEntity == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
             Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
