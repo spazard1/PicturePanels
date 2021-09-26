@@ -40,6 +40,16 @@ async function postGameStateAsync() {
     });
 }
 
+async function getGameRoundsAsync(gameStateId) {
+    return await fetch("/api/gameState/gameRounds/" + gameStateId)
+        .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        return false;
+    });
+}
+
 function createPanels() {
     var panelNumber = 1;
 
@@ -313,6 +323,35 @@ function drawWelcome(gameState) {
         document.getElementById("welcomeJoinGame").classList.add("hidden");
         document.getElementById("teamOnePlayerNames").classList.remove("welcomePlayerNames");
         document.getElementById("teamTwoPlayerNames").classList.remove("welcomePlayerNames");
+    }
+}
+
+async function drawEndGameAsync(gameState) {
+    var endGameContainer = document.getElementById("endGameContainer");
+
+    if (gameState.turnType === "EndGame") {
+        document.getElementById("panels").classList.add("hidden");
+
+        endGameContainer.classList.remove("hidden");
+
+        var gameRounds = await this.getGameRoundsAsync(gameState.gameStateId);
+
+        for (var gameRound in gameRounds) {
+            var gameRoundElement = document.createElement("div");
+            gameRoundElement.classList = "gameRound";
+            gameRoundElement.innerHTML = gameRound.roundNumber;
+
+            var thumbnail = document.createElement("img");
+            thumbnail.src = "api/images/thumbnails/" + gameState.gameStateId + "/" + gameState.roundNumber;
+
+            gameRoundElement.appendChild(thumbnail);
+
+            endGameContainer.appendChild(gameRoundElement);
+        }
+        
+    } else {
+        document.getElementById("panels").classList.remove("hidden");
+        endGameContainer.classList.add("hidden");
     }
 }
 
@@ -1076,6 +1115,7 @@ async function handleGameState(gameState, updateType, firstLoad) {
     }
 
     drawWelcome(gameState);
+    drawEndGameAsync(gameState);
     drawGameState(gameState);
     drawGameStateId(gameState);
     drawRoundNumber(gameState);
