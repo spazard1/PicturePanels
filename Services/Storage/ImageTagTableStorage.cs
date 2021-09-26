@@ -20,7 +20,7 @@ namespace PicturePanels.Services.Storage
             return this.GetAsync(ImageTagTableEntity.DefaultPartitionKey, rowKey);
         }
 
-        public IAsyncEnumerable<ImageTagTableEntity> GetAllTagsAsync()
+        public IAsyncEnumerable<ImageTagTableEntity> GetAllVisbileTags()
         {
             var imageTags = this.GetAllAsync();
             return imageTags.Where(it => !it.IsHidden);

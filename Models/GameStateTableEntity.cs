@@ -15,6 +15,7 @@ namespace PicturePanels.Models
         public const string TurnTypeMakeGuess = "MakeGuess";
         public const string TurnTypeGuessesMade = "GuessesMade";
         public const string TurnTypeEndRound = "EndRound";
+        public const string TurnTypeEndGame = "EndGame";
 
         public const string TeamGuessStatusPass = "Pass";
         public const string TeamGuessStatusGuess = "Guess";
@@ -109,8 +110,7 @@ namespace PicturePanels.Models
 
         public bool IsUpdateAllowed(GameStateUpdateMessage gameStateUpdate)
         {
-            return RoundNumber <= GameStateTableEntity.MaxRounds &&
-                RoundNumber == gameStateUpdate.RoundNumber &&
+            return RoundNumber == gameStateUpdate.RoundNumber &&
                 TurnType == gameStateUpdate.TurnType &&
                 TurnNumber == gameStateUpdate.TurnNumber &&
                 TurnEndTime == gameStateUpdate.TurnEndTime;
@@ -159,7 +159,14 @@ namespace PicturePanels.Models
             this.TeamTurn = this.RoundNumber % 2 == 0 ? 2 : 1;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
-            this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            if (RoundNumber > this.FinalRoundNumber)
+            {
+                this.NewTurnType(GameStateTableEntity.TurnTypeEndGame);
+            }
+            else
+            {
+                this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
+            }
             this.TurnNumber = 1;
         }
 
@@ -211,6 +218,10 @@ namespace PicturePanels.Models
                 case GameStateTableEntity.TurnTypeEndRound:
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
                     this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.EndRoundTime);
+                    break;
+                case GameStateTableEntity.TurnTypeEndGame:
+                    this.TurnStartTime = DateTime.UtcNow;
+                    this.TurnEndTime = this.TurnStartTime;
                     break;
             }
         }
