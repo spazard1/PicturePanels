@@ -29,8 +29,8 @@ namespace PicturePanels.Services.Storage
         public const string ScratchBlobContainer = "scratch";
         public const string ThumbnailsBlobContainer = "thumbnails";
         public const string PanelsBlobContainer = "panels";
-        public const string WelcomeBlobContainer = "welcome";
-        public const string WelcomeImageId = "soundofmusic";
+        public const string WelcomeGameStateId = "welcome";
+        public const string WelcomeImageId = "17d941da-39ae-43c0-a940-3dc1c1ffda7c";
 
         public ImageTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, IConnectionStringProvider connectionStringProvider) : base(cloudStorageAccountProvider, "images")
         {
@@ -88,21 +88,6 @@ namespace PicturePanels.Services.Storage
             var sasToken = sasBuilderBlob.ToSasQueryParameters(new StorageSharedKeyCredential(blobServiceClient.AccountName, connectionStringProvider.AccountKey)).ToString();
 
             return blobContainerClient.GetBlockBlobClient(imageId).Uri + "?" + sasToken;
-        }
-
-        public async Task<List<string>> GetAllBlobContainersAsync()
-        {
-            var blobContainers = new List<string>();
-            await foreach (var blobContainer in blobServiceClient.GetBlobContainersAsync())
-            {
-                blobContainers.Add(blobContainer.Name);
-            }
-            blobContainers.Remove(ScratchBlobContainer);
-            blobContainers.Remove(ThumbnailsBlobContainer);
-            blobContainers.Remove(PanelsBlobContainer);
-            blobContainers.Remove(WelcomeBlobContainer);
-
-            return blobContainers;
         }
 
         public async Task CopyToBlobContainerAsync(ImageTableEntity imageTableEntity, string targetBlobContainer)

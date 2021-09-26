@@ -56,7 +56,7 @@ body::-webkit-scrollbar {
 
 .welcomeGameCode {
     margin-top: 2vh;
-    font-size: 3vh;
+    font-size: 3.5vh;
 }
 
 .welcomeGameStateId {
@@ -81,6 +81,15 @@ body::-webkit-scrollbar {
 }
 
 .welcomeGameStateOptions {
+    margin-top: 2vh;
+}
+
+.startGameButtons {
+    display: flex;
+    width: 80%;
+}
+
+.tagsInputContainer {
     margin-top: 2vh;
 }
 
@@ -247,14 +256,6 @@ body::-webkit-scrollbar {
     font-size: 2.5vh;
 }
 
-.welcomePlayerNames {
-    top: 20vh;
-    display: flex;
-    flex-wrap: wrap;
-    width: 20vw;
-    justify-content: center;
-}
-
 .teamOnePlayerNames {
     text-align: left;
     left: .5vh;
@@ -263,6 +264,35 @@ body::-webkit-scrollbar {
 .teamTwoPlayerNames {
     text-align: right;
     right: .5vw;
+}
+
+.teamPlayerNames div {
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: .15vw solid black;
+}
+
+.teamOnePlayerNames div {
+    padding-left: 3px;
+}
+
+.teamTwoPlayerNames div {
+    padding-right: 3px;
+}
+
+.welcomePlayerNames {
+    top: 20vh;
+    display: flex;
+    flex-wrap: wrap;
+    width: 20vw;
+    justify-content: center;
+    background-color: black;
+    z-index: 900;
+    opacity: .9;
+    box-sizing: border-box;
+    border: 4px solid grey;
+    padding-top: 1vh;
 }
 
 .welcomePlayerNames.teamOnePlayerNames {
@@ -279,21 +309,8 @@ body::-webkit-scrollbar {
     margin-left: .5vw;
     margin-right: .5vw;
     margin-bottom: 1vh;
-}
-
-.teamPlayerNames div {
-    white-space: nowrap;
-    overflow: hidden;
-    box-sizing: border-box;
-    border: .15vw solid black;
-}
-
-.teamOnePlayerNames div {
-    padding-left: 3px;
-}
-
-.teamTwoPlayerNames div {
-    padding-right: 3px;
+    justify-content: center;
+    padding-left: 0px;
 }
 
 .teamPlayerName {
@@ -443,7 +460,7 @@ body::-webkit-scrollbar {
 
 .remainingTurnTimeContainer {
     font-size: 4vh;
-    bottom: 15vh;
+    bottom: 12vh;
     right: 10vw;
 }
 
@@ -479,7 +496,7 @@ body::-webkit-scrollbar {
     top: 1.5vh;
     text-align: center;
     vertical-align: middle;
-    font-size: 3vh;
+    font-size: 2.75vh;
 }
 
 .countdownDiv {

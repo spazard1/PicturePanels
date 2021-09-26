@@ -32,7 +32,7 @@ namespace PicturePanels.Filters
             {
                 if (DateTime.TryParse(createdTime, out DateTime createdDateTime))
                 {
-                    if (createdDateTime.AddDays(1) >= DateTime.UtcNow)
+                    if (createdDateTime.AddDays(ImageTableStorage.ThumbnailCacheDays) >= DateTime.UtcNow)
                     {
                         var queryString = this.securityProvider.GetUserQueryString(context.HttpContext.Request.Query);
                         var result = this.securityProvider.VerifyString(this.securityProvider.GetUserQueryString(context.HttpContext.Request.Query), signature);
@@ -49,7 +49,6 @@ namespace PicturePanels.Filters
             {
                 if (this.securityProvider.TryValidateToken(authorization, out SecurityToken securityToken, out ClaimsPrincipal claimsPrincipal))
                 {
-                    context.HttpContext.Items[SecurityProvider.UserNameKey] = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SecurityProvider.UserNameKey)?.Value;
                     context.HttpContext.Items[SecurityProvider.UserIdKey] = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SecurityProvider.UserIdKey)?.Value;
                     authorized = true;
                 }
@@ -57,7 +56,7 @@ namespace PicturePanels.Filters
 
             if (!authorized)
             {
-                context.HttpContext.Items[SecurityProvider.UserNameKey] = string.Empty;
+                context.HttpContext.Items[SecurityProvider.UserIdKey] = string.Empty;
             }
 
             var requireAuthorizationAttribute = context.ActionDescriptor.FilterDescriptors
@@ -73,7 +72,7 @@ namespace PicturePanels.Filters
 
             if (requireAdminAttribute != null)
             {
-                var user = await this.userTableStorage.GetAsync(context.HttpContext.Items[SecurityProvider.UserNameKey].ToString());
+                var user = await this.userTableStorage.GetAsync(context.HttpContext.Items[SecurityProvider.UserIdKey].ToString());
                 if (user == null || !user.IsAdmin)
                 {
                     context.Result = new StatusCodeResult(403);

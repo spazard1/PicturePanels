@@ -10,7 +10,6 @@ namespace PicturePanels.Models
     {
         public const string GameStatePartitionKey = "GameState";
 
-        public const string TurnTypeSetup = "Setup";
         public const string TurnTypeWelcome = "Welcome";
         public const string TurnTypeOpenPanel = "OpenPanel";
         public const string TurnTypeMakeGuess = "MakeGuess";
@@ -122,8 +121,10 @@ namespace PicturePanels.Models
             return new GameStateTableEntity()
             {
                 GameStateId = GenerateGameStateId(),
-                TurnType = GameStateTableEntity.TurnTypeSetup,
+                TurnType = GameStateTableEntity.TurnTypeWelcome,
                 TurnStartTime = DateTime.UtcNow,
+                TurnNumber = 1,
+                TeamTurn = 1,
                 TeamOneName = "Team 1",
                 TeamTwoName = "Team 2",
                 RoundNumber = 1,
@@ -136,7 +137,6 @@ namespace PicturePanels.Models
                 RevealedPanels = new List<string>()
             };
         }
-
 
         private static char[] gameStateIdLetters = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Z' };
 
@@ -151,13 +151,6 @@ namespace PicturePanels.Models
             }
 
             return stringBuilder.ToString();
-        }
-
-        public void Welcome()
-        {
-            this.NewTurnType(GameStateTableEntity.TurnTypeWelcome);
-            this.TurnNumber = 1;
-            this.TeamTurn = 1;
         }
 
         public void NewRound()

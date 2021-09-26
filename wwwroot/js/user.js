@@ -16,7 +16,7 @@
             if (response.ok) {
                 localStorage.setItem("username", document.getElementById("username").value);
 
-                showMessage("User created. Return to the <a href='upload'>Upload page</a>.");
+                showMessage("User created. Return to the <a href='javascript: history.back()'>previous page</a>.");
                 return;
             }
 
@@ -51,7 +51,7 @@ async function putUserAsync() {
             if (response.ok) {
                 localStorage.setItem("username", document.getElementById("username").value);
 
-                showMessage("User edited. Return to the <a href='upload'>Upload page</a>.");
+                showMessage("User edited. Return to the <a href='javascript: history.back()'>previous page</a>.");
                 return;
             }
 

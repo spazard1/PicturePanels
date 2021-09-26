@@ -39,8 +39,6 @@ function loginPrompt(callback) {
 }
 
 async function tryLoginAsync(username, password) {
-    localStorage.setItem("username", username);
-
     return await fetch("/api/users/login",
         {
             method: "PUT",
@@ -61,15 +59,43 @@ async function tryLoginAsync(username, password) {
         .then(responseJson => {
             if (responseJson && responseJson.userToken) {
                 localStorage.setItem("userToken", responseJson.userToken);
+                document.getElementById("loggedInUser").classList.remove("hidden");
+
                 return responseJson.user;
             }
             return false;
         });
 }
 
-function logout() {
+async function setupLoggedInUserAsync(loginCallback) {
+    document.getElementById("loginButton").onclick = () => {
+        loginPrompt(loginCallback);
+    };
+
+    var loggedInUserElement = document.getElementById("loggedInUser");
+    if (loggedInUserElement) {
+        document.getElementById("editUserButton").onclick = () => {
+            window.location.href = "/edituser";
+        };
+
+        document.getElementById("logoutButton").onclick = () => {
+            localStorage.removeItem("userToken");
+            window.location.reload();
+        };
+    }
+
+    if (localStorage.getItem("userToken")) {
+        var user = await getUserAsync();
+        if (user) {
+            loggedInUserElement.classList.remove("hidden");
+            loginCallback(user, true);
+            return;
+        }
+    }
+
     localStorage.removeItem("userToken");
-    window.location.reload();
+    loggedInUserElement.classList.add("hidden");
+    loginCallback(null, true);
 }
 
 async function getUserAsync() {
@@ -89,7 +115,7 @@ async function getUserAsync() {
 }
 
 async function setupTagsAsync(defaultTags) {
-    var input = document.getElementById("tagsInput");
+    var tagsInput = document.getElementById("tagsInput");
 
     var safeTags = await fetch("api/images/tags")
         .then(response => {
@@ -100,11 +126,12 @@ async function setupTagsAsync(defaultTags) {
         });
 
     if (defaultTags) {
-        input.value = defaultTags;
+        tagsInput.value = defaultTags;
+        document.getElementById("tagsInputContainer").classList.remove("hidden");
     }
 
     // init Tagify script on the above inputs
-    tagify = new Tagify(input, {
+    tagify = new Tagify(tagsInput, {
         originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
         whitelist: safeTags,
         maxTags: 10,

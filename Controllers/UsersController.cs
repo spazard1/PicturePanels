@@ -94,7 +94,6 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut]
-        [RequireAuthorization]
         public async Task<IActionResult> PutAsync([FromBody] EditUserEntity userEntity)
         {
             var userModel = await this.userTableStorage.GetAsync(userEntity.UserName);

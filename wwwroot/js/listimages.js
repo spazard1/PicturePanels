@@ -1,10 +1,16 @@
 ﻿var maxRatio = 1.9;
 
-function listImages() {
-    fetch("api/images/notApproved", {
-        headers: {
-            "Authorization": localStorage.getItem("userToken")
-        }
+function listImages(username) {
+    var url = "api/images/notApproved";
+
+    if (username) {
+        url = "api/images/username/" + username;
+    }
+
+    fetch(url, {
+            headers: {
+                "Authorization": localStorage.getItem("userToken")
+            }
         })
         .then(response => response.json())
         .then(responseJson => {
@@ -32,15 +38,15 @@ function listImages() {
 
                 imageContainerElement.appendChild(imageInfo);
 
-                drawImageInfo(img, image, nameInfoElement);
+                drawImageInfo(img, image, nameInfoElement, username);
             };
         });
 }
 
-function drawImageInfo(img, imageEntity, nameInfoElement) {
+function drawImageInfo(img, imageEntity, nameInfoElement, username) {
     if (!img.complete) {
         setTimeout(function () {
-            drawImageInfo(img, imageEntity, nameInfoElement);
+            drawImageInfo(img, imageEntity, nameInfoElement, username);
         }, 100);
         return;
     }
@@ -75,7 +81,11 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
 
     var imageUploadedBy = document.createElement("div");
     imageUploadedBy.id = imageEntity.id + "_uploadedBy";
-    imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
+    if (username) {
+        imageUploadedBy.appendChild(document.createTextNode(username));
+    } else {
+        imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
+    }
     nameInfoElement.appendChild(imageUploadedBy);
 
     var actionLinks = document.createElement("div");
@@ -221,5 +231,9 @@ window.onload = async function () {
 
     document.getElementById("showAll").onclick = () => {
         showAllImages();
+    };
+
+    document.getElementById("loadUserImages").onclick = () => {
+        listImages(document.getElementById("username").value);
     };
 };
