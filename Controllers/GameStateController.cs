@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading.Tasks;
 using PicturePanels.Services.Storage;
 using System.Text;
+using PicturePanels.Services.Authentication;
 
 namespace PicturePanels.Controllers
 {
@@ -47,7 +48,7 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> GetAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
-            if (gameState == null || gameState.TurnType == GameStateTableEntity.TurnTypeSetup)
+            if (gameState == null)
             {
                 return StatusCode(404);
             }
@@ -56,7 +57,7 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync()
+        public async Task<IActionResult> PostAsync(GameStateEntity entity)
         {
             GameStateTableEntity gameState = null;
             for (int i = 0; i < 10; i++)
@@ -74,34 +75,14 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
 
+            gameState.CreatedBy = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
+            gameState.TeamOneName = entity.TeamOneName;
+            gameState.TeamTwoName = entity.TeamTwoName;
+            gameState.OpenPanelTime = entity.OpenPanelTime ?? GameStateTableEntity.DefaultOpenPanelTime;
+            gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
+            gameState.Tags = entity.Tags?.Split(",").ToList();
+
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
-
-            return Json(new GameStateEntity(gameState));
-        }
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(GameStateEntity entity, string id)
-        {
-            var gameState = await this.gameStateTableStorage.GetAsync(id);
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-
-            if (gameState.TurnType != GameStateTableEntity.TurnTypeSetup)
-            {
-                return StatusCode(403);
-            }
-
-            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
-            {
-                gs.Welcome();
-                gs.TeamOneName = entity.TeamOneName;
-                gs.TeamTwoName = entity.TeamTwoName;
-                gs.OpenPanelTime = entity.OpenPanelTime.HasValue ? entity.OpenPanelTime.Value : GameStateTableEntity.DefaultOpenPanelTime;
-                gs.GuessTime = entity.GuessTime.HasValue ? entity.GuessTime.Value : GameStateTableEntity.DefaultMakeGuessTime;
-            });
 
             gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
 

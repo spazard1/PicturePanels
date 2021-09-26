@@ -32,10 +32,6 @@ namespace PicturePanels.Services.Storage
 
             await foreach (var imageTag in GetAllAsync())
             {
-                if (imageTag.IsHidden)
-                {
-                    continue;
-                }
                 imageTagDictionary[imageTag.Tag] = imageTag;
             }
 

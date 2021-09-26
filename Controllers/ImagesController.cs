@@ -117,27 +117,27 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
-        
+        */
+
         [HttpGet("populate")]
-        [RequireAdmin]
         public async Task<IActionResult> PopulateAsync()
         {
+            var user = await this.userTableStorage.GetAsync("spazard1");
             await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
             {
-                if (!string.IsNullOrWhiteSpace(imageTableEntity.UploadedBy))
+                if (imageTableEntity.Tags?.Contains("guysweekend") == true)
                 {
-                    await this.imageUploadedByTableStorage.InsertOrReplaceAsync(new ImageUploadedByTableEntity()
+                    await this.userPlayedImageTableStorage.InsertOrReplaceAsync(new UserPlayedImageTableEntity()
                     {
-                        UploadedBy = imageTableEntity.UploadedBy,
-                        ImageId = imageTableEntity.Id,
-                        Name = imageTableEntity.Name
+                        UserId = user.UserId,
+                        ImageId = imageTableEntity.Id
                     });
                 }
             }
 
             return StatusCode(200);
         }
-        */
+
 
         [HttpGet("tags")]
         public IActionResult GetAllTags()
@@ -193,6 +193,36 @@ namespace PicturePanels.Controllers
             {
                 QueryString = userTableEntity.QueryString,
                 ImageIds = images
+            });
+        }
+
+        [HttpGet("username/{username}")]
+        [RequireAdmin]
+        public async Task<IActionResult> GetUserImagesAsync(string username)
+        {
+            var userId = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
+            var userTableEntity = await this.userTableStorage.GetAsync(userId);
+            if (userTableEntity == null)
+            {
+                return StatusCode(404);
+            }
+
+            var user = await this.userTableStorage.GetAsync(username);
+            if (user == null)
+            {
+                return StatusCode(404);
+            }
+            var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(user.UserId);
+
+            var imageModels = this.imageTableStorage.PopulateImageDetails(uploadedByImages);
+            var images = await imageModels.Select(image => new ImageEntity(image)).ToListAsync();
+
+            userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
+
+            return Json(new ImageListEntity()
+            {
+                QueryString = userTableEntity.QueryString,
+                Images = images
             });
         }
 
@@ -256,9 +286,9 @@ namespace PicturePanels.Controllers
 
             ImageTableEntity imageTableEntity;
 
-            if (gameStateId == ImageTableStorage.WelcomeBlobContainer)
+            if (gameStateId == ImageTableStorage.WelcomeGameStateId)
             {
-                imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeBlobContainer, ImageTableStorage.WelcomeImageId);
+                imageTableEntity = await this.imageTableStorage.GetAsync(ImageTableStorage.WelcomeImageId);
                 await this.imageTableStorage.GeneratePanelImageUrlAsync(imageTableEntity, panelNumber);
                 return ImageRedirectResult(this.imageTableStorage.GetPanelImageUrl(imageTableEntity.Id, panelNumber));
             }
@@ -316,7 +346,10 @@ namespace PicturePanels.Controllers
             var userId = userIdObject?.ToString();
             if (imageTableEntity.UploadedBy != null && imageTableEntity.UploadedBy != userId)
             {
-                return StatusCode((int)HttpStatusCode.Forbidden);
+                var user = await this.userTableStorage.GetAsync(userId);
+                if (!user.IsAdmin) {
+                    return StatusCode((int)HttpStatusCode.Forbidden);
+                }
             }
 
             Response.Headers["Location"] = await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
@@ -441,10 +474,6 @@ namespace PicturePanels.Controllers
 
             imageTableEntity.AlternativeNames.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             imageTableEntity.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            if (!imageTableEntity.Tags.Contains(ImageTagTableEntity.AllTag))
-            {
-                imageTableEntity.Tags.Add(ImageTagTableEntity.AllTag);
-            }
             imageTableEntity.Tags = imageTableEntity.Tags.Select(tag => tag.ToLowerInvariant()).ToList();
 
             var answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };

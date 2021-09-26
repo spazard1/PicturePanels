@@ -78,8 +78,6 @@ function setupChats(chatsElementId, teamNumber) {
         });
     }
 
-    setupInputDefaultText(chatsElementId + "_inputText", "chat with your team...")
-
     setupChatTypingIndicator(chatsElementId);
 
     setupGrowers();
