@@ -14,7 +14,9 @@
         })
         .then(response => {
             if (response.ok) {
-                localStorage.setItem("username", document.getElementById("username").value);
+                if (document.getElementById("username").value) {
+                    localStorage.setItem("username", document.getElementById("username").value);
+                }
 
                 showMessage("User created. Return to the <a href='javascript: history.back()'>previous page</a>.");
                 return;
@@ -48,9 +50,11 @@ async function putUserAsync() {
             body: JSON.stringify(body)
         })
         .then(response => {
-            if (response.ok) {
+            if (document.getElementById("username").value) {
                 localStorage.setItem("username", document.getElementById("username").value);
+            }
 
+            if (response.ok) {
                 showMessage("User edited. Return to the <a href='javascript: history.back()'>previous page</a>.");
                 return;
             }

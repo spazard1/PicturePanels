@@ -138,6 +138,25 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
+        [HttpGet("populateUploadedBy")]
+        public async Task<IActionResult> PopulateUploadedByAsync()
+        {
+            await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
+            {
+                if (imageTableEntity.UploadedBy == null)
+                {
+                    Console.WriteLine("");
+                }
+                await this.imageUploadedByTableStorage.InsertOrReplaceAsync(new ImageUploadedByTableEntity()
+                {
+                    ImageId = imageTableEntity.Id,
+                    UploadedBy = imageTableEntity.UploadedBy,
+                    Name = imageTableEntity.Name
+                });
+            }
+
+            return StatusCode(200);
+        }
 
         [HttpGet("tags")]
         public IActionResult GetAllTags()
@@ -481,6 +500,13 @@ namespace PicturePanels.Controllers
 
             imageTableEntity.Answers = answers;
             imageTableEntity = await this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
+
+            await this.imageUploadedByTableStorage.InsertOrReplaceAsync(new ImageUploadedByTableEntity()
+            {
+                ImageId = imageTableEntity.Id,
+                UploadedBy = imageTableEntity.UploadedBy,
+                Name = imageTableEntity.Name
+            });
 
             return Json(new ImageEntity(imageTableEntity));
         }
