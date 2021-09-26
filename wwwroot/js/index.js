@@ -39,6 +39,10 @@ function loginPrompt(callback) {
 }
 
 async function tryLoginAsync(username, password) {
+    if (username) {
+        localStorage.setItem("username", username);
+    }
+
     return await fetch("/api/users/login",
         {
             method: "PUT",
@@ -69,6 +73,7 @@ async function tryLoginAsync(username, password) {
 
 async function setupLoggedInUserAsync(loginCallback) {
     document.getElementById("loginButton").onclick = () => {
+        document.getElementById("loginButton").disabled = "";
         loginPrompt(loginCallback);
     };
 

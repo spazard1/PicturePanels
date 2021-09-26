@@ -98,8 +98,8 @@ namespace PicturePanels.Services.Storage
                 if (userModel != null)
                 {
                     imageTableEntity.UploadedBy = userModel.DisplayName;
-                    yield return imageTableEntity;
                 }
+                yield return imageTableEntity;
             }
         }
     }

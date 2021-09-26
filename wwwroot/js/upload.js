@@ -284,7 +284,7 @@ function setupCropper(url) {
 
     cropperImage.addEventListener('ready', function () {
         showLoadingMessage();
-        showMessage("Step 2 of 3.<br/>Crop the image if needed.")
+        showMessage("Step 2 of 3.<br/>Crop the image.")
         document.getElementById("chooseImagePanel").classList.add("hidden");
         document.getElementById("cropperInstructions").classList.remove("hidden");
         document.getElementById("uploadButtonsContainer").classList.remove("hidden");
@@ -305,6 +305,8 @@ function setupActionButton(value, callback) {
 }
 
 function uploadLoginCallback(user, automatic) {
+    document.getElementById("loginButton").disabled = "";
+
     if (user) {
         showMessage("Step 1 of 3.<br/>Choose an image to upload.");
         document.getElementById("loginPanel").classList.add("hidden");
