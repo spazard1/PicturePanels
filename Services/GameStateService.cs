@@ -158,7 +158,7 @@ namespace PicturePanels.Services
             });
 
             await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
@@ -401,12 +401,11 @@ namespace PicturePanels.Services
 
                 if (gameState.TeamOneCorrect || gameState.TeamTwoCorrect)
                 {
-                    await this.gameRoundTableStorage.InsertOrReplaceAsync(new GameRoundTableEntity()
+                    var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+                    await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
                     {
-                        GameStateId = gameState.GameStateId,
-                        RoundNumber = gameState.RoundNumber,
-                        TeamOneScore = gameState.GetTeamScoreChange(1),
-                        TeamTwoScore = gameState.GetTeamScoreChange(2)
+                        gr.TeamOneScore = gameState.GetTeamScoreChange(1);
+                        gr.TeamTwoScore = gameState.GetTeamScoreChange(2); 
                     });
                 }
 

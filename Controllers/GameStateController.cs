@@ -98,6 +98,12 @@ namespace PicturePanels.Controllers
         [HttpPut("{id}/gameBoardPing")]
         public async Task<IActionResult> GameBoardPingAsync(string id)
         {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
             await this.gameStateService.QueueNextTurnIfNeeded(id);
             await this.gameStateService.SetGameBoardActiveAsync(id);
 
