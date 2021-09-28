@@ -21,7 +21,7 @@ namespace PicturePanels.Services
 
         private static readonly Regex MultipleSpaces = new(@"\s+");
 
-        private const double CorrectRatio = .95;
+        private const double CorrectRatio = .9;
 
         public static bool IsCorrect(string guess, IEnumerable<string> answers)
         {
