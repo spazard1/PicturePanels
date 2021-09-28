@@ -394,7 +394,6 @@ namespace PicturePanels.Controllers
         }
 
         [HttpGet("thumbnails/{gameStateId}/{roundNumber:int}")]
-        [RequireAuthorization]
         public async Task<IActionResult> GetThumbnailAsync(string gameStateId, int roundNumber)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);

@@ -329,6 +329,25 @@ function drawWelcome(gameState) {
 async function drawEndGameAsync(gameState) {
     var endGameContainer = document.getElementById("endGameContainer");
 
+    var endGameWinner = document.getElementById("endGameWinner");
+    endGameWinner.classList.add("animate__hidden");
+
+    if (gameState.teamOneScore > gameState.teamTwoScore) {
+        endGameWinner.innerHTML = gameState.teamOneName + " wins!";
+    } else if (gameState.teamOneScore < gameState.teamTwoScore) {
+        endGameWinner.innerHTML = gameState.teamTwoName + " wins!";
+    } else {
+        if (gameState.teamOneIncorrectGuesses > gameState.teamTwoIncorrectGuesses) {
+            endGameWinner.innerHTML = gameState.teamTwoName + " wins!";
+        } else if (gameState.teamOneIncorrectGuesses < gameState.teamTwoIncorrectGuesses) {
+            endGameWinner.innerHTML = gameState.teamOneName + " wins!";
+        } else {
+            endGameWinner.innerHTML = "It's a tie game!";
+        }
+    }
+
+    var imagePromises = [];
+
     if (gameState.turnType === "EndGame") {
         document.getElementById("panels").classList.add("hidden");
 
@@ -336,18 +355,59 @@ async function drawEndGameAsync(gameState) {
 
         var gameRounds = await this.getGameRoundsAsync(gameState.gameStateId);
 
-        for (var gameRound in gameRounds) {
+        var endGameRoundsElement = document.getElementById("endGameRounds");
+
+        for (var gameRound of gameRounds) {
             var gameRoundElement = document.createElement("div");
-            gameRoundElement.classList = "gameRound";
-            gameRoundElement.innerHTML = gameRound.roundNumber;
+            gameRoundElement.classList = "animate__hidden gameRound";
+
+            var gameRoundScoreContainer = document.createElement("div");
+            gameRoundScoreContainer.classList = "gameRoundScoreContainer";
+            if (gameRound.teamOneScore != 0) {
+                var teamOneScoreElement = document.createElement("div");
+                teamOneScoreElement.classList = "gameRoundScore teamOneBox";
+                teamOneScoreElement.innerHTML = gameRound.teamOneScore;
+                gameRoundScoreContainer.appendChild(teamOneScoreElement);
+            }
+
+            if (gameRound.teamTwoScore != 0) {
+                var teamTwoScoreElement = document.createElement("div");
+                teamTwoScoreElement.classList = "gameRoundScore teamTwoBox";
+                teamTwoScoreElement.innerHTML = gameRound.teamTwoScore;
+                gameRoundScoreContainer.appendChild(teamTwoScoreElement);
+            }
+
+            if (gameRound.teamOneScore == 0 && gameRound.teamTwoScore == 0) {
+                var teamZeroScoreElement = document.createElement("div");
+                teamZeroScoreElement.classList = "gameRoundScore gameRoundScoreZero teamOneBox";
+                teamZeroScoreElement.innerHTML = "0";
+                gameRoundScoreContainer.appendChild(teamZeroScoreElement);
+            }
 
             var thumbnail = document.createElement("img");
-            thumbnail.src = "api/images/thumbnails/" + gameState.gameStateId + "/" + gameState.roundNumber;
+            thumbnail.classList = "thumbnail";
+            imagePromises.push(loadImageAsync(thumbnail, "api/images/thumbnails/" + gameState.gameStateId + "/" + gameRound.roundNumber));
 
-            gameRoundElement.appendChild(thumbnail);
+            if (gameRound.roundNumber <= 5) {
+                gameRoundElement.appendChild(gameRoundScoreContainer);
+                gameRoundElement.appendChild(thumbnail);
+            } else {
+                gameRoundElement.appendChild(thumbnail);
+                gameRoundElement.appendChild(gameRoundScoreContainer);
+            }
 
-            endGameContainer.appendChild(gameRoundElement);
+            endGameRoundsElement.appendChild(gameRoundElement);
         }
+
+        await Promise.all(imagePromises);
+
+        var delay = 0;
+        for (var endGameRound of endGameRoundsElement.children) {
+            animateCSS(endGameRound, ["fadeInDown", "slow"], ["hidden"], delay);
+            delay += 100;
+        }
+
+        animateCSS(endGameWinner, ["fadeInDown", "slow"], ["hidden"]);
         
     } else {
         document.getElementById("panels").classList.remove("hidden");
@@ -407,16 +467,16 @@ function drawTeamStatus(gameState) {
             teamStatus.innerHTML = "Who was right?";
             stopCountdown(activeTeamCountdownCanvas);
             stopCountdown(passiveTeamCountdownCanvas);
-
             break;
         case "EndRound":
             teamStatus.innerHTML = "Round " + gameState.roundNumber + " Complete";
             stopCountdown(activeTeamCountdownCanvas);
             stopCountdown(passiveTeamCountdownCanvas);
-
             break;
-        default:
-            teamStatus.innerHTML = gameState.turnType;
+        case "EndGame":
+            teamStatus.innerHTML = "Game Over!";
+            stopCountdown(activeTeamCountdownCanvas);
+            stopCountdown(passiveTeamCountdownCanvas);
             break;
     }
 }
@@ -908,7 +968,7 @@ function drawGameStateId(gameState) {
         document.getElementById("gameStateIdDisplayText").innerHTML = gameState.gameStateId;
     }
 
-    if (gameState.turnType !== "Welcome") {
+    if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
         animateCSS("#gameStateIdDisplay", ["backInLeft"], ["backOutRight", "hidden"]);
     } else {
         animateCSS("#gameStateIdDisplay", ["backOutRight"], ["backInLeft"]);
@@ -916,7 +976,7 @@ function drawGameStateId(gameState) {
 }
 
 function drawRoundNumber(gameState) {
-    if (gameState.turnType === "Welcome") {
+    if (gameState.turnType === "Welcome" || gameState.turnType === "EndGame") {
         document.getElementById("roundNumberCorner").classList.add("hidden");
     } else {
         document.getElementById("roundNumberCorner").classList.remove("hidden");

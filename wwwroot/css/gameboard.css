@@ -348,8 +348,6 @@ body::-webkit-scrollbar {
 
 .panels {
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
     margin-top: 1vh;
     width: 83vw;
     display: flex;
@@ -497,6 +495,42 @@ body::-webkit-scrollbar {
     text-align: center;
     vertical-align: middle;
     font-size: 2.75vh;
+}
+
+.endGameContainer {
+    width: 83vw;
+    margin-top: 2vh;
+}
+
+.endGameWinner {
+    font-size: 7vh;
+}
+
+.endGameRounds {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gameRound {
+    width: 20%;
+    box-sizing: border-box;
+    padding: 1vh;
+}
+
+.gameRoundScoreContainer {
+    display: flex;
+    justify-content: space-around;
+    margin: 1vh;
+}
+
+.gameRoundScore {
+    font-size: 5vh;
+    padding: 0 1vw;
+    box-sizing: border-box;
+}
+
+.gameRoundScoreZero {
+    opacity: 0;
 }
 
 .countdownDiv {
