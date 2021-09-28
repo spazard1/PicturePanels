@@ -250,6 +250,7 @@ namespace PicturePanels.Controllers
             var gameRoundTableEntities = this.gameRoundTableStorage.GetAllFromPartitionAsync(gameStateId);
 
             var gameRounds = await gameRoundTableEntities.Select(gameRound => new GameRoundEntity(gameRound)).ToListAsync();
+            gameRounds.Sort();
 
             return Json(gameRounds);
         }

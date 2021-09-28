@@ -278,28 +278,9 @@ namespace PicturePanels.Models
 
         public void IncrementScores()
         {
-            if (TeamOneCorrect && TeamTwoCorrect)
-            {
-                if (TeamTurn == 1)
-                {
-                    TeamOneScore += 5;
-                    TeamTwoScore += 2;
-                }
-                else 
-                {
-                    TeamOneScore += 2;
-                    TeamTwoScore += 5;
-                }
-            }
-            else if (TeamOneCorrect)
-            {
-                TeamOneScore += 5;
-            }
-            else if (TeamTwoCorrect)
-            {
-                TeamTwoScore += 5;
-            }
-            
+            TeamOneScore = GetTeamScoreChange(1);
+            TeamTwoScore = GetTeamScoreChange(2);
+
             if (!TeamOneCorrect && TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
             {
                 TeamOneIncorrectGuesses += 1;
@@ -307,6 +288,33 @@ namespace PicturePanels.Models
             if (!TeamTwoCorrect && TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
             {
                 TeamTwoIncorrectGuesses += 1;
+            }
+        }
+
+        public int GetTeamScoreChange(int teamNumber)
+        {
+            if (TeamOneCorrect && TeamTwoCorrect)
+            {
+                if (teamNumber == TeamTurn)
+                {
+                    return 5;
+                }
+                else
+                {
+                    return 2;
+                }
+            }
+            else if (TeamOneCorrect && teamNumber == 1)
+            {
+                return 5;
+            }
+            else if (TeamTwoCorrect && teamNumber == 2)
+            {
+                return 5;
+            }
+            else
+            {
+                return 0;
             }
         }
 

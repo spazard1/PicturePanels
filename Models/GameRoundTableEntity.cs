@@ -20,11 +20,6 @@ namespace PicturePanels.Models
 
         public int TeamOneScore { get; set; }
 
-        public int TeamOneCorrect { get; set; }
-
         public int TeamTwoScore { get; set; }
-
-        public int TeamTwoCorrect { get; set; }
-
     }
 }
