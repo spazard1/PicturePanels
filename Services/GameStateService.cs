@@ -399,6 +399,17 @@ namespace PicturePanels.Services
                     gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
                 });
 
+                if (gameState.TeamOneCorrect || gameState.TeamTwoCorrect)
+                {
+                    await this.gameRoundTableStorage.InsertOrReplaceAsync(new GameRoundTableEntity()
+                    {
+                        GameStateId = gameState.GameStateId,
+                        RoundNumber = gameState.RoundNumber,
+                        TeamOneScore = gameState.GetTeamScoreChange(1),
+                        TeamTwoScore = gameState.GetTeamScoreChange(2)
+                    });
+                }
+
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
             }
@@ -430,7 +441,6 @@ namespace PicturePanels.Services
             });
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), updateType);
-
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
