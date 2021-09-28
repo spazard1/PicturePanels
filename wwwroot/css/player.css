@@ -274,6 +274,9 @@ body {
     background-color: dodgerblue;
     padding: 0px 3px 1px 3px;
     border-radius: 10px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 .teamGuessVoteCount:before {

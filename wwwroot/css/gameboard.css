@@ -490,7 +490,7 @@ body::-webkit-scrollbar {
 .roundNumberCorner {
     position: fixed;
     white-space: nowrap;
-    right: 1.5vw;
+    right: 1vw;
     top: 1.5vh;
     text-align: center;
     vertical-align: middle;
