@@ -133,9 +133,9 @@ function resetPanel(panel, entranceAnimation, delay) {
     animateCSS(panel.firstChild, [entranceAnimation], exitAnimations, delay, true);
 }
 
-async function resetPanelsAsync(gameState) {
-    if (gameState.turnType === "EndGame") {
-        return;
+async function resetPanelsAsync(gameState, updateType) {
+    if (gameState.turnType === "EndGame" || (updateType !== "FirstLoad" && updateType !== "NewRound")) {
+        return
     }
 
     var imagePromises = [];
@@ -1195,11 +1195,8 @@ async function handleGameState(gameState, updateType) {
 
     animationPromise = Promise.resolve();
 
-    if (updateType === "FirstLoad" || updateType === "NewRound") {
-        await resetPanelsAsync(gameState);
-    }
-
     drawWelcome(gameState);
+    await resetPanelsAsync(gameState, updateType);
     drawEndGameAsync(gameState);
     drawGameState(gameState);
     drawGameStateId(gameState);

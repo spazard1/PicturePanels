@@ -608,6 +608,10 @@ function updateVoteCount(ticks, amount) {
         } else {
             voteCountElement.innerHTML = "0";
         }
+
+        if (amount > 0) {
+            animateCSS(voteCountElement, ["pulse"], [], 0, true);
+        }
     }
 }
 
