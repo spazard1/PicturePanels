@@ -42,8 +42,8 @@ namespace PicturePanels.Services
 
         public async Task RegisterGameBoard(string gameStateId)
         {
-            await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
             await this.gameStateService.SetGameBoardActiveAsync(gameStateId);
+            await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup(gameStateId));
             await Groups.AddToGroupAsync(Context.ConnectionId, AllGroup(gameStateId));

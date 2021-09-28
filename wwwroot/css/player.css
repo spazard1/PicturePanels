@@ -15,7 +15,7 @@ body {
 
 #choosePlayerNameLabel {
     flex: 0 0 auto;
-    margin-top: 3rem;
+    margin-top: 1rem;
     width: 100%;
     vertical-align: middle;
     text-align: center;
@@ -37,10 +37,6 @@ body {
     border: 3px solid black;
 }
 
-.playerNameInputDivInvalid {
-    border: 3px solid red !important;
-}
-
 #colorPicker {
     flex: 0 0 auto;
     margin-top: 3rem;
@@ -55,6 +51,7 @@ body {
     margin-top: 3rem;
     color: white;
     flex: 1;
+    width: 80%;
 }
 
 #choosePlayerNameButton {
@@ -185,19 +182,33 @@ body {
     justify-content: center;
 }
 
-.playerReadyMessage {
-    flex: 0 0 auto;
-    align-self: center;
-    font-size: .7em;
-}
-
 .teamGuessButton {
     background-color: lightgreen;
     margin-left: 1.5rem;
 }
 
 .playerReadyButton {
+    position: relative;
     background-color: lightgreen;
+}
+
+.confirmButtonChild {
+    transition: opacity 1s ease-in;
+}
+
+.confirmReady {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.playerNameConfirm {
+    background-color: black;
+    padding: 2px 3px;
+    border-radius: 8px;
 }
 
 .teamGuessesInputContainer {

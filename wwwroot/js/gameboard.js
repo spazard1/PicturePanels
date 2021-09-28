@@ -134,6 +134,10 @@ function resetPanel(panel, entranceAnimation, delay) {
 }
 
 async function resetPanelsAsync(gameState) {
+    if (gameState.turnType === "EndGame") {
+        return;
+    }
+
     var imagePromises = [];
     var panels = document.getElementsByClassName("panel");
 
@@ -328,9 +332,16 @@ function drawWelcome(gameState) {
 
 async function drawEndGameAsync(gameState) {
     var endGameContainer = document.getElementById("endGameContainer");
-
     var endGameWinner = document.getElementById("endGameWinner");
-    endGameWinner.classList.add("animate__hidden");
+
+    if (gameState.turnType !== "EndGame") {
+        endGameWinner.innerHTML = "";
+        return;
+    }
+
+    if (endGameWinner.innerHTML) {
+        return;
+    }
 
     if (gameState.teamOneScore > gameState.teamTwoScore) {
         endGameWinner.innerHTML = gameState.teamOneName + " wins!";
@@ -718,6 +729,10 @@ function drawRemainingTurnTime(gameState) {
         gameState.turnType === "Welcome" ||
         gameState.turnType === "EndRound")) {
 
+        if (gameState.roundNumber === gameState.finalRoundNumber) {
+            return;
+        }
+
         if (gameState.turnType === "Welcome") {
             document.getElementById("remainingTurnTimeText").innerHTML = "Game starts in";
         } else {
@@ -992,7 +1007,15 @@ function drawRoundNumber(gameState) {
 }
 
 async function drawImageEntityAsync(gameState, updateType) {
-    if (updateType !== "NewRound" && gameState.turnType !== "EndRound" && !gameState.teamOneCorrect && !gameState.teamTwoCorrect) {
+    if (gameState.turnType === "Welcome" || gameState.turnType === "EndGame") {
+        animateCSS("#uploadedBy", ["bounceOutRight"], ["slow", "bounceInRight"]);
+        animateCSS("#answerTitle", ["bounceOutUp"], ["slow", "bounceInDown"]);
+        return;
+    }
+
+    if (updateType !== "FirstLoad" && updateType !== "NewRound" &&
+        gameState.turnType !== "EndRound" &&
+        !gameState.teamOneCorrect && !gameState.teamTwoCorrect) {
         return;
     }
 
@@ -1014,6 +1037,10 @@ async function drawImageEntityAsync(gameState, updateType) {
 }
 
 async function drawRevealedPanelsAsync(gameState) {
+    if (gameState.turnType === "EndGame") {
+        return;
+    }
+
     if (gameState.turnType === "EndRound") {
         return openAllPanelsAsync();
     }
@@ -1155,22 +1182,20 @@ function drawWelcomeAnimation() {
 }
 
 function stopWelcomeAnimation() {
-    document.getElementById("welcome").classList.add("hidden");
-
     clearInterval(welcomeAnimationTimeout);
     welcomeAnimationTimeout = null;
 }
 
 var animationPromise;
 
-async function handleGameState(gameState, updateType, firstLoad) {
+async function handleGameState(gameState, updateType) {
     currentGameState = gameState;
 
     loadThemeCss(gameState);
 
     animationPromise = Promise.resolve();
 
-    if (firstLoad || updateType === "NewRound") {
+    if (updateType === "FirstLoad" || updateType === "NewRound") {
         await resetPanelsAsync(gameState);
     }
 
@@ -1281,11 +1306,13 @@ async function putGameBoardPingAsync() {
 }
 
 async function startGameAsync(gameState) {
+    document.getElementById("welcomeContainer").classList.add("hidden");
+
     startSignalRAsync("gameboard").then(function () {
         connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"))
     });
 
-    handleGameState(gameState, null, true);
+    handleGameState(gameState, "FirstLoad");
 
     getPlayersAsync().then(players => {
         handlePlayers(players);
@@ -1303,7 +1330,6 @@ async function startGameboardAsync() {
         drawWelcomeAnimation();
     }
 
-    document.getElementById("welcome").classList.remove("hidden");
     resizePanelContainer();
 }
 

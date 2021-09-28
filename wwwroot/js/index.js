@@ -157,12 +157,12 @@ async function getGameStateAsync(gameStateId) {
         return null;
     }
 
-    return await fetch("/api/gameState/" + gameStateId + "/")
+    return await fetch("/api/gameState/" + gameStateId)
         .then(response => {
             if (response.ok) {
                 return response.json();
             }
-            return;
+            return false;
         });
 }
 

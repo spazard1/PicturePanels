@@ -52,7 +52,7 @@ function setupPlayerMenu() {
         width: Math.ceil(Math.min(250, window.screen.width * .60))
     });
 
-    if (localStorage.getItem("playerName")) {
+    if (localStorage.getItem("playerColor")) {
         document.getElementById("playerNameInput").style.color = initialColor;
         document.getElementById("gameStateId").style.color = initialColor;
     }
@@ -223,7 +223,7 @@ function setupChoosePlayerName() {
 
     document.getElementById("panelButtons").classList.add("hidden");
 
-    document.getElementById("teamGuessButton").classList.add("hidden");
+    document.getElementById("teamButtons").classList.add("hidden");
     document.getElementById("teamGuesses").classList.add("hidden");
 
     document.getElementById("chats").classList.add("hidden");
@@ -240,12 +240,24 @@ function setupChoosePlayerName() {
 
     document.getElementById("teamTwoName").classList.remove("teamTwoColor");
     document.getElementById("teamTwoName").classList.add("teamTwoBox");
+
+    if (localStorage.getItem("playerName")) {
+        document.getElementById("playerNameInput").value = localStorage.getItem("playerName");
+    }
+
+    if (localStorage.getItem("gameStateId")) {
+        document.getElementById("gameStateId").value = localStorage.getItem("gameStateId");
+    }
 }
 
 async function choosePlayerNameButtonOnClickAsync() {
     var playerNameInput = document.getElementById("playerNameInput");
-    if (playerNameInput.value.length <= 1 || playerNameInput.value === playerNameInput.defaultValue) {
-        document.getElementById("playerNameInput").classList.add("playerNameInputDivInvalid");
+    if (playerNameInput.value.length <= 1) {
+        bootbox.alert({
+            size: "small",
+            message: "Your player name is too short.",
+            closeButton: false
+        });
         return;
     }
 
@@ -253,17 +265,22 @@ async function choosePlayerNameButtonOnClickAsync() {
         localStorage.setItem("gameStateId", document.getElementById("gameStateId").value.toUpperCase());
     }
 
-    playerNameChosen({
-        name: document.getElementById("playerNameInput").value,
-        color: window.colorPicker.color.hslString
-    });
-
     var gameState = await getGameStateAsync();
     if (gameState) {
         handleGameState(gameState);
     } else {
+        bootbox.alert({
+            size: "small",
+            message: "Didn't find a game with that code. Try a different code.",
+            closeButton: false
+        });
         return;
     }
+
+    playerNameChosen({
+        name: document.getElementById("playerNameInput").value,
+        color: window.colorPicker.color.hslString
+    });
 }
 
 function playerNameChosen(player) {
@@ -308,6 +325,8 @@ function teamChosen(teamNumber) {
     document.getElementById("chooseSmallestTeam").onclick = null;
     document.getElementById("chooseSmallestTeam").classList.add("hidden");
 
+    document.getElementById("teamButtons").classList.remove("hidden");
+
     document.getElementById("chooseTeam").classList.add("hidden");
 
     document.getElementById("chats").classList.remove("hidden");
@@ -344,6 +363,11 @@ async function setupPlayerAsync() {
     promises.push(getPlayerAsync());
 
     var results = await Promise.all(promises);
+
+    if (!results[0] || results[0].turnType === "EndGame") {
+        localStorage.removeItem("gameStateId");
+        results[0] = null;
+    }
     
     if (shouldPlayerLoadFromCache() && results[0] && results[1]) {
         playerNameChosen({
@@ -623,10 +647,9 @@ async function handleRandomizeTeam(player) {
     }
 }
 
+var confirmPlayerReadyInterval;
 function drawPlayerReady(player) {
-    var playerReadyMessageElement = document.getElementById("playerReadyMessage");
-    playerReadyMessageElement.classList.remove("hidden");
-    playerReadyMessageElement.innerHTML = "";
+    clearInterval(confirmPlayerReadyInterval);
 
     var playerReadyButton = document.getElementById("playerReadyButton");
     if (!player) {
@@ -636,17 +659,35 @@ function drawPlayerReady(player) {
 
     if (player.playerId === localStorage.getItem("playerId")) {
         playerReadyButton.innerHTML = "Undo Ready";
-        playerReadyMessageElement.appendChild(document.createTextNode("Ready; waiting for confirmation..."));
     } else {
-        playerReadyButton.innerHTML = "Confirm!";
+        playerReadyButton.innerHTML = "";
+
+        var playerNameReady = document.createElement("div");
+        playerNameReady.id = "playerNameReady"
+        playerNameReady.classList = "confirmButtonChild";
 
         var playerName = document.createElement("span");
+        playerName.classList = "playerNameConfirm";
         playerName.style = "color: " + player.color + ";";
         playerName.appendChild(document.createTextNode(player.name));
-        playerReadyMessageElement.appendChild(playerName);
+        playerNameReady.appendChild(playerName);
+        playerNameReady.appendChild(document.createTextNode(" is ready..."));
+        playerReadyButton.appendChild(playerNameReady);
 
-        playerReadyMessageElement.appendChild(document.createTextNode(" is ready..."));
+        var confirmElement = document.createElement("div");
+        confirmElement.id = "confirmReady";
+        confirmElement.classList = "confirmReady confirmButtonChild opacity0";
+        confirmElement.appendChild(document.createTextNode("Confirm?"));
+        playerReadyButton.appendChild(confirmElement);
+
+        confirmPlayerReadyInterval = setTimeout(fadeConfirmButton, 2000);
     }
+}
+
+function fadeConfirmButton() {
+    document.getElementById("playerNameReady").classList.toggle("opacity0");
+    document.getElementById("confirmReady").classList.toggle("opacity0");
+    confirmPlayerReadyInterval = setTimeout(fadeConfirmButton, 5000);
 }
 
 function registerConnections() {

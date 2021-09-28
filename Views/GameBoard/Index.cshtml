@@ -16,7 +16,7 @@
     <script src="~/js/gameboard.js" asp-append-version="true"></script>
 }
 
-<div id="welcome" class="welcomeContainer">
+<div id="welcomeContainer" class="welcomeContainer">
     <div id="welcomeStartGame" class="welcomeText welcomeStartGame">
         Welcome to Picture Panels!<br />
         <div id="welcomeCreateGameButton" class="center defaultButton welcomeButton">Create New Game</div>
@@ -109,7 +109,6 @@
         <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
         <div id="teamTwoGuessText" class="teamGuess teamTwoBox teamTwoGuess hideIfEmpty animate__animated"></div>
     </div>
-
 </div>
 
 <div id="roundNumberCorner" class="roundNumberCorner hidden">
@@ -153,7 +152,7 @@
 <div id="panels" class="panels center"></div>
 
 <div id="endGameContainer" class="endGameContainer center">
-    <div id="endGameWinner" class="endGameWinner"></div>
+    <div id="endGameWinner" class="endGameWinner animate__hidden"></div>
     <div id="endGameRounds" class="endGameRounds"></div>
 </div>
 
