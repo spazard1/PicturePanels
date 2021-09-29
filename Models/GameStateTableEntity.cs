@@ -32,7 +32,7 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
-        public const int GuessesMadeTimeIncorrect = 25;
+        public const int GuessesMadeTimeIncorrect = 20;
         public const int GuessesMadeTimeCorrect = 40;
         public const int EndRoundTime = 30;
 
@@ -192,17 +192,30 @@ namespace PicturePanels.Models
                     if (!this.RevealedPanels.Any())
                     {
                         this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.RoundStartDelayTime);
-                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.OpenPanelTime);
                     }
                     else
                     {
                         this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                    }
+                    if (this.OpenPanelTime > 0)
+                    {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(this.OpenPanelTime);
+                    }
+                    else
+                    {
+                        this.TurnEndTime = null;
                     }
                     break;
                 case GameStateTableEntity.TurnTypeMakeGuess:
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
-                    this.TurnEndTime = this.TurnStartTime.AddSeconds(this.GuessTime);
+                    if (this.GuessTime > 0)
+                    {
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.GuessTime);
+                    }
+                    else
+                    {
+                        this.TurnEndTime = null;
+                    }
                     break;
                 case GameStateTableEntity.TurnTypeGuessesMade:
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
@@ -221,7 +234,7 @@ namespace PicturePanels.Models
                     break;
                 case GameStateTableEntity.TurnTypeEndGame:
                     this.TurnStartTime = DateTime.UtcNow;
-                    this.TurnEndTime = this.TurnStartTime;
+                    this.TurnEndTime = null;
                     break;
             }
         }

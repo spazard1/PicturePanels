@@ -58,10 +58,10 @@ namespace PicturePanels.Entities
 
         public string ThemeCss { get; set; }
 
-        [Range(15, 60)]
+        [Range(0, 120)]
         public int? OpenPanelTime { get; set; }
 
-        [Range(60, 180)]
+        [Range(0, 300)]
         public int? GuessTime { get; set; }
 
         public int? RoundNumber { get; set; }

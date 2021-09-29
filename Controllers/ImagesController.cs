@@ -66,6 +66,11 @@ namespace PicturePanels.Controllers
                     continue;
                 }
 
+                if (!imageTableEntity.IsHidden)
+                {
+                    imageTableEntity.Tags.Add(ImageTagTableEntity.AllTag);
+                }
+
                 foreach (var tag in imageTableEntity.Tags)
                 {
                     if (!tagCounts.ContainsKey(tag))
@@ -128,6 +133,7 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
+        /*
         [HttpGet("populate")]
         public async Task<IActionResult> PopulateAsync()
         {
@@ -146,26 +152,21 @@ namespace PicturePanels.Controllers
 
             return StatusCode(200);
         }
-
-        [HttpGet("populateUploadedBy")]
+        */
+    
+        
+        [HttpGet("populateAnswers")]
         public async Task<IActionResult> PopulateUploadedByAsync()
         {
             await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
             {
-                if (imageTableEntity.UploadedBy == null)
-                {
-                    Console.WriteLine("");
-                }
-                await this.imageUploadedByTableStorage.InsertOrReplaceAsync(new ImageUploadedByTableEntity()
-                {
-                    ImageId = imageTableEntity.Id,
-                    UploadedBy = imageTableEntity.UploadedBy,
-                    Name = imageTableEntity.Name
-                });
+                imageTableEntity.Tags.Remove("all");
+                await this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
             }
 
             return StatusCode(200);
         }
+        
 
         [HttpGet("tags")]
         public IActionResult GetAllVisbileTags()
@@ -583,10 +584,6 @@ namespace PicturePanels.Controllers
             imageTableEntity.BlobContainer = imageTableEntity.UploadedBy;
             imageTableEntity.AlternativeNames.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             imageTableEntity.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            if (!imageTableEntity.Tags.Contains(ImageTagTableEntity.AllTag))
-            {
-                imageTableEntity.Tags.Add(ImageTagTableEntity.AllTag);
-            }
             imageTableEntity.Tags = imageTableEntity.Tags.Select(tag => tag.ToLowerInvariant()).ToList();
 
             await this.imageTableStorage.CopyImageFromScratchAsync(imageTableEntity);
