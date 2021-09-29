@@ -8,15 +8,15 @@ namespace PicturePanels.Services
 {
     public class GameStateQueueService
     {
+        public ServiceBusClient Client { get; }
+
         public ServiceBusSender Sender { get; }
-        public ServiceBusReceiver Receiver { get; }
 
         public GameStateQueueService()
         {
-            var client = new ServiceBusClient("***REMOVED***");
+            Client = new ServiceBusClient("***REMOVED***");
 
-            Sender = client.CreateSender("gamestateupdates");
-            Receiver = client.CreateReceiver("gamestateupdates");
+            Sender = Client.CreateSender("gamestateupdates");
         }
 
         public async Task QueueGameStateChangeAsync(GameStateTableEntity gameState)
@@ -28,8 +28,8 @@ namespace PicturePanels.Services
 
             var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState)));
 
-            // add a small extra grace period
-            await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime.Value.Subtract(TimeSpan.FromSeconds(1)));
+            // subtract a small extra grace period to handle latency
+            await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime.Value.Subtract(TimeSpan.FromSeconds(2)));
         }
     }
 }
