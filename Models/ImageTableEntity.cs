@@ -28,6 +28,8 @@ namespace PicturePanels.Models
 
         public string Name { get; set; }
 
+        public bool IsHidden { get; set; }
+
         public List<string> AlternativeNames { get; set; }
 
         public List<string> Answers { get; set; }
