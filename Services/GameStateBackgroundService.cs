@@ -50,7 +50,7 @@ namespace PicturePanels.Services
             await processor.CloseAsync(stoppingToken);
         }
 
-        private  Task ErrorHandler(ProcessErrorEventArgs args)
+        private Task ErrorHandler(ProcessErrorEventArgs args)
         {
             Console.WriteLine(args.Exception);
             return Task.CompletedTask;
