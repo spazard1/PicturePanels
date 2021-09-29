@@ -8,15 +8,15 @@ namespace PicturePanels.Services
 {
     public class GameStateQueueService
     {
+        public ServiceBusClient Client { get; }
+
         public ServiceBusSender Sender { get; }
-        public ServiceBusReceiver Receiver { get; }
 
         public GameStateQueueService()
         {
-            var client = new ServiceBusClient("Endpoint=sb://picturepanels.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=TJLwj1a8CdqLrFrJeBaAGuUwulEbe9GbhHwK8WhQGdQ=");
+            Client = new ServiceBusClient("Endpoint=sb://picturepanels.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=TJLwj1a8CdqLrFrJeBaAGuUwulEbe9GbhHwK8WhQGdQ=");
 
-            Sender = client.CreateSender("gamestateupdates");
-            Receiver = client.CreateReceiver("gamestateupdates");
+            Sender = Client.CreateSender("gamestateupdates");
         }
 
         public async Task QueueGameStateChangeAsync(GameStateTableEntity gameState)
@@ -28,8 +28,8 @@ namespace PicturePanels.Services
 
             var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState)));
 
-            // add a small extra grace period
-            await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime.Value.Subtract(TimeSpan.FromSeconds(1)));
+            // subtract a small extra grace period to handle latency
+            await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime.Value.Subtract(TimeSpan.FromSeconds(2)));
         }
     }
 }
