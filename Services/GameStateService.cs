@@ -99,7 +99,7 @@ namespace PicturePanels.Services
                 gs.StartGame();
             });
 
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewRound);
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
             return gameState;
         }
