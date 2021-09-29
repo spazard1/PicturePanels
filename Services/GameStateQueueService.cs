@@ -21,6 +21,11 @@ namespace PicturePanels.Services
 
         public async Task QueueGameStateChangeAsync(GameStateTableEntity gameState)
         {
+            if (!gameState.TurnEndTime.HasValue)
+            {
+                return;
+            }
+
             var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState)));
 
             // add a small extra grace period
