@@ -224,7 +224,10 @@ namespace PicturePanels.Services
             }
             else
             {
-                foreach (var panelId in GameStateTableEntity.AllPanels)
+                var randomOuterPanels = GameStateTableEntity.OuterPanels.ToArray();
+                randomOuterPanels.Shuffle();
+
+                foreach (var panelId in randomOuterPanels)
                 {
                     if (!gameState.RevealedPanels.Contains(panelId))
                     {
