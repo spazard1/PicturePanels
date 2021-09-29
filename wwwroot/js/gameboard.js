@@ -439,7 +439,10 @@ function drawTeamStatus(gameState) {
         activeTeamCountdownCanvas = document.getElementById("teamTwoCountdownCanvas");
     }
 
-    if (gameState.teamTurn === 1) {
+    if (gameState.turnType === "EndGame") {
+        document.getElementById("teamOneDiv").classList.remove("activeTeam");
+        document.getElementById("teamTwoDiv").classList.remove("activeTeam");
+    } else if (gameState.teamTurn === 1) {
         document.getElementById("teamOneDiv").classList.add("activeTeam");
         document.getElementById("teamTwoDiv").classList.remove("activeTeam");
     } else {
@@ -485,7 +488,11 @@ function drawTeamStatus(gameState) {
             stopCountdown(passiveTeamCountdownCanvas);
             break;
         case "EndGame":
-            teamStatus.innerHTML = "Game Over!";
+            if (gameState.teamOneScore != gameState.teamTwoScore) {
+                teamStatus.innerHTML = "Congratulations";
+            } else {
+                teamStatus.innerHTML = ""
+            }
             stopCountdown(activeTeamCountdownCanvas);
             stopCountdown(passiveTeamCountdownCanvas);
             break;
@@ -493,25 +500,33 @@ function drawTeamStatus(gameState) {
 }
 
 function drawTeamGuesses(gameState) {
-    var teamOneGuessElement = document.getElementById("teamOneGuessText");
-    var teamTwoGuessElement = document.getElementById("teamTwoGuessText");
-    teamOneGuessElement.classList.remove("teamGuessIncorrect");
-    teamTwoGuessElement.classList.remove("teamGuessIncorrect");
+    var teamOneGuessContainer = document.getElementById("teamOneGuessContainer");
+    var teamTwoGuessContainer = document.getElementById("teamTwoGuessContainer");
 
     if (gameState.teamOneGuessStatus) {
-        animateCSS(teamOneGuessElement, ["slow", "bounceInDown"], ["bounceOutUp"]).then(() => {
-            teamOneGuessElement.innerHTML = "Ready!";
-        });
+        animateCSS(teamOneGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"]);
     }
 
     if (gameState.teamTwoGuessStatus) {
-        teamTwoGuessElement.innerHTML = "Ready!";
-        animateCSS(teamTwoGuessElement, ["slow", "bounceInDown"], ["bounceOutUp"]).then(() => {
-            teamTwoGuessElement.innerHTML = "Ready!";
-        });
+        animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"]);
     }
 
     if (gameState.turnType === "GuessesMade") {
+        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"], 2000));
+        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"]));
+
+        animationPromise = animationPromise.then(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    document.getElementById("teamOneGuessReady").classList.add("opacity0");
+                    document.getElementById("teamTwoGuessReady").classList.add("opacity0");
+                    document.getElementById("teamOneGuessText").classList.remove("opacity0");
+                    document.getElementById("teamTwoGuessText").classList.remove("opacity0");
+                    resolve();
+                }, 3000);
+            });
+        });
+
         var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
         if (gameState.teamOneGuessStatus !== "Guess") {
             teamOneGuess = "(team passed)";
@@ -522,32 +537,32 @@ function drawTeamGuesses(gameState) {
             teamTwoGuess = "(team passed)";
         }
 
-        if (gameState.teamTurn === 1) {
-            drawTeamGuess(teamOneGuess, teamOneGuessElement, 2000);
-            drawTeamGuess(teamTwoGuess, teamTwoGuessElement, 3000);
+        document.getElementById("teamOneGuessText").innerHTML = teamOneGuess;
+        document.getElementById("teamTwoGuessText").innerHTML = teamTwoGuess;
+
+        if (teamOneGuess.length > 20) {
+            teamOneGuessContainer.classList.add("teamGuessLong");
         } else {
-            drawTeamGuess(teamTwoGuess, teamTwoGuessElement, 2000);
-            drawTeamGuess(teamOneGuess, teamOneGuessElement, 3000);
+            teamOneGuessContainer.classList.remove("teamGuessLong");
+        }
+
+        if (teamTwoGuess.length > 20) {
+            teamTwoGuessContainer.classList.add("teamGuessLong");
+        } else {
+            teamTwoGuessContainer.classList.remove("teamGuessLong");
         }
     } else if (gameState.turnType !== "MakeGuess") {
-        animateCSS(teamOneGuessElement, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
-        animateCSS(teamTwoGuessElement, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
+        animateCSS(teamOneGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
+        animateCSS(teamTwoGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
+        setTimeout(() => {
+            document.getElementById("teamOneGuessReady").classList.remove("opacity0");
+            document.getElementById("teamTwoGuessReady").classList.remove("opacity0");
+            document.getElementById("teamOneGuessText").classList.add("opacity0");
+            document.getElementById("teamTwoGuessText").classList.add("opacity0");
+            teamOneGuessContainer.classList.remove("teamGuessIncorrect");
+            teamTwoGuessContainer.classList.remove("teamGuessIncorrect");
+        }, 1000);
     }
-}
-
-function drawTeamGuess(teamGuessText, teamGuessElement, delay) {
-    animationPromise = animationPromise.then(() => animateCSS(teamGuessElement, ["slow", "bounceInDown"], ["bounceOutUp"], delay)).then(() => {
-        if (teamGuessText.length > 20) {
-            teamGuessElement.classList.add("teamGuessLong");
-        } else {
-            teamGuessElement.classList.remove("teamGuessLong");
-        }
-
-        teamGuessElement.innerHTML = teamGuessText.split('').map((x, index) => { return "<span class='letter' style='animation-delay:" + (2 + index / Math.max(10, teamGuessElement.textContent.length)) + "s'>" + x + "</span>" }).join("");
-        return new Promise((resolve) => {
-            setTimeout(resolve, 3000);
-        });
-    });
 }
 
 function drawTeamGuessHighlights(gameState) {
@@ -555,25 +570,23 @@ function drawTeamGuessHighlights(gameState) {
         return;
     }
 
-    var teamOneGuessElement = document.getElementById("teamOneGuessText");
-    var teamTwoGuessElement = document.getElementById("teamTwoGuessText");
+    var teamOneGuessContainer = document.getElementById("teamOneGuessContainer");
+    var teamTwoGuessContainer = document.getElementById("teamTwoGuessContainer");
 
     if (gameState.teamOneCorrect) {
-        animationPromise = animationPromise.then(() => animateCSS(teamOneGuessElement, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
+        animationPromise = animationPromise.then(() => animateCSS(teamOneGuessContainer, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
     } else if (gameState.teamOneGuessStatus === "Guess" && !gameState.teamOneCorrect) {
         animationPromise = animationPromise.then(() => {
-            teamOneGuessElement.innerHTML = "\"" + gameState.teamOneGuess + "\"";
-            teamOneGuessElement.classList.add("teamGuessIncorrect");
+            teamOneGuessContainer.classList.add("teamGuessIncorrect");
             return Promise.resolve();
         });
     }
 
     if (gameState.teamTwoCorrect) {
-        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessElement, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
+        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
     } else if (gameState.teamTwoGuessStatus === "Guess" && !gameState.teamTwoCorrect) {
         animationPromise = animationPromise.then(() => {
-            teamTwoGuessElement.innerHTML = "\"" + gameState.teamTwoGuess + "\"";
-            teamTwoGuessElement.classList.add("teamGuessIncorrect");
+            teamTwoGuessContainer.classList.add("teamGuessIncorrect");
             return Promise.resolve();
         });
     }
@@ -729,14 +742,16 @@ function drawRemainingTurnTime(gameState) {
         gameState.turnType === "Welcome" ||
         gameState.turnType === "EndRound")) {
 
-        if (gameState.roundNumber === gameState.finalRoundNumber) {
-            return;
-        }
+
 
         if (gameState.turnType === "Welcome") {
             document.getElementById("remainingTurnTimeText").innerHTML = "Game starts in";
         } else {
-            document.getElementById("remainingTurnTimeText").innerHTML = "Next round starts in";
+            if (gameState.roundNumber === gameState.finalRoundNumber) {
+                document.getElementById("remainingTurnTimeText").innerHTML = "Game ends in";
+            } else {
+                document.getElementById("remainingTurnTimeText").innerHTML = "Next round starts in";
+            }
         }
 
         remainingSeconds = (new Date(gameState.turnEndTime) - new Date()) / 1000;
