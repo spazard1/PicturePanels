@@ -993,15 +993,15 @@ var allPlayers = [];
 
 function drawGameStateId(gameState) {
     if (gameState.revealedPanels.length === 0 && gameState.turnType === "OpenPanel") {
-        document.getElementById("gameStateIdDisplayText").innerHTML = "Join the game!&nbsp;&nbsp;&nbsp;https://picturepanels.net/&nbsp;&nbsp;&nbsp;" + gameState.gameStateId;
+        document.getElementById("gameStateIdDisplayText").innerHTML = "Join the game!&nbsp;&nbsp;&nbsp;picturepanels.net&nbsp;&nbsp;&nbsp;" + gameState.gameStateId;
     } else {
         document.getElementById("gameStateIdDisplayText").innerHTML = gameState.gameStateId;
     }
 
     if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
-        animateCSS("#gameStateIdDisplay", ["backInLeft"], ["backOutRight", "hidden"]);
+        animateCSS("#gameStateIdDisplay", ["bounceInLeft", "slow"], ["bounceOutLeft", "hidden"]);
     } else {
-        animateCSS("#gameStateIdDisplay", ["backOutRight"], ["backInLeft"]);
+        animateCSS("#gameStateIdDisplay", ["bounceOutLeft"], ["bounceInLeft", "slow"]);
     }
 }
 
