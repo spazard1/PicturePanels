@@ -91,7 +91,10 @@
         <div id="teamOneName" class="teamName">Team 1</div>
         <div id="teamOneInnerPanelsCount" class="teamInfoPanelCounts center"></div>
         <div id="teamOneIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
-        <div id="teamOneGuessText" class="teamGuess teamOneBox teamOneGuess hideIfEmpty animate__animated"></div>
+        <div id="teamOneGuessContainer" class="teamGuess teamOneBox teamOneGuess animate__hidden">
+            <div id="teamOneGuessReady" class="teamGuessReady teamGuessChild">Ready!</div>
+            <div id="teamOneGuessText" class="teamGuessText teamGuessChild opacity0">(team passed)</div>
+        </div>
     </div>
     <div class="teamBox teamOneBox teamInfo teamScore">
         <div id="teamOneScoreText">0</div>
@@ -109,7 +112,10 @@
         <div id="teamTwoName" class="teamName">Team 2</div>
         <div id="teamTwoInnerPanelsCount" class="teamInfoPanelCounts center"></div>
         <div id="teamTwoIncorrectGuessesDiv" class="teamInfoIncorrectGuesses"></div>
-        <div id="teamTwoGuessText" class="teamGuess teamTwoBox teamTwoGuess hideIfEmpty animate__animated"></div>
+        <div id="teamTwoGuessContainer" class="teamGuess teamTwoBox teamTwoGuess animate__hidden">
+            <div id="teamTwoGuessReady" class="teamGuessReady teamGuessChild">Ready!</div>
+            <div id="teamTwoGuessText" class="teamGuessText teamGuessChild opacity0">(team passed)</div>
+        </div>
     </div>
 </div>
 

@@ -32,6 +32,7 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
+        public const int GuessesMadeTimeBothPass = 9;
         public const int GuessesMadeTimeIncorrect = 20;
         public const int GuessesMadeTimeCorrect = 40;
         public const int EndRoundTime = 30;
@@ -223,9 +224,14 @@ namespace PicturePanels.Models
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeCorrect);
                     }
-                    else
+                    else if (this.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess ||
+                        this.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeIncorrect);
+                    }
+                    else
+                    {
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeBothPass);
                     }
                     break;
                 case GameStateTableEntity.TurnTypeEndRound:
@@ -291,8 +297,8 @@ namespace PicturePanels.Models
 
         public void IncrementScores()
         {
-            TeamOneScore = GetTeamScoreChange(1);
-            TeamTwoScore = GetTeamScoreChange(2);
+            TeamOneScore += GetTeamScoreChange(1);
+            TeamTwoScore += GetTeamScoreChange(2);
 
             if (!TeamOneCorrect && TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
             {
