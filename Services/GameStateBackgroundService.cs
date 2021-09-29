@@ -43,7 +43,7 @@ namespace PicturePanels.Services
 
                     var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
                     var gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
-                    if (gameState == null)
+                    if (gameState == null || !gameState.TurnEndTime.HasValue)
                     {
                         continue;
                     }
@@ -52,6 +52,12 @@ namespace PicturePanels.Services
                     if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
                     {
                         continue;
+                    }
+
+                    var delayTime = gameState.TurnEndTime.Value - DateTime.UtcNow;
+                    if (delayTime.TotalMilliseconds > 0)
+                    {
+                        await Task.Delay(delayTime, stoppingToken);
                     }
 
                     if (gameState.IsUpdateAllowed(gameStateUpdate))

@@ -211,6 +211,19 @@ body::-webkit-scrollbar {
     text-align: center;
 }
 
+.teamGuessChild {
+    transition: opacity 1.5s ease-in;
+}
+
+.teamGuessReady {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .teamGuess span {
     position: relative;
     opacity: 0;
