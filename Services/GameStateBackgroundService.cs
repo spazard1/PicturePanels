@@ -30,53 +30,60 @@ namespace PicturePanels.Services
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var options = new ServiceBusProcessorOptions
+            {
+                PrefetchCount = 10,
+                MaxConcurrentCalls = 10
+            };
+            await using ServiceBusProcessor processor = this.gameStateQueueService.Client.CreateProcessor("gamestateupdates", options);
+
+            processor.ProcessMessageAsync += MessageHandler;
+            processor.ProcessErrorAsync += ErrorHandler;
+
+            await processor.StartProcessingAsync(stoppingToken);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                ServiceBusReceivedMessage receivedMessage = null;
-                try
-                {
-                    receivedMessage = await gameStateQueueService.Receiver.ReceiveMessageAsync(cancellationToken: stoppingToken);
-                    if (receivedMessage == null)
-                    {
-                        continue;
-                    }
-
-                    var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
-                    var gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
-                    if (gameState == null || !gameState.TurnEndTime.HasValue)
-                    {
-                        continue;
-                    }
-
-                    var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
-                    if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
-                    {
-                        continue;
-                    }
-
-                    var delayTime = gameState.TurnEndTime.Value - DateTime.UtcNow;
-                    if (delayTime.TotalMilliseconds > 0)
-                    {
-                        await Task.Delay(delayTime, stoppingToken);
-                    }
-
-                    if (gameState.IsUpdateAllowed(gameStateUpdate))
-                    {
-                        await this.gameStateService.ToNextTurnTypeAsync(gameState);
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
-                finally
-                {
-                    if (receivedMessage != null)
-                    {
-                        await gameStateQueueService.Receiver.CompleteMessageAsync(receivedMessage, stoppingToken);
-                    }
-                }
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
+
+            await processor.CloseAsync(stoppingToken);
+        }
+
+        private  Task ErrorHandler(ProcessErrorEventArgs args)
+        {
+            Console.WriteLine(args.Exception);
+            return Task.CompletedTask;
+        }
+
+        private async Task MessageHandler(ProcessMessageEventArgs args)
+        {
+            var receivedMessage = args.Message;
+            if (receivedMessage == null)
+            {
+                return;
+            }
+
+            var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
+            if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
+            {
+                return;
+            }
+
+            var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
+            if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
+            {
+                return;
+            }
+
+            var delayTime = gameState.TurnEndTime.Value - DateTime.UtcNow;
+            if (delayTime.TotalMilliseconds > 0)
+            {
+                await Task.Delay(delayTime, args.CancellationToken);
+            }
+
+            await this.gameStateService.ToNextTurnTypeAsync(gameState);
         }
     }
 }
