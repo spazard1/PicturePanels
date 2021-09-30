@@ -24,11 +24,10 @@ body::-webkit-scrollbar {
 }
 
 .welcomeContainer {
-    padding: .5em;
+    padding: 3vh 2vw;
     font-size: 3vh;
     position: absolute;
     width: 50vw;
-    height: 60vh;
     top: 20vh;
     left: 25vw;
     background-color: black;
@@ -41,7 +40,6 @@ body::-webkit-scrollbar {
 
 .welcomeStartGame {
     font-size: 4vh;
-    margin-top: 2vh;
 }
 
 .welcomeText a {
@@ -91,6 +89,21 @@ body::-webkit-scrollbar {
 
 .tagsInputContainer {
     margin-top: 2vh;
+}
+
+.loginContainer {
+    margin-top: 6vh;
+    font-size: 2.5vh;
+    width: 60%;
+}
+
+.loginMessage {
+    margin-top: 2.5vh;
+}
+
+.loggedInUser {
+    margin-top: 2.5vh;
+    font-size: 2.5vh;
 }
 
 .teamInfos {
@@ -231,10 +244,9 @@ body::-webkit-scrollbar {
 }
 
 .teamGuessIncorrect {
-    text-decoration-style: wavy;
-    text-decoration-color: red;
+    text-decoration-color: rgba(255, 0, 0, .7);
     text-decoration-line: line-through;
-    text-decoration-thickness: 3px;
+    text-decoration-thickness: 5px;
 }
 
 @keyframes move-text {

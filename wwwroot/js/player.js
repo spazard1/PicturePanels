@@ -540,7 +540,7 @@ function deleteTeamGuess(teamGuess) {
     document.getElementById("teamGuess_" + teamGuess.ticks).remove();
 }
 
-function drawTeamGuess(teamGuess) {
+function drawTeamGuess(teamGuess, startingPlayerId) {
     var teamGuessesElement = document.getElementById("teamGuesses");
 
     var teamGuessElement = document.createElement("div");
@@ -555,6 +555,9 @@ function drawTeamGuess(teamGuess) {
     var teamGuessVoteCountElement = document.createElement("div");
     teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
     teamGuessVoteCountElement.classList = "teamGuessVoteCount";
+    if (localStorage.getItem("playerId") === startingPlayerId) {
+        teamGuessVoteCountElement.classList.add("teamGuessVoteCountChosen");
+    }
     teamGuessVoteCountElement.innerHTML = teamGuess.voteCount;
     teamGuessElement.appendChild(teamGuessVoteCountElement);
 
@@ -721,8 +724,6 @@ async function finalizePlayerAsync() {
     await startSignalRAsync("player");
     var player = await putPlayerAsync();
 
-    drawPlayer(player);
-
     playerIsReadyToPlay = true;
     localStorage.setItem("createdTime", new Date());
 
@@ -739,6 +740,7 @@ async function finalizePlayerAsync() {
     drawTeamGuesses(results[0]); // first promise is getTeamGuessesAsync
     handleGameState(results[1]); // second promise is getGameStateAsync
     drawPlayerReady(results[2]); // third promise is getPlayerReadyAsync
+    drawPlayer(player);
 
     document.getElementById("playerBanner").onclick = (event) => {
         var result = confirm("Do you want to change your player name, color, or team?");

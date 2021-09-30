@@ -245,18 +245,16 @@ body {
 .teamGuessDeleteButton {
     cursor: pointer;
     position: absolute;
-    top: -1em;
-    right: -1em;
+    top: -1.25em;
+    right: -1.25em;
     width: 2em;
     height: 2em;
-    justify-content: center;
-    vertical-align: middle;
 }
 
 .teamGuessDeleteButton img {
     position: absolute;
-    top: .6em;
-    left: .6em;
+    top: .8em;
+    left: .4em;
     width: .8em;
     height: .8em;
 }
