@@ -49,7 +49,7 @@ function setupPlayerMenu() {
             },
         ],
         color: initialColor,
-        width: Math.ceil(Math.min(250, window.screen.width * .60))
+        width: Math.ceil(Math.min(250, window.screen.width * .50))
     });
 
     if (localStorage.getItem("playerColor")) {
@@ -255,7 +255,16 @@ async function choosePlayerNameButtonOnClickAsync() {
     if (playerNameInput.value.length <= 1) {
         bootbox.alert({
             size: "small",
-            message: "Your player name is too short.",
+            message: "Your player name must be at least two characters.",
+            closeButton: false
+        });
+        return;
+    }
+
+    if (playerNameInput.value.length > 14) {
+        bootbox.alert({
+            size: "small",
+            message: "Your player name must be 14 or less characters.",
             closeButton: false
         });
         return;

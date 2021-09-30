@@ -116,7 +116,6 @@ namespace PicturePanels.Controllers
                 return "player";
             }
             name = name.Replace("(", "").Replace(")", "");
-            name = name.Substring(0, Math.Min(name.Length, 14));
             return name;
         }
 

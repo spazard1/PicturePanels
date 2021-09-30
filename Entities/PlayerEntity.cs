@@ -1,5 +1,6 @@
 ﻿using PicturePanels.Models;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PicturePanels.Entities
 {
@@ -27,6 +28,9 @@ namespace PicturePanels.Entities
 
         public string PlayerId { get; set; }
 
+        [Required]
+        [MinLength(2)]
+        [MaxLength(14)]
         public string Name { get; set; }
 
         public int TeamNumber { get; set; }
