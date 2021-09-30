@@ -12,7 +12,12 @@ function listImages(username) {
                 "Authorization": localStorage.getItem("userToken")
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response.status + " " + response.message);
+        })
         .then(responseJson => {
             var imageContainerElement = document.getElementById("imageContainer");
             imageContainerElement.innerHTML = "";
@@ -40,6 +45,9 @@ function listImages(username) {
 
                 drawImageInfo(img, image, nameInfoElement, username);
             };
+        }).catch(error => {
+            var imageContainerElement = document.getElementById("imageContainer");
+            imageContainerElement.innerHTML = error;
         });
 }
 

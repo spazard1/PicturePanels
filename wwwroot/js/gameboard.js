@@ -515,18 +515,6 @@ function drawTeamGuesses(gameState) {
         animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"], 2000));
         animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"]));
 
-        animationPromise = animationPromise.then(() => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    document.getElementById("teamOneGuessReady").classList.add("opacity0");
-                    document.getElementById("teamTwoGuessReady").classList.add("opacity0");
-                    document.getElementById("teamOneGuessText").classList.remove("opacity0");
-                    document.getElementById("teamTwoGuessText").classList.remove("opacity0");
-                    resolve();
-                }, 3000);
-            });
-        });
-
         var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
         if (gameState.teamOneGuessStatus !== "Guess") {
             teamOneGuess = "(team passed)";
@@ -537,9 +525,21 @@ function drawTeamGuesses(gameState) {
             teamTwoGuess = "(team passed)";
         }
 
-        document.getElementById("teamOneGuessText").innerHTML = teamOneGuess;
-        document.getElementById("teamTwoGuessText").innerHTML = teamTwoGuess;
+        animationPromise = animationPromise.then(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    document.getElementById("teamOneGuessText").innerHTML = teamOneGuess;
+                    document.getElementById("teamTwoGuessText").innerHTML = teamTwoGuess;
 
+                    document.getElementById("teamOneGuessReady").classList.add("opacity0");
+                    document.getElementById("teamTwoGuessReady").classList.add("opacity0");
+                    document.getElementById("teamOneGuessText").classList.remove("opacity0");
+                    document.getElementById("teamTwoGuessText").classList.remove("opacity0");
+                    resolve();
+                }, 3000);
+            });
+        });
+        
         if (teamOneGuess.length > 20) {
             teamOneGuessContainer.classList.add("teamGuessLong");
         } else {
@@ -551,10 +551,13 @@ function drawTeamGuesses(gameState) {
         } else {
             teamTwoGuessContainer.classList.remove("teamGuessLong");
         }
+        
     } else if (gameState.turnType !== "MakeGuess") {
         animateCSS(teamOneGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
         animateCSS(teamTwoGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
         setTimeout(() => {
+            document.getElementById("teamOneGuessText").innerHTML = "(team passed)";
+            document.getElementById("teamTwoGuessText").innerHTML = "(team passed)";
             document.getElementById("teamOneGuessReady").classList.remove("opacity0");
             document.getElementById("teamTwoGuessReady").classList.remove("opacity0");
             document.getElementById("teamOneGuessText").classList.add("opacity0");
@@ -1354,7 +1357,26 @@ window.onresize = function () {
     }, 100);
 }
 
+function gameboardLoginCallback(user, automatic) {
+    document.getElementById("loginButton").disabled = "";
+
+    if (user) {
+        document.getElementById("displayName").innerHTML = user.displayName;
+        document.getElementById("loginContainer").classList.add("hidden");
+    } else {
+        document.getElementById("loginContainer").classList.remove("hidden");
+
+        if (automatic) {
+            document.getElementById("loginMessage").innerHTML = "When you are logged in, you won't see images that you have already played.";
+        } else {
+            document.getElementById("loginMessage").innerHTML = "That login didn't work. Try again.";
+        }
+    }
+}
+
 window.onload = async function () {
+    setupLoggedInUserAsync(gameboardLoginCallback);
+
     setupTagsAsync(urlParams.get('tags'));
 
     createPanels();
@@ -1433,10 +1455,6 @@ window.onload = async function () {
 
     document.getElementById("welcomeGameStateTeamTwoName").oninput = (event) => {
         document.getElementById("teamTwoName").innerHTML = event.target.value;
-    };
-
-    document.getElementById("loginButton").onclick = () => {
-        loginPrompt(() => { });
     };
 
     // full screen

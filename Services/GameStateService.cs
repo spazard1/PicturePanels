@@ -405,11 +405,13 @@ namespace PicturePanels.Services
                 if (gameState.TeamOneCorrect || gameState.TeamTwoCorrect)
                 {
                     var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-                    await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
+                    gameRoundTableEntity = await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
                     {
                         gr.TeamOneScore = gameState.GetTeamScoreChange(1);
                         gr.TeamTwoScore = gameState.GetTeamScoreChange(2); 
                     });
+
+                    await this.SaveUserPlayedImageAsync(gameState, gameRoundTableEntity);
                 }
 
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
@@ -429,7 +431,7 @@ namespace PicturePanels.Services
                     updateType = GameStateTableEntity.UpdateTypeNewRound;
                     gs.NewRound();
                 }
-                else if (gs.RevealedPanels.Count > GameStateTableEntity.MaxOpenPanels)
+                else if (gs.RevealedPanels.Count >= GameStateTableEntity.MaxOpenPanels)
                 {
                     updateType = GameStateTableEntity.UpdateTypeNewTurn;
                     gs.NewTurnType(GameStateTableEntity.TurnTypeEndRound);
@@ -455,11 +457,26 @@ namespace PicturePanels.Services
                 gs.NewRound();
             });
 
+            var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+            await this.SaveUserPlayedImageAsync(gameState, gameRoundTableEntity);
+
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewRound);
 
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
+        }
+
+        private async Task SaveUserPlayedImageAsync(GameStateTableEntity gameState, GameRoundTableEntity gameRoundTableEntity)
+        {
+            if (!string.IsNullOrWhiteSpace(gameState.CreatedBy))
+            {
+                await this.userPlayedImageTableStorage.InsertOrReplaceAsync(new UserPlayedImageTableEntity()
+                {
+                    UserId = gameState.CreatedBy,
+                    ImageId = gameRoundTableEntity.ImageId
+                });
+            }
         }
 
         private static Random rand = new Random();

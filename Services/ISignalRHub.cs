@@ -17,6 +17,8 @@ namespace PicturePanels.Services
 
         Task AddTeamGuess(TeamGuessEntity teamGuessEntity);
 
+        Task AddTeamGuess(TeamGuessEntity teamGuessEntity, string creatorPlayerId);
+
         Task DeleteTeamGuess(TeamGuessEntity teamGuessEntity);
 
         Task VoteTeamGuess(string oldVote, string newVote);

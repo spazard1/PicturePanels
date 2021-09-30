@@ -40,7 +40,7 @@ namespace PicturePanels.Models
         public const int DefaultOpenPanelTime = 30;
         public const int DefaultMakeGuessTime = 120;
 
-        public const int MaxOpenPanels = 10;
+        public const int MaxOpenPanels = 8;
 
         public const int MaxRounds = 10;
 

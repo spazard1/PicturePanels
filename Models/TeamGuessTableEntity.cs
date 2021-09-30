@@ -28,6 +28,10 @@ namespace PicturePanels.Models
             set { this.RowKey = value.Ticks.ToString(); }
         }
 
+        public string Ticks {
+            get => this.RowKey;
+        }
+
         public string Guess { get; set; }
 
         public string PlayerId { get; set; }

@@ -73,15 +73,17 @@ async function tryLoginAsync(username, password) {
 
 async function setupLoggedInUserAsync(loginCallback) {
     document.getElementById("loginButton").onclick = () => {
-        document.getElementById("loginButton").disabled = "";
+        document.getElementById("loginButton").disabled = "disabled";
         loginPrompt(loginCallback);
     };
 
     var loggedInUserElement = document.getElementById("loggedInUser");
     if (loggedInUserElement) {
-        document.getElementById("editUserButton").onclick = () => {
-            window.location.href = "/edituser";
-        };
+        if (document.getElementById("editUserButton")) {
+            document.getElementById("editUserButton").onclick = () => {
+                window.location.href = "/edituser";
+            };
+        }
 
         document.getElementById("logoutButton").onclick = () => {
             localStorage.removeItem("userToken");

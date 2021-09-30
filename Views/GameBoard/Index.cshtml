@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/@@yaireo/tagify"></script>
     <script src="https://unpkg.com/@@yaireo/tagify@4.7.2/dist/tagify.polyfills.min.js"></script>
 
+    <script src="~/external/fittext.js" asp-append-version="true"></script>
+
     <script src="~/js/index.js" asp-append-version="true"></script>
     <script src="~/js/gameboard.js" asp-append-version="true"></script>
 }
@@ -22,7 +24,15 @@
         <div id="welcomeCreateGameButton" class="center defaultButton welcomeButton">Create New Game</div>
         <div id="welcomeJoinGameButton" class="center defaultButton welcomeButton">Join Existing Game</div>
 
-        <div type="button" class="center defaultButton welcomeButton" id="loginButton">Login</div>
+        <div id="loginContainer" class="loginContainer center hidden">
+            <div class="center defaultButton welcomeButton" id="loginButton">Login</div>
+            <div id="loginMessage" class="center loginMessage"></div>
+            <a href="newuser">Create a new user</a>
+        </div>
+        <div id="loggedInUser" class="loggedInUser center hidden">
+            Logged in as: <span id="displayName" class="loggedInUserDisplayName"></span><br />
+            <input type="button" id="logoutButton" value="Logout" class="loggedInUserButton" />
+        </div>
     </div>
 
     <div id="welcomeCreateGame" class="welcomeText welcomeCreateGame hidden">
