@@ -36,7 +36,7 @@ namespace PicturePanels.Services.Authentication
 
 			var handler = new JwtSecurityTokenHandler();
 			var credentials = new X509SigningCredentials(cert, SecurityAlgorithms.RsaSha256);
-			var token = new JwtSecurityToken("https://picturepanels.net", "https://picturepanels.net", claims, DateTime.UtcNow, DateTime.UtcNow.AddDays(1), credentials);
+			var token = new JwtSecurityToken("https://picturepanels.net", "https://picturepanels.net", claims, DateTime.UtcNow, DateTime.UtcNow.AddDays(30), credentials);
 			return handler.WriteToken(token);
 		}
 

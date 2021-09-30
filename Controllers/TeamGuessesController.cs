@@ -125,15 +125,28 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            if (GuessChecker.IsCorrect(entity.Guess, allGuesses.Select(guess => guess.Guess)))
+            var teamGuess = await this.teamGuessTableStorage.InsertAsync(entity.ToModel(player));
+
+            var startingVoteCount = 0;
+            if (!allGuesses.Any(guess => guess.Ticks == player.TeamGuessVote))
             {
-                return StatusCode(405);
+                startingVoteCount = 1;
+                await this.playerTableStorage.ReplaceAsync(player, (p) =>
+                {
+                    p.TeamGuessVote = teamGuess.Ticks;
+                });
             }
 
-            var teamGuess = await this.teamGuessTableStorage.InsertAsync(entity.ToModel(player));
-            await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess), player.TeamNumber);
+            if (startingVoteCount > 0)
+            {
+                await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess) { VoteCount = startingVoteCount }, player.TeamNumber, player.PlayerId);
+            }
+            else
+            {
+                await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess), player.TeamNumber);
+            }
 
-            await this.chatService.SendChatAsync(player, "submitted the guess '" + teamGuess.Guess + "'", true);
+            await this.chatService.SendChatAsync(player, "added the guess '" + teamGuess.Guess + "'", true);
 
             return Json(new TeamGuessEntity(teamGuess));
         }

@@ -82,25 +82,6 @@ input:focus {
     color: black;
 }
 
-.loggedInUser {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    position: fixed;
-    right: 0;
-    top: 0;
-    padding: .2vh .2vw .2vh .2vw;
-    background-color: white;
-}
-
-.loggedInUser div {
-    margin: .25vh;
-}
-
-.loggedInUserDisplayName {
-    font-size: 1.75rem;
-}
-
 .center {
     text-align: center;
     margin: auto;
