@@ -15,7 +15,7 @@ body {
 
 #choosePlayerNameLabel {
     flex: 0 0 auto;
-    margin-top: 1rem;
+    margin-top: .5rem;
     width: 100%;
     vertical-align: middle;
     text-align: center;
@@ -26,7 +26,6 @@ body {
 }
 
 #playerNameInputDiv {
-    width: 75%;
     flex: 0 0 auto;
     vertical-align: middle;
     text-align: center;
@@ -39,19 +38,20 @@ body {
 
 #colorPicker {
     flex: 0 0 auto;
-    margin-top: 3rem;
+    margin-top: 1rem;
 }
 
 .choosePlayerName {
     flex: 0 0 auto;
-    margin-top: 3rem;
+    margin-top: 2rem;
 }
 
 .playerHelp {
-    margin-top: 3rem;
+    font-size: 1rem;
+    margin-top: 1rem;
     color: white;
     flex: 1;
-    width: 80%;
+    width: 95%;
 }
 
 #choosePlayerNameButton {
@@ -61,11 +61,11 @@ body {
 }
 
 .playerTextInput {
-    margin-top: 3vh;
+    margin-top: .75rem;
     caret-color: white;
     background-color: black;
     font-size: 1em;
-    width: 60%;
+    width: 75%;
     text-align: center;
 }
 
