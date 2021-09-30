@@ -330,6 +330,7 @@ window.onload = async () => {
         viewMode: 0,
         initialAspectRatio: 16 / 9,
         guides: false,
+        highlight: false,
         dragMode: 'move',
         autoCropArea: 1,
         zoomable: false,
