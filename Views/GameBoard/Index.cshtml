@@ -50,7 +50,7 @@
                 <option value="120">2 minutes</option>
                 <option value="0">No Limit</option>
             </select>
-
+            &nbsp;&nbsp;&nbsp;
             Guessing Time:
             <select id="welcomeGuessTime">
                 <option value="60">1 minute</option>
@@ -61,10 +61,16 @@
                 <option value="0">No Limit</option>
             </select>
 
-            <div id="tagsInputContainer" class="tagsInputContainer center hidden">
-                Tags: <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
+            <div id="tagsInputContainer" class="tagsInputContainer center">
+                Included Tags:
+                <span data-toggle="tooltip" title="If you want only certain types images to be included in the game, add those tags here."></span>
+                <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
             </div>
-
+            <div id="excludedTagsInputContainer" class="tagsInputContainer center">
+                Excluded Tags:
+                <span data-toggle="tooltip" title="Images that have these tags will not be included in your game, even if they match one of the included tags."></span>
+                <input id="excludedTagsInput" name="input-custom-dropdown" class="tagsInput" />
+            </div>
         </div>
     </div>
 

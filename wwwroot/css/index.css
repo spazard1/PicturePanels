@@ -87,6 +87,10 @@ input:focus {
     margin: auto;
 }
 
+.tagsInput {
+    font-size: 2vh;
+}
+
 #signalRConnectionState {
     position: fixed;
     bottom: 0;

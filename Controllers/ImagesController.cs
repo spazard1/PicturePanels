@@ -114,13 +114,8 @@ namespace PicturePanels.Controllers
             foreach (var tagCount in tagCounts)
             {
                 var tagCountTableEntity = await this.imageTagTableStorage.GetAsync(tagCount.Key);
-                await this.imageTagTableStorage.InsertOrReplaceAsync(new ImageTagTableEntity()
-                {
-                    Tag = tagCount.Key,
-                    Count = tagCount.Value,
-                    IsHidden = tagCountTableEntity?.IsHidden ?? true
-                });
-
+                tagCountTableEntity.Count = tagCount.Value;
+                await this.imageTagTableStorage.InsertOrReplaceAsync(tagCountTableEntity);
                 allTagDictionary.Remove(tagCount.Key);
             }
 
@@ -169,17 +164,19 @@ namespace PicturePanels.Controllers
         
 
         [HttpGet("tags")]
-        public IActionResult GetAllVisbileTags()
+        public async Task<IActionResult> GetAllVisbileTagsAsync()
         {
-            var tags = this.imageTagTableStorage.GetAllVisbileTags();
+            var tags = await this.imageTagTableStorage.GetAllVisbileTags().ToListAsync();
+            tags.Sort();
             return Json(tags.Select((tag) => tag.Tag));
         }
 
         [HttpGet("alltags")]
         [RequireAdmin]
-        public IActionResult GetAllTags()
+        public async Task<IActionResult> GetAllTagsAsync()
         {
-            var tags = this.imageTagTableStorage.GetAllAsync();
+            var tags = await this.imageTagTableStorage.GetAllAsync().ToListAsync();
+            tags.Sort();
             return Json(tags.Select((tag) => new ImageTagCountEntity(tag)));
         }
 
@@ -548,7 +545,6 @@ namespace PicturePanels.Controllers
 
             imageTableEntity.AlternativeNames.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             imageTableEntity.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            imageTableEntity.Tags = imageTableEntity.Tags.Select(tag => tag.ToLowerInvariant()).ToList();
 
             var answers = new List<string>() { GuessChecker.Prepare(imageTableEntity.Name) };
             answers = answers.Concat(GuessChecker.Prepare(imageTableEntity.AlternativeNames)).ToList();
@@ -583,8 +579,7 @@ namespace PicturePanels.Controllers
             imageTableEntity.BlobName = alphanumericRegex.Replace(imageEntity.Name, string.Empty) + "-" + imageTableEntity.Id + ".png";
             imageTableEntity.BlobContainer = imageTableEntity.UploadedBy;
             imageTableEntity.AlternativeNames.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            imageTableEntity.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            imageTableEntity.Tags = imageTableEntity.Tags.Select(tag => tag.ToLowerInvariant()).ToList();
+            imageTableEntity.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
 
             await this.imageTableStorage.CopyImageFromScratchAsync(imageTableEntity);
 

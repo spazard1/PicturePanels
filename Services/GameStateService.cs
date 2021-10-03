@@ -489,7 +489,7 @@ namespace PicturePanels.Services
                 imageTags = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
                 foreach (var imageTag in imageTags)
                 {
-                    if (!gameState.Tags.Contains(imageTag.Key))
+                    if (!gameState.Tags?.Contains(imageTag.Key) == true || gameState.ExcludedTags?.Contains(imageTag.Key) == true)
                     {
                         imageTags.Remove(imageTag.Key);
                     }
@@ -533,6 +533,11 @@ namespace PicturePanels.Services
 
                     var imageTableEntity = await this.imageTableStorage.GetAsync(imageNumberEntity.ImageId);
                     if (imageTableEntity == null)
+                    {
+                        continue;
+                    }
+
+                    if (gameState.ExcludedTags?.Any(tag => imageTableEntity.Tags.Contains(tag)) == true)
                     {
                         continue;
                     }

@@ -59,6 +59,8 @@ namespace PicturePanels.Models
 
         public List<string> Tags { get; set; }
 
+        public List<string> ExcludedTags { get; set; }
+
         public string ThemeCss { get; set; }
 
         public int OpenPanelTime { get; set; }
