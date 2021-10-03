@@ -81,7 +81,9 @@ namespace PicturePanels.Controllers
             gameState.OpenPanelTime = entity.OpenPanelTime ?? GameStateTableEntity.DefaultOpenPanelTime;
             gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
             gameState.Tags = entity.Tags?.Split(",").ToList();
-            gameState.Tags.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
+            gameState.ExcludedTags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 

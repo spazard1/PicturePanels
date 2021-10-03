@@ -30,7 +30,8 @@ async function postGameStateAsync() {
             teamTwoName: document.getElementById("welcomeGameStateTeamTwoName").value,
             openPanelTime: parseInt(document.getElementById("welcomeOpenPanelTime").value),
             guessTime: parseInt(document.getElementById("welcomeGuessTime").value),
-            tags: document.getElementById("tagsInput").value
+            tags: document.getElementById("tagsInput").value,
+            excludedTags: document.getElementById("excludedTagsInput").value
         })
     }).then(response => {
         if (response.ok) {
@@ -1117,11 +1118,7 @@ function drawIncorrectGuesses(gameState) {
         return Promise.resolve();
     };
 
-    if (!document.getElementById("teamOneIncorrectGuessesDiv").innerHTML && !document.getElementById("teamTwoIncorrectGuessesDiv").innerHTML) {
-        incorrectGuessesFunction();
-    } else {
-        animationPromise = animationPromise.then(incorrectGuessesFunction);
-    }
+    animationPromise = animationPromise.then(incorrectGuessesFunction);
 }
 
 function drawPanelCounts(gameState) {
