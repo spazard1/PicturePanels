@@ -274,6 +274,9 @@ async function choosePlayerNameButtonOnClickAsync() {
         localStorage.setItem("gameStateId", document.getElementById("gameStateId").value.toUpperCase());
     }
 
+    localStorage.setItem("playerName", document.getElementById("playerNameInput").value);
+    localStorage.setItem("playerColor", window.colorPicker.color.hslString);
+
     var gameState = await getGameStateAsync();
     if (gameState) {
         handleGameState(gameState);
@@ -293,9 +296,6 @@ async function choosePlayerNameButtonOnClickAsync() {
 }
 
 function playerNameChosen(player) {
-    localStorage.setItem("playerName", player.name);
-    localStorage.setItem("playerColor", player.color);
-
     document.getElementById("playerName").innerHTML = player.name;
 
     document.getElementById("choosePlayerNameLabel").classList.add("hidden");
