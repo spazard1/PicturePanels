@@ -101,6 +101,10 @@ namespace PicturePanels
                 app.UseWebOptimizer();
             }
 
+            app.UseCors(policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+
+            app.UseDefaultFiles();
+
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();
