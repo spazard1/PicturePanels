@@ -1,0 +1,86 @@
+﻿.activeTeam {
+    border: 4px solid lightgreen;
+}
+
+.panel:nth-child(even) .panelBackground {
+    background: #8D602D;
+}
+
+.panel:nth-child(odd) .panelBackground {
+    background: #1F4699;
+}
+
+.panelButton .panelButtonBackground {
+    border: 3px solid black;
+}
+
+.panelButton:nth-child(even) .panelButtonBackground {
+    background-color: #f3e6d8;
+}
+
+.panelButton:nth-child(odd) .panelButtonBackground {
+    background-color: #d5dff6;
+}
+
+.panelButtonSelected:nth-child(even) .panelButtonBackground {
+    border: 3px solid white;
+    background-color: dodgerblue;
+}
+
+.panelButtonSelected:nth-child(odd) .panelButtonBackground {
+    border: 3px solid white;
+    background-color: dodgerblue;
+}
+
+.mostVotesPanel {
+    box-shadow: 0 0 0 .25vw green;
+    outline: dashed .25vw lightblue;
+}
+
+.teamOneBox {
+    border: 5px solid blue;
+    background-color: darkblue;
+}
+
+.teamTwoBox {
+    border: 5px solid red;
+    background-color: darkred;
+}
+
+.teamOneColor {
+    color: blue;
+}
+
+.teamTwoColor {
+    color: red;
+}
+
+.teamOneDarkColorBackground {
+    background-color: darkblue;
+}
+
+.teamTwoDarkColorBackground {
+    background-color: darkred;
+}
+
+#teamOnePlayerNames div {
+    background-color: darkblue;
+}
+
+#teamTwoPlayerNames div {
+    background-color: darkred;
+}
+
+@keyframes correct {
+    0% {
+        color: lightgreen;
+    }
+
+    50% {
+        color: orange;
+    }
+
+    100% {
+        color: mediumpurple;
+    }
+}

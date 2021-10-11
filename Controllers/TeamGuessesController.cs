@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PicturePanels.Entities;
+using PicturePanels.Models;
 using PicturePanels.Services;
 using PicturePanels.Services.Storage;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PicturePanels.Controllers
@@ -34,7 +36,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var voteCounts = new Dictionary<string, int>();
+            var voteCounts = new Dictionary<string, int>() { { GameStateTableEntity.TeamGuessStatusPass, 0 } };
 
             await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameStateId, player.TeamNumber))
             {
@@ -58,6 +60,13 @@ namespace PicturePanels.Controllers
                     teamGuessEntities.Add(new TeamGuessEntity(guessModel));
                 }
             }
+
+            teamGuessEntities.Add(new TeamGuessEntity()
+            {
+                Guess= GameStateTableEntity.TeamGuessStatusPass,
+                Ticks= GameStateTableEntity.TeamGuessStatusPass,
+                VoteCount = voteCounts[GameStateTableEntity.TeamGuessStatusPass]
+            });
 
             return Json(teamGuessEntities);
         }
@@ -119,16 +128,21 @@ namespace PicturePanels.Controllers
             }
 
             var allGuesses = await this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber).ToListAsync();
+            var allGuessesToLower = allGuesses.Select(guess => guess.Guess.ToLowerInvariant());
 
             if (allGuesses.Count >= TeamGuessTableStorage.MaxGuesses)
             {
                 return StatusCode(400);
             }
 
+            if (allGuessesToLower.Contains(entity.Guess.ToLowerInvariant())) {
+                return StatusCode((int)HttpStatusCode.Conflict);
+            }
+
             var teamGuess = await this.teamGuessTableStorage.InsertAsync(entity.ToModel(player));
 
             var startingVoteCount = 0;
-            if (!allGuesses.Any(guess => guess.Ticks == player.TeamGuessVote))
+            if (player.TeamGuessVote != GameStateTableEntity.TeamGuessStatusPass && !allGuesses.Any(guess => guess.Ticks == player.TeamGuessVote))
             {
                 startingVoteCount = 1;
                 await this.playerTableStorage.ReplaceAsync(player, (p) =>

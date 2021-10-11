@@ -44,6 +44,8 @@ namespace PicturePanels.Models
 
         public const int MaxRounds = 10;
 
+        public const string DefaultTheme = "default";
+
         public GameStateTableEntity()
         {
             this.PartitionKey = GameStatePartitionKey;
@@ -61,7 +63,7 @@ namespace PicturePanels.Models
 
         public List<string> ExcludedTags { get; set; }
 
-        public string ThemeCss { get; set; }
+        public string Theme { get; set; }
 
         public int OpenPanelTime { get; set; }
 

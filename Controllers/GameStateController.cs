@@ -84,6 +84,7 @@ namespace PicturePanels.Controllers
             gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
             gameState.ExcludedTags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            gameState.Theme = entity.Theme ?? GameStateTableEntity.DefaultTheme;
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 

@@ -90,7 +90,9 @@ namespace PicturePanels.Controllers
                 await this.playerTableStorage.InsertAsync(playerModel);
             }
             else
-            {  
+            {
+                notifyTeam = playerModel.TeamNumber != entity.TeamNumber || playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
+
                 playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
                 {
                     pm.Name = GetPlayerName(entity.Name);
@@ -99,9 +101,6 @@ namespace PicturePanels.Controllers
                     pm.LastPingTime = DateTime.UtcNow;
                     pm.ConnectionId = entity.ConnectionId;
                 });
-
-                notifyTeam = isNewPlayer || playerModel.TeamNumber != entity.TeamNumber ||
-                    playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
             }
 
             await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
