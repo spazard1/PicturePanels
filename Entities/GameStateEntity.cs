@@ -18,7 +18,7 @@ namespace PicturePanels.Entities
             this.GameStateId = tableEntity.GameStateId;
             this.Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
             this.ExcludedTags = string.Join(",", tableEntity.ExcludedTags ?? new List<string>());
-            this.ThemeCss = tableEntity.ThemeCss;
+            this.Theme = tableEntity.Theme;
             this.OpenPanelTime = tableEntity.OpenPanelTime;
             this.GuessTime = tableEntity.GuessTime;
             this.RoundNumber = tableEntity.RoundNumber;
@@ -59,7 +59,7 @@ namespace PicturePanels.Entities
 
         public string ExcludedTags { get; set; }
 
-        public string ThemeCss { get; set; }
+        public string Theme { get; set; }
 
         [Range(0, 120)]
         public int? OpenPanelTime { get; set; }
@@ -115,7 +115,7 @@ namespace PicturePanels.Entities
 
         public void CopyProperties(GameStateTableEntity currentModel)
         {
-            currentModel.ThemeCss = this.ThemeCss ?? currentModel.ThemeCss;
+            currentModel.Theme = this.Theme ?? currentModel.Theme;
             currentModel.OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime;
             currentModel.GuessTime = this.GuessTime ?? currentModel.GuessTime;
             currentModel.RoundNumber = this.RoundNumber ?? currentModel.RoundNumber;

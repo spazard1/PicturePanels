@@ -58,6 +58,7 @@ namespace PicturePanels.Services.Storage
 
                 playerModel.SelectedPanels = new List<string>();
                 playerModel.IsReady = false;
+                playerModel.TeamGuessVote = null;
 
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
             }

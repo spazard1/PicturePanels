@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/@@yaireo/tagify"></script>
     <script src="https://unpkg.com/@@yaireo/tagify@4.7.2/dist/tagify.polyfills.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script src="~/external/fittext.js" asp-append-version="true"></script>
 
     <script src="~/js/index.js" asp-append-version="true"></script>
@@ -135,8 +137,18 @@
     </div>
 </div>
 
-<div id="roundNumberCorner" class="roundNumberCorner hidden">
-    Round <span id="roundNumber"></span> of <span id="finalRoundNumber"></span>
+<div class="volume-chooser">
+  <div class="volume-button">
+    <span>&#128266;</span>
+    <span class="volume-value">100</span>
+  </div>
+  <div class="volume-control">
+    <input id="volumeInput" class="volume" type="range" max="100">
+  </div>  
+</div>  
+
+<div id="roundNumberCorner" class="roundNumberCorner center hidden">
+    Round<br /><span id="roundNumber"></span> of <span id="finalRoundNumber"></span>
 </div>
 
 <div class="roundNumberAnimateContainer fadedDisplayBox">
