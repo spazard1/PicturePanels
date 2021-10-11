@@ -180,14 +180,11 @@ body::-webkit-scrollbar {
 .teamName {
     white-space: nowrap;
     overflow: hidden;
-    font-size: 3vh;
-    height: 1em;
+    font-size: 2.75vh;
     line-height: 1em;
     width: 70%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 3px;
-    margin-bottom: 3px;
+    margin: 0 auto 3px auto;
+    padding: 4px 0;
 }
 
 .teamScore {
@@ -279,6 +276,7 @@ body::-webkit-scrollbar {
     position: absolute;
     top: 8vh;
     font-size: 2.5vh;
+    margin-top: 2px;
 }
 
 .teamOnePlayerNames {
@@ -514,12 +512,14 @@ body::-webkit-scrollbar {
 
 .roundNumberCorner {
     position: fixed;
+    width: 10vw;
     white-space: nowrap;
-    right: 1vw;
-    top: 1.5vh;
+    right: 0;
+    top: 0;
     text-align: center;
     vertical-align: middle;
     font-size: 2.75vh;
+    line-height: 3.5vh;
 }
 
 .endGameContainer {
@@ -621,4 +621,40 @@ body::-webkit-scrollbar {
     to {
         stroke-dashoffset: 60px;
     }
+}
+
+.volume-chooser {
+    background: #333;
+    color: #dedede;
+    padding: 5px;
+    display: inline-block;
+    position: fixed;
+    top: 5px;
+    left: 5px;
+}
+
+.volume-value {
+    display: none;
+}
+
+.volume-chooser:hover .volume-control {
+    display: block;
+}
+
+.volume-chooser:hover .volume-value {
+    display: inline-block;
+}
+
+.volume-control {
+    position: absolute;
+    display: none;
+    top: 100%;
+    border: 1px solid #aaa;
+    background: #dedede;
+    width: 40px;
+}
+
+.volume-control .volume {
+    -webkit-appearance: slider-vertical;
+    width: 35px;
 }

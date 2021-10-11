@@ -213,7 +213,7 @@ function editTeamTwo() {
 }
 
 async function handleGameState(gameState) {
-    loadThemeCss(gameState);
+    loadThemeAsync(gameState);
 
     updatePanelButtons(gameState);
 

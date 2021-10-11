@@ -578,7 +578,7 @@ function drawTeamGuessHighlights(gameState) {
     var teamTwoGuessContainer = document.getElementById("teamTwoGuessContainer");
 
     if (gameState.teamOneCorrect) {
-        animationPromise = animationPromise.then(() => animateCSS(teamOneGuessContainer, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
+        animationPromise = animationPromise.then(() => animateCSS(teamOneGuessContainer, ["tada", "repeat-2"], ["slow", "bounceInDown"]));
     } else if (gameState.teamOneGuessStatus === "Guess" && !gameState.teamOneCorrect) {
         animationPromise = animationPromise.then(() => {
             teamOneGuessContainer.classList.add("teamGuessIncorrect");
@@ -587,7 +587,7 @@ function drawTeamGuessHighlights(gameState) {
     }
 
     if (gameState.teamTwoCorrect) {
-        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["tada", "repeat-3"], ["slow", "bounceInDown"]));
+        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["tada", "repeat-2"], ["slow", "bounceInDown"]));
     } else if (gameState.teamTwoGuessStatus === "Guess" && !gameState.teamTwoCorrect) {
         animationPromise = animationPromise.then(() => {
             teamTwoGuessContainer.classList.add("teamGuessIncorrect");
@@ -745,8 +745,6 @@ function drawRemainingTurnTime(gameState) {
     if (gameState.turnEndTime && ((gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect)) ||
         gameState.turnType === "Welcome" ||
         gameState.turnType === "EndRound")) {
-
-
 
         if (gameState.turnType === "Welcome") {
             document.getElementById("remainingTurnTimeText").innerHTML = "Game starts in";
@@ -1103,6 +1101,20 @@ async function drawRevealedPanelsAsync(gameState) {
     await Promise.all(loadImagePromises);
 }
 
+function playGuessesMadeSound(gameState) {
+    if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+        animationPromise = animationPromise.then(() => {
+            playRandomSound(correctSounds);
+            return Promise.resolve();
+        });
+    } else if (gameState.teamOneGuessStatus === "Guess" || gameState.teamTwoGuessStatus === "Guess") {
+        animationPromise = animationPromise.then(() => {
+            playRandomSound(incorrectSounds);
+            return Promise.resolve();
+        });
+    }
+}
+
 function drawIncorrectGuesses(gameState) {
     var incorrectGuessesFunction = () => {
         if (gameState.teamOneIncorrectGuesses <= 3) {
@@ -1206,7 +1218,7 @@ var animationPromise;
 async function handleGameState(gameState, updateType) {
     currentGameState = gameState;
 
-    loadThemeCss(gameState);
+    loadThemeAsync(gameState, true);
 
     animationPromise = Promise.resolve();
 
@@ -1219,6 +1231,7 @@ async function handleGameState(gameState, updateType) {
     drawTeamStatus(gameState);
     drawTeamGuesses(gameState);
     await drawRevealedPanelsAsync(gameState);
+    playGuessesMadeSound(gameState);
     await drawImageEntityAsync(gameState, updateType);
     drawTeamGuessHighlights(gameState);
     drawTeamScoreChange(gameState);
@@ -1252,6 +1265,11 @@ function handlePlayers(players) {
 }
 
 function handleAddPlayer(player) {
+    var playerElement = document.getElementById("player_" + player.playerId);
+    if (!playerElement) {
+        playRandomSound(playerJoinSounds);
+    }
+
     playerSelectedPanels[player.playerId] = player;
 
     updatePlayer(player);
@@ -1453,6 +1471,21 @@ window.onload = async function () {
     document.getElementById("welcomeGameStateTeamTwoName").oninput = (event) => {
         document.getElementById("teamTwoName").innerHTML = event.target.value;
     };
+
+    $(".volume-chooser").on("input", ".volume", function (e) {
+        var volume = $(e.currentTarget).val();
+        localStorage.setItem("volume", volume);
+        $(".volume-value").text(volume);
+        Howler.volume(volume / 100);
+    });
+
+    if (!localStorage.getItem("volume")) {
+        localStorage.setItem("volume", 40);
+    }
+
+    document.getElementById("volumeInput").value = localStorage.getItem("volume");
+    $(".volume-value").text(localStorage.getItem("volume"));
+    Howler.volume(parseInt(localStorage.getItem("volume")) / 100);
 
     // full screen
     // window.innerWidth == screen.width && window.innerHeight == screen.height

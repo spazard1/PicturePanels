@@ -52,10 +52,8 @@ function setupPlayerMenu() {
         width: Math.ceil(Math.min(250, window.screen.width * .50))
     });
 
-    if (localStorage.getItem("playerColor")) {
-        document.getElementById("playerNameInput").style.color = initialColor;
-        document.getElementById("gameStateId").style.color = initialColor;
-    }
+    document.getElementById("playerNameInput").style.color = initialColor;
+    document.getElementById("gameStateId").style.color = initialColor;
 
     document.getElementById("playerNameInput").oninput = function (event) {
         event.target.style.color = window.colorPicker.color.hslString;
@@ -190,10 +188,7 @@ async function putTeamGuessVoteAsync(ticks) {
             method: "PUT"
         }).then((response) => {
             if (response.ok) {
-                var teamGuessElements = document.querySelectorAll(".teamGuessVoteCount");
-                for (var teamGuessElement of teamGuessElements) {
-                    teamGuessElement.classList.remove("teamGuessVoteCountChosen");
-                }
+                resetTeamGuessVoteChoosen();
                 document.getElementById("teamGuessVoteCount_" + ticks).classList.add("teamGuessVoteCountChosen");
             }
         });
@@ -437,7 +432,6 @@ function drawTurnType(gameState) {
 
             document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("playerReadyButton").classList.add("hidden");
-            document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
             document.getElementById("turnStatusMessage").classList.add("opacity0");
             break;
@@ -445,7 +439,6 @@ function drawTurnType(gameState) {
             document.getElementById("startGameButton").classList.add("hidden");
             document.getElementById("cancelStartGameButton").classList.add("hidden");
 
-            document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
 
             if (gameState.teamTurn === parseInt(localStorage.getItem("teamNumber"))) {
@@ -469,13 +462,11 @@ function drawTurnType(gameState) {
             if ((localStorage.getItem("teamNumber") === "1" && gameState.teamOneGuessStatus) ||
                 (localStorage.getItem("teamNumber") === "2" && gameState.teamTwoGuessStatus)) {
                 document.getElementById("playerReadyButton").classList.add("hidden");
-                document.getElementById("teamGuessButton").classList.add("hidden");
                 document.getElementById("teamGuesses").classList.add("hidden");
                 document.getElementById("turnStatusMessage").classList.add("opacity0");
                 drawPlayerReady();
             } else {
                 document.getElementById("playerReadyButton").classList.remove("hidden");
-                document.getElementById("teamGuessButton").classList.remove("hidden");
                 document.getElementById("teamGuesses").classList.remove("hidden");
                 document.getElementById("turnStatusMessage").classList.remove("opacity0");
             }
@@ -489,7 +480,6 @@ function drawTurnType(gameState) {
             document.getElementById("cancelStartGameButton").classList.add("hidden");
             document.getElementById("panelButtons").classList.add("hidden");
             document.getElementById("playerReadyButton").classList.add("hidden");
-            document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
             document.getElementById("turnStatusMessage").classList.add("opacity0");
             break;
@@ -500,7 +490,6 @@ function drawTurnType(gameState) {
             document.getElementById("panelButtons").classList.add("hidden");
 
             document.getElementById("playerReadyButton").classList.add("hidden");
-            document.getElementById("teamGuessButton").classList.add("hidden");
             document.getElementById("teamGuesses").classList.add("hidden");
             document.getElementById("turnStatusMessage").classList.add("opacity0");
             break;
@@ -515,12 +504,21 @@ function highlightturnStatusMessage() {
 }
 
 function handleGameState(gameState, updateType) {
-    loadThemeCss(gameState);
+    loadThemeAsync(gameState);
 
     if (playerIsReadyToPlay && (updateType === "NewTurn" || updateType === "NewRound")) {
         clearPanelButtonSelection();
         drawPlayerReady();
         scrollChats("chats", true);
+    }
+
+    if (updateType === "NewTurn" || updateType === "NewRound") {
+        resetTeamGuessVoteChoosen();
+        resetTeamGuessVoteCounts();
+    }
+
+    if (updateType === "NewRound") {
+        drawTeamGuesses([]);
     }
 
     drawGameState(gameState);
@@ -535,7 +533,7 @@ function handleGameState(gameState, updateType) {
 }
 
 function drawTeamGuesses(teamGuesses) {
-    var teamGuessesElement = document.getElementById("teamGuesses");
+    var teamGuessesElement = document.getElementById("teamGuessesContainer");
     teamGuessesElement.innerHTML = "";
 
     if (!teamGuesses) {
@@ -550,16 +548,16 @@ function deleteTeamGuess(teamGuess) {
 }
 
 function drawTeamGuess(teamGuess, startingPlayerId) {
-    var teamGuessesElement = document.getElementById("teamGuesses");
+    if (teamGuess.guess === "Pass") {
+        document.getElementById("teamGuessVoteCount_Pass").innerHTML = teamGuess.voteCount;
+        return
+    }
+
+    var teamGuessesElement = document.getElementById("teamGuessesContainer");
 
     var teamGuessElement = document.createElement("div");
     teamGuessElement.id = "teamGuess_" + teamGuess.ticks;
     teamGuessElement.classList = "teamGuessText";
-    if (localStorage.getItem("teamNumber") === "1") {
-        teamGuessElement.classList.add("teamOneDarkColorBackground");
-    } else {
-        teamGuessElement.classList.add("teamTwoDarkColorBackground");
-    }
 
     var teamGuessVoteCountElement = document.createElement("div");
     teamGuessVoteCountElement.id = "teamGuessVoteCount_" + teamGuess.ticks;
@@ -624,6 +622,20 @@ function updateVoteCount(ticks, amount) {
         if (amount > 0) {
             animateCSS(voteCountElement, ["pulse"], [], 0, true);
         }
+    }
+}
+
+function resetTeamGuessVoteChoosen() {
+    var teamGuessElements = document.querySelectorAll(".teamGuessVoteCount");
+    for (var teamGuessElement of teamGuessElements) {
+        teamGuessElement.classList.remove("teamGuessVoteCountChosen");
+    }
+}
+
+function resetTeamGuessVoteCounts() {
+    var teamGuessElements = document.querySelectorAll(".teamGuessVoteCount");
+    for (var teamGuessElement of teamGuessElements) {
+        teamGuessElement.innerHTML = "0";
     }
 }
 
@@ -781,7 +793,12 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
-    document.getElementById("teamGuessButton").onclick = (event) => {
+    document.getElementById("teamGuess_Pass").onclick = (event) => {
+        event.stopPropagation();
+        putTeamGuessVoteAsync("Pass");
+    }
+
+    document.getElementById("teamGuessAdd").onclick = (event) => {
         promptTeamGuess();
     }
 

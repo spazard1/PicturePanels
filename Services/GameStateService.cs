@@ -411,7 +411,7 @@ namespace PicturePanels.Services
                         gr.TeamTwoScore = gameState.GetTeamScoreChange(2); 
                     });
 
-                    await this.SaveUserPlayedImageAsync(gameState, gameRoundTableEntity);
+                    await this.SaveRoundCompleteAsync(gameState);
                 }
 
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
@@ -456,15 +456,20 @@ namespace PicturePanels.Services
             {
                 gs.NewRound();
             });
-
-            var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-            await this.SaveUserPlayedImageAsync(gameState, gameRoundTableEntity);
+            await this.SaveRoundCompleteAsync(gameState);
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewRound);
 
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
+        }
+
+        private async Task SaveRoundCompleteAsync(GameStateTableEntity gameState)
+        {
+            var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+            await this.SaveUserPlayedImageAsync(gameState, gameRoundTableEntity);
+            await this.teamGuessTableStorage.DeleteTeamGuessesAsync(gameState.GameStateId);
         }
 
         private async Task SaveUserPlayedImageAsync(GameStateTableEntity gameState, GameRoundTableEntity gameRoundTableEntity)

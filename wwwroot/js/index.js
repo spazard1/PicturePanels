@@ -121,6 +121,19 @@ async function getUserAsync() {
         });
 }
 
+async function getThemeAsync(gameStateId) {
+    return await fetch("/api/themes/" + gameStateId,
+        {
+            method: "GET"
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return false;
+        });
+}
+
 async function setupTagsAsync(defaultTags) {
     var tagsInputs = document.getElementsByClassName("tagsInput");
 
@@ -243,16 +256,69 @@ async function loadImageAsync(img, imgSrc) {
     })
 }
 
-function loadThemeCss(gameState) {
-    if (!gameState.themeCss) {
+var playerJoinSounds = [];
+var openPanelSounds = [];
+var correctSounds = [];
+var incorrectSounds = [];
+var theme = "";
+
+function playRandomSound(sounds) {
+    if (!sounds || sounds.length <= 0) {
         return;
     }
+    sounds[Math.floor(Math.random() * sounds.length)].play();
+}
+
+async function loadThemeAsync(gameState, includeSounds) {
+    if (!gameState.theme || gameState.theme === theme) {
+        return;
+    }
+
+    theme = gameState.theme;
 
     if (document.getElementById("themeCssLink").href.indexOf(gameState.themeCss) > 0) {
         return;
     }
 
-    document.getElementById("themeCssLink").href = "themes/" + gameState.themeCss + ".css";
+    playerJoinSounds = [];
+    openPanelSounds = [];
+    correctSounds = [];
+    incorrectSounds = [];
+
+    var theme = await getThemeAsync(gameState.gameStateId);
+
+    document.getElementById("themeCssLink").href = "themes/" + theme.name + "/" + theme.css;
+
+    if (includeSounds) {
+        if (theme.playerJoinSounds) {
+            theme.playerJoinSounds.forEach(sound => {
+                playerJoinSounds.push(new Howl({
+                    src: ["themes/" + theme.name + "/" + sound]
+                }));
+            });
+        }
+        if (theme.openPanelSounds) {
+            theme.openPanelSounds.forEach(sound => {
+                openPanelSounds.push(new Howl({
+                    src: ["themes/" + theme.name + "/" + sound]
+                }));
+            });
+        }
+        if (theme.correctSounds) {
+            theme.correctSounds.forEach(sound => {
+                correctSounds.push(new Howl({
+                    src: ["themes/" + theme.name + "/" + sound]
+                }));
+            });
+        }
+        if (theme.incorrectSounds) {
+            theme.incorrectSounds.forEach(sound => {
+                incorrectSounds.push(new Howl({
+                    src: ["themes/" + theme.name + "/" + sound]
+                }));
+            });
+        }
+    }
 }
 
 async function getBlobContainers() {
