@@ -427,6 +427,20 @@ async function drawEndGameAsync(gameState) {
     }
 }
 
+function playEndGameSounds(gameState, updateType) {
+    if (updateType !== "NewRound" || gameState.turnType !== "EndGame") {
+        return;
+    }
+
+    playRandomSound(endGameSounds);
+}
+
+function playTurnStartSounds(gameState, updateType) {
+    if (gameState.turnType === "OpenPanel" && (updateType === "NewTurn" || updateType === "NewRound")) {
+        playRandomSound(turnStartSounds);
+    }
+}
+
 function drawTeamStatus(gameState) {
     var teamStatus = document.getElementById("teamStatus");
     var teamOneCountdownCanvas = document.getElementById("teamOneCountdownCanvas");
@@ -554,15 +568,15 @@ function drawTeamGuesses(gameState) {
         }
         
     } else if (gameState.turnType !== "MakeGuess") {
-        animateCSS(teamOneGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
-        animateCSS(teamTwoGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-3"]);
+        animateCSS(teamOneGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-2"]);
+        animateCSS(teamTwoGuessContainer, ["bounceOutUp"], ["slow", "bounceInDown", "tada", "repeat-2"]);
         setTimeout(() => {
-            document.getElementById("teamOneGuessText").innerHTML = "(team passed)";
-            document.getElementById("teamTwoGuessText").innerHTML = "(team passed)";
             document.getElementById("teamOneGuessReady").classList.remove("opacity0");
             document.getElementById("teamTwoGuessReady").classList.remove("opacity0");
             document.getElementById("teamOneGuessText").classList.add("opacity0");
             document.getElementById("teamTwoGuessText").classList.add("opacity0");
+            document.getElementById("teamOneGuessText").innerHTML = "(team passed)";
+            document.getElementById("teamTwoGuessText").innerHTML = "(team passed)";
             teamOneGuessContainer.classList.remove("teamGuessIncorrect");
             teamTwoGuessContainer.classList.remove("teamGuessIncorrect");
         }, 1000);
@@ -761,9 +775,12 @@ function drawRemainingTurnTime(gameState) {
             if (remainingSeconds >= 0 && remainingSeconds <= 10) {
                 document.getElementById("remainingTurnTimeTextSeconds").innerHTML = Math.max(0, Math.floor(remainingSeconds)) + "...";
                 animateCSS("#remainingTurnTime", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
+                if (remainingSeconds >= 1 && remainingSeconds <= 9) {
+                    playRandomSound(countdownSounds);
+                }
             }
             remainingSeconds = (new Date(gameState.turnEndTime) - new Date()) / 1000;
-        }, 500);
+        }, 1000);
     } else {
         remainingSeconds = -1;
         clearInterval(remainingTurnTimeInterval);
@@ -1111,28 +1128,32 @@ function playOpenPanelSounds(gameState, updateType) {
     }
 }
 
-function playGuessesMadeSounds(gameState, updateType) {
-    if (updateType !== "NewTurn" && updateType !== "NewRound" && updateType !== "TeamReady") {
+function playTeamReadySounds(gameState, updateType) {
+    if (gameState.turnType !== "MakeGuess" && gameState.turnType !== "GuessesMade") {
         return;
     }
 
-    if (updateType === "TeamReady") {
+    if ((updateType === "TeamReady" || updateType === "NewTurn") &&
+        (gameState.teamOneGuessStatus || gameState.teamTwoGuessStatus)) {
         playRandomSound(teamReadySounds);
+    }
+}
+
+function playGuessesMadeSounds(gameState, updateType) {
+    if (gameState.turnType !== "GuessesMade" || updateType !== "NewTurn") {
         return;
     }
 
-    if (gameState.turnType === "GuessesMade") {
-        if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
-            animationPromise = animationPromise.then(() => {
-                playRandomSound(correctSounds);
-                return Promise.resolve();
-            });
-        } else if (gameState.teamOneGuessStatus === "Guess" || gameState.teamTwoGuessStatus === "Guess") {
-            animationPromise = animationPromise.then(() => {
-                playRandomSound(incorrectSounds);
-                return Promise.resolve();
-            });
-        }
+    if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+        animationPromise = animationPromise.then(() => {
+            playRandomSound(correctSounds);
+            return Promise.resolve();
+        });
+    } else if (gameState.teamOneGuessStatus === "Guess" || gameState.teamTwoGuessStatus === "Guess") {
+        animationPromise = animationPromise.then(() => {
+            playRandomSound(incorrectSounds);
+            return Promise.resolve();
+        });
     }
 }
 
@@ -1245,16 +1266,19 @@ async function handleGameState(gameState, updateType) {
 
     drawWelcome(gameState);
     await resetPanelsAsync(gameState, updateType);
-    drawEndGameAsync(gameState);
+    await drawEndGameAsync(gameState);
+    playEndGameSounds(gameState, updateType);
+    playTurnStartSounds(gameState, updateType);
     drawGameState(gameState);
     drawGameStateId(gameState);
     drawRoundNumber(gameState);
     drawTeamStatus(gameState);
     drawTeamGuesses(gameState);
-    playOpenPanelSounds(gameState, updateType);
+    playTeamReadySounds(gameState, updateType);
     await drawRevealedPanelsAsync(gameState);
-    playGuessesMadeSounds(gameState, updateType);
+    playOpenPanelSounds(gameState, updateType);
     await drawImageEntityAsync(gameState, updateType);
+    playGuessesMadeSounds(gameState, updateType);
     drawTeamGuessHighlights(gameState);
     drawTeamScoreChange(gameState);
     drawIncorrectGuesses(gameState);
