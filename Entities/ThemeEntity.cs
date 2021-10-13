@@ -21,7 +21,9 @@ namespace PicturePanels.Entities
             this.Name = themeTableEntity.Name;
             this.Css = themeTableEntity.Css;
             this.PlayerJoinSounds = themeTableEntity.PlayerJoinSounds;
+            this.TurnStartSounds = themeTableEntity.TurnStartSounds;
             this.OpenPanelSounds = themeTableEntity.OpenPanelSounds;
+            this.TeamReadySounds = themeTableEntity.TeamReadySounds;
             this.CorrectSounds = themeTableEntity.CorrectSounds;
             this.IncorrectSounds = themeTableEntity.IncorrectSounds;
         }
@@ -32,7 +34,11 @@ namespace PicturePanels.Entities
 
         public List<string> PlayerJoinSounds { get; set; }
 
+        public List<string> TurnStartSounds { get; set; }
+
         public List<string> OpenPanelSounds { get; set; }
+
+        public List<string> TeamReadySounds { get; set; }
 
         public List<string> CorrectSounds { get; set; }
 

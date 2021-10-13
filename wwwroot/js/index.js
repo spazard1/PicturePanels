@@ -258,9 +258,10 @@ async function loadImageAsync(img, imgSrc) {
 
 var playerJoinSounds = [];
 var openPanelSounds = [];
+var teamReadySounds = [];
 var correctSounds = [];
 var incorrectSounds = [];
-var theme = "";
+var loadedTheme = "";
 
 function playRandomSound(sounds) {
     if (!sounds || sounds.length <= 0) {
@@ -270,11 +271,11 @@ function playRandomSound(sounds) {
 }
 
 async function loadThemeAsync(gameState, includeSounds) {
-    if (!gameState.theme || gameState.theme === theme) {
+    if (!gameState.theme || gameState.theme === loadedTheme) {
         return;
     }
 
-    theme = gameState.theme;
+    loadedTheme = gameState.theme;
 
     if (document.getElementById("themeCssLink").href.indexOf(gameState.themeCss) > 0) {
         return;
@@ -282,6 +283,7 @@ async function loadThemeAsync(gameState, includeSounds) {
 
     playerJoinSounds = [];
     openPanelSounds = [];
+    teamReadySounds = [];
     correctSounds = [];
     incorrectSounds = [];
 
@@ -300,6 +302,13 @@ async function loadThemeAsync(gameState, includeSounds) {
         if (theme.openPanelSounds) {
             theme.openPanelSounds.forEach(sound => {
                 openPanelSounds.push(new Howl({
+                    src: ["themes/" + theme.name + "/" + sound]
+                }));
+            });
+        }
+        if (theme.teamReadySounds) {
+            theme.teamReadySounds.forEach(sound => {
+                teamReadySounds.push(new Howl({
                     src: ["themes/" + theme.name + "/" + sound]
                 }));
             });

@@ -1101,17 +1101,38 @@ async function drawRevealedPanelsAsync(gameState) {
     await Promise.all(loadImagePromises);
 }
 
-function playGuessesMadeSound(gameState) {
-    if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
-        animationPromise = animationPromise.then(() => {
-            playRandomSound(correctSounds);
-            return Promise.resolve();
-        });
-    } else if (gameState.teamOneGuessStatus === "Guess" || gameState.teamTwoGuessStatus === "Guess") {
-        animationPromise = animationPromise.then(() => {
-            playRandomSound(incorrectSounds);
-            return Promise.resolve();
-        });
+function playOpenPanelSounds(gameState, updateType) {
+    if (updateType !== "NewTurn" && updateType !== "NewRound") {
+        return;
+    }
+
+    if (gameState.turnType === "MakeGuess") {
+        playRandomSound(openPanelSounds);
+    }
+}
+
+function playGuessesMadeSounds(gameState, updateType) {
+    if (updateType !== "NewTurn" && updateType !== "NewRound" && updateType !== "TeamReady") {
+        return;
+    }
+
+    if (updateType === "TeamReady") {
+        playRandomSound(teamReadySounds);
+        return;
+    }
+
+    if (gameState.turnType === "GuessesMade") {
+        if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+            animationPromise = animationPromise.then(() => {
+                playRandomSound(correctSounds);
+                return Promise.resolve();
+            });
+        } else if (gameState.teamOneGuessStatus === "Guess" || gameState.teamTwoGuessStatus === "Guess") {
+            animationPromise = animationPromise.then(() => {
+                playRandomSound(incorrectSounds);
+                return Promise.resolve();
+            });
+        }
     }
 }
 
@@ -1230,8 +1251,9 @@ async function handleGameState(gameState, updateType) {
     drawRoundNumber(gameState);
     drawTeamStatus(gameState);
     drawTeamGuesses(gameState);
+    playOpenPanelSounds(gameState, updateType);
     await drawRevealedPanelsAsync(gameState);
-    playGuessesMadeSound(gameState);
+    playGuessesMadeSounds(gameState, updateType);
     await drawImageEntityAsync(gameState, updateType);
     drawTeamGuessHighlights(gameState);
     drawTeamScoreChange(gameState);

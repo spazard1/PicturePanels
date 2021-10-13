@@ -22,6 +22,7 @@ namespace PicturePanels.Models
 
         public const string UpdateTypeNewRound = "NewRound";
         public const string UpdateTypeNewTurn = "NewTurn";
+        public const string UpdateTypeTeamReady = "TeamReady";
 
         public const int RoundStartDelayTime = 10;
         public const int TurnStartDelayTime = 5;

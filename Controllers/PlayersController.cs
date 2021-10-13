@@ -70,12 +70,10 @@ namespace PicturePanels.Controllers
                 return StatusCode(400);
             }
 
-            var isNewPlayer = false;
             bool notifyTeam = true;
 
             if (playerModel == null)
             {
-                isNewPlayer = true;
                 playerModel = new PlayerTableEntity()
                 {
                     Name = GetPlayerName(entity.Name),

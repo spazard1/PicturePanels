@@ -14,8 +14,11 @@ namespace PicturePanels.Services
 
         public GameStateQueueService()
         {
-            Client = new ServiceBusClient("***REMOVED***");
-
+            #if DEBUG
+                Client = new ServiceBusClient("***REMOVED***");
+            #else
+                Client = new ServiceBusClient("***REMOVED***");
+            #endif
             Sender = Client.CreateSender("gamestateupdates");
         }
 

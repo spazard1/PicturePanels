@@ -45,7 +45,11 @@ namespace PicturePanels.Controllers
             theme.Css = "default.css";
 
             theme.PlayerJoinSounds = new List<string>() { "playerJoin.mp3" };
+            theme.TurnStartSounds = new List<string>() { };
+            theme.TeamReadySounds = new List<string>() { "teamReady.mp3" };
+            theme.OpenPanelSounds = new List<string>() { "openPanel.mp3" };
             theme.CorrectSounds = new List<string>() { "correct.wav" };
+            theme.IncorrectSounds = new List<string>() { "incorrect.wav" };
 
             await this.themeTableStorage.InsertOrReplaceAsync(theme);
 
