@@ -631,6 +631,7 @@ body::-webkit-scrollbar {
     position: fixed;
     top: 5px;
     left: 5px;
+    z-index: 1000;
 }
 
 .volume-value {
@@ -652,9 +653,11 @@ body::-webkit-scrollbar {
     border: 1px solid #aaa;
     background: #dedede;
     width: 40px;
+    z-index: 1000;
 }
 
 .volume-control .volume {
     -webkit-appearance: slider-vertical;
     width: 35px;
+    z-index: 1000;
 }

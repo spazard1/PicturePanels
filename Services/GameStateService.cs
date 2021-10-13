@@ -59,23 +59,21 @@ namespace PicturePanels.Services
             switch (gameState.TurnType)
             {
                 case GameStateTableEntity.TurnTypeWelcome:
-                    gameState = await this.StartGameAsync(gameState);
+                    await this.StartGameAsync(gameState);
                     break;
                 case GameStateTableEntity.TurnTypeOpenPanel:
-                    gameState = await this.OpenMostVotesPanelAsync(gameState);
+                    await this.OpenMostVotesPanelAsync(gameState);
                     break;
                 case GameStateTableEntity.TurnTypeMakeGuess:
-                    gameState = await this.SubmitMostVotesTeamGuessAsync(gameState);
+                    await this.SubmitMostVotesTeamGuessAsync(gameState);
                     break;
                 case GameStateTableEntity.TurnTypeGuessesMade:
-                    gameState = await this.ExitGuessesMadeAsync(gameState);
+                    await this.ExitGuessesMadeAsync(gameState);
                     break;
                 case GameStateTableEntity.TurnTypeEndRound:
-                    gameState = await this.ExitEndRoundAsync(gameState);
+                    await this.ExitEndRoundAsync(gameState);
                     break;
             }
-
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
         }
 
         public async Task<GameStateTableEntity> QueueStartGameAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
@@ -178,6 +176,7 @@ namespace PicturePanels.Services
             var panelIdToOpen = await this.GetMostVotesPanelAsync(gameState);
             gameState = await this.OpenPanelAsync(gameState, panelIdToOpen);
             await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team opened panel " + panelIdToOpen + ".", true);
+
             return gameState;
         }
 
@@ -283,7 +282,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeTeamReady);
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
 
             return gameState;
         }
@@ -321,7 +320,14 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeTeamReady);
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+            {
+                await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeTeamReady);
+            }
+            else
+            {
+                await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
+            }
 
             return gameState;
         }
