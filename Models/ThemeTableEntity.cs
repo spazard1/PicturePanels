@@ -26,6 +26,8 @@ namespace PicturePanels.Models
 
         public List<string> TurnStartSounds { get; set; }
 
+        public List<string> CountdownSounds { get; set; }
+
         public List<string> OpenPanelSounds { get; set; }
 
         public List<string> TeamReadySounds { get; set; }
@@ -33,7 +35,8 @@ namespace PicturePanels.Models
         public List<string> CorrectSounds { get; set; }
 
         public List<string> IncorrectSounds { get; set; }
-        
+
+        public List<string> EndGameSounds { get; set; }
 
         public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
         {
@@ -47,6 +50,11 @@ namespace PicturePanels.Models
             if (properties.ContainsKey(nameof(this.TurnStartSounds)))
             {
                 this.TurnStartSounds = properties[nameof(this.TurnStartSounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
+            if (properties.ContainsKey(nameof(this.CountdownSounds)))
+            {
+                this.CountdownSounds = properties[nameof(this.CountdownSounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
 
             if (properties.ContainsKey(nameof(this.OpenPanelSounds)))
@@ -68,6 +76,11 @@ namespace PicturePanels.Models
             {
                 this.IncorrectSounds = properties[nameof(this.IncorrectSounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
+
+            if (properties.ContainsKey(nameof(this.EndGameSounds)))
+            {
+                this.EndGameSounds = properties[nameof(this.EndGameSounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
         }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
@@ -82,6 +95,11 @@ namespace PicturePanels.Models
             if (this.TurnStartSounds != null)
             {
                 result[nameof(this.TurnStartSounds)] = new EntityProperty(string.Join(",", this.TurnStartSounds));
+            }
+
+            if (this.CountdownSounds != null)
+            {
+                result[nameof(this.CountdownSounds)] = new EntityProperty(string.Join(",", this.CountdownSounds));
             }
 
             if (this.OpenPanelSounds != null)
@@ -102,6 +120,11 @@ namespace PicturePanels.Models
             if (this.IncorrectSounds != null)
             {
                 result[nameof(this.IncorrectSounds)] = new EntityProperty(string.Join(",", this.IncorrectSounds));
+            }
+
+            if (this.EndGameSounds != null)
+            {
+                result[nameof(this.EndGameSounds)] = new EntityProperty(string.Join(",", this.EndGameSounds));
             }
 
             return result;

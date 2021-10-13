@@ -257,10 +257,13 @@ async function loadImageAsync(img, imgSrc) {
 }
 
 var playerJoinSounds = [];
+var turnStartSounds = [];
+var countdownSounds = [];
 var openPanelSounds = [];
 var teamReadySounds = [];
 var correctSounds = [];
 var incorrectSounds = [];
+var endGameSounds = [];
 var loadedTheme = "";
 
 function playRandomSound(sounds) {
@@ -282,48 +285,72 @@ async function loadThemeAsync(gameState, includeSounds) {
     }
 
     playerJoinSounds = [];
+    turnStartSounds = [];
+    countdownSounds = [];
     openPanelSounds = [];
     teamReadySounds = [];
     correctSounds = [];
     incorrectSounds = [];
+    endGameSounds = [];
 
     var theme = await getThemeAsync(gameState.gameStateId);
 
-    document.getElementById("themeCssLink").href = "themes/" + theme.name + "/" + theme.css;
+    document.getElementById("themeCssLink").href = "themes/" + theme.css;
 
     if (includeSounds) {
         if (theme.playerJoinSounds) {
             theme.playerJoinSounds.forEach(sound => {
                 playerJoinSounds.push(new Howl({
-                    src: ["themes/" + theme.name + "/" + sound]
+                    src: ["themes/" + sound]
+                }));
+            });
+        }
+        if (theme.turnStartSounds) {
+            theme.turnStartSounds.forEach(sound => {
+                turnStartSounds.push(new Howl({
+                    src: ["themes/" + sound]
+                }));
+            });
+        }
+        if (theme.countdownSounds) {
+            theme.countdownSounds.forEach(sound => {
+                countdownSounds.push(new Howl({
+                    src: ["themes/" + sound]
                 }));
             });
         }
         if (theme.openPanelSounds) {
             theme.openPanelSounds.forEach(sound => {
                 openPanelSounds.push(new Howl({
-                    src: ["themes/" + theme.name + "/" + sound]
+                    src: ["themes/" + sound]
                 }));
             });
         }
         if (theme.teamReadySounds) {
             theme.teamReadySounds.forEach(sound => {
                 teamReadySounds.push(new Howl({
-                    src: ["themes/" + theme.name + "/" + sound]
+                    src: ["themes/" + sound]
                 }));
             });
         }
         if (theme.correctSounds) {
             theme.correctSounds.forEach(sound => {
                 correctSounds.push(new Howl({
-                    src: ["themes/" + theme.name + "/" + sound]
+                    src: ["themes/" + sound]
                 }));
             });
         }
         if (theme.incorrectSounds) {
             theme.incorrectSounds.forEach(sound => {
                 incorrectSounds.push(new Howl({
-                    src: ["themes/" + theme.name + "/" + sound]
+                    src: ["themes/" + sound]
+                }));
+            });
+        }
+        if (theme.endGameSounds) {
+            theme.endGameSounds.forEach(sound => {
+                endGameSounds.push(new Howl({
+                    src: ["themes/" + sound]
                 }));
             });
         }

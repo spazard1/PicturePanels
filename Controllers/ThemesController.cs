@@ -41,15 +41,28 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> CreateAsync()
         {
             var theme = await this.themeTableStorage.GetAsync("default");
+            theme.Css = "default/default.css";
+            theme.PlayerJoinSounds = new List<string>() { "default/playerJoin.mp3" };
+            theme.TurnStartSounds = new List<string>() { "default/turnStart.wav" };
+            theme.CountdownSounds = new List<string>() { "default/countdown.wav" };
+            theme.TeamReadySounds = new List<string>() { "default/teamReady.mp3" };
+            theme.OpenPanelSounds = new List<string>() { "default/openPanel.mp3" };
+            theme.CorrectSounds = new List<string>() { "default/correct.wav" };
+            theme.IncorrectSounds = new List<string>() { "default/incorrect.wav" };
+            theme.EndGameSounds = new List<string>() { "default/endGame.wav" };
 
-            theme.Css = "default.css";
+            await this.themeTableStorage.InsertOrReplaceAsync(theme);
 
-            theme.PlayerJoinSounds = new List<string>() { "playerJoin.mp3" };
-            theme.TurnStartSounds = new List<string>() { };
-            theme.TeamReadySounds = new List<string>() { "teamReady.mp3" };
-            theme.OpenPanelSounds = new List<string>() { "openPanel.mp3" };
-            theme.CorrectSounds = new List<string>() { "correct.wav" };
-            theme.IncorrectSounds = new List<string>() { "incorrect.wav" };
+            theme = await this.themeTableStorage.GetAsync("guysweekend");
+            theme.Css = "guysweekend/guysweekend.css";
+            theme.PlayerJoinSounds = new List<string>() { "default/playerJoin.mp3" };
+            theme.TurnStartSounds = new List<string>() { "default/turnStart.wav" };
+            theme.CountdownSounds = new List<string>() { "default/countdown.wav" };
+            theme.TeamReadySounds = new List<string>() { "default/teamReady.mp3" };
+            theme.OpenPanelSounds = new List<string>() { "default/openPanel.mp3" };
+            theme.CorrectSounds = new List<string>() { "default/correct.wav" };
+            theme.IncorrectSounds = new List<string>() { "default/incorrect.wav" };
+            theme.EndGameSounds = new List<string>() { "default/endGame.wav" };
 
             await this.themeTableStorage.InsertOrReplaceAsync(theme);
 
