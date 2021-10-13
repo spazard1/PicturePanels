@@ -14,8 +14,11 @@ namespace PicturePanels.Services
 
         public GameStateQueueService()
         {
-            Client = new ServiceBusClient("Endpoint=sb://picturepanels.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=TJLwj1a8CdqLrFrJeBaAGuUwulEbe9GbhHwK8WhQGdQ=");
-
+            #if DEBUG
+                Client = new ServiceBusClient("Endpoint=sb://picturepanelsdev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=I8cyBw1rYVV5V/5Y9hwLFxnCQ7lLonP6OaC5cKDGPxM=");
+            #else
+                Client = new ServiceBusClient("Endpoint=sb://picturepanels.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=TJLwj1a8CdqLrFrJeBaAGuUwulEbe9GbhHwK8WhQGdQ=");
+            #endif
             Sender = Client.CreateSender("gamestateupdates");
         }
 

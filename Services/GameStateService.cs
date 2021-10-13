@@ -283,7 +283,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeTeamReady);
 
             return gameState;
         }
@@ -321,7 +321,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeTeamReady);
 
             return gameState;
         }

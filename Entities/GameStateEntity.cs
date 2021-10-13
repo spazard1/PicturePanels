@@ -112,24 +112,5 @@ namespace PicturePanels.Entities
         public bool TeamTwoCorrect { get; set; }
 
         public string TeamTwoGuessStatus { get; set; }
-
-        public void CopyProperties(GameStateTableEntity currentModel)
-        {
-            currentModel.Theme = this.Theme ?? currentModel.Theme;
-            currentModel.OpenPanelTime = this.OpenPanelTime ?? currentModel.OpenPanelTime;
-            currentModel.GuessTime = this.GuessTime ?? currentModel.GuessTime;
-            currentModel.RoundNumber = this.RoundNumber ?? currentModel.RoundNumber;
-            currentModel.FinalRoundNumber = this.FinalRoundNumber ?? currentModel.FinalRoundNumber;
-            currentModel.TeamTurn = this.TeamTurn ?? currentModel.TeamTurn;
-            currentModel.TurnType = this.TurnType ?? currentModel.TurnType;
-            currentModel.TeamOneName = this.TeamOneName ?? currentModel.TeamOneName;
-            currentModel.TeamOneScore = this.TeamOneScore ?? currentModel.TeamOneScore;
-            currentModel.TeamOneIncorrectGuesses = this.TeamOneIncorrectGuesses ?? currentModel.TeamOneIncorrectGuesses;
-            currentModel.TeamOneInnerPanels = this.TeamOneInnerPanels ?? currentModel.TeamOneInnerPanels;
-            currentModel.TeamTwoName = this.TeamTwoName ?? currentModel.TeamTwoName;
-            currentModel.TeamTwoScore = this.TeamTwoScore ?? currentModel.TeamTwoScore;
-            currentModel.TeamTwoIncorrectGuesses = this.TeamTwoIncorrectGuesses ?? currentModel.TeamTwoIncorrectGuesses;
-            currentModel.TeamTwoInnerPanels = this.TeamTwoInnerPanels ?? currentModel.TeamTwoInnerPanels;
-        }
     }
 }
