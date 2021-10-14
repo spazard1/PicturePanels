@@ -33,13 +33,14 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
-        public const int GuessesMadeTimeBothPass = 9;
+        public const int GuessesMadeTimeBothPass = 8;
         public const int GuessesMadeTimeIncorrect = 20;
         public const int GuessesMadeTimeCorrect = 40;
         public const int EndRoundTime = 30;
 
         public const int DefaultOpenPanelTime = 30;
         public const int DefaultMakeGuessTime = 120;
+        public const int DefaultWrongGuessPenalty = 0;
 
         public const int MaxOpenPanels = 8;
 
@@ -69,6 +70,8 @@ namespace PicturePanels.Models
         public int OpenPanelTime { get; set; }
 
         public int GuessTime { get; set; }
+
+        public int WrongGuessPenalty { get; set; }
 
         public int RoundNumber { get; set; }
 
@@ -335,6 +338,14 @@ namespace PicturePanels.Models
             else if (TeamTwoCorrect && teamNumber == 2)
             {
                 return 5;
+            }
+            else if (!TeamOneCorrect && teamNumber == 1 && TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
+            {
+                return WrongGuessPenalty;
+            }
+            else if (!TeamTwoCorrect && teamNumber == 2 && TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
+            {
+                return WrongGuessPenalty;
             }
             else
             {
