@@ -80,6 +80,7 @@ namespace PicturePanels.Controllers
             gameState.TeamTwoName = entity.TeamTwoName;
             gameState.OpenPanelTime = entity.OpenPanelTime ?? GameStateTableEntity.DefaultOpenPanelTime;
             gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
+            gameState.WrongGuessPenalty = entity.WrongGuessPenalty ?? GameStateTableEntity.DefaultWrongGuessPenalty;
             gameState.Tags = entity.Tags?.Split(",").ToList();
             gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
@@ -262,6 +263,20 @@ namespace PicturePanels.Controllers
             gameRounds.Sort();
 
             return Json(gameRounds);
+        }
+
+        [HttpGet("gameRounds/{gameStateId}/{roundNumber:int}")]
+        public async Task<IActionResult> GetGameRoundAsync(string gameStateId, int roundNumber)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            var gameRound = await this.gameRoundTableStorage.GetAsync(gameStateId, roundNumber.ToString());
+
+            return Json(new GameRoundEntity(gameRound));
         }
 
         [HttpPut("{id}/nextTurn")]

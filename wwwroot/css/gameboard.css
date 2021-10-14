@@ -24,10 +24,10 @@ body::-webkit-scrollbar {
 }
 
 .welcomeContainer {
-    padding: 3vh 2vw;
+    padding: 2vh 2vw;
     font-size: 3vh;
     position: absolute;
-    width: 50vw;
+    width: 55vw;
     top: 15vh;
     left: 25vw;
     background-color: black;
@@ -62,7 +62,7 @@ body::-webkit-scrollbar {
 }
 
 .welcomeButton {
-    margin-top: 3vh;
+    margin-top: 4vh;
     font-size: 3vh;
     width: 15vw;
 }
@@ -79,7 +79,15 @@ body::-webkit-scrollbar {
 }
 
 .welcomeGameStateOptions {
-    margin-top: 2vh;
+    margin-top: 3vh;
+}
+
+.welcomeGameStateDropdownSubOptions {
+    margin-top: 1vh;
+}
+
+.welcomeGameStateTeamName {
+    margin: 0 .75rem;
 }
 
 .startGameButtons {
@@ -87,8 +95,18 @@ body::-webkit-scrollbar {
     width: 80%;
 }
 
+.welcomeTagsMessage {
+    font-size: 2vh;
+    margin-top: 5vh;
+}
+
 .tagsInputContainer {
-    margin-top: 2vh;
+    display: inline-block;
+    width: 25vw;
+}
+
+.welcomeGameStateDropdownOptions {
+    margin-top: 5vh;
 }
 
 .loginContainer {

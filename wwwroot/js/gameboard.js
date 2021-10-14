@@ -775,7 +775,7 @@ function drawRemainingTurnTime(gameState) {
             if (remainingSeconds >= 0 && remainingSeconds <= 10) {
                 document.getElementById("remainingTurnTimeTextSeconds").innerHTML = Math.max(0, Math.floor(remainingSeconds)) + "...";
                 animateCSS("#remainingTurnTime", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
-                if (remainingSeconds >= 1 && remainingSeconds <= 9) {
+                if (remainingSeconds >= 1 && remainingSeconds <= 5) {
                     playRandomSound(countdownSounds);
                 }
             }
@@ -1455,7 +1455,7 @@ window.onload = async function () {
 
         document.getElementById("welcomeGameStateTeamOneName").value = "Team 1";
         document.getElementById("welcomeGameStateTeamTwoName").value = "Team 2";
-        document.getElementById("welcomeCreateGameMessage").innerHTML = "Creating a new game! Set it up how you want!";
+        document.getElementById("welcomeCreateGameMessage").innerHTML = "Creating a new game... Set it up how you want!";
         document.getElementById("welcomeGameStateOptions").classList.remove("hidden");
     };
 
