@@ -7,6 +7,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center bottom;
+    background-color: black;
     border: none;
 }
 
@@ -15,6 +16,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center top;
+    background-color: black;
     border: none;
 }
 
@@ -23,6 +25,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center bottom;
+    background-color: black;
     border: none;
 }
 
@@ -31,6 +34,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center top;
+    background-color: black;
     border: none;
 }
 

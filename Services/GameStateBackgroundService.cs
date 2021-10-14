@@ -83,6 +83,12 @@ namespace PicturePanels.Services
                 await Task.Delay(delayTime, args.CancellationToken);
             }
 
+            gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
+            if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
+            {
+                return;
+            }
+
             await this.gameStateService.ToNextTurnTypeAsync(gameState);
         }
     }

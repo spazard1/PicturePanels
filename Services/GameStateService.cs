@@ -309,25 +309,27 @@ namespace PicturePanels.Services
             if (teamGuess == null)
             {
                 gameState = await this.PassAsync(gameState, playerModel.TeamNumber);
+                gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
+
+                await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState),
+                       gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ? GameStateTableEntity.UpdateTypeTeamReady : GameStateTableEntity.UpdateTypeNewTurn);
+
                 await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
             }
             else
             {
                 gameState = await this.GuessAsync(gameState, playerModel.TeamNumber, teamGuess.Guess);
+                gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
+
+                await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState),
+                    gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ? GameStateTableEntity.UpdateTypeTeamReady : GameStateTableEntity.UpdateTypeNewTurn);
+
                 await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
                 await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
                 await this.teamGuessTableStorage.DeleteAsync(teamGuess);
             }
 
-            gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
-            {
-                await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeTeamReady);
-            }
-            else
-            {
-                await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
-            }
+            
 
             return gameState;
         }
@@ -408,17 +410,12 @@ namespace PicturePanels.Services
                     gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
                 });
 
-                if (gameState.TeamOneCorrect || gameState.TeamTwoCorrect)
+                var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+                gameRoundTableEntity = await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
                 {
-                    var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-                    gameRoundTableEntity = await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
-                    {
-                        gr.TeamOneScore = gameState.GetTeamScoreChange(1);
-                        gr.TeamTwoScore = gameState.GetTeamScoreChange(2); 
-                    });
-
-                    await this.SaveRoundCompleteAsync(gameState);
-                }
+                    gr.TeamOneScore += gameState.GetTeamScoreChange(1);
+                    gr.TeamTwoScore += gameState.GetTeamScoreChange(2);
+                });
 
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
@@ -430,6 +427,12 @@ namespace PicturePanels.Services
         public async Task<GameStateTableEntity> ExitGuessesMadeAsync(GameStateTableEntity gameState)
         {
             var updateType = string.Empty;
+
+            if (gameState.IsRoundOver())
+            {
+                await this.SaveRoundCompleteAsync(gameState);
+            }
+
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
                 if (gs.TeamOneCorrect || gs.TeamTwoCorrect)
