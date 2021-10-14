@@ -1,17 +1,15 @@
-﻿using PicturePanels.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using PicturePanels.Entities;
+using PicturePanels.Filters;
 using PicturePanels.Models;
 using PicturePanels.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using PicturePanels.Filters;
+using PicturePanels.Services.Authentication;
+using PicturePanels.Services.Storage;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using PicturePanels.Services.Storage;
-using System.Text;
-using PicturePanels.Services.Authentication;
 
 namespace PicturePanels.Controllers
 {
@@ -23,6 +21,7 @@ namespace PicturePanels.Controllers
         private readonly ImageTableStorage imageTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
+        private readonly ThemeTableStorage themeTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly SignalRHelper signalRHelper;
         private readonly GameStateService gameStateService;
@@ -31,6 +30,7 @@ namespace PicturePanels.Controllers
             ImageTableStorage imageTableStorage,
             PlayerTableStorage playerTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
+            ThemeTableStorage themeTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
             SignalRHelper signalRHelper,
             GameStateService gameStateService)
@@ -39,6 +39,7 @@ namespace PicturePanels.Controllers
             this.imageTableStorage = imageTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
+            this.themeTableStorage = themeTableStorage;
             this.hubContext = hubContext;
             this.signalRHelper = signalRHelper;
             this.gameStateService = gameStateService;
@@ -85,7 +86,9 @@ namespace PicturePanels.Controllers
             gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
             gameState.ExcludedTags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            gameState.Theme = entity.Theme ?? GameStateTableEntity.DefaultTheme;
+
+            var theme = this.themeTableStorage.GetAsync(entity.Theme);
+            gameState.Theme = theme != null ? entity.Theme : GameStateTableEntity.DefaultTheme;
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 
@@ -277,6 +280,25 @@ namespace PicturePanels.Controllers
             var gameRound = await this.gameRoundTableStorage.GetAsync(gameStateId, roundNumber.ToString());
 
             return Json(new GameRoundEntity(gameRound));
+        }
+
+        [HttpGet("scoreChange/{gameStateId}")]
+        public async Task<IActionResult> GetScoreChangeAsync(string gameStateId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            var x = gameState.GetTeamScoreChange(1);
+            var y = gameState.GetTeamScoreChange(2);
+
+            return Json(new ScoreChangeEntity()
+            {
+                TeamOne = gameState.GetTeamScoreChange(1),
+                TeamTwo = gameState.GetTeamScoreChange(2)
+            });
         }
 
         [HttpPut("{id}/nextTurn")]

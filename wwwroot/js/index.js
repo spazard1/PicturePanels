@@ -136,8 +136,9 @@ async function getThemeAsync(gameStateId) {
 
 async function setupTagsAsync(defaultTags) {
     var tagsInputs = document.getElementsByClassName("tagsInput");
+    var tagsInputsArray = Array.prototype.slice.call(tagsInputs)
 
-    for (var tagsInput of tagsInputs) {
+    for (var tagsInput of tagsInputsArray) {
         var safeTags = await fetch("api/images/tags")
             .then(response => {
                 if (!response.ok) {
@@ -146,7 +147,7 @@ async function setupTagsAsync(defaultTags) {
                 return response.json();
             });
 
-        if (defaultTags) {
+        if (defaultTags && tagsInput.classList.contains("tagsInputSetupDefault")) {
             tagsInput.value = defaultTags;
         }
 

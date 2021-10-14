@@ -27,9 +27,9 @@ body::-webkit-scrollbar {
     padding: 2vh 2vw;
     font-size: 3vh;
     position: absolute;
-    width: 55vw;
+    width: 60vw;
     top: 15vh;
-    left: 25vw;
+    left: 20vw;
     background-color: black;
     z-index: 900;
     text-align: center;
@@ -64,7 +64,9 @@ body::-webkit-scrollbar {
 .welcomeButton {
     margin-top: 4vh;
     font-size: 3vh;
-    width: 15vw;
+    width: 16vw;
+    white-space: nowrap;
+    padding: 0 5px;
 }
 
 .gameStateIdInput {

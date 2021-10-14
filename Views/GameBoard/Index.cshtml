@@ -44,12 +44,12 @@
             VS. 
             <input id="welcomeGameStateTeamTwoName" class="welcomeGameStateTeamName welcomeGameStateInput" autocomplete="off" maxlength="30" />
 
-            <div class="welcomeTagsMessage">All images are included by default. Use included tags if you only want certain categories included in your game.</div>
+            <div class="welcomeTagsMessage">All images are included by default. Use included tags if you only want certain categories in your game.</div>
             
             <div id="tagsInputContainer" class="tagsInputContainer center">
                 Included Tags:
                 <span data-toggle="tooltip" title="If you want only certain types of images to be included in your game, add those tags here."></span>
-                <input id="tagsInput" name="input-custom-dropdown" class="tagsInput" />
+                <input id="tagsInput" name="input-custom-dropdown" class="tagsInput tagsInputSetupDefault" />
             </div>
             <div id="excludedTagsInputContainer" class="tagsInputContainer center">
                 Excluded Tags:
@@ -59,7 +59,7 @@
 
             <div class="welcomeGameStateDropdownOptions">
                 <div>
-                    Panel Voting Time:
+                    Open Panel Time:
                     <span data-toggle="tooltip" title="How much time should a team be given to vote for panels to open? When time runs out, the most voted panel is automatically opened."></span>
                     <select id="welcomeOpenPanelTime">
                         <option value="30" selected="selected">30 seconds</option>
@@ -83,9 +83,9 @@
                 <div class="welcomeGameStateDropdownSubOptions">
                     Wrong Guess Penalty:
                     <span data-toggle="tooltip" title="If a team makes a wrong guess, what should the penalty be?"></span>
-                    <select id="welcomeWrongGuesses">
-                        <option value="0" selected="selected">None</option>
-                        <option value="-1">-1 Point</option>
+                    <select id="welcomeWrongGuessPenalty">
+                        <option value="0">None</option>
+                        <option value="-1" selected="selected">-1 Point</option>
                         <option value="-2">-2 Points</option>
                     </select>
                 </div>
