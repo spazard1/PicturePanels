@@ -29,9 +29,11 @@ async function postGameStateAsync() {
             teamOneName: document.getElementById("welcomeGameStateTeamOneName").value,
             teamTwoName: document.getElementById("welcomeGameStateTeamTwoName").value,
             openPanelTime: parseInt(document.getElementById("welcomeOpenPanelTime").value),
+            wrongGuessPenalty: parseInt(document.getElementById("welcomeWrongGuessPenalty").value),
             guessTime: parseInt(document.getElementById("welcomeGuessTime").value),
             tags: document.getElementById("tagsInput").value,
-            excludedTags: document.getElementById("excludedTagsInput").value
+            excludedTags: document.getElementById("excludedTagsInput").value,
+            theme: urlParams.get('theme')
         })
     }).then(response => {
         if (response.ok) {
@@ -49,6 +51,26 @@ async function getGameRoundsAsync(gameStateId) {
         }
         return false;
     });
+}
+
+async function getGameRoundAsync(gameStateId, roundNumber) {
+    return await fetch("/api/gameState/gameRounds/" + gameStateId + "/" + roundNumber)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return false;
+        });
+}
+
+async function getScoreChangeAsync(gameStateId) {
+    return await fetch("/api/gameState/scoreChange/" + gameStateId)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return false;
+        });
 }
 
 function createPanels() {
@@ -610,39 +632,40 @@ function drawTeamGuessHighlights(gameState) {
     }
 }
 
-function drawTeamScoreChange(gameState) {
+async function drawTeamScoreChangeAsync(gameState) {
     var teamOneScoreTextElement = document.getElementById("teamOneScoreText");
     var teamTwoScoreTextElement = document.getElementById("teamTwoScoreText");
     var teamOneScoreChangeElement = document.getElementById("teamOneScoreChange");
     var teamTwoScoreChangeElement = document.getElementById("teamTwoScoreChange");
 
     if (gameState.turnType === "GuessesMade") {
-        if (gameState.teamOneGuessStatus === "Guess" && gameState.teamTwoGuessStatus === "Guess") {
+        var scoreChange = await getScoreChangeAsync(gameState.gameStateId);
+
+        if (scoreChange.teamOne && scoreChange.teamTwo) {
             animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
             animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"]));
             delay = 0;
-        } else if (gameState.teamOneGuessStatus === "Guess") {
+        } else if (scoreChange.teamOne) {
             animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
-        } else if (gameState.teamTwoGuessStatus === "Guess") {
+        } else if (scoreChange.teamTwo) {
             animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
         }
 
-        animationPromise = animationPromise.then(() => {
-            drawTeamScoreChangeText(gameState);
+        animationPromise = animationPromise.then(async () => {
+            drawTeamScoreChangeText(scoreChange);
             return Promise.resolve();
         });
 
-        if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
-            animationPromise = animationPromise.then(() => {
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        teamOneScoreTextElement.innerHTML = gameState.teamOneScore;
-                        teamTwoScoreTextElement.innerHTML = gameState.teamTwoScore;
-                        resolve();
-                    }, 2000);
-                });
+        animationPromise = animationPromise.then(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    teamOneScoreTextElement.innerHTML = gameState.teamOneScore;
+                    teamTwoScoreTextElement.innerHTML = gameState.teamTwoScore;
+                    resolve();
+                }, 2000);
             });
-        }
+        });
+
     } else {
         teamOneScoreTextElement.innerHTML = gameState.teamOneScore;
         teamTwoScoreTextElement.innerHTML = gameState.teamTwoScore;
@@ -657,26 +680,23 @@ function drawTeamScoreChange(gameState) {
     }
 }
 
-function drawTeamScoreChangeText(gameState) {
+function drawTeamScoreChangeText(scoreChange) {
     var teamOneScoreChangeElement = document.getElementById("teamOneScoreChange");
     var teamTwoScoreChangeElement = document.getElementById("teamTwoScoreChange");
 
-    if (gameState.teamOneCorrect && gameState.teamTwoCorrect) {
-        if (gameState.teamTurn === 1) {
-            teamOneScoreChangeElement.innerHTML = "+5";
-            teamTwoScoreChangeElement.innerHTML = "+2";
-        } else {
-            teamOneScoreChangeElement.innerHTML = "+2";
-            teamTwoScoreChangeElement.innerHTML = "+5";
-        }
-    } else if (gameState.teamOneCorrect) {
-        teamOneScoreChangeElement.innerHTML = "+5";
-        teamTwoScoreChangeElement.innerHTML = "";
-    } else if (gameState.teamTwoCorrect) {
-        teamOneScoreChangeElement.innerHTML = "";
-        teamTwoScoreChangeElement.innerHTML = "+5";
+    if (scoreChange.teamOne > 0) {
+        teamOneScoreChangeElement.innerHTML = "+" + scoreChange.teamOne;
+    } else if (scoreChange.teamOne < 0) {
+        teamOneScoreChangeElement.innerHTML = scoreChange.teamOne;
     } else {
         teamOneScoreChangeElement.innerHTML = "";
+    }
+
+    if (scoreChange.teamTwo > 0) {
+        teamTwoScoreChangeElement.innerHTML = "+" + scoreChange.teamTwo;
+    } else if (scoreChange.teamTwo < 0) {
+        teamTwoScoreChangeElement.innerHTML = scoreChange.teamTwo;
+    } else {
         teamTwoScoreChangeElement.innerHTML = "";
     }
 }
@@ -1280,7 +1300,7 @@ async function handleGameState(gameState, updateType) {
     await drawImageEntityAsync(gameState, updateType);
     playGuessesMadeSounds(gameState, updateType);
     drawTeamGuessHighlights(gameState);
-    drawTeamScoreChange(gameState);
+    await drawTeamScoreChangeAsync(gameState);
     drawIncorrectGuesses(gameState);
     drawPanelCounts(gameState);
     drawRemainingTurnTime(gameState);
