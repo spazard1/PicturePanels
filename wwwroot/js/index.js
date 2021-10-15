@@ -676,7 +676,7 @@ function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0
 }
 
 var signalRTimeOut = false;
-async function startSignalRAsync(playerIdSuffix) {
+async function startSignalRAsync(playerIdSuffix, onreconnected) {
     var connectionStateElement = document.getElementById("signalRConnectionState");
     if (!connectionStateElement) {
         connectionStateElement = document.createElement("div");
@@ -699,6 +699,10 @@ async function startSignalRAsync(playerIdSuffix) {
     }, 1000 * 60 * 60 * 4);
 
     setInterval(signalRMonitor, 1000);
+
+    if (onreconnected) {
+        connection.onreconnected(onreconnected);
+    }
 };
 
 if (!localStorage.getItem("playerId")) {
