@@ -741,9 +741,19 @@ function registerConnections() {
     connection.on("PlayerReady", drawPlayerReady);
 }
 
+function playerOnReconnected() {
+    console.log("player reconnected");
+    putPlayerAsync();
+}
+
 async function finalizePlayerAsync() {
-    await startSignalRAsync("player");
+    await startSignalRAsync("player", playerOnReconnected);
     var player = await putPlayerAsync();
+
+    connection.onreconnected(connectionId => {
+        console.log("reconnected");
+        putPlayerAsync();
+    });
 
     playerIsReadyToPlay = true;
     localStorage.setItem("createdTime", new Date());
