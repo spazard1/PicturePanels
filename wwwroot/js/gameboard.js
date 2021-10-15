@@ -990,9 +990,30 @@ function resetMaxVotesPanels() {
     });
 }
 
+async function loadAllPanelImagesAsync() {
+    var panels = document.getElementsByClassName("panel");
+
+    var panelsArray = [];
+    for (var panel of panels) {
+        panelsArray.push(panel);
+    }
+    shuffle(panelsArray);
+
+    var loadPromises = [];
+    panelsArray.forEach(function (panel) {
+        loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + currentGameState.roundNumber + "/" + panel.panelNumber));
+    });
+
+    await Promise.all(loadPromises);
+}
+
 async function openAllPanelsAsync() {
     hidePlayerDots();
     hideMostVotesPanels();
+
+    await loadAllPanelImagesAsync();
+
+    var delayTimeout = 0;
 
     var panels = document.getElementsByClassName("panel");
 
@@ -1002,30 +1023,14 @@ async function openAllPanelsAsync() {
     }
     shuffle(panelsArray);
 
-    var delayTimeout = 0;
-    var loadPromises = [];
     panelsArray.forEach(function (panel) {
-        loadPromises.push(loadImageAsync(panel.lastChild, "/api/images/panels/" + currentGameState.gameStateId + "/" + currentGameState.roundNumber + "/" + panel.panelNumber));
+        if (!panel.classList.contains("panelOpen")) {
+            setTimeout(function () {
+                openPanel(panel);
+            }, delayTimeout);
+            delayTimeout += 150;
+        }
     });
-
-    await Promise.all(loadPromises);
-
-    var openPromises = [];
-
-    panelsArray.forEach(function (panel) {
-        new Promise((resolve) => {
-            if (!panel.classList.contains("panelOpen")) {
-                setTimeout(function () {
-                    openPanel(panel);
-
-                    resolve();
-                }, delayTimeout);
-                delayTimeout += 150;
-            }
-        });
-    });
-
-    await Promise.all(openPromises);
 }
 
 var allPlayers = [];
@@ -1101,6 +1106,8 @@ async function drawRevealedPanelsAsync(gameState) {
 
     if (gameState.turnType === "GuessesMade") {
         if (gameState.teamOneCorrect || gameState.teamTwoCorrect) {
+            loadAllPanelImagesAsync();
+
             animationPromise = animationPromise.then(() => {
                 return new Promise((resolve) => {
                     setTimeout(() => {
@@ -1108,6 +1115,8 @@ async function drawRevealedPanelsAsync(gameState) {
                     }, 5000);
                 })
             });
+
+            return;
         } else {
             // always wait to show if the guesses were wrong
             animationPromise = animationPromise.then(() => {
@@ -1401,11 +1410,16 @@ async function putGameBoardPingAsync() {
         });
 }
 
+function gameBoardOnReconnected() {
+    console.log("gameboard reconnected");
+    connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"));
+}
+
 async function startGameAsync(gameState) {
     document.getElementById("welcomeContainer").classList.add("hidden");
 
-    startSignalRAsync("gameboard").then(function () {
-        connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"))
+    startSignalRAsync("gameboard", gameBoardOnReconnected).then(function () {
+        connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"));
     });
 
     handleGameState(gameState, "FirstLoad");

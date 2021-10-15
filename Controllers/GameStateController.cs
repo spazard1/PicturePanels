@@ -87,8 +87,15 @@ namespace PicturePanels.Controllers
             gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
             gameState.ExcludedTags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
 
-            var theme = this.themeTableStorage.GetAsync(entity.Theme);
-            gameState.Theme = theme != null ? entity.Theme : GameStateTableEntity.DefaultTheme;
+            if (!string.IsNullOrWhiteSpace(entity.Theme))
+            {
+                var theme = await this.themeTableStorage.GetAsync(entity.Theme);
+                gameState.Theme = theme != null ? entity.Theme : GameStateTableEntity.DefaultTheme;
+            }
+            else
+            {
+                gameState.Theme = GameStateTableEntity.DefaultTheme;
+            }
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 

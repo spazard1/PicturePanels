@@ -149,19 +149,18 @@ namespace PicturePanels.Controllers
         }
         */
     
-        
-        [HttpGet("populateAnswers")]
+        /*
+        [HttpGet("populate")]
         public async Task<IActionResult> PopulateUploadedByAsync()
         {
             await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
             {
-                imageTableEntity.Tags.Remove("all");
-                await this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
+                await this.imageTableStorage.GetThumbnailUrlAsync(imageTableEntity);
             }
 
             return StatusCode(200);
         }
-        
+        */
 
         [HttpGet("tags")]
         public async Task<IActionResult> GetAllVisbileTagsAsync()
