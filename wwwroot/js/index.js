@@ -430,12 +430,8 @@ function drawPanelButtons() {
     }
 }
 
-function updatePanelButtons(gameState, disabledPanels) {
+function updatePanelButtons(gameState) {
     var panelButtons = document.getElementsByClassName("panelButton");
-
-    if (!disabledPanels) {
-        disabledPanels = [];
-    }
 
     for (var panelButton of panelButtons) {
         var panelButtonImage = panelButton.lastChild;
@@ -444,10 +440,6 @@ function updatePanelButtons(gameState, disabledPanels) {
             panelButton.classList.add("panelButtonDisabled");
             panelButton.classList.remove("panelButtonSelected");
             panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/" + panelButton.value;
-        } else if (disabledPanels.includes(panelButton.value)) { 
-            panelButton.classList.add("panelButtonDisabled");
-            panelButton.classList.remove("panelButtonSelected");
-            panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/0";
         } else {
             panelButton.classList.remove("panelButtonDisabled");
             panelButtonImage.src = "/api/images/panels/" + gameState.gameStateId + "/" + gameState.roundNumber + "/0";
@@ -458,14 +450,11 @@ function updatePanelButtons(gameState, disabledPanels) {
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
-    // While there remain elements to shuffle...
     while (0 !== currentIndex) {
 
-        // Pick a remaining element...
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
 
-        // And swap it with the current element.
         temporaryValue = array[currentIndex];
         array[currentIndex] = array[randomIndex];
         array[randomIndex] = temporaryValue;

@@ -521,6 +521,21 @@ function handleGameState(gameState, updateType) {
         drawTeamGuesses([]);
     }
 
+    if (gameState.turnType === "OpenPanel" && localStorage.getItem("innerPanelNotifyGameStateId") !== gameState.gameStateId &&
+        parseInt(localStorage.getItem("teamNumber")) == gameState.teamTurn) {
+        if ((localStorage.getItem("teamNumber") === "1" && gameState.teamOneInnerPanels <= 0) ||
+            (localStorage.getItem("teamNumber") === "2" && gameState.teamTwoInnerPanels <= 0)) {
+
+            bootbox.alert({
+                size: "small",
+                message: "Your team is out of inner panels. From now on, if you open an inner panel, it will cost one point.",
+                closeButton: false
+            });
+
+            localStorage.setItem("innerPanelNotifyGameStateId", gameState.gameStateId);
+        }
+    }
+
     drawGameState(gameState);
 
     if (!playerIsReadyToPlay) {
@@ -647,19 +662,7 @@ function updatePlayerPanelButtons(gameState) {
         return;
     }
 
-    var disabledPanels = [];
-
-    if (localStorage.getItem("teamNumber") === "1") {
-        if (gameState.teamOneInnerPanels <= 0) {
-            disabledPanels = disabledPanels.concat(innerPanels);
-        }
-    } else {
-        if (gameState.teamTwoInnerPanels <= 0) {
-            disabledPanels = disabledPanels.concat(innerPanels);
-        }
-    }
-
-    updatePanelButtons(gameState, disabledPanels);
+    updatePanelButtons(gameState);
 }
 
 async function handleRandomizeTeam(player) {
@@ -715,7 +718,7 @@ function drawPlayerReady(player) {
 function fadeConfirmButton() {
     document.getElementById("playerNameReady").classList.toggle("opacity0");
     document.getElementById("confirmReady").classList.toggle("opacity0");
-    confirmPlayerReadyInterval = setTimeout(fadeConfirmButton, 5000);
+    confirmPlayerReadyInterval = setTimeout(fadeConfirmButton, 3000);
 }
 
 function registerConnections() {
