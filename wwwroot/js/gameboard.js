@@ -1208,38 +1208,74 @@ function drawPanelCounts(gameState) {
     var teamOneInnerPanelsCountDiv = document.getElementById("teamOneInnerPanelsCount");
     var teamTwoInnerPanelsCountDiv = document.getElementById("teamTwoInnerPanelsCount");
 
-    if (gameState.teamOneInnerPanels > teamOneInnerPanelsCountDiv.children.length || gameState.teamTwoInnerPanels > teamTwoInnerPanelsCountDiv.children.length) {
+    if (gameState.teamOneInnerPanels <= 0) {
         teamOneInnerPanelsCountDiv.innerHTML = "";
-        teamTwoInnerPanelsCountDiv.innerHTML = "";
 
-        for (var i = 0; i < gameState.teamOneInnerPanels; i++) {
-            var panelElement = document.createElement("div");
-            panelElement.className = "animate__animated animate__slow teamOneBox";
-            teamOneInnerPanelsCountDiv.appendChild(panelElement);
-            panelElement.addEventListener('animationend', () => {
-                teamOneInnerPanelsCountDiv.lastChild.remove();
-            });
-        }
+        panelElement = document.createElement("div");
+        panelElement.className = "animate__animated animate__slow panelCount teamOneBox";
+        teamOneInnerPanelsCountDiv.appendChild(panelElement);
+        panelElement.addEventListener('animationend', () => {
+            teamOneInnerPanelsCountDiv.lastChild.remove();
+        });
 
-        for (i = 0; i < gameState.teamTwoInnerPanels; i++) {
-            panelElement = document.createElement("div");
-            panelElement.className = "animate__animated animate__slow teamTwoBox";
-            teamTwoInnerPanelsCountDiv.appendChild(panelElement);
-            panelElement.addEventListener('animationend', () => {
-                teamTwoInnerPanelsCountDiv.lastChild.remove();
-            });
-        }
+        var negativeElement = document.createElement("div");
+        negativeElement.className = "negativePanelCount";
+        negativeElement.innerHTML = "&#x2794; -2";
+        teamOneInnerPanelsCountDiv.appendChild(negativeElement);
+
     } else {
-        var children = teamOneInnerPanelsCountDiv.children;
-        for (i = 0; i < children.length; i++) {
-            if (gameState.teamOneInnerPanels <= i) {
-                children[i].classList.add("animate__rollOut");
+        for (var element of teamOneInnerPanelsCountDiv.children) {
+            if (element.classList.contains("negativePanelCount")) {
+                element.remove();
             }
         }
 
-        children = teamTwoInnerPanelsCountDiv.children;
-        for (i = 0; i < children.length; i++) {
-            if (gameState.teamTwoInnerPanels <= i) {
+        var children = teamOneInnerPanelsCountDiv.children;
+        for (var i = 0; i < Math.max(gameState.teamOneInnerPanels, teamOneInnerPanelsCountDiv.children.length); i++) {
+            if (teamOneInnerPanelsCountDiv.children.length < gameState.teamOneInnerPanels && i < gameState.teamOneInnerPanels) {
+                var panelElement = document.createElement("div");
+                panelElement.className = "animate__animated animate__slow panelCount teamOneBox";
+                teamOneInnerPanelsCountDiv.appendChild(panelElement);
+                panelElement.addEventListener('animationend', () => {
+                    teamOneInnerPanelsCountDiv.lastChild.remove();
+                });
+            } else if (teamOneInnerPanelsCountDiv.children.length > gameState.teamOneInnerPanels && i >= gameState.teamOneInnerPanels) {
+                children[i].classList.add("animate__rollOut");
+            }
+        }
+    }
+
+    if (gameState.teamTwoInnerPanels <= 0) {
+        teamTwoInnerPanelsCountDiv.innerHTML = "";
+
+        panelElement = document.createElement("div");
+        panelElement.className = "animate__animated animate__slow panelCount teamTwoBox";
+        teamTwoInnerPanelsCountDiv.appendChild(panelElement);
+        panelElement.addEventListener('animationend', () => {
+            teamTwoInnerPanelsCountDiv.lastChild.remove();
+        });
+
+        negativeElement = document.createElement("div");
+        negativeElement.className = "negativePanelCount";
+        negativeElement.innerHTML = "&#x2794; -2";
+        teamTwoInnerPanelsCountDiv.appendChild(negativeElement);
+    } else {
+        for (var element of teamTwoInnerPanelsCountDiv.children) {
+            if (element.classList.contains("negativePanelCount")) {
+                element.remove();
+            }
+        }
+
+        var children = teamTwoInnerPanelsCountDiv.children;
+        for (var i = 0; i < Math.max(gameState.teamTwoInnerPanels, teamTwoInnerPanelsCountDiv.children.length); i++) {
+            if (teamTwoInnerPanelsCountDiv.children.length < gameState.teamTwoInnerPanels && i < gameState.teamTwoInnerPanels) {
+                var panelElement = document.createElement("div");
+                panelElement.className = "animate__animated animate__slow panelCount teamTwoBox";
+                teamTwoInnerPanelsCountDiv.appendChild(panelElement);
+                panelElement.addEventListener('animationend', () => {
+                    teamTwoInnerPanelsCountDiv.lastChild.remove();
+                });
+            } else if (teamTwoInnerPanelsCountDiv.children.length > gameState.teamTwoInnerPanels && i >= gameState.teamTwoInnerPanels) {
                 children[i].classList.add("animate__rollOut");
             }
         }
