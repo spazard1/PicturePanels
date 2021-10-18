@@ -78,7 +78,11 @@ namespace PicturePanels
             {
                 options.AccessTokenLifetime = TimeSpan.FromDays(1);
                 options.ClaimsProvider = context => context.User.Claims;
+#if DEBUG
                 options.ConnectionString = "***REMOVED***";
+#else
+                options.ConnectionString = "***REMOVED***";
+#endif
             });
  
             services.AddWebOptimizer(pipeline =>

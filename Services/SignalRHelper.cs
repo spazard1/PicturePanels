@@ -34,43 +34,7 @@ namespace PicturePanels.Services
             }
         }
 
-        public async Task AddPlayerToTeamGroupAsync(PlayerTableEntity playerModel, bool notifyTeam)
-        {
-            await this.hubContext.Clients.Group(SignalRHub.GameBoardGroup(playerModel.GameStateId)).AddPlayer(new PlayerEntity(playerModel));
-
-            await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.AllGroup(playerModel.GameStateId));
-
-            if (playerModel.IsAdmin)
-            {
-                await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 1));
-                await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 2));
-                return;
-            }
-
-            if (playerModel.TeamNumber == 1)
-            {
-                if (!string.IsNullOrWhiteSpace(playerModel.ConnectionId))
-                {
-                    var remove = this.hubContext.Groups.RemoveFromGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 2));
-                    await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 1));
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(playerModel.ConnectionId))
-                {
-                    var remove = this.hubContext.Groups.RemoveFromGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 1));
-                    await this.hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 2));
-                }
-
-            }
-
-            if (notifyTeam)
-            {
-                await this.hubContext.Clients.Group(playerModel.SignalRTeamGroupName).AddPlayer(new PlayerEntity(playerModel));
-            }
-        }
-
+        /*
         public async Task RandomizeTeamsAsync(string gameStateId)
         {
             var tasks = new List<Task>();
@@ -117,6 +81,13 @@ namespace PicturePanels.Services
 
             await Task.WhenAll(tasks);
         }
+        */
+
+        public async Task AddPlayerAsync(PlayerTableEntity playerModel)
+        {
+            await hubContext.Clients.Group(SignalRHub.GameBoardGroup(playerModel.GameStateId)).AddPlayer(new PlayerEntity(playerModel));
+            await hubContext.Clients.Group(playerModel.SignalRTeamGroupName).AddPlayer(new PlayerEntity(playerModel));
+        }
 
         public async Task AddTeamGuessAsync(string gameStateId, TeamGuessEntity teamGuessEntity, int teamNumber)
         {
@@ -151,6 +122,20 @@ namespace PicturePanels.Services
         public async Task PlayerReadyAsync(PlayerTableEntity playerModel)
         {
             await hubContext.Clients.Group(playerModel.SignalRTeamGroupName).PlayerReady(new PlayerEntity(playerModel));
+        }
+
+        public async Task SwitchTeamGroupsAsync(PlayerTableEntity playerModel)
+        {
+            if (playerModel.TeamNumber == 1)
+            {
+                await hubContext.Groups.RemoveFromGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 2));
+                await hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 1));
+            }
+            else
+            {
+                await hubContext.Groups.RemoveFromGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 1));
+                await hubContext.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 2));
+            }
         }
     }
 }

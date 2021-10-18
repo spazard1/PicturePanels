@@ -65,7 +65,7 @@ namespace PicturePanels.Entities
         [Range(0, 120)]
         public int? OpenPanelTime { get; set; }
 
-        [Range(0, 300)]
+        [Range(0, 180)]
         public int? GuessTime { get; set; }
 
         [Range(-2, 0)]

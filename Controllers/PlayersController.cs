@@ -60,17 +60,15 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        [HttpPut("{gameStateId}/{playerId}")]
-        public async Task<IActionResult> PutAsync(string gameStateId, string playerId, [FromBody] PlayerEntity entity)
+        [HttpPut("{gameStateId}")]
+        public async Task<IActionResult> PutAsync(string gameStateId, [FromBody] PlayerEntity entity)
         {
-            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, entity.PlayerId ?? string.Empty);
 
-            if (entity.GameStateId != gameStateId || entity.PlayerId != playerId)
+            if (entity.GameStateId != gameStateId)
             {
                 return StatusCode(400);
             }
-
-            bool notifyTeam = true;
 
             if (playerModel == null)
             {
@@ -80,28 +78,35 @@ namespace PicturePanels.Controllers
                     TeamNumber = entity.TeamNumber,
                     Color = entity.Color,
                     LastPingTime = DateTime.UtcNow,
-                    ConnectionId = entity.ConnectionId,
                     GameStateId = gameStateId,
-                    PlayerId = playerId,
+                    PlayerId = Guid.NewGuid().ToString(),
                     SelectedPanels = new List<string>()
                 };
                 await this.playerTableStorage.InsertAsync(playerModel);
+
+                await this.signalRHelper.AddPlayerAsync(playerModel);
             }
             else
             {
-                notifyTeam = playerModel.TeamNumber != entity.TeamNumber || playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow;
-
+                var newTeam = playerModel.TeamNumber != entity.TeamNumber;
                 playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
                 {
                     pm.Name = GetPlayerName(entity.Name);
                     pm.TeamNumber = entity.TeamNumber;
                     pm.Color = entity.Color;
                     pm.LastPingTime = DateTime.UtcNow;
-                    pm.ConnectionId = entity.ConnectionId;
                 });
-            }
 
-            await this.signalRHelper.AddPlayerToTeamGroupAsync(playerModel, notifyTeam && !playerModel.IsAdmin);
+                if (newTeam)
+                {
+                    await this.signalRHelper.SwitchTeamGroupsAsync(playerModel);
+                }
+
+                if (newTeam || playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow)
+                {
+                    await this.signalRHelper.AddPlayerAsync(playerModel);
+                }
+            }
 
             return Json(new PlayerEntity(playerModel));
         }

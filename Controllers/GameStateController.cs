@@ -410,6 +410,7 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
+        /*
         [HttpPut("{id}/randomizeTeams")]
         [RequireAdmin]
         public async Task<IActionResult> RandomizeTeamsAsync(string id)
@@ -423,6 +424,7 @@ namespace PicturePanels.Controllers
             await this.signalRHelper.RandomizeTeamsAsync(id);
             return StatusCode((int)HttpStatusCode.Accepted);
         }
+        */
 
         [HttpPost("{id}/openPanel/{panelId}")]
         [RequireAuthorization]
