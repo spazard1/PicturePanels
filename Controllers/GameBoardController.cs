@@ -7,6 +7,7 @@ namespace PicturePanels.Controllers
     public class GameBoardController : Controller
     {
         [Route("/gameboard")]
+        [Route("/play")]
         public IActionResult Index()
         {
             ViewData["Title"] = "Game Board";
