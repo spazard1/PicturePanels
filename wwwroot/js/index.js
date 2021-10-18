@@ -208,7 +208,7 @@ async function getPlayersAsync() {
 }
 
 async function putPlayerAsync() {
-    return await fetch("api/players/" + localStorage.getItem("gameStateId") + "/" + localStorage.getItem("playerId"),
+    return await fetch("api/players/" + localStorage.getItem("gameStateId"),
         {
             method: "PUT",
             headers: {
@@ -219,8 +219,7 @@ async function putPlayerAsync() {
                 PlayerId: localStorage.getItem("playerId"),
                 Name: localStorage.getItem("playerName"),
                 TeamNumber: parseInt(localStorage.getItem("teamNumber")),
-                Color: localStorage.getItem("playerColor"),
-                ConnectionId: connection.connectionId
+                Color: localStorage.getItem("playerColor")
             })
         })
         .then(response => response.json())
@@ -463,13 +462,6 @@ function shuffle(array) {
     return array;
 }
 
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
 function clearPanelButtonSelection() {
     var panelButtons = document.getElementsByClassName("panelButton");
     for (var panelButton of panelButtons) {
@@ -577,9 +569,9 @@ function setupAdminMenu() {
 }
 
 var connection;
-async function createSignalRConnectionAsync(playerIdSuffix) {
+async function createSignalRConnectionAsync(queryString) {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl("/signalRHub?user=" + localStorage.getItem("playerId") + "_" + playerIdSuffix)
+        .withUrl("/signalRHub?" + queryString)
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();
@@ -665,7 +657,7 @@ function animateCSS(element, animationsToAdd, animationsToRemove, startDelay = 0
 }
 
 var signalRTimeOut = false;
-async function startSignalRAsync(playerIdSuffix, onreconnected) {
+async function startSignalRAsync(queryString) {
     var connectionStateElement = document.getElementById("signalRConnectionState");
     if (!connectionStateElement) {
         connectionStateElement = document.createElement("div");
@@ -680,7 +672,7 @@ async function startSignalRAsync(playerIdSuffix, onreconnected) {
         return;
     }
 
-    await createSignalRConnectionAsync(playerIdSuffix);
+    await createSignalRConnectionAsync(queryString);
    
     setTimeout(function () {
         signalRTimeOut = true;
@@ -688,15 +680,7 @@ async function startSignalRAsync(playerIdSuffix, onreconnected) {
     }, 1000 * 60 * 60 * 4);
 
     setInterval(signalRMonitor, 1000);
-
-    if (onreconnected) {
-        connection.onreconnected(onreconnected);
-    }
 };
-
-if (!localStorage.getItem("playerId")) {
-    localStorage.setItem("playerId", uuidv4());
-}
 
 const urlParams = new URLSearchParams(window.location.search);
 const debugParam = urlParams.get('debug');

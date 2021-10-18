@@ -25,6 +25,41 @@ namespace PicturePanels.Services
             this.gameStateService = gameStateService;
         }
 
+        public async override Task OnConnectedAsync()
+        {
+            var httpContext = this.Context.GetHttpContext();
+
+            var gameStateId = httpContext.Request.Query["gameStateId"];
+            var playerId = httpContext.Request.Query["playerId"];
+
+
+            if (!string.IsNullOrWhiteSpace(playerId))
+            {
+                var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+                if (playerModel != null)
+                {
+                    playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, pm =>
+                    {
+                        pm.ConnectionId = Context.ConnectionId;
+                    });
+                    await this.AddPlayerToGroupsAsync(playerModel);
+                }
+            }
+            else
+            {
+                await this.AddGameboardToGroupsAsync(gameStateId);
+            }
+
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
         public static string TeamGroup(string gameStateId, int teamNumber)
         {
              return gameStateId + "_team_" + teamNumber;        
@@ -44,9 +79,6 @@ namespace PicturePanels.Services
         {
             await this.gameStateService.SetGameBoardActiveAsync(gameStateId);
             await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup(gameStateId));
-            await Groups.AddToGroupAsync(Context.ConnectionId, AllGroup(gameStateId));
         }
 
         private static readonly Regex MultipleNewLines = new(@"([\r\n])+");
@@ -113,6 +145,26 @@ namespace PicturePanels.Services
             });
 
             await Clients.Group(GameBoardGroup(entity.GameStateId)).SelectPanels(new PlayerEntity(playerModel));
+        }
+
+        private async Task AddGameboardToGroupsAsync(string gameStateId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, AllGroup(gameStateId));
+            await Groups.AddToGroupAsync(Context.ConnectionId, GameBoardGroup(gameStateId));
+        }
+
+        private async Task AddPlayerToGroupsAsync(PlayerTableEntity playerModel)
+        {
+            await this.Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.AllGroup(playerModel.GameStateId));
+
+            if (playerModel.IsAdmin)
+            {
+                await this.Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 1));
+                await this.Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, 2));
+                return;
+            }
+
+            await this.Groups.AddToGroupAsync(playerModel.ConnectionId, SignalRHub.TeamGroup(playerModel.GameStateId, playerModel.TeamNumber));
         }
     }
 }

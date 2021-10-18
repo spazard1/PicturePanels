@@ -1446,17 +1446,10 @@ async function putGameBoardPingAsync() {
         });
 }
 
-function gameBoardOnReconnected() {
-    console.log("gameboard reconnected");
-    connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"));
-}
-
 async function startGameAsync(gameState) {
     document.getElementById("welcomeContainer").classList.add("hidden");
 
-    startSignalRAsync("gameboard", gameBoardOnReconnected).then(function () {
-        connection.invoke("RegisterGameBoard", localStorage.getItem("gameStateId"));
-    });
+    startSignalRAsync("gameStateId=" + localStorage.getItem("gameStateId"));
 
     handleGameState(gameState, "FirstLoad");
 
@@ -1596,7 +1589,7 @@ window.onload = async function () {
     });
 
     if (!localStorage.getItem("volume")) {
-        localStorage.setItem("volume", 40);
+        localStorage.setItem("volume", 50);
     }
 
     document.getElementById("volumeInput").value = localStorage.getItem("volume");

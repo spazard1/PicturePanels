@@ -744,19 +744,11 @@ function registerConnections() {
     connection.on("PlayerReady", drawPlayerReady);
 }
 
-function playerOnReconnected() {
-    console.log("player reconnected");
-    putPlayerAsync();
-}
-
 async function finalizePlayerAsync() {
-    await startSignalRAsync("player", playerOnReconnected);
     var player = await putPlayerAsync();
+    localStorage.setItem("playerId", player.playerId);
 
-    connection.onreconnected(connectionId => {
-        console.log("reconnected");
-        putPlayerAsync();
-    });
+    await startSignalRAsync("playerId=" + player.playerId + "&gameStateId=" + player.gameStateId);
 
     playerIsReadyToPlay = true;
     localStorage.setItem("createdTime", new Date());
