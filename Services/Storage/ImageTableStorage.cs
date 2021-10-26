@@ -14,6 +14,7 @@ using Azure.Storage.Blobs.Specialized;
 using Azure.Storage;
 using Azure.Storage.Blobs.Models;
 using System.Drawing.Drawing2D;
+using PicturePanels.Entities;
 
 namespace PicturePanels.Services.Storage
 {
@@ -275,6 +276,24 @@ namespace PicturePanels.Services.Storage
             }
         }
 
+        public async Task CropImageAsync(ImageCropEntity imageCropEntity)
+        {
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(ScratchBlobContainer);
+            var blob = blobContainerClient.GetBlobClient(imageCropEntity.ImageId);
+
+            var imageMemoryStream = new MemoryStream();
+            await blob.DownloadToAsync(imageMemoryStream);
+
+            var image = Image.FromStream(imageMemoryStream);
+
+            var croppedImage = CropImage(image, (int) imageCropEntity.X, (int) imageCropEntity.Y, (int) imageCropEntity.Width, (int) imageCropEntity.Height);
+
+            var memoryStream = new MemoryStream();
+            croppedImage.Save(memoryStream, ImageFormat.Png);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            await blob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = "image/png" });
+        }
+
         public string GetPanelImageUrl(string imageId, int panelNumber)
         {
             return this.GetDownloadUrl(PanelsBlobContainer, imageId + "_panel_" + panelNumber, DateTime.UtcNow.AddDays(ThumbnailCacheDays));
@@ -341,6 +360,31 @@ namespace PicturePanels.Services.Storage
                 {
                     wrapMode.SetWrapMode(WrapMode.TileFlipXY);
                     graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        public static Bitmap CropImage(Image image, int x, int y, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, x, y, width, height, GraphicsUnit.Pixel, wrapMode);
                 }
             }
 
