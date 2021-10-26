@@ -511,14 +511,14 @@ namespace PicturePanels.Controllers
 
         [HttpPost]
         [RequireAuthorization]
-        public async Task<IActionResult> PostAsync()
+        public async Task<IActionResult> PostAsync([FromBody] ImageCropEntity imageCropEntity)
         {
             var imageTableEntity = new ImageTableEntity()
             {
                 Id = Guid.NewGuid().ToString()
             };
 
-            await this.imageTableStorage.UploadFromStream(ImageTableStorage.ScratchBlobContainer, imageTableEntity.Id, this.Request.BodyReader.AsStream());
+            await this.imageTableStorage.CropImageAsync(imageCropEntity);
 
             await this.imageNotApprovedTableStorage.InsertAsync(new ImageNotApprovedTableEntity()
             {
