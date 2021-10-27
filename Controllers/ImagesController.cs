@@ -472,16 +472,16 @@ namespace PicturePanels.Controllers
 
         [HttpPost("uploadTemporaryUrl")]
         [RequireAuthorization]
-        public async Task<IActionResult> UploadTemporaryUrlAsync([FromBody] UrlEntity urlEntity)
+        public async Task<IActionResult> UploadTemporaryUrlAsync([FromBody] ScratchImageEntity urlEntity)
         {
             try
             {
-                var imageUrlOrError = await imageTableStorage.UploadTemporaryAsync(new Uri(urlEntity.Url));
-                if (!imageUrlOrError.StartsWith("https"))
+                var scratchImageEntity = await imageTableStorage.UploadTemporaryAsync(new Uri(urlEntity.Url));
+                if (!string.IsNullOrWhiteSpace(scratchImageEntity.Error))
                 {
-                    return StatusCode((int)HttpStatusCode.BadRequest, imageUrlOrError);
+                    return StatusCode((int)HttpStatusCode.BadRequest, scratchImageEntity.Error);
                 }
-                return Json(new UrlEntity() { Url = imageUrlOrError });
+                return Json(scratchImageEntity);
             }
             catch
             {
@@ -495,13 +495,12 @@ namespace PicturePanels.Controllers
         {
             try
             {
-                var imageUrlOrError = await imageTableStorage.UploadTemporaryAsync(this.Request.BodyReader.AsStream());
-
-                if (!imageUrlOrError.StartsWith("https"))
+                var scratchImageEntity = await imageTableStorage.UploadTemporaryAsync(this.Request.BodyReader.AsStream());
+                if (!string.IsNullOrWhiteSpace(scratchImageEntity.Error))
                 {
-                    return StatusCode((int)HttpStatusCode.BadRequest, imageUrlOrError);
+                    return StatusCode((int)HttpStatusCode.BadRequest, scratchImageEntity.Error);
                 }
-                return Json(new UrlEntity() { Url = imageUrlOrError });
+                return Json(scratchImageEntity);
             }
             catch
             {
@@ -515,8 +514,24 @@ namespace PicturePanels.Controllers
         {
             var imageTableEntity = new ImageTableEntity()
             {
-                Id = Guid.NewGuid().ToString()
+                Id = imageCropEntity.ImageId
             };
+
+            if (imageCropEntity.Width < 1000)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, "Image is not big enough.");
+            }
+
+            var aspectRatio = (double) imageCropEntity.Width / (double) imageCropEntity.Height;
+
+            if (aspectRatio > 1.85)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, "Image is too wide.");
+            }
+            else if (aspectRatio < 1.3)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, "Image is too square.");
+            }
 
             await this.imageTableStorage.CropImageAsync(imageCropEntity);
 
