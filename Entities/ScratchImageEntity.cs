@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace PicturePanels.Entities
 {
-    public class UrlEntity
+    public class ScratchImageEntity
     {
-        public UrlEntity()
-        {
-
-        }
+        public string ImageId { get; set; }
 
         public string Url { get; set; }
+
+        public string Error { get; set; }
     }
 }

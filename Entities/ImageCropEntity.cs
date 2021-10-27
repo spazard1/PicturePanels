@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,14 +8,20 @@ namespace PicturePanels.Entities
 {
     public class ImageCropEntity
     {
+        [Required]
+        [MinLength(10)]
         public string ImageId { get; set; }
 
-        public double Height { get; set; }
+        [Required]
+        public int Height { get; set; }
 
-        public double Width { get; set; }
+        [Required]
+        public int Width { get; set; }
 
-        public double X { get; set; }
+        [Required]
+        public int X { get; set; }
 
-        public double Y { get; set; }
+        [Required]
+        public int Y { get; set; }
     }
 }

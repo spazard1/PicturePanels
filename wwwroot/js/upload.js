@@ -93,6 +93,8 @@ async function uploadTemporaryBlobAsync(blob) {
         .then(handleUploadTemporaryAsync);
 }
 
+var scratchImageId;
+
 async function handleUploadTemporaryAsync(response) {
     Promise.resolve().then(async () => {
         if (!response.ok) {
@@ -101,13 +103,12 @@ async function handleUploadTemporaryAsync(response) {
         return response.json();
     })
     .then(async responseJson => {
+        scratchImageId = responseJson.imageId;
         setupCropper(responseJson.url);
         return responseJson;
     }).catch(function (error) {
         showLoadingMessage();
-
         showMessage(error.message, true);
-
         return null;
     });
 }
@@ -157,18 +158,8 @@ async function putImageAsync(imageEntity) {
         });
 }
 
-async function getCanvasBlobAsync() {
-    return new Promise((resolve) => {
-        cropper.getCroppedCanvas().toBlob((blob) => {
-            resolve(blob);
-        });
-    });
-}
-
 async function postImageAsync() {
     showLoadingMessage("Saving cropped image...");
-
-    var blob = await getCanvasBlobAsync();
 
     return await fetch("api/images/",
         {
@@ -177,11 +168,14 @@ async function postImageAsync() {
                 "Content-Type": "application/json",
                 "Authorization": localStorage.getItem("userToken")
             },
-            body: blob
+            body: JSON.stringify({
+                ...cropper.getData(true),
+                imageId: scratchImageId
+            })
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("The image failed to be uploaded.")
+                throw new Error("The cropped image failed to be saved.")
             }
             return response.json();
         })
