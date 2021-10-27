@@ -161,7 +161,7 @@ namespace PicturePanels.Services.Storage
             return GetDownloadUrl(blobContainer, blobName);
         }
 
-        public async Task<string> UploadTemporaryAsync(Stream imageStream)
+        public async Task<ScratchImageEntity> UploadTemporaryAsync(Stream imageStream)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(ScratchBlobContainer);
             await blobContainerClient.CreateIfNotExistsAsync();
@@ -171,10 +171,14 @@ namespace PicturePanels.Services.Storage
 
             await blob.UploadAsync(imageStream, new BlobHttpHeaders() { ContentType = "image/png" });
 
-            return GetDownloadUrl(ScratchBlobContainer, imageId);
+            return new ScratchImageEntity()
+            {
+                Url = GetDownloadUrl(ScratchBlobContainer, imageId),
+                ImageId = imageId
+            };
         }
 
-        public async Task<string> UploadTemporaryAsync(Uri url)
+        public async Task<ScratchImageEntity> UploadTemporaryAsync(Uri url)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(ScratchBlobContainer);
             await blobContainerClient.CreateIfNotExistsAsync();
@@ -189,11 +193,17 @@ namespace PicturePanels.Services.Storage
 
             if ((int)response.StatusCode == 401 || (int) response.StatusCode == 403)
             {
-                return $"Did not have access to that URL ({response.StatusCode}).";
+                return new ScratchImageEntity()
+                {
+                    Error = $"Did not have access to that URL ({response.StatusCode})."
+                };
             }
             else if ((int)response.StatusCode >= 400)
             {
-                return $"Could not load from from that URL ({response.StatusCode}).";
+                return new ScratchImageEntity()
+                {
+                    Error = $"Could not load from from that URL ({response.StatusCode})."
+                };
             }
 
             var imageId = Guid.NewGuid().ToString();
@@ -204,7 +214,12 @@ namespace PicturePanels.Services.Storage
             bitmap.Save(memoryStream, ImageFormat.Png);
             memoryStream.Seek(0, SeekOrigin.Begin);
             await blob.UploadAsync(memoryStream, new BlobHttpHeaders() { ContentType = response.Content.Headers.ContentType.MediaType });
-            return GetDownloadUrl(ScratchBlobContainer, imageId);
+            
+            return new ScratchImageEntity()
+            {
+                Url = GetDownloadUrl(ScratchBlobContainer, imageId),
+                ImageId = imageId
+            };
         }
 
         public async Task<string> GetThumbnailUrlAsync(ImageTableEntity entity)
@@ -286,7 +301,7 @@ namespace PicturePanels.Services.Storage
 
             var image = Image.FromStream(imageMemoryStream);
 
-            var croppedImage = CropImage(image, (int) imageCropEntity.X, (int) imageCropEntity.Y, (int) imageCropEntity.Width, (int) imageCropEntity.Height);
+            var croppedImage = CropImage(image, imageCropEntity.X, imageCropEntity.Y, imageCropEntity.Width, imageCropEntity.Height);
 
             var memoryStream = new MemoryStream();
             croppedImage.Save(memoryStream, ImageFormat.Png);
