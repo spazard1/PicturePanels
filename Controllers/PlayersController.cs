@@ -147,6 +147,11 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {

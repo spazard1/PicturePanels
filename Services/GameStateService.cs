@@ -125,6 +125,50 @@ namespace PicturePanels.Services
             }
         }
 
+        public async Task<GameStateTableEntity> PauseGameAsync(GameStateTableEntity gameState)
+        {
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                var remainingTime = gs.TurnEndTime - DateTime.UtcNow;
+                gs.PauseState = GameStateTableEntity.PauseStatePaused;
+                gs.PauseTurnRemainingTime = remainingTime.HasValue && remainingTime.Value.TotalSeconds > 0 ? (int)Math.Ceiling(remainingTime.Value.TotalSeconds) : -1;
+            });
+
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+
+            return gameState;
+        }
+
+        public async Task<GameStateTableEntity> ResumeGameAsync(GameStateTableEntity gameState)
+        {
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.PauseState = null;
+                if (gs.PauseTurnRemainingTime > 0)
+                {
+                    gs.TurnEndTime = DateTime.UtcNow.AddSeconds(gs.PauseTurnRemainingTime + GameStateTableEntity.PauseResumeGradePeriod);
+                }
+                else if (gs.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
+                {
+                    gs.TurnEndTime = gs.OpenPanelTime > 0 ? DateTime.UtcNow.AddSeconds(gs.OpenPanelTime) : DateTime.UtcNow.AddSeconds(GameStateTableEntity.DefaultOpenPanelTime);
+                }
+                else if (gs.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+                {
+                    gs.TurnEndTime = gs.GuessTime > 0 ? DateTime.UtcNow.AddSeconds(gs.GuessTime) : DateTime.UtcNow.AddSeconds(GameStateTableEntity.DefaultMakeGuessTime);
+                }
+                else
+                {
+                    gs.TurnEndTime = null;
+                }
+                gs.PauseTurnRemainingTime = 0;
+            });
+
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+
+            return gameState;
+        }
+
         public async Task SetGameBoardActiveAsync(string gameStateId)
         {
             await this.activeGameBoardTableStorage.InsertOrReplaceAsync(new ActiveGameBoardTableEntity()

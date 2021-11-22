@@ -175,6 +175,59 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
+        [HttpPut("{id}/pause")]
+        public async Task<IActionResult> PutPauseAsync(string id)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel && gameState.OpenPanelTime <= 0)
+            {
+                return StatusCode(403);
+            }
+
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess && gameState.GuessTime <= 0)
+            {
+                return StatusCode(403);
+            }
+
+            gameState = await this.gameStateService.PauseGameAsync(gameState);
+
+            return Json(new GameStateEntity(gameState));
+        }
+
+        [HttpPut("{id}/resume")]
+        public async Task<IActionResult> PutResumeAsync(string id)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenPanel && gameState.TurnType != GameStateTableEntity.TurnTypeMakeGuess)
+            {
+                return StatusCode(403);
+            }
+
+            if (gameState.PauseState != GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
+            gameState = await this.gameStateService.ResumeGameAsync(gameState);
+
+            return Json(new GameStateEntity(gameState));
+        }
+
         [HttpGet("{id}/{playerId}/smallestTeam")]
         public async Task<IActionResult> GetSmallestTeamAsync(string id, string playerId)
         {
