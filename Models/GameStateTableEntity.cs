@@ -24,6 +24,10 @@ namespace PicturePanels.Models
         public const string UpdateTypeNewTurn = "NewTurn";
         public const string UpdateTypeTeamReady = "TeamReady";
 
+        public const string PauseStatePaused = "Paused";
+
+        public const int PauseResumeGradePeriod = 2;
+
         public const int RoundStartDelayTime = 10;
         public const int TurnStartDelayTime = 5;
 
@@ -86,6 +90,10 @@ namespace PicturePanels.Models
         public DateTime TurnStartTime { get; set; }
 
         public DateTime? TurnEndTime { get; set; }
+
+        public string PauseState { get; set; }
+
+        public int PauseTurnRemainingTime { get; set; }
 
         public IList<string> RevealedPanels { get; set; }
 

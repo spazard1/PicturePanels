@@ -84,7 +84,7 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
-            if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
+            if (gameState == null || !gameState.TurnEndTime.HasValue || gameState.PauseState == GameStateTableEntity.PauseStatePaused || !gameState.IsUpdateAllowed(gameStateUpdate))
             {
                 return;
             }
