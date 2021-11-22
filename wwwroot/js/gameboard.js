@@ -43,6 +43,30 @@ async function postGameStateAsync() {
     });
 }
 
+async function pauseGameAsync() {
+    return await fetch("/api/gameState/" + currentGameState.gameStateId + "/pause", {
+        method: "PUT"
+    })
+        .then(response => {
+            if (response.ok) {
+                return true;
+            }
+            return false;
+        });
+}
+
+async function resumeGameAsync() {
+    return await fetch("/api/gameState/" + currentGameState.gameStateId + "/resume", {
+        method: "PUT"
+    })
+        .then(response => {
+            if (response.ok) {
+                return true;
+            }
+            return false;
+        });
+}
+
 async function getGameRoundsAsync(gameStateId) {
     return await fetch("/api/gameState/gameRounds/" + gameStateId)
         .then(response => {
@@ -738,6 +762,12 @@ function updateCountdown(canvas, gameState) {
 
     clearInterval(canvas.countdownInterval);
 
+    if (gameState.pauseState === "Paused") {
+        canvas.currentCountdown = gameState.pauseTurnRemainingTime * 1000;
+        drawCountdown(canvas);
+        return;
+    }
+
     canvas.countdownInterval = setInterval(function () {
         if (canvas.currentCountdown <= 0) {
             clearInterval(canvas.countdownInterval);
@@ -746,6 +776,7 @@ function updateCountdown(canvas, gameState) {
         }
 
         drawCountdown(canvas);
+
     }, 1000 / framerate);
 }
 
@@ -1282,6 +1313,22 @@ function drawPanelCounts(gameState) {
     }
 }
 
+function drawPauseState(gameState) {
+    if (gameState.pauseState === "Paused") {
+        document.getElementById("pauseButton").classList.add("hidden");
+        document.getElementById("resumeButton").classList.remove("hidden");
+    } else if (gameState.turnType === "OpenPanel" && gameState.openPanelTime > 0) {
+        document.getElementById("pauseButton").classList.remove("hidden");
+        document.getElementById("resumeButton").classList.add("hidden");
+    } else if (gameState.turnType === "MakeGuess" && gameState.guessTime > 0) {
+        document.getElementById("pauseButton").classList.remove("hidden");
+        document.getElementById("resumeButton").classList.add("hidden");
+    } else {
+        document.getElementById("pauseButton").classList.add("hidden");
+        document.getElementById("resumeButton").classList.add("hidden");
+    }
+}
+
 function setupWelcomeAnimationAsync() {
     var promises = [];
     var panels = document.getElementsByClassName("panel");
@@ -1351,6 +1398,7 @@ async function handleGameState(gameState, updateType) {
     drawRemainingTurnTime(gameState);
     drawAllPlayerDots(gameState, updateType === "NewTurn");
     drawMostVotesPanels(updateType === "NewTurn");
+    drawPauseState(gameState);
 }
 
 function handlePlayers(players) {
@@ -1508,6 +1556,9 @@ window.onload = async function () {
     setupCanvases();
 
     startGameboardAsync();
+
+    document.getElementById("pauseButton").onclick = pauseGameAsync;
+    document.getElementById("resumeButton").onclick = resumeGameAsync;
 
     document.getElementById("welcomeCreateGameButton").onclick = async () => {
         document.getElementById("welcomeStartGame").classList.add("hidden");
