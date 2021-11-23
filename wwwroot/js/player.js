@@ -419,6 +419,15 @@ function drawTurnType(gameState) {
 
     document.getElementById("turnStatusMessage").classList.remove("turnStatusMessageCorrect");
 
+    if (gameState.pauseState === "Paused") {
+        document.getElementById("panelButtons").classList.add("hidden");
+        document.getElementById("playerReadyButton").classList.add("hidden");
+        document.getElementById("teamGuesses").classList.add("hidden");
+        document.getElementById("turnStatusMessage").classList.remove("opacity0");
+        document.getElementById("turnStatusMessage").innerHTML = "Game is paused";
+        return;
+    }
+
     switch (gameState.turnType) {
         case "Welcome":
 

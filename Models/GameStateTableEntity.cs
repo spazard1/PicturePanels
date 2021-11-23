@@ -26,8 +26,6 @@ namespace PicturePanels.Models
 
         public const string PauseStatePaused = "Paused";
 
-        public const int PauseResumeGradePeriod = 2;
-
         public const int RoundStartDelayTime = 10;
         public const int TurnStartDelayTime = 5;
 
@@ -91,9 +89,11 @@ namespace PicturePanels.Models
 
         public DateTime? TurnEndTime { get; set; }
 
+        public double TurnTimeLength { get; set; }
+
         public string PauseState { get; set; }
 
-        public int PauseTurnRemainingTime { get; set; }
+        public double PauseTurnRemainingTime { get; set; }
 
         public IList<string> RevealedPanels { get; set; }
 
@@ -258,6 +258,15 @@ namespace PicturePanels.Models
                     this.TurnStartTime = DateTime.UtcNow;
                     this.TurnEndTime = null;
                     break;
+            }
+
+            if (this.TurnEndTime.HasValue)
+            {
+                this.TurnTimeLength = (this.TurnEndTime.Value - this.TurnStartTime).TotalSeconds;
+            }
+            else
+            {
+                this.TurnTimeLength = 0;
             }
         }
 
