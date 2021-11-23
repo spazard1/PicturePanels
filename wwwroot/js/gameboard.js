@@ -558,6 +558,10 @@ function drawTeamStatus(gameState) {
             stopCountdown(passiveTeamCountdownCanvas);
             break;
     }
+
+    if (gameState.pauseState === "Paused") {
+        teamStatus.innerHTML = "Game is paused";
+    }
 }
 
 function drawTeamGuesses(gameState) {
@@ -753,8 +757,8 @@ function setupCanvases() {
 var framerate = 30;
 
 function updateCountdown(canvas, gameState) {
+    canvas.countdownMax = gameState.turnTimeLength * 1000;
     canvas.currentCountdown = new Date(gameState.turnEndTime) - new Date();
-    canvas.countdownMax = new Date(gameState.turnEndTime) - new Date(gameState.turnStartTime);
 
     if (canvas.countdownMax <= 0) {
         return;
@@ -1315,17 +1319,22 @@ function drawPanelCounts(gameState) {
 
 function drawPauseState(gameState) {
     if (gameState.pauseState === "Paused") {
+        document.getElementById("pauseContainer").classList.remove("hidden");
+
         document.getElementById("pauseButton").classList.add("hidden");
         document.getElementById("resumeButton").classList.remove("hidden");
     } else if (gameState.turnType === "OpenPanel" && gameState.openPanelTime > 0) {
+        document.getElementById("pauseContainer").classList.remove("hidden");
+
         document.getElementById("pauseButton").classList.remove("hidden");
         document.getElementById("resumeButton").classList.add("hidden");
     } else if (gameState.turnType === "MakeGuess" && gameState.guessTime > 0) {
+        document.getElementById("pauseContainer").classList.remove("hidden");
+
         document.getElementById("pauseButton").classList.remove("hidden");
         document.getElementById("resumeButton").classList.add("hidden");
     } else {
-        document.getElementById("pauseButton").classList.add("hidden");
-        document.getElementById("resumeButton").classList.add("hidden");
+        document.getElementById("pauseContainer").classList.add("hidden");
     }
 }
 

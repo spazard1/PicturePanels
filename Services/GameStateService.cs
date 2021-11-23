@@ -131,7 +131,7 @@ namespace PicturePanels.Services
             {
                 var remainingTime = gs.TurnEndTime - DateTime.UtcNow;
                 gs.PauseState = GameStateTableEntity.PauseStatePaused;
-                gs.PauseTurnRemainingTime = remainingTime.HasValue && remainingTime.Value.TotalSeconds > 0 ? (int)Math.Ceiling(remainingTime.Value.TotalSeconds) : -1;
+                gs.PauseTurnRemainingTime = remainingTime.HasValue && remainingTime.Value.TotalSeconds > 0 ? Math.Ceiling(remainingTime.Value.TotalSeconds) : -1;
             });
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
@@ -146,7 +146,7 @@ namespace PicturePanels.Services
                 gs.PauseState = null;
                 if (gs.PauseTurnRemainingTime > 0)
                 {
-                    gs.TurnEndTime = DateTime.UtcNow.AddSeconds(gs.PauseTurnRemainingTime + GameStateTableEntity.PauseResumeGradePeriod);
+                    gs.TurnEndTime = DateTime.UtcNow.AddSeconds(gs.PauseTurnRemainingTime);
                 }
                 else if (gs.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
                 {
