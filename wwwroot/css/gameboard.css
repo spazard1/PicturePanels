@@ -679,3 +679,15 @@ body::-webkit-scrollbar {
     width: 35px;
     z-index: 1000;
 }
+
+.pauseContainer {
+    cursor: pointer;
+    position: fixed;
+    top: 5px;
+    left: 70px;
+    text-align: center;
+    line-height: 1em;
+    background: #333;
+    padding: 5px;
+    width: 75px;
+}
