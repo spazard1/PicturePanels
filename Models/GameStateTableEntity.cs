@@ -37,7 +37,7 @@ namespace PicturePanels.Models
 
         public const int GuessesMadeTimeBothPass = 8;
         public const int GuessesMadeTimeIncorrect = 20;
-        public const int GuessesMadeTimeCorrect = 40;
+        public const int GuessesMadeTimeCorrect = 35;
         public const int EndRoundTime = 30;
 
         public const int DefaultOpenPanelTime = 30;
