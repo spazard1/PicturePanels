@@ -18,6 +18,7 @@ namespace PicturePanels.Entities
         {
             Id = tableEntity.Id;
             Name = tableEntity.Name;
+            IsHidden = tableEntity.IsHidden;
             AlternativeNames = string.Join(",", tableEntity.AlternativeNames ?? new List<string>());
             Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
             UploadedBy = tableEntity.UploadedBy;
@@ -31,6 +32,8 @@ namespace PicturePanels.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
+        public bool IsHidden { get; set; }
+
         public string AlternativeNames { get; set; }
 
         public string Tags { get; set; }
@@ -42,6 +45,7 @@ namespace PicturePanels.Entities
             tableEntity.Name = this.Name;
             tableEntity.AlternativeNames = this.AlternativeNames?.Split(",").ToList();
             tableEntity.Tags = this.Tags?.Split(",").ToList();
+            tableEntity.IsHidden = this.IsHidden;
         }
 
         public int CompareTo([AllowNull] ImageEntity other)

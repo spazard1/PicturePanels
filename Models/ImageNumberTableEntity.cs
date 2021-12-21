@@ -2,7 +2,7 @@
 
 namespace PicturePanels.Models
 {
-    public class ImageNumberTableEntity : TableEntity
+    public class ImageNumberTableEntity : TableEntity, IImageIdTableEntity
     {
         public string Tag
         {
