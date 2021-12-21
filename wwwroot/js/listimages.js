@@ -1,10 +1,10 @@
 ﻿var maxRatio = 1.9;
 
-function listImages(username) {
+function listImages(search) {
     var url = "api/images/notApproved";
 
-    if (username) {
-        url = "api/images/username/" + username;
+    if (search) {
+        url = "api/images/search/" + search;
     }
 
     fetch(url, {
@@ -43,7 +43,7 @@ function listImages(username) {
 
                 imageContainerElement.appendChild(imageInfo);
 
-                drawImageInfo(img, image, nameInfoElement, username);
+                drawImageInfo(img, image, nameInfoElement);
             };
         }).catch(error => {
             var imageContainerElement = document.getElementById("imageContainer");
@@ -51,10 +51,10 @@ function listImages(username) {
         });
 }
 
-function drawImageInfo(img, imageEntity, nameInfoElement, username) {
+function drawImageInfo(img, imageEntity, nameInfoElement) {
     if (!img.complete) {
         setTimeout(function () {
-            drawImageInfo(img, imageEntity, nameInfoElement, username);
+            drawImageInfo(img, imageEntity, nameInfoElement);
         }, 100);
         return;
     }
@@ -76,6 +76,12 @@ function drawImageInfo(img, imageEntity, nameInfoElement, username) {
     imageName.appendChild(document.createTextNode(imageEntity.name));
     nameInfoElement.appendChild(imageName);
 
+    var isHidden = document.createElement("div");
+    isHidden.id = imageEntity.id + "_isHidden";
+    isHidden.classList = "isHidden";
+    isHidden.appendChild(document.createTextNode("IsHidden: " + imageEntity.isHidden));
+    nameInfoElement.appendChild(isHidden);
+
     var imageAlternativeNames = document.createElement("div");
     imageAlternativeNames.id = imageEntity.id + "_alternativeNames";
     imageAlternativeNames.classList = "privateInfo";
@@ -89,11 +95,7 @@ function drawImageInfo(img, imageEntity, nameInfoElement, username) {
 
     var imageUploadedBy = document.createElement("div");
     imageUploadedBy.id = imageEntity.id + "_uploadedBy";
-    if (username) {
-        imageUploadedBy.appendChild(document.createTextNode(username));
-    } else {
-        imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
-    }
+    imageUploadedBy.appendChild(document.createTextNode(imageEntity.uploadedBy));
     nameInfoElement.appendChild(imageUploadedBy);
 
     var actionLinks = document.createElement("div");
@@ -145,6 +147,8 @@ async function editImageAsync(imageId) {
     document.getElementById("imageAlternativeName2").value = alternativeNames[1] ? alternativeNames[1] : "";
     document.getElementById("imageAlternativeName3").value = alternativeNames[2] ? alternativeNames[2] : "";
     document.getElementById("tagsInput").value = imageEntity.tags;
+    document.getElementById("isHiddenInput").checked = imageEntity.isHidden;
+
 }
 
 async function patchImageAsync() {
@@ -158,7 +162,8 @@ async function patchImageAsync() {
             body: JSON.stringify({
                 name: document.getElementById("imageName").value,
                 alternativeNames: document.getElementById("imageAlternativeName1").value + "," + document.getElementById("imageAlternativeName2").value + "," + document.getElementById("imageAlternativeName3").value,
-                tags: document.getElementById("tagsInput").value
+                tags: document.getElementById("tagsInput").value,
+                isHidden: document.getElementById("isHiddenInput").checked
             })
         })
         .then(response => {
@@ -174,6 +179,7 @@ async function patchImageAsync() {
 
             document.getElementById(responseJson.id + "_name").innerHTML = responseJson.name;
             document.getElementById(responseJson.id + "_tags").innerHTML = responseJson.tags;
+            document.getElementById(responseJson.id + "_isHidden").innerHTML = "IsHidden: " + responseJson.isHidden;
             document.getElementById(responseJson.id + "_alternativeNames").innerHTML = responseJson.alternativeNames;
 
             return responseJson;
@@ -242,6 +248,6 @@ window.onload = async function () {
     };
 
     document.getElementById("loadUserImages").onclick = () => {
-        listImages(document.getElementById("username").value);
+        listImages(document.getElementById("search").value);
     };
 };

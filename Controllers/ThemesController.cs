@@ -40,6 +40,7 @@ namespace PicturePanels.Controllers
         [HttpGet("create")]
         public async Task<IActionResult> CreateAsync()
         {
+            // default
             var theme = await this.themeTableStorage.GetAsync("default");
             theme.Css = "default/default.css";
             theme.PlayerJoinSounds = new List<string>() { "default/playerJoin.mp3" };
@@ -53,6 +54,47 @@ namespace PicturePanels.Controllers
 
             await this.themeTableStorage.InsertOrReplaceAsync(theme);
 
+            // christmas
+            theme = await this.themeTableStorage.GetAsync("christmas");
+            theme.Css = "christmas/christmas.css";
+            theme.PlayerJoinSounds = new List<string>() { "default/playerJoin.mp3" };
+            theme.TurnStartSounds = new List<string>() { "default/turnStart.wav" };
+            theme.CountdownSounds = new List<string>() { "christmas/jingle-bells.wav" };
+            theme.TeamReadySounds = new List<string>() { "default/teamReady.mp3" };
+            theme.OpenPanelSounds = new List<string>() { "default/openPanel.mp3" };
+            theme.CorrectSounds = new List<string>() { 
+                "christmas/grinch-welcome-christmas.mp3",
+                "christmas/elf-smilings-my-favorite.mp3",
+                "christmas/merry-christmas-charlie-brown.mp3",
+                "christmas/rudolph-im-cute.mp3",
+                "christmas/rudolph-skinny-santa.mp3",
+                "christmas/run-a-neat-inn.mp3",
+                "christmas/roast-beast.mp3",
+                "christmas/thats-what-its-all-about.mp3",
+                "christmas/wonderful-life-youve-had-a-wonderful-life.mp3",
+                "christmas/hot-goose.mp3",
+                "christmas/wonderful-at-christmas.mp3",
+                "christmas/what-right.mp3"
+            };
+            theme.IncorrectSounds = new List<string>() { 
+                "christmas/elf-bye-buddy.mp3",
+                "christmas/elf-fruit-spray.mp3",
+                "christmas/elf-im-singing.mp3",
+                "christmas/elf-need-a-hug.mp3",
+                "christmas/elf-throne-of-lies.mp3",
+                "christmas/ive-killed-it.mp3",
+                "christmas/mean-one.mp3",
+                "christmas/wonderful-life-kind-of-an-angel-id-get.mp3",
+                "christmas/wonderful-life-some-easier-way-to-get-my-wings.mp3",
+                "christmas/humbug.mp3"
+            };
+            theme.EndGameSounds = new List<string>() {
+                "christmas/god-bless-us.mp3"
+            };
+
+            await this.themeTableStorage.InsertOrReplaceAsync(theme);
+
+            // guys weekend
             theme = await this.themeTableStorage.GetAsync("guysweekend");
             theme.Css = "guysweekend/guysweekend.css";
             theme.PlayerJoinSounds = new List<string>() { "guysweekend/wow.mp3" };

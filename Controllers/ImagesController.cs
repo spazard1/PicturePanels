@@ -229,9 +229,9 @@ namespace PicturePanels.Controllers
             });
         }
 
-        [HttpGet("username/{username}")]
+        [HttpGet("search/{search}")]
         [RequireAdmin]
-        public async Task<IActionResult> GetUserImagesAsync(string username)
+        public async Task<IActionResult> GetSearchImagesAsync(string search)
         {
             var userId = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
             var userTableEntity = await this.userTableStorage.GetAsync(userId);
@@ -240,23 +240,39 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var user = await this.userTableStorage.GetAsync(username);
-            if (user == null)
+            IAsyncEnumerable<ImageTableEntity> imageModels = null;
+
+            var user = await this.userTableStorage.GetAsync(search);
+            if (user != null)
             {
-                return StatusCode(404);
+                var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(user.UserId);
+                imageModels = this.imageTableStorage.PopulateImageDetails(uploadedByImages);
             }
-            var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(user.UserId);
-
-            var imageModels = this.imageTableStorage.PopulateImageDetails(uploadedByImages);
-            var images = await imageModels.Select(image => new ImageEntity(image)).ToListAsync();
-
-            userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
-
-            return Json(new ImageListEntity()
+            else
             {
-                QueryString = userTableEntity.QueryString,
-                Images = images
-            });
+                var tag = await this.imageTagTableStorage.GetAsync(search);
+
+                if (tag != null)
+                {
+                    var tagImages = this.imageNumberTableStorage.GetAllFromPartitionAsync(search);
+                    imageModels = this.imageTableStorage.PopulateImageDetails(tagImages);
+                }
+            }
+
+            if (imageModels != null)
+            {
+                imageModels = this.userTableStorage.PopulateUploadedBy(imageModels);
+                var images = await imageModels.Select(image => new ImageEntity(image)).ToListAsync();
+                userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
+
+                return Json(new ImageListEntity()
+                {
+                    QueryString = userTableEntity.QueryString,
+                    Images = images
+                });
+            }
+
+            return StatusCode(404);
         }
 
         [HttpGet("entity/{gameStateId}")]
