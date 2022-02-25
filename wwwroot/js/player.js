@@ -537,7 +537,7 @@ function handleGameState(gameState, updateType) {
 
             bootbox.alert({
                 size: "small",
-                message: "Your team is out of inner panels. From now on, if you open an inner panel, it will cost two points.",
+                message: "Your team is out of inner panels. From now on, if you open an inner panel, it will cost one point.",
                 closeButton: false
             });
 
