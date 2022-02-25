@@ -198,11 +198,11 @@ namespace PicturePanels.Services
             {
                 if (gameState.TeamTurn == 1 && gameState.TeamOneInnerPanels <= 0)
                 {
-                    teamOneScoreChange = -2;
+                    teamOneScoreChange = -1;
                 }
                 else if (gameState.TeamTurn == 2 && gameState.TeamTwoInnerPanels <= 0)
                 {
-                    teamTwoScoreChange = -2;
+                    teamTwoScoreChange = -1;
                 }
             }
             

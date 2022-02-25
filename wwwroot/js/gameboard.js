@@ -1255,7 +1255,7 @@ function drawPanelCounts(gameState) {
 
         var negativeElement = document.createElement("div");
         negativeElement.className = "negativePanelCount";
-        negativeElement.innerHTML = "&#x2794; -2";
+        negativeElement.innerHTML = "&#x2794; -1";
         teamOneInnerPanelsCountDiv.appendChild(negativeElement);
 
     } else {
@@ -1292,7 +1292,7 @@ function drawPanelCounts(gameState) {
 
         negativeElement = document.createElement("div");
         negativeElement.className = "negativePanelCount";
-        negativeElement.innerHTML = "&#x2794; -2";
+        negativeElement.innerHTML = "&#x2794; -1";
         teamTwoInnerPanelsCountDiv.appendChild(negativeElement);
     } else {
         for (var element of teamTwoInnerPanelsCountDiv.children) {
