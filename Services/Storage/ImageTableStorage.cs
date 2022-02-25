@@ -455,13 +455,28 @@ namespace PicturePanels.Services.Storage
 
         public async IAsyncEnumerable<ImageTableEntity> PopulateImageDetails(IAsyncEnumerable<IImageIdTableEntity> imageIdTableEntities)
         {
+            var tasks = new List<Task<ImageTableEntity>>();
+
             await foreach (var imageIdTableEntity in imageIdTableEntities)
             {
-                var imageEntity = await this.GetAsync(imageIdTableEntity.ImageId);
-                if (imageEntity != null)
+                tasks.Add(this.GetAsync(imageIdTableEntity.ImageId));
+
+                if (tasks.Count >= QueryBatchSize)
                 {
-                    yield return imageEntity;
+                    await Task.WhenAll(tasks);
+
+                    foreach (var imageTableEntityTask in tasks)
+                    {
+                        yield return imageTableEntityTask.Result;
+                    }
+
+                    tasks.Clear();
                 }
+            }
+
+            foreach (var imageTableEntityTask in tasks)
+            {
+                yield return imageTableEntityTask.Result;
             }
         }
     }

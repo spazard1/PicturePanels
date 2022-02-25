@@ -262,7 +262,8 @@ namespace PicturePanels.Controllers
             if (imageModels != null)
             {
                 imageModels = this.userTableStorage.PopulateUploadedBy(imageModels);
-                var images = await imageModels.Select(image => new ImageEntity(image)).ToListAsync();
+                
+                var images = await this.userPlayedImageTableStorage.PopulateIsPlayed(imageModels.Select(image => new ImageEntity(image)), userId).ToListAsync();
                 userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
 
                 return Json(new ImageListEntity()
@@ -683,6 +684,36 @@ namespace PicturePanels.Controllers
             {
                 imageTableStorage.GenerateCacheAsync(imageTableEntity);
             });
+
+            return Json(new ImageEntity(imageTableEntity));
+        }
+
+        [HttpPut("{imageId}/togglePlayed")]
+        [RequireAdmin]
+        public async Task<IActionResult> TogglePlayedAsync(string imageId)
+        {
+            var imageTableEntity = await this.imageTableStorage.GetAsync(imageId);
+            if (imageTableEntity == null)
+            {
+                return StatusCode(404);
+            }
+
+            var userId = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
+
+            var imagePlayedEntity = await this.userPlayedImageTableStorage.GetAsync(imageId, userId);
+
+            if (imagePlayedEntity == null)
+            {
+                await this.userPlayedImageTableStorage.InsertOrReplaceAsync(new UserPlayedImageTableEntity()
+                {
+                    UserId = userId,
+                    ImageId = imageId
+                });
+            }
+            else
+            {
+                await this.userPlayedImageTableStorage.DeleteAsync(imagePlayedEntity);
+            }
 
             return Json(new ImageEntity(imageTableEntity));
         }
