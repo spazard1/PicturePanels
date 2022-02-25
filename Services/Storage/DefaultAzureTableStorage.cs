@@ -9,6 +9,8 @@ namespace PicturePanels.Services.Storage
 {
     public class DefaultAzureTableStorage<T> where T:TableEntity, new()
     {
+        public const int QueryBatchSize = 25;
+
         protected readonly CloudTable cloudTable;
 
         public DefaultAzureTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider, string tableName)

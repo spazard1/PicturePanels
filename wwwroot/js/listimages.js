@@ -39,12 +39,19 @@ function listImages(search) {
                     document.getElementById(imageId).classList.toggle("imageInfoHidden");
                 }
 
+                if (image.isPlayed) {
+                    imageInfo.classList.add("imageIsPlayed");
+                }
+
                 imageInfo.appendChild(img);
 
                 imageContainerElement.appendChild(imageInfo);
 
                 drawImageInfo(img, image, nameInfoElement);
             };
+
+            document.getElementById("imageCount").innerHTML = responseJson.images.length;
+
         }).catch(error => {
             var imageContainerElement = document.getElementById("imageContainer");
             imageContainerElement.innerHTML = error;
@@ -82,6 +89,12 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     isHidden.appendChild(document.createTextNode("IsHidden: " + imageEntity.isHidden));
     nameInfoElement.appendChild(isHidden);
 
+    var isPlayed = document.createElement("div");
+    isPlayed.id = imageEntity.id + "_isPlayed";
+    isPlayed.classList = "isPlayed";
+    isPlayed.appendChild(document.createTextNode("isPlayed: " + imageEntity.isPlayed));
+    nameInfoElement.appendChild(isPlayed);
+
     var imageAlternativeNames = document.createElement("div");
     imageAlternativeNames.id = imageEntity.id + "_alternativeNames";
     imageAlternativeNames.classList = "privateInfo";
@@ -115,6 +128,14 @@ function drawImageInfo(img, imageEntity, nameInfoElement) {
     };
     aproveLink.appendChild(document.createTextNode("Approve"));
     actionLinks.appendChild(aproveLink);
+
+    var togglePlayedLink = document.createElement("span");
+    togglePlayedLink.classList = "actionLink";
+    togglePlayedLink.onclick = function (event) {
+        togglePlayedAsync(imageEntity.id);
+    };
+    togglePlayedLink.appendChild(document.createTextNode("Played"));
+    actionLinks.appendChild(togglePlayedLink);
 
     var deleteLink = document.createElement("span");
     deleteLink.classList = "actionLink";
@@ -201,9 +222,34 @@ async function approveImageAsync(imageId) {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("got bad response on delete image: " + response.text());
+                throw new Error("got bad response on approve image: " + response.text());
             }
             document.getElementById(imageId).remove();
+        }).catch(error => {
+            alert(error);
+        });
+}
+
+async function togglePlayedAsync(imageId) {
+    var result = confirm("Toggle played?");
+    if (!result) {
+        return;
+    }
+
+    return await fetch("api/images/" + imageId + "/togglePlayed",
+        {
+            method: "PUT",
+            headers: {
+                "Authorization": localStorage.getItem("userToken")
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("got bad response on toggle played image: " + response.text());
+            }
+            document.getElementById(imageId).imageEntity.isPlayed = !document.getElementById(imageId).imageEntity.isPlayed;
+
+            document.getElementById(imageId + "_isPlayed").innerHTML = "isPlayed: " + document.getElementById(imageId).imageEntity.isPlayed;
         }).catch(error => {
             alert(error);
         });
@@ -232,6 +278,8 @@ async function deleteImageAsync(imageId) {
         });
 }
 
+var toggleOnlyPlayed = false;
+
 window.onload = async function () {
     listImages();
 
@@ -249,5 +297,23 @@ window.onload = async function () {
 
     document.getElementById("loadUserImages").onclick = () => {
         listImages(document.getElementById("search").value);
+    };
+
+    document.getElementById("toggleIsPlayed").onclick = () => {
+        toggleOnlyPlayed = !toggleOnlyPlayed;
+
+        var playedImages = document.getElementsByClassName("imageIsPlayed");
+        for (var image of playedImages) {
+            image.classList.toggle("hidden");
+        }
+
+        var allImageCount = document.getElementsByClassName("imageInfo").length;
+
+        if (toggleOnlyPlayed) {
+            document.getElementById("imageCount").innerHTML = allImageCount - playedImages.length;
+        } else {
+            document.getElementById("imageCount").innerHTML = allImageCount;
+        }
+
     };
 };

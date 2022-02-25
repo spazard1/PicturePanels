@@ -40,6 +40,8 @@ namespace PicturePanels.Entities
 
         public string UploadedBy { get; internal set; }
 
+        public bool IsPlayed { get; internal set; }
+
         public void CopyProperties(ImageTableEntity tableEntity)
         {
             tableEntity.Name = this.Name;
