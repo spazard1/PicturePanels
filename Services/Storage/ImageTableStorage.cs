@@ -30,6 +30,7 @@ namespace PicturePanels.Services.Storage
         public const string ScratchBlobContainer = "scratch";
         public const string ThumbnailsBlobContainer = "thumbnails";
         public const string PanelsBlobContainer = "panels";
+        public const string GameStateQRCodesContainer = "gamestateqrcodes";
         public const string WelcomeGameStateId = "welcome";
         public const string WelcomeImageId = "17d941da-39ae-43c0-a940-3dc1c1ffda7c";
 
@@ -150,7 +151,7 @@ namespace PicturePanels.Services.Storage
             await targetCloudBlob.StartCopyFromUriAsync(new Uri(this.GetDownloadUrl(ScratchBlobContainer, imageTableEntity.Id)));
         }
 
-        public async Task<string> UploadFromStream(string blobContainer, string blobName, Stream imageStream)
+        public async Task<string> UploadFromStreamAsync(string blobContainer, string blobName, Stream imageStream)
         {
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobContainer);
             await blobContainerClient.CreateIfNotExistsAsync();

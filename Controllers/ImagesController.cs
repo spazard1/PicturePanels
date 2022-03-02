@@ -377,6 +377,20 @@ namespace PicturePanels.Controllers
             return StatusCode((int)HttpStatusCode.TemporaryRedirect);
         }
 
+        [HttpGet("gameStateQRCode/{gameStateId}")]
+        public async Task<IActionResult> GetGameStateQRCodeAsync(string gameStateId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound, "Did not find game state");
+            }
+
+            Response.Headers["Location"] = this.imageTableStorage.GetDownloadUrl(ImageTableStorage.GameStateQRCodesContainer, gameState.GameStateId + ".png", DateTime.UtcNow.AddDays(7));
+            Response.Headers["Cache-Control"] = "max-age=" + 3600 * 24 * 7;
+            return StatusCode((int)HttpStatusCode.TemporaryRedirect);
+        }
+
         [HttpGet("thumbnails/{imageId}")]
         [RequireAuthorization]
         public async Task<IActionResult> GetThumbnailAsync(string imageId)

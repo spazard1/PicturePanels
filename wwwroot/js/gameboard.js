@@ -370,6 +370,7 @@ function drawWelcome(gameState) {
         document.getElementById("teamOnePlayerNames").classList.add("welcomePlayerNames");
         document.getElementById("teamTwoPlayerNames").classList.add("welcomePlayerNames");
         document.getElementById("welcomeGameStateId").innerHTML = gameState.gameStateId;
+        document.getElementById("welcomeQRCodeImg").src = "api/images/gameStateQRCode/" + gameState.gameStateId;
     } else {
         document.getElementById("welcomeJoinGame").classList.add("hidden");
         document.getElementById("teamOnePlayerNames").classList.remove("welcomePlayerNames");

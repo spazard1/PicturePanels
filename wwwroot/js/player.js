@@ -807,6 +807,17 @@ window.onresize = function () {
 }
 
 window.onload = async function () {
+    var gc = urlParams.get('gc');
+    if (gc) {
+        if (gc.length === 4) {
+            localStorage.setItem("gameStateId", gc);
+            localStorage.removeItem("createdTime");
+        }
+
+        window.location.href = "https://picturepanels.net/";
+        return;
+    }
+
     document.getElementById("teamGuess_Pass").onclick = (event) => {
         event.stopPropagation();
         putTeamGuessVoteAsync("Pass");

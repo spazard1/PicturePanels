@@ -23,8 +23,8 @@ namespace PicturePanels.Controllers
         private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly ThemeTableStorage themeTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
-        private readonly SignalRHelper signalRHelper;
         private readonly GameStateService gameStateService;
+        private readonly GameStateQRCodeGenerator gameStateQRCodeGenerator;
 
         public GameStateController(GameStateTableStorage gameStateTableStorage,
             ImageTableStorage imageTableStorage,
@@ -32,8 +32,8 @@ namespace PicturePanels.Controllers
             GameRoundTableStorage gameRoundTableStorage,
             ThemeTableStorage themeTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
-            SignalRHelper signalRHelper,
-            GameStateService gameStateService)
+            GameStateService gameStateService,
+            GameStateQRCodeGenerator gameStateQRCodeGenerator)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.imageTableStorage = imageTableStorage;
@@ -41,8 +41,8 @@ namespace PicturePanels.Controllers
             this.gameRoundTableStorage = gameRoundTableStorage;
             this.themeTableStorage = themeTableStorage;
             this.hubContext = hubContext;
-            this.signalRHelper = signalRHelper;
             this.gameStateService = gameStateService;
+            this.gameStateQRCodeGenerator = gameStateQRCodeGenerator;
         }
 
         [HttpGet("{id}")]
@@ -100,6 +100,8 @@ namespace PicturePanels.Controllers
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
 
             gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
+
+            await this.gameStateQRCodeGenerator.GenerateAsync(gameState);
 
             if (gameState.FinalRoundNumber == 0)
             {
