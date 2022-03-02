@@ -65,6 +65,7 @@ namespace PicturePanels
             services.AddSingleton<ChatService>();
             services.AddSingleton<CertificateProvider>();
             services.AddSingleton<SecurityProvider>();
+            services.AddSingleton<GameStateQRCodeGenerator>();
 
             services.AddScoped<AuthorizationFilter>();
 
