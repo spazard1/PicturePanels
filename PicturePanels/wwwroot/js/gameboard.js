@@ -578,9 +578,6 @@ function drawTeamGuesses(gameState) {
     }
 
     if (gameState.turnType === "GuessesMade") {
-        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"], 2000));
-        animationPromise = animationPromise.then(() => animateCSS(teamTwoGuessContainer, ["slow", "bounceInDown"], ["bounceOutUp", "hidden"]));
-
         var teamOneGuess = "\"" + gameState.teamOneGuess + "\"";
         if (gameState.teamOneGuessStatus !== "Guess") {
             teamOneGuess = "(team passed)";
@@ -671,13 +668,13 @@ async function drawTeamScoreChangeAsync(gameState) {
         var scoreChange = await getScoreChangeAsync(gameState.gameStateId);
 
         if (scoreChange.teamOne && scoreChange.teamTwo) {
-            animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
+            animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 1000));
             animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"]));
             delay = 0;
         } else if (scoreChange.teamOne) {
-            animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
+            animationPromise = animationPromise.then(() => animateCSS(teamOneScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 1000));
         } else if (scoreChange.teamTwo) {
-            animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 3000));
+            animationPromise = animationPromise.then(() => animateCSS(teamTwoScoreChangeElement, ["slow", "bounceInDown"], ["bounceOutUp"], 1000));
         }
 
         animationPromise = animationPromise.then(async () => {
@@ -831,7 +828,7 @@ function drawRemainingTurnTime(gameState) {
             if (remainingSeconds >= 0 && remainingSeconds <= 10) {
                 document.getElementById("remainingTurnTimeTextSeconds").innerHTML = Math.max(0, Math.floor(remainingSeconds)) + "...";
                 animateCSS("#remainingTurnTime", ["slow", "bounceInRight"], ["bounceOutRight", "hidden"]);
-                if (remainingSeconds >= 1 && remainingSeconds <= 5) {
+                if (remainingSeconds >= 1 && remainingSeconds <= 4) {
                     playRandomSound(countdownSounds);
                 }
             }
