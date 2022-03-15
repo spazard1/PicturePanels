@@ -4,13 +4,15 @@ import './index.css';
 import Gameboard from './routes/gameboard';
 import Player from './routes/player';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Player />} />
       <Route path="gameboard" element={<Gameboard />} />
+
+      <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>
   </BrowserRouter>,
   document.getElementById('root')
