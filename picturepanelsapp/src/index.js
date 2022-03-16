@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Gameboard from './routes/gameboard';
-import Player from './routes/player';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 
+const Player = lazy(() => import('./routes/player'));
+const Gameboard = lazy(() => import('./routes/gameboard'));
+
 ReactDOM.render(
   <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Player />} />
-      <Route path="gameboard" element={<Gameboard />} />
+    <Suspense fallback={<div></div>}>
+      <Routes>
+        <Route path="/" element={<Player />} />
+        <Route path="gameboard" element={<Gameboard />} />
 
-      <Route path="*" element={<Navigate replace to="/" />} />
-    </Routes>
+        <Route path="*" element={<Navigate replace to="/" />} />
+      </Routes>
+    </Suspense>
   </BrowserRouter>,
   document.getElementById('root')
 );
