@@ -1,10 +1,16 @@
-﻿html {
+﻿body {
     touch-action: manipulation;
+    height: 100% !important;
+    max-width: 100%;
+    color: white;
+    background-color: black;
+    margin: 0;
+    padding: 0;
 }
 
-html, body {
-    max-width: 100%;
-    overflow-x: hidden;
+#mainDiv {
+    height: 100%;
+    width: 100%;
 }
 
 a {

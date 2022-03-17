@@ -1,15 +1,5 @@
-﻿html, body {
-    -webkit-overflow-scrolling: touch !important;
+﻿body.admin {
     overflow: auto !important;
-    height: 100% !important;
-    margin: 0;
-    padding: 0;
-    color: white;
-    background-color: black;
-}
-
-body {
-    font-size: 2em;
 }
 
 .buttonsFlex {
