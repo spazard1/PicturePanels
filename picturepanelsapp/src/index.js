@@ -4,10 +4,10 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import './index.css';
 
-const Player = lazy(() => import('./Player/Player'));
-const Gameboard = lazy(() => import('./Gameboard/Gameboard'));
-const Upload = lazy(() => import('./Upload/Upload'));
-const Admin = lazy(() => import('./Admin/Admin'));
+const Player = lazy(() => import('./player/Player'));
+const Gameboard = lazy(() => import('./gameboard/Gameboard'));
+const Upload = lazy(() => import('./upload/Upload'));
+const Admin = lazy(() => import('./admin/Admin'));
 
 ReactDOM.render(
   <BrowserRouter>
