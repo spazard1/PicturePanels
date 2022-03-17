@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import AllLinks from "../Common/AllLinks";
+import AllLinks from "../common/AllLinks";
 import './Gameboard.css';
 
 export default function Gameboard() {
