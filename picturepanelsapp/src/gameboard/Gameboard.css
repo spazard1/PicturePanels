@@ -1,0 +1,693 @@
+﻿body {
+    color: white;
+    background-color: black;
+    overflow: hidden;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+#blackcover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+    font-size: 3em;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.welcomeContainer {
+    padding: 2vh 2vw;
+    font-size: 3vh;
+    position: absolute;
+    width: 60vw;
+    top: 15vh;
+    left: 20vw;
+    background-color: rgba(0, 0, 0, .9);
+    z-index: 900;
+    text-align: center;
+    box-sizing: border-box;
+    border: 4px solid grey;
+}
+
+.welcomeStartGame {
+    font-size: 4vh;
+}
+
+.welcomeText a {
+    color: skyblue;
+    text-decoration: none;
+}
+
+.welcomeQRCodeImg {
+    margin-top: 2vh;
+    height: 25vh;
+    background-color: rgba(0, 0, 0, 1);
+}
+
+.welcomeGameCode {
+    margin-top: 2vh;
+    font-size: 3.5vh;
+}
+
+.welcomeGameStateId {
+    font-size: 7vh;
+}
+
+.welcomeButton {
+    margin-top: 4vh;
+    font-size: 3vh;
+    width: 16vw;
+    white-space: nowrap;
+    padding: 0 5px;
+}
+
+.gameStateIdInput {
+    margin-top: 3vh;
+    font-size: 4vh;
+    width: 10vw;
+    text-align: center;
+}
+
+.welcomeGameStateInput {
+    text-align: center;
+}
+
+.welcomeGameStateOptions {
+    margin-top: 3vh;
+}
+
+.welcomeGameStateDropdownSubOptions {
+    margin-top: 1vh;
+}
+
+.welcomeGameStateTeamName {
+    margin: 0 .75rem;
+}
+
+.startGameButtons {
+    display: flex;
+    width: 80%;
+}
+
+.welcomeTagsMessage {
+    font-size: 2vh;
+    margin-top: 5vh;
+}
+
+.tagsInputContainer {
+    display: inline-block;
+    width: 25vw;
+}
+
+.welcomeGameStateDropdownOptions {
+    margin-top: 5vh;
+}
+
+.loginContainer {
+    margin-top: 6vh;
+    font-size: 2.5vh;
+    width: 60%;
+}
+
+.loginMessage {
+    margin-top: 2.5vh;
+}
+
+.loggedInUser {
+    margin-top: 2.5vh;
+    font-size: 2.5vh;
+}
+
+.teamInfos {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    width: 80%;
+    height: 7vh;
+}
+
+.teamInfo {
+    position: relative;
+    box-sizing: border-box;
+    text-align: center;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.teamInfoIncorrectGuesses {
+    position: absolute;
+    bottom: 0;
+    color: red;
+    font-size: 2.5vh;
+    font-weight: bold;
+}
+
+#teamOneDiv .teamInfoIncorrectGuesses {
+    left: 4px;
+}
+
+#teamTwoDiv .teamInfoIncorrectGuesses {
+    right: 4px;
+}
+
+.teamInfoPanelCounts {
+    width: 50%;
+    height: 35%;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+
+.teamInfoPanelCounts .panelCount {
+    box-sizing: border-box;
+    width: 15%;
+    border-width: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 3px;
+}
+
+.negativePanelCount {
+    white-space: nowrap;
+    font-size: 1.9vh;
+    line-height: 2vh;
+    margin-left: 3px;
+}
+
+.teamNameBox {
+    box-sizing: border-box;
+    flex: 6;
+    background-color: rgb(35, 35, 35);
+    border: 4px solid rgb(35, 35, 35);
+    height: 100%;
+}
+
+.teamStatus {
+    position: relative;
+    flex: 3;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 3.25vh;
+    vertical-align: middle;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.teamName {
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 2.75vh;
+    line-height: 1em;
+    width: 70%;
+    margin: 0 auto 3px auto;
+    padding: 3px 0;
+}
+
+.teamScore {
+    position: relative;
+    box-sizing: border-box;
+    flex: 1;
+    vertical-align: middle;
+    font-size: 5.5vh;
+    height: 7vh;
+    line-height: 5.5vh;
+    width: 100%;
+}
+
+.teamScoreChange {
+    position: absolute;
+    box-sizing: border-box;
+    width: 100%;
+    top: 7.5vh;
+    z-index: 100;
+    font-size: 4vh;
+    line-height: normal;
+}
+
+.teamGuess {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 3px;
+    width: 100%;
+    top: 7.5vh;
+    font-weight: 500;
+    font-size: 4vh;
+    line-height: normal;
+    z-index: 100;
+    text-align: center;
+}
+
+.teamGuessChild {
+    transition: opacity 1.5s ease-in;
+}
+
+.teamGuessReady {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.teamGuess span {
+    position: relative;
+    opacity: 0;
+    animation: move-text 0.75s forwards;
+}
+
+.teamGuessIncorrect {
+    text-decoration-color: rgba(255, 0, 0, .7);
+    text-decoration-line: line-through;
+    text-decoration-thickness: 5px;
+}
+
+@keyframes move-text {
+    0% {
+        bottom: -0.1em;
+        opacity: .25;
+    }
+
+    50% {
+        bottom: 0.1em;
+        opacity: 1;
+    }
+
+    100% {
+        bottom: 0;
+        opacity: 1;
+    }
+}
+
+.teamPlayerNames {
+    position: absolute;
+    top: 8vh;
+    font-size: 2.5vh;
+    margin-top: 2px;
+}
+
+.teamOnePlayerNames {
+    text-align: left;
+    left: .5vh;
+}
+
+.teamTwoPlayerNames {
+    text-align: right;
+    right: .5vw;
+}
+
+.teamPlayerNames div {
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: .15vw solid black;
+}
+
+.teamOnePlayerNames div {
+    padding-left: 3px;
+}
+
+.teamTwoPlayerNames div {
+    padding-right: 3px;
+}
+
+.welcomePlayerNames {
+    top: 20vh;
+    display: flex;
+    flex-wrap: wrap;
+    width: 20vw;
+    justify-content: center;
+    background-color: black;
+    z-index: 900;
+    opacity: .9;
+    box-sizing: border-box;
+    border: 4px solid grey;
+    padding-top: 1vh;
+}
+
+.welcomePlayerNames.teamOnePlayerNames {
+    left: 5vh;
+}
+
+.welcomePlayerNames.teamTwoPlayerNames {
+    right: 5vh;
+}
+
+.welcomePlayerNames div {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: .5vw;
+    margin-right: .5vw;
+    margin-bottom: 1vh;
+    justify-content: center;
+    padding-left: 0px;
+}
+
+.teamPlayerName {
+    width: 7vw;
+    white-space: nowrap;
+    height: 1.45em;
+    line-height: 1.1em;
+    margin-bottom: 3px;
+    z-index: 1;
+    box-sizing: border-box;
+    transition: opacity .5s;
+}
+
+.imageContainer {
+    text-align: center;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    margin-top: 1vh;
+    max-width: 83vw;
+    max-height: 91vh;
+    text-align: center;
+    overflow: hidden;
+}
+
+.imageContainer img {
+    object-fit: contain;
+    object-position: 50% 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.panels {
+    text-align: center;
+    margin-top: 1vh;
+    width: 83vw;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.panel {
+    position: relative;
+    box-sizing: border-box;
+    width: 20%;
+    display: flex;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+}
+
+.panel .panelBackground {
+    position: absolute;
+    border: 2px solid black;
+    font-size: 1em;
+    user-select: none;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 2s;
+    z-index: 20;
+}
+
+.panelNumber {
+    position: relative;
+    font-size: 10vh;
+    user-select: none;
+}
+
+.panel .panelImage {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    vertical-align: bottom;
+}
+
+.mostVotesPanel {
+    position: absolute;
+    transition: opacity 1s, transform 1s;
+}
+
+.mostVotesPanel .panelImage {
+    position: relative;
+    width: 100%;
+    vertical-align: bottom;
+    z-index: 10;
+}
+
+.playerDot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1s, transform 1s;
+}
+
+.playerDot svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.playerDot svg circle {
+    width: 100%;
+    height: 100%;
+}
+
+.playerDot div {
+    position: relative;
+    color: black;
+    text-align: center;
+    font-size: 2.5vh;
+    margin: auto;
+    vertical-align: middle;
+}
+
+.uploadedByContainer {
+    font-size: 3vh;
+    bottom: 1vh;
+    right: .5vw;
+}
+
+.roundNumberAnimateContainer {
+    font-size: 10vh;
+    top: 45vh;
+    width: 100%;
+}
+
+.answerTitleContainer {
+    font-size: 6vh;
+    top: 18vh;
+    width: 100%;
+}
+
+.remainingTurnTimeContainer {
+    font-size: 4vh;
+    bottom: 12vh;
+    right: 10vw;
+}
+
+.gameStateIdDisplayContainer {
+    font-size: 3vh;
+    bottom: 1vh;
+    left: .5vw;
+}
+
+.fadedDisplayBox {
+    position: absolute;
+    z-index: 1000;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.fadedDisplayBox .fadedDisplayBoxTitle {
+    display: inline-block;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .6);
+    border: 3px solid rgba(50, 50, 50, 1);
+    padding: .1em .3em .1em .3em;
+}
+
+.fadedDisplayBoxTitle * {
+    opacity: 1;
+}
+
+.roundNumberCorner {
+    position: fixed;
+    width: 10vw;
+    white-space: nowrap;
+    right: 0;
+    top: 0;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2.75vh;
+    line-height: 3.5vh;
+}
+
+.endGameContainer {
+    width: 83vw;
+    margin-top: 2vh;
+}
+
+.endGameWinner {
+    font-size: 7vh;
+}
+
+.endGameRounds {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gameRound {
+    width: 20%;
+    box-sizing: border-box;
+    padding: 1vh;
+}
+
+.gameRoundScoreContainer {
+    display: flex;
+    justify-content: space-around;
+    margin: 1vh;
+}
+
+.gameRoundScore {
+    font-size: 5vh;
+    padding: 0 1vw;
+    box-sizing: border-box;
+}
+
+.gameRoundScoreZero {
+    opacity: 0;
+}
+
+.countdownDiv {
+    position: absolute;
+    height: 100%;
+    margin: 0;
+    top: 0;
+}
+
+#teamOneDiv .countdownDiv {
+    right: 0;
+}
+
+#teamTwoDiv .countdownDiv {
+    left: 0;
+}
+
+.countdownDiv canvas {
+    height: 100%;
+}
+
+#countdown-number {
+    color: white;
+    display: none;
+}
+
+#countdown svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+#teamOneCountdownDiv svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+#teamTwoCountdownDiv svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+#countdown svg circle {
+    stroke-dasharray: 113px;
+    stroke-dashoffset: 0px;
+    stroke-linecap: round;
+    stroke-width: 3px;
+    stroke: white;
+    fill: none;
+    animation: countdown 60s linear forwards;
+}
+
+@keyframes countdown {
+    from {
+        stroke-dashoffset: 0px;
+    }
+
+    to {
+        stroke-dashoffset: 60px;
+    }
+}
+
+.volume-chooser {
+    background: #333;
+    color: #dedede;
+    padding: 5px;
+    display: inline-block;
+    position: fixed;
+    top: 5px;
+    left: 5px;
+    z-index: 1000;
+}
+
+.volume-value {
+    display: none;
+}
+
+.volume-chooser:hover .volume-control {
+    display: block;
+}
+
+.volume-chooser:hover .volume-value {
+    display: inline-block;
+}
+
+.volume-control {
+    position: absolute;
+    display: none;
+    top: 100%;
+    border: 1px solid #aaa;
+    background: #dedede;
+    width: 40px;
+    z-index: 1000;
+}
+
+.volume-control .volume {
+    -webkit-appearance: slider-vertical;
+    width: 35px;
+    z-index: 1000;
+}
+
+.pauseContainer {
+    cursor: pointer;
+    position: fixed;
+    top: 5px;
+    left: 70px;
+    text-align: center;
+    line-height: 1em;
+    background: #333;
+    padding: 5px;
+    width: 75px;
+}
