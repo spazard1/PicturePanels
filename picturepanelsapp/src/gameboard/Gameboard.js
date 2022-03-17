@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import AllLinks from "../common/AllLinks";
 import './Gameboard.css';
 
