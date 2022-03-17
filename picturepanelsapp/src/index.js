@@ -1,11 +1,13 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import './index.css';
 
-const Player = lazy(() => import('./routes/player'));
-const Gameboard = lazy(() => import('./routes/gameboard'));
+const Player = lazy(() => import('./Player/Player'));
+const Gameboard = lazy(() => import('./Gameboard/Gameboard'));
+const Upload = lazy(() => import('./Upload/Upload'));
+const Admin = lazy(() => import('./Admin/Admin'));
 
 ReactDOM.render(
   <BrowserRouter>
@@ -13,6 +15,8 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<Player />} />
         <Route path="gameboard" element={<Gameboard />} />
+        <Route path="upload" element={<Upload />} />
+        <Route path="admin" element={<Admin />} />
 
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>

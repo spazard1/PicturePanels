@@ -1,0 +1,363 @@
+﻿html, body {
+    -webkit-overflow-scrolling: touch !important;
+    overflow: auto !important;
+    height: 100% !important;
+    margin: 0;
+    padding: 0;
+    color: white;
+    background-color: black;
+}
+
+body {
+    font-size: 2em;
+}
+
+#choosePlayerNameLabel {
+    flex: 0 0 auto;
+    margin-top: .5rem;
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: .8em;
+}
+
+#playerNameInputDiv {
+    flex: 0 0 auto;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    border: 3px solid black;
+}
+
+#colorPicker {
+    flex: 0 0 auto;
+    margin-top: 1rem;
+}
+
+.choosePlayerName {
+    flex: 0 0 auto;
+    margin-top: 2rem;
+}
+
+.playerHelp {
+    font-size: 1rem;
+    margin-top: 1rem;
+    color: white;
+    flex: 1;
+    width: 95%;
+}
+
+#choosePlayerNameButton {
+    font-size: 1.5em;
+    width: 100%;
+    flex: 1;
+}
+
+.playerTextInput {
+    margin-top: .75rem;
+    caret-color: white;
+    background-color: black;
+    font-size: 1em;
+    width: 75%;
+    text-align: center;
+}
+
+.gameStateId {
+    width: 60%
+}
+
+.playerBannerFlex {
+    display: flex;
+}
+
+.teamName {
+    overflow: hidden;
+    font-size: .8em;
+    user-select: none;
+}
+
+.playerName {
+    overflow: hidden;
+    white-space: nowrap;
+    flex-grow: 1;
+    flex-basis: 0;
+    font-size: .8em;
+    user-select: none;
+}
+
+#playerBannerTeamNames {
+    overflow: hidden;
+    white-space: nowrap;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+#chooseTeam {
+    flex-grow: 1;
+    display: flex;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.chooseTeamName {
+    flex-grow: 1;
+    padding: 4px;
+    margin-bottom: 2em;
+    cursor: pointer;
+}
+
+.chooseSmallestTeamBox {
+    margin-top: 4em;
+    color: black;
+    background-color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 5px solid grey;
+}
+
+.playerBanner {
+    width: 100vw;
+    display: flex;
+}
+
+#playerBannerItem {
+    flex-grow: 1;
+}
+
+.playerBannerChooseTeam {
+    flex-grow: 3;
+    flex-direction: column;
+    width: 70%;
+}
+
+.playerBannerChooseTeam .playerBannerItem {
+    margin-bottom: 2em;
+    height: 2em;
+}
+
+.playerBannerPlaying {
+    cursor: pointer;
+    flex: 0 0 auto;
+    padding: 2px 0 2px 0;
+}
+
+.turnStatusMessage {
+    position: fixed;
+    padding: 2px;
+    top: 0;
+    user-select: none;
+    font-size: .8em;
+    z-index: 20;
+    background-color: black;
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+    flex-direction: column;
+    transition: opacity 1s;
+}
+
+.turnStatusMessageHighlight {
+    animation: highlightTurnStatus 2s alternate;
+    animation-iteration-count: 4;
+    animation-fill-mode: both;
+}
+
+.turnStatusMessageCorrect {
+    animation: correct 3s infinite alternate;
+}
+
+.teamButtons {
+    margin-bottom: .5rem;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.teamGuessButton {
+    background-color: lightgreen;
+    margin-left: 1.5rem;
+}
+
+.playerReadyButton {
+    position: relative;
+    background-color: lightgreen;
+}
+
+.confirmButtonChild {
+    transition: opacity 1s ease-in;
+}
+
+.confirmReady {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.playerNameConfirm {
+    background-color: black;
+    padding: 2px 3px;
+    border-radius: 8px;
+}
+
+.teamGuessesInputContainer {
+    margin-top: .5em;
+    width: 100%;
+    display: flex;
+}
+
+.teamGuessesContainer {
+    margin-top: .5em;
+}
+
+.teamGuesses {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: center;
+}
+
+.teamGuessText {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+    height: fit-content;
+    overflow-wrap: break-word;
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+    max-width: 95%;
+    font-size: .65em;
+    padding: 3px 10px;
+    margin-bottom: 1em;
+    border-radius: 10px;
+    background-color: darkblue;
+    border: 3px solid blue;
+}
+
+.teamGuessAdd {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    background-color: #101010;
+    border: 3px dashed darkblue;
+    width: 6em;
+    white-space: nowrap;
+}
+
+.teamGuess_Pass {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    background-color: #101010;
+    border: 3px solid #383838;
+    font-style: italic;
+    width: 6em;
+}
+
+.teamGuessDeleteButton {
+    cursor: pointer;
+    position: absolute;
+    top: -1.25em;
+    right: -1.25em;
+    width: 2em;
+    height: 2em;
+}
+
+.teamGuessDeleteButton img {
+    position: absolute;
+    top: .8em;
+    left: .4em;
+    width: .8em;
+    height: .8em;
+}
+
+.teamGuessesMessage {
+    flex: 1;
+}
+
+.teamGuessVoteCount {
+    position: absolute;
+    top: -.9em;
+    left: -1em;
+    font-size: 1rem;
+    font-style: normal;
+    color: yellow;
+    background-color: dodgerblue;
+    padding: 1px 4px 1px 4px;
+    border-radius: 10px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.teamGuessVoteCount:before {
+    content: "\02606";
+}
+
+.teamGuessVoteCountChosen:before {
+    content: "\02605";
+}
+
+.teamGuessVoteCount:empty {
+    display: none;
+}
+
+.modal-title {
+    color: black;
+}
+
+.bootbox-body {
+    color: black;
+    font-size: 1rem;
+}
+
+@keyframes highlightTurnStatus {
+    0% {
+        color: white;
+    }
+
+    100% {
+        color: greenyellow;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    #mainDiv {
+        width: 50vw;
+    }
+
+    .playerBanner {
+        width: 50vw;
+    }
+
+    .turnStatusMessage {
+        width: 50vw;
+    }
+
+    .chat img {
+        max-width: 40vw;
+    }
+
+    .panelButtons {
+        width: 48vw;
+    }
+
+    .panelButton {
+        font-size: 1.1em;
+    }
+
+    .panelImages {
+        width: 48vw;
+    }
+}
