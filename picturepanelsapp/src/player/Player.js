@@ -1,5 +1,5 @@
 import React from "react";
-import AllLinks from "../Common/AllLinks";
+import AllLinks from "../common/AllLinks";
 import './Player.css';
 
 export default function Player() {

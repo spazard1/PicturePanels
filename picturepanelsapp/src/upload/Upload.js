@@ -1,5 +1,5 @@
 import React from "react";
-import AllLinks from "../Common/AllLinks";
+import AllLinks from "../common/AllLinks";
 import './Upload.css';
 
 export default function Upload() {
@@ -11,3 +11,4 @@ export default function Upload() {
       </main>
     );
   }
+ 
