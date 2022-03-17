@@ -1,21 +1,5 @@
-﻿html, body {
+﻿body.upload {
     overflow-x: hidden !important;
-    height: 100% !important;
-    margin: 0;
-    padding: 0;
-}
-
-a {
-    color: dodgerblue;
-}
-
-a:visited {
-    color: dodgerblue;
-}
-
-#mainDiv {
-    height: 100%;
-    width: 100%;
 }
 
 input {

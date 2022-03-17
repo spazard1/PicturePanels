@@ -1,12 +1,10 @@
-﻿body {
-    color: white;
-    background-color: black;
+﻿body.gameboard {
     overflow: hidden;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
 
-body::-webkit-scrollbar {
+body.gameboard::-webkit-scrollbar {
     display: none;
 }
 
