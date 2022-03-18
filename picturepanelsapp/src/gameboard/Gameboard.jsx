@@ -1,17 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import AllLinks from "../common/AllLinks";
 import { useBodyClass } from "../common/useBodyClass";
 import "./Gameboard.css";
 
 export default function Gameboard() {
-  const { x, setX } = useState();
   useBodyClass("gameboard");
-
-  useEffect(() => {
-    if (x === 1) {
-      setX(3);
-    }
-  }, []);
 
   return (
     <main style={{ padding: "1rem 0" }}>
