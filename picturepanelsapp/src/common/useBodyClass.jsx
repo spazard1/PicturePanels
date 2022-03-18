@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export function useBodyClass(className) {
   useEffect(() => {
@@ -6,6 +6,6 @@ export function useBodyClass(className) {
 
     return () => {
       document.body.classList.remove(className);
-    }
+    };
   });
 }

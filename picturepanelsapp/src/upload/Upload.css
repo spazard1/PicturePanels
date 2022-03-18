@@ -1,182 +1,182 @@
 ﻿body.upload {
-    overflow-x: hidden !important;
+  overflow-x: hidden !important;
 }
 
 input {
-    font-size: 1.4em;
+  font-size: 1.4em;
 }
 
 .loggedInUser {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    position: fixed;
-    right: 0;
-    top: 0;
-    padding: .2vh .2vw;
-    background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: fixed;
+  right: 0;
+  top: 0;
+  padding: 0.2vh 0.2vw;
+  background-color: white;
 }
 
 .loggedInUser div {
-    margin: .25vh;
+  margin: 0.25vh;
 }
 
 .loggedInUserDisplayName {
-    font-size: 1.75rem;
+  font-size: 1.75rem;
 }
 
 #cropperImage {
-    display: block;
-    max-width: 100%;
+  display: block;
+  max-width: 100%;
 }
 
 .uploadInputPanel {
-    padding: 1vh .5vw 1vh .5vw;
-    width: 100%;
-    font-size: 1.3em;
-    box-sizing: border-box;
+  padding: 1vh 0.5vw 1vh 0.5vw;
+  width: 100%;
+  font-size: 1.3em;
+  box-sizing: border-box;
 }
 
 .inputPanelElement {
-    padding-bottom: 2vh;
+  padding-bottom: 2vh;
 }
 
 .imageAlternativeName {
-    margin-bottom: .5vh;
+  margin-bottom: 0.5vh;
 }
 
 .imageContainer {
-    width: 100%;
+  width: 100%;
 }
 
 .helpMessageContainer {
-    width: 100%;
+  width: 100%;
 }
 
 .uploadResults {
-    font-size: 1.4em;
-    margin-bottom: 3vh;
+  font-size: 1.4em;
+  margin-bottom: 3vh;
 }
 
 .uploadInstructions {
-    margin-bottom: 8vh;
+  margin-bottom: 8vh;
 }
 
 .imageFileDiv {
-    margin-bottom: 1vh;
+  margin-bottom: 1vh;
 }
 
 .croppedImageInfo {
-    display: flex;
-    flex-wrap: wrap;
-    flex: 1;
-    max-height: 10%;
-    width: 100%;
-    font-size: 1.4em;
-    margin-bottom: 1vh;
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  max-height: 10%;
+  width: 100%;
+  font-size: 1.4em;
+  margin-bottom: 1vh;
 }
 
 .croppedImageInfo div {
-    flex: 1;
-    min-width: 50%;
-    margin-top: .5vh;
+  flex: 1;
+  min-width: 50%;
+  margin-top: 0.5vh;
 }
 
 .imageUrl {
-    width: 80%;
-    text-align: center;
+  width: 80%;
+  text-align: center;
 }
 
 .uploadButton {
-    padding: 1px 4px 1px 4px;
-    margin-left: .5vw;
-    margin-right: .5vw;
-    background-color: deepskyblue;
-    border: 3px solid dodgerblue;
-    border-radius: 3px;
-    cursor: pointer;
+  padding: 1px 4px 1px 4px;
+  margin-left: 0.5vw;
+  margin-right: 0.5vw;
+  background-color: deepskyblue;
+  border: 3px solid dodgerblue;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .aspectRatioButton {
-    font-size: .9em;
-    padding: 1px 6px 1px 6px;
-    margin-left: .5vw;
-    margin-right: .5vw;
-    background-color: deepskyblue;
-    border: 3px solid dodgerblue;
-    border-radius: 3px;
-    cursor: pointer;
+  font-size: 0.9em;
+  padding: 1px 6px 1px 6px;
+  margin-left: 0.5vw;
+  margin-right: 0.5vw;
+  background-color: deepskyblue;
+  border: 3px solid dodgerblue;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .imageUrlDiv {
-    margin-bottom: 3vh;
+  margin-bottom: 3vh;
 }
 
 .imagePreview {
-    object-fit: contain;
-    max-width: 100%;
+  object-fit: contain;
+  max-width: 100%;
 }
 
 .loading {
-    text-align: center;
-    padding: 1em;
-    background-color: white;
-    border: 5px solid dodgerblue;
-    z-index: 100;
-    position: absolute;
-    width: 40vw;
-    top: 30vh;
-    left: 30vw;
+  text-align: center;
+  padding: 1em;
+  background-color: white;
+  border: 5px solid dodgerblue;
+  z-index: 100;
+  position: absolute;
+  width: 40vw;
+  top: 30vh;
+  left: 30vw;
 }
 
 .loadingMessage {
-    font-size: 3em;
+  font-size: 3em;
 }
 
 .loading img {
-    max-height: 4em;
-    max-width: 4em;
+  max-height: 4em;
+  max-width: 4em;
 }
 
 .helpMessage {
-    font-size: 2em;
-    margin-bottom: .5vh;
+  font-size: 2em;
+  margin-bottom: 0.5vh;
 }
 
 .helpImage {
-    object-fit: contain;
-    max-width: 40%;
+  object-fit: contain;
+  max-width: 40%;
 }
 
 @media only screen and (min-width: 1000px) {
-    #mainDiv {
-        display: flex;
-        flex-direction: row;
-    }
+  #mainDiv {
+    display: flex;
+    flex-direction: row;
+  }
 
-    .uploadInputPanel {
-        padding-top: 1vh;
-        flex: 3;
-    }
+  .uploadInputPanel {
+    padding-top: 1vh;
+    flex: 3;
+  }
 
-    .imageContainer {
-        height: 80vh;
-        flex: 7;
-    }
+  .imageContainer {
+    height: 80vh;
+    flex: 7;
+  }
 
-    .helpMessageContainer {
-        height: 99vh;
-        flex: 7;
-    }
+  .helpMessageContainer {
+    height: 99vh;
+    flex: 7;
+  }
 
-    .croppedImageInfo {
-        position: absolute;
-        top: 0;
-        right: 5%;
-        width: 60%;
-    }
+  .croppedImageInfo {
+    position: absolute;
+    top: 0;
+    right: 5%;
+    width: 60%;
+  }
 
-    .imageUrlDiv {
-        margin-bottom: 5vh;
-    }
+  .imageUrlDiv {
+    margin-bottom: 5vh;
+  }
 }
