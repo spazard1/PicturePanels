@@ -1,276 +1,275 @@
 ﻿body {
-    touch-action: manipulation;
-    height: 100% !important;
-    max-width: 100%;
-    color: white;
-    background-color: black;
-    margin: 0;
-    padding: 0;
+  touch-action: manipulation;
+  height: 100% !important;
+  max-width: 100%;
+  color: white;
+  background-color: black;
+  margin: 0;
+  padding: 0;
 }
 
 #mainDiv {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 a {
-    color: lightblue;
+  color: lightblue;
 }
 
 a:visited {
-    color: lightblue;
+  color: lightblue;
 }
 
 .noHighlights {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 input:focus {
-    outline: none;
+  outline: none;
 }
 
 .inline {
-    display: inline;
+  display: inline;
 }
 
 .hideIfEmpty:empty {
-    display: none !important;
+  display: none !important;
 }
 
 .animate__hidden {
-    display: none !important;
-    visibility: hidden;
+  display: none !important;
+  visibility: hidden;
 }
 
 .hidden {
-    display: none !important;
-    visibility: hidden;
+  display: none !important;
+  visibility: hidden;
 }
 
 .opacity0 {
-    opacity: 0;
+  opacity: 0;
 }
 
 .uppercase {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 [data-toggle="tooltip"]:before {
-    content: "\1f6c8";
+  content: "\1f6c8";
 }
 
 .defaultButton {
-    height: fit-content;
-    cursor: pointer;
-    user-select: none;
-    box-sizing: border-box;
-    padding: 1px 4px 1px 4px;
-    margin: 3px;
-    color: black;
-    font-size: .7em;
-    background-color: rgb(239, 239, 239);
-    border: 3px outset rgb(118, 118, 118);
-    border-radius: 15px;
+  height: fit-content;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  padding: 1px 4px 1px 4px;
+  margin: 3px;
+  color: black;
+  font-size: 0.7em;
+  background-color: rgb(239, 239, 239);
+  border: 3px outset rgb(118, 118, 118);
+  border-radius: 15px;
 }
 
 .defaultButton:active {
-    border: 3px inset rgb(118, 118, 118);
+  border: 3px inset rgb(118, 118, 118);
 }
 
 .modal-title,
 .loginPrompt {
-    color: black;
+  color: black;
 }
 
 .center {
-    text-align: center;
-    margin: auto;
+  text-align: center;
+  margin: auto;
 }
 
 .tagsInput {
-    font-size: 2vh;
+  font-size: 2vh;
 }
 
 #signalRConnectionState {
-    position: fixed;
-    bottom: 0;
-    z-index: 10000;
-    background-color: black;
-    box-sizing: border-box;
-    padding: .3em;
-    border: 3px solid red;
-    text-align: center;
-    width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 10000;
+  background-color: black;
+  box-sizing: border-box;
+  padding: 0.3em;
+  border: 3px solid red;
+  text-align: center;
+  width: 100%;
 }
 
 .newUser {
-    font-size: 1.75rem;
+  font-size: 1.75rem;
 }
 
 .userResults {
-    margin-bottom: 3vh;
+  margin-bottom: 3vh;
 }
 
 .errorMessage {
-    color: red;
-    border: 2px solid red;
+  color: red;
+  border: 2px solid red;
 }
 
 .adminMenu {
-    position: fixed;
-    height: 1em;
-    bottom: .5em;
-    text-align: center;
-    left: 50%;
-    transform: translate(-50%, 0);
-    font-size: 2.5vh;
+  position: fixed;
+  height: 1em;
+  bottom: 0.5em;
+  text-align: center;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 2.5vh;
 }
 
 #adminMenu a {
-    padding: 3px;
-    margin: 2px;
-    background-color: black;
-    border: 2px solid dodgerblue;
+  padding: 3px;
+  margin: 2px;
+  background-color: black;
+  border: 2px solid dodgerblue;
 }
 
 .thumbnailsContainer {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .thumbnailContainer {
-    margin-bottom: 2vh;
-    width: 20%;
-    box-sizing: border-box;
+  margin-bottom: 2vh;
+  width: 20%;
+  box-sizing: border-box;
 }
 
 .thumbnail {
-    object-fit: contain;
-    object-position: top;
-    width: 100%;
+  object-fit: contain;
+  object-position: top;
+  width: 100%;
 }
 
 input::placeholder,
 textarea::placeholder {
-    text-transform: lowercase;
-    font-style: italic;
+  text-transform: lowercase;
+  font-style: italic;
 }
 
 input:focus::placeholder,
 textarea:focus::placeholder {
-    color: transparent;
+  color: transparent;
 }
 
-
 .flexColumns {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .smoothScroll {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 #mainDiv {
-    padding: 0;
-    height: 100%;
+  padding: 0;
+  height: 100%;
 }
 
 .panelButtons {
-    flex: none;
-    border: 5px solid black;
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
+  flex: none;
+  border: 5px solid black;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .panelButtonsHighlight {
-    animation: highlightPanelButtons 2s alternate infinite;
-    animation-fill-mode: both;
+  animation: highlightPanelButtons 2s alternate infinite;
+  animation-fill-mode: both;
 }
 
 .panelButton {
-    position: relative;
-    cursor: pointer;
-    width: 20%;
-    box-sizing: border-box;
-    display: flex;
-    vertical-align: middle;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  cursor: pointer;
+  width: 20%;
+  box-sizing: border-box;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .panelButtonNumber {
-    color: black;
-    font-size: 1em;
+  color: black;
+  font-size: 1em;
 }
 
 .panelButton .panelButtonBackground {
-    position: absolute;
-    font-size: 1em;
-    user-select: none;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    display: flex;
-    vertical-align: middle;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  font-size: 1em;
+  user-select: none;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .panelButtonDisabled {
-    cursor: default !important;
+  cursor: default !important;
 }
 
 .panelButtonDisabled .panelButtonBackground {
-    background-color: rgb(45,45,45) !important;
+  background-color: rgb(45, 45, 45) !important;
 }
 
 .panelButtonDisabled .panelButtonBackground {
-    color: black !important;
+  color: black !important;
 }
 
 .panelButton .panelButtonImage {
-    z-index: 100;
-    width: 100%;
-    vertical-align: bottom;
+  z-index: 100;
+  width: 100%;
+  vertical-align: bottom;
 }
 
 .mostVotesPanel {
-    z-index: 100;
-    top: 0;
-    left: 0;
+  z-index: 100;
+  top: 0;
+  left: 0;
 }
 
 .teamBox {
-    white-space: nowrap;
-    box-sizing: border-box;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .teamOneColor {
-    white-space: nowrap;
-    overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .teamTwoColor {
-    white-space: nowrap;
-    overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 @keyframes highlightPanelButtons {
-    0% {
-        border-color: black;
-    }
+  0% {
+    border-color: black;
+  }
 
-    100% {
-        border-color: greenyellow;
-    }
+  100% {
+    border-color: greenyellow;
+  }
 }
