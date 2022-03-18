@@ -1,199 +1,199 @@
 ﻿body.admin {
-    overflow: auto !important;
+  overflow: auto !important;
 }
 
 .buttonsFlex {
-    width: 100%;
-    display: flex;
+  width: 100%;
+  display: flex;
 }
 
 .buttonsFlex * {
-    flex: 1;
+  flex: 1;
 }
 
 .panelButtons {
-    position: inherit;
+  position: inherit;
 }
 
 #goContainer {
-    margin-bottom: 2vh;
+  margin-bottom: 2vh;
 }
 
 .turnButtons {
-    width: 80%;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
+  width: 80%;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
 }
 
 .editTeamButtons {
-    width: 60%;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
+  width: 60%;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
 }
 
 .gameStatus {
-    margin-top: 2vh;
-    font-size: .6em;
+  margin-top: 2vh;
+  font-size: 0.6em;
 }
 
 .flexItem {
-    text-align: center;
-    flex: 1;
-    width: 50vw;
+  text-align: center;
+  flex: 1;
+  width: 50vw;
 }
 
 .input-number {
-    text-align: center;
-    font-size: 1.3em;
+  text-align: center;
+  font-size: 1.3em;
 }
 
 .teamTurn {
-    width: 7em;
+  width: 7em;
 }
 
 .teamName {
-    width: 50vw;
-    text-align: center;
+  width: 50vw;
+  text-align: center;
 }
 
 .plusMinus {
-    padding: 3px;
-    width: 3em;
-    display: flex;
+  padding: 3px;
+  width: 3em;
+  display: flex;
 }
 
 .plusMinusInput {
-    flex: 1;
+  flex: 1;
 }
 
 .plusMinusButton {
-    background-color: rgb(239, 239, 239);
-    margin-left: 2px;
-    margin-right: 2px;
-    cursor: pointer;
-    flex: 1;
-    box-sizing: border-box;
-    display: flex;
-    vertical-align: middle;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
+  background-color: rgb(239, 239, 239);
+  margin-left: 2px;
+  margin-right: 2px;
+  cursor: pointer;
+  flex: 1;
+  box-sizing: border-box;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .plusMinusButtonText {
-    color: black;
-    position: relative;
-    z-index: 1000;
-    font-size: 1em;
-    user-select: none;
-    font-weight: bold;
+  color: black;
+  position: relative;
+  z-index: 1000;
+  font-size: 1em;
+  user-select: none;
+  font-weight: bold;
 }
 
 .plusMinusText {
-    font-size: .7em;
-    text-align: center;
-    min-width: 0;
-    flex-grow: 2;
+  font-size: 0.7em;
+  text-align: center;
+  min-width: 0;
+  flex-grow: 2;
 }
 
 .adminSelect {
-    text-align: center;
-    color: black;
-    font-size: .9em;
-    margin: 3px;
-    min-width: 0;
+  text-align: center;
+  color: black;
+  font-size: 0.9em;
+  margin: 3px;
+  min-width: 0;
 }
 
 .adminTeamSelect {
-    width: 2em;
+  width: 2em;
 }
 
 .adminButton {
-    font-size: .6em;
-    height: 2em;
-    width: 5.5em;
-    margin: 3px;
-    box-sizing: border-box;
+  font-size: 0.6em;
+  height: 2em;
+  width: 5.5em;
+  margin: 3px;
+  box-sizing: border-box;
 }
 
 .adminInputText {
-    text-align: center;
-    color: black;
-    font-size: 1em;
-    margin: 3px;
-    max-width: 80vw;
+  text-align: center;
+  color: black;
+  font-size: 1em;
+  margin: 3px;
+  max-width: 80vw;
 }
 
 .adminInputTextNumber {
-    width: 4em;
+  width: 4em;
 }
 
 .buttonHighlight {
-    border-color: lime;
-    border-width: 4px;
+  border-color: lime;
+  border-width: 4px;
 }
 
 #imageNumber {
-    margin: 3px;
+  margin: 3px;
 }
 
 #imageId {
-    color: black;
-    flex: 5;
-    margin: 3px;
-    min-width: 0;
-    font-size: .9em;
+  color: black;
+  flex: 5;
+  margin: 3px;
+  min-width: 0;
+  font-size: 0.9em;
 }
 
-#selectImageContainer  {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
+#selectImageContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
 .selectImageButton {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .chatsContainer {
-    display:none;
-    overflow: hidden;
+  display: none;
+  overflow: hidden;
 }
 
 @media only screen and (min-width: 1000px) {
-    #mainDiv {
-        width: 50vw;
-    }
+  #mainDiv {
+    width: 50vw;
+  }
 
-    .turnStatusMessage {
-        width: 50vw;
-    }
+  .turnStatusMessage {
+    width: 50vw;
+  }
 
-    .chats {
-        flex: 1 0 0;
-    }
+  .chats {
+    flex: 1 0 0;
+  }
 
-    .chat img {
-        max-width: 40vw;
-    }
+  .chat img {
+    max-width: 40vw;
+  }
 
-    .panelButtons {
-        width: 48vw;
-    }
+  .panelButtons {
+    width: 48vw;
+  }
 
-    .chatsContainer {
-        display: flex;
-        height: 100%;
-        width: 50vw;
-        position: absolute;
-        top: 0;
-        left: 50vw;
-        flex-direction: column;
-        overflow: hidden;
-    }
+  .chatsContainer {
+    display: flex;
+    height: 100%;
+    width: 50vw;
+    position: absolute;
+    top: 0;
+    left: 50vw;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-    .adminMenu {
-        left: 25%;
-    }
+  .adminMenu {
+    left: 25%;
+  }
 }
