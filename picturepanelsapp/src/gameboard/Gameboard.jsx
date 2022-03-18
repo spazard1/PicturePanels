@@ -8,7 +8,7 @@ export default function Gameboard() {
   useBodyClass("gameboard");
 
   useEffect(() => {
-    if (x === 4) {
+    if (x === 2) {
       setX(3);
     }
   }, []);
