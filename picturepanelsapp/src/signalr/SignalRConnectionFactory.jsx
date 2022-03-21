@@ -18,9 +18,16 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
     //const li = document.createElement("li");
     //li.textContent = `Connection lost due to error "${error}". Reconnecting.`;
     //document.getElementById("messageList").appendChild(li);
+
+    setConnectionId(connection.id);
   });
 
-  setConnectionId(connection.id);
+  connection.onreconnected((connectionId) => {
+    console.log("signalr reconnected");
+    setConnectionId(connectionId);
+  });
+
+  connection.start();
 
   return connection;
 };
