@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AllLinks from "../common/AllLinks";
 import { useBodyClass } from "../common/useBodyClass";
 import SignalRContext from "../signalr/SignalRContext";
@@ -10,15 +10,19 @@ import "animate.css";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
+
   const [gameState, setGameState] = useState({});
+  const [connection, setConnection] = useState();
   const [connectionId, setConnectionId] = useState();
-  const signalRContext = useRef();
 
   useEffect(() => {
-    signalRContext.current = CreateSignalRConnection(
+    const newConnection = CreateSignalRConnection(
       "gameStateId=" + localStorage.getItem("gameStateId"),
       setConnectionId
     );
+
+    setConnection(newConnection);
+    setConnectionId(newConnection.id);
   }, []);
 
   useSignalR("GameState", (gameState) => {
@@ -31,7 +35,7 @@ export default function Gameboard() {
   }, [connectionId]);
 
   return (
-    <SignalRContext.Provider value={signalRContext.current}>
+    <SignalRContext.Provider value={connection}>
       <AllLinks />
       <Panels revealedPanels={gameState.revealedPanels ?? []} />
     </SignalRContext.Provider>
