@@ -21,4 +21,6 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
   });
 
   setConnectionId(connection.id);
+
+  return connection;
 };
