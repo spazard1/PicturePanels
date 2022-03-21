@@ -5,9 +5,10 @@ import SignalRContext from "../signalr/SignalRContext";
 import { useSignalR } from "../signalr/useSignalR";
 import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
 import Panels from "./Panels";
+import getGameState from "../common/getGameState";
+
 import "./Gameboard.css";
 import "animate.css";
-import getGameState from "../common/getGameState";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -19,16 +20,23 @@ export default function Gameboard() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    if (!gameStateId) {
+      return;
+    }
+
     const newConnection = CreateSignalRConnection(
-      "gameStateId=" + localStorage.getItem("gameStateId"),
+      "gameStateId=" + gameStateId,
       setConnectionId
     );
 
+    console.log(connection);
+    console.log("setting connection", newConnection);
     setConnection(newConnection);
     setConnectionId(newConnection.id);
-  }, []);
+  }, [gameStateId]);
 
   useSignalR("GameState", (gameState) => {
+    console.log("new gameState: " + gameState);
     setGameState(gameState);
   });
 
@@ -39,7 +47,7 @@ export default function Gameboard() {
 
     getGameState(gameStateId, (gameState) => {
       setGameState(gameState);
-      setLoaded(true);
+      setLoaded(false);
     });
   }, [gameStateId, connectionId]);
 
@@ -55,6 +63,7 @@ export default function Gameboard() {
     setInterval(() => {
       setGameState((previousGameState) => {
         console.log(previousGameState.revealedPanels);
+
         let revealedPanels = previousGameState.revealedPanels;
 
         if (previousGameState.revealedPanels.length > 10) {
@@ -63,15 +72,15 @@ export default function Gameboard() {
           revealedPanels.push(Math.ceil(Math.random() * 20) + "");
         }
 
-        let newGameState = Object.assign({}, previousGameState); // creating copy of state variable jasper
-        newGameState.revealedPanels = revealedPanels; // update the name property, assign a new value
+        let newGameState = Object.assign({}, previousGameState);
+        newGameState.revealedPanels = revealedPanels;
         return newGameState;
       });
     }, 5000);
-  }, [loaded]);
+  }, []);
 
   return (
-    <SignalRContext.Provider value={connection}>
+    <SignalRContext.Provider value={"this is my test context"}>
       <AllLinks />
       <Panels
         roundNumber={gameState.roundNumber ?? 0}
