@@ -32,7 +32,6 @@ namespace PicturePanels.Services
             var gameStateId = httpContext.Request.Query["gameStateId"];
             var playerId = httpContext.Request.Query["playerId"];
 
-
             if (!string.IsNullOrWhiteSpace(playerId))
             {
                 var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);

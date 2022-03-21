@@ -107,7 +107,14 @@ namespace PicturePanels
                 app.UseWebOptimizer();
             }
 
-            app.UseCors(policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+            app.UseCors(policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins(
+                new string[] {
+                        "http://localhost:3000",
+                        "https://localhost:3000",
+                        "https://picturepanels.net",
+                        "https://nice-pebble-0e37f8d10.1.azurestaticapps.net/"
+                    }
+                ));
 
             app.UseDefaultFiles();
 
