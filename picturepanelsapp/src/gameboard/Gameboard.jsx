@@ -16,6 +16,7 @@ export default function Gameboard() {
   const [gameState, setGameState] = useState({});
   const [connection, setConnection] = useState();
   const [connectionId, setConnectionId] = useState();
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const newConnection = CreateSignalRConnection(
@@ -38,12 +39,36 @@ export default function Gameboard() {
 
     getGameState(gameStateId, (gameState) => {
       setGameState(gameState);
+      setLoaded(true);
     });
   }, [gameStateId, connectionId]);
 
   useEffect(() => {
     setGameStateId("KDML");
   }, []);
+
+  useEffect(() => {
+    if (!loaded || !gameState) {
+      return;
+    }
+
+    setInterval(() => {
+      setGameState((previousGameState) => {
+        console.log(previousGameState.revealedPanels);
+        let revealedPanels = previousGameState.revealedPanels;
+
+        if (previousGameState.revealedPanels.length > 10) {
+          revealedPanels = [];
+        } else {
+          revealedPanels.push(Math.ceil(Math.random() * 20) + "");
+        }
+
+        let newGameState = Object.assign({}, previousGameState); // creating copy of state variable jasper
+        newGameState.revealedPanels = revealedPanels; // update the name property, assign a new value
+        return newGameState;
+      });
+    }, 5000);
+  }, [loaded]);
 
   return (
     <SignalRContext.Provider value={connection}>
