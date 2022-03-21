@@ -7,10 +7,12 @@ import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
 import Panels from "./Panels";
 import "./Gameboard.css";
 import "animate.css";
+import getGameState from "../common/getGameState";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
+  const [gameStateId, setGameStateId] = useState();
   const [gameState, setGameState] = useState({});
   const [connection, setConnection] = useState();
   const [connectionId, setConnectionId] = useState();
@@ -30,14 +32,26 @@ export default function Gameboard() {
   });
 
   useEffect(() => {
-    // fetch initial game state, set gameState
-    setGameState({ revealedPanels: [] });
-  }, [connectionId]);
+    if (!gameStateId) {
+      return;
+    }
+
+    getGameState(gameStateId, (gameState) => {
+      setGameState(gameState);
+    });
+  }, [gameStateId, connectionId]);
+
+  useEffect(() => {
+    setGameStateId("KDML");
+  }, []);
 
   return (
     <SignalRContext.Provider value={connection}>
       <AllLinks />
-      <Panels revealedPanels={gameState.revealedPanels ?? []} />
+      <Panels
+        roundNumber={gameState.roundNumber ?? 0}
+        revealedPanels={gameState.revealedPanels ?? []}
+      />
     </SignalRContext.Provider>
   );
 }
