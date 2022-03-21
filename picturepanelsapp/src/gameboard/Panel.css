@@ -1,0 +1,42 @@
+/* stylelint-disable selector-class-pattern */
+.panel {
+  position: relative;
+  box-sizing: border-box;
+  width: 20%;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+
+.panel .panelBackground {
+  position: absolute;
+  border: 2px solid black;
+  font-size: 1em;
+  user-select: none;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 2s;
+  z-index: 20;
+}
+
+.panelNumber {
+  position: relative;
+  font-size: 10vh;
+  user-select: none;
+}
+
+.panel .panelImage {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  vertical-align: bottom;
+}
