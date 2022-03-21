@@ -1,36 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import Panel from "./Panel";
 
 import "./Panels.css";
-import { useSignalR } from "../signalr/useSignalR";
 
 const panelNumbers = [...Array(20).keys()].map(
   (panelNumber) => panelNumber + 1
 );
 
-export default function Panels() {
-  const [revealedPanels, setRevealedPanels] = useState([]);
-
-  useSignalR("GameState", (gameState) => {
-    setRevealedPanels(gameState.revealedPanels);
-  });
-
-  useEffect(() => {
-    setRevealedPanels([1]);
-  }, []);
+export default function Panels({ revealedPanels }) {
+  console.log(revealedPanels);
 
   return (
     <div id="panels" className="panels center">
       {panelNumbers.map((panelNumber) => (
         <>
-          {revealedPanels.indexOf(panelNumber) > 0 && (
+          {revealedPanels.indexOf(panelNumber) >= 0 && (
             <Panel
               className={"isOpen"}
               key={panelNumber}
               panelNumber={panelNumber}
             ></Panel>
           )}
-          {revealedPanels.indexOf(panelNumber) <= 0 && (
+          {revealedPanels.indexOf(panelNumber) < 0 && (
             <Panel key={panelNumber} panelNumber={panelNumber}></Panel>
           )}
         </>
@@ -38,3 +30,7 @@ export default function Panels() {
     </div>
   );
 }
+
+Panels.propTypes = {
+  revealedPanels: PropTypes.arrayOf(PropTypes.string),
+};
