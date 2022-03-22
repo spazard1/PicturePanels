@@ -1,0 +1,32 @@
+/* stylelint-disable selector-id-pattern */
+/* stylelint-disable selector-class-pattern */
+
+.scoreBoard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.scoreBoardStatus {
+  position: relative;
+  flex: 3;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 3.25vh;
+  vertical-align: middle;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreTeam {
+  box-sizing: border-box;
+  flex: 1;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 5.5vh;
+  height: 7vh;
+  line-height: 5.5vh;
+  width: 100%;
+}
