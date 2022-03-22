@@ -5,19 +5,14 @@ import usePrevious from "../common/usePrevious";
 import { GetEntranceClass } from "../animate/Animate";
 import "./Panels.css";
 
-const panelNumbers = [...Array(20).keys()].map(
-  (panelNumber) => panelNumber + 1 + ""
-);
+const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
 export default function Panels({ revealedPanels, roundNumber }) {
   const [entranceClass, setEntranceClass] = useState("");
   const previousRevealedPanels = usePrevious(revealedPanels);
 
   useEffect(() => {
-    if (
-      !previousRevealedPanels ||
-      revealedPanels.length < previousRevealedPanels.length
-    ) {
+    if (!previousRevealedPanels || revealedPanels.length < previousRevealedPanels.length) {
       setEntranceClass(GetEntranceClass());
     }
   }, [revealedPanels]);
