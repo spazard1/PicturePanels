@@ -1,0 +1,109 @@
+﻿/* stylelint-disable selector-id-pattern */
+/* stylelint-disable selector-class-pattern */
+@font-face {
+  font-family: valentines;
+  src: url("/fonts/VanessasValentine.ttf");
+}
+
+.panelNumber {
+  font-family: valentines, sans-serif;
+  letter-spacing: 6px;
+}
+
+.activeTeam {
+  border: 4px dashed pink;
+}
+
+.panel:nth-child(3n) .panelBackground {
+  background: #ffb6c1;
+}
+
+.panel:nth-child(3n) .panelNumber {
+  color: black;
+}
+
+.panel:nth-child(3n + 1) .panelBackground {
+  background: #ff69b4;
+}
+
+.panel:nth-child(3n + 2) .panelBackground {
+  background: red;
+}
+
+.panelButtonNumber {
+  color: black;
+}
+
+.panelButton .panelButtonBackground {
+  border: 3px solid black;
+}
+
+.panelButtonSelected .panelButtonBackground {
+  border: 3px solid white;
+}
+
+.panelButton:nth-child(3n) .panelButtonBackground {
+  background: #ffb6c1;
+}
+
+.panelButton:nth-child(3n + 1) .panelButtonBackground {
+  background: #ff69b4;
+  color: white;
+}
+
+.panelButton:nth-child(3n + 2) .panelButtonBackground {
+  background: red;
+}
+
+.mostVotesPanel {
+  box-shadow: 0 0 0 0.25vw red;
+  outline: dashed 0.25vw white;
+}
+
+.teamOneBox {
+  border: 5px solid #f0f;
+  background-color: #8b008b;
+}
+
+.teamTwoBox {
+  border: 5px solid red;
+  background-color: darkred;
+}
+
+.teamOneColor {
+  color: #f0f;
+}
+
+.teamTwoColor {
+  color: red;
+}
+
+.teamOneDarkColor {
+  color: #8b008b;
+}
+
+.teamTwoDarkColor {
+  color: darkred;
+}
+
+#teamOnePlayerNames div {
+  background-color: #8b008b;
+}
+
+#teamTwoPlayerNames div {
+  background-color: darkred;
+}
+
+@keyframes correct {
+  0% {
+    color: white;
+  }
+
+  50% {
+    color: #ffb6c1;
+  }
+
+  100% {
+    color: #ff69b4;
+  }
+}
