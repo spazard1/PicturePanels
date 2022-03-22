@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import Panel from "./Panel";
 import MostVotesPanels from "./MostVotesPanels";
@@ -8,9 +8,12 @@ import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-export default function Panels({ players, revealedPanels, roundNumber }) {
+export default function Panels({ gameStateId, players, revealedPanels, roundNumber }) {
   const [entranceClass, setEntranceClass] = useState("");
+  const [imagesLoaded, setImagesLoaded] = useState({});
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
   const previousRevealedPanels = usePrevious(revealedPanels);
+  const panelRefs = useMemo(() => panelNumbers.map(() => React.createRef()), []);
 
   useEffect(() => {
     if (!previousRevealedPanels || revealedPanels.length < previousRevealedPanels.length) {
@@ -18,15 +21,16 @@ export default function Panels({ players, revealedPanels, roundNumber }) {
     }
   }, [revealedPanels]);
 
-  const measuredRef = useCallback(
-    (node) => {
-      if (node !== null) {
-        console.log(node);
-        console.log(node.getBoundingClientRect().height);
-      }
-    },
-    [roundNumber]
-  );
+  useEffect(() => {
+    if (Object.keys(imagesLoaded).length === panelNumbers.length) {
+      setAllImagesLoaded(true);
+    }
+  }, [imagesLoaded]);
+
+  useEffect(() => {
+    setImagesLoaded({});
+    setAllImagesLoaded(false);
+  }, [gameStateId, roundNumber]);
 
   return (
     <>
@@ -34,22 +38,25 @@ export default function Panels({ players, revealedPanels, roundNumber }) {
         {panelNumbers.map((panelNumber) => {
           return (
             <Panel
-              ref={measuredRef}
+              key={panelNumber}
+              ref={panelRefs[panelNumber - 1]}
+              gameStateId={gameStateId}
               isOpen={revealedPanels.indexOf(panelNumber) >= 0}
               entranceClass={entranceClass}
-              key={panelNumber}
               panelNumber={panelNumber}
               roundNumber={roundNumber}
+              setImagesLoaded={setImagesLoaded}
             ></Panel>
           );
         })}
       </div>
-      <MostVotesPanels players={players}></MostVotesPanels>
+      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players}></MostVotesPanels>}
     </>
   );
 }
 
 Panels.propTypes = {
+  gameStateId: PropTypes.string.isRequired,
   players: PropTypes.object.isRequired,
   revealedPanels: PropTypes.arrayOf(PropTypes.string),
   roundNumber: PropTypes.number.isRequired,
