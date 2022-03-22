@@ -83,3 +83,7 @@
   font-size: 2.5vh;
   font-weight: bold;
 }
+
+.activeTeam {
+  border: 4px solid lightgreen;
+}
