@@ -7,5 +7,5 @@ export function useBodyClass(className) {
     return () => {
       document.body.classList.remove(className);
     };
-  });
+  }, [className]);
 }
