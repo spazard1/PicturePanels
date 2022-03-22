@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import AllLinks from "../common/AllLinks";
 import { useBodyClass } from "../common/useBodyClass";
 import { useSignalR } from "../signalr/useSignalR";
 import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
@@ -54,7 +53,6 @@ export default function Gameboard() {
 
   return (
     <>
-      <AllLinks />
       <Panels
         roundNumber={gameState.roundNumber ?? 0}
         revealedPanels={gameState.revealedPanels ?? []}
