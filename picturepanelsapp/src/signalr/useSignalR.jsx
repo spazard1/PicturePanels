@@ -1,18 +1,18 @@
 import { useContext, useEffect } from "react";
-import SignalRContext from "../signalr/SignalRContext";
+import SignalRConnectionContext from "./SignalRConnectionContext";
 
 export function useSignalR(eventName, callback) {
-  const signalRContext = useContext(SignalRContext);
+  const { connection } = useContext(SignalRConnectionContext);
 
   useEffect(() => {
-    if (!signalRContext) {
+    if (!connection) {
       return;
     }
 
-    signalRContext.on(eventName, callback);
+    connection.on(eventName, callback);
 
     return () => {
-      signalRContext.off(eventName, callback);
+      connection.off(eventName, callback);
     };
-  }, [signalRContext]);
+  }, [connection]);
 }

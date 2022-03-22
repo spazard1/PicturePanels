@@ -1,0 +1,116 @@
+﻿/* stylelint-disable selector-id-pattern */
+/* stylelint-disable selector-class-pattern */
+.activeTeam {
+  border: 4px solid lightgreen;
+}
+
+.panel:nth-child(n + 1):nth-child(-n + 5) .panelBackground {
+  background-image: url("/themes/guysweekend/ScottAndRandyTop.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-color: black;
+  border: none;
+}
+
+.panel:nth-child(n + 6):nth-child(-n + 10) .panelBackground {
+  background-image: url("/themes/guysweekend/ScottAndRandyBottom.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-color: black;
+  border: none;
+}
+
+.panel:nth-child(n + 11):nth-child(-n + 15) .panelBackground {
+  background-image: url("/themes/guysweekend/ScottAndRandy2Top.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-color: black;
+  border: none;
+}
+
+.panel:nth-child(n + 16):nth-child(-n + 20) .panelBackground {
+  background-image: url("/themes/guysweekend/ScottAndRandy2Bottom.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-color: black;
+  border: none;
+}
+
+.panelButton .panelButtonBackground {
+  border: 3px solid black;
+}
+
+.panelButton:nth-child(even) .panelButtonBackground {
+  background-color: #f3e6d8;
+}
+
+.panelButton:nth-child(odd) .panelButtonBackground {
+  background-color: #d5dff6;
+}
+
+.panelButtonSelected:nth-child(even) .panelButtonBackground {
+  border: 3px solid white;
+  background-color: dodgerblue;
+}
+
+.panelButtonSelected:nth-child(odd) .panelButtonBackground {
+  border: 3px solid white;
+  background-color: dodgerblue;
+}
+
+.mostVotesPanel {
+  box-shadow: 0 0 0 0.25vw green;
+  outline: dashed 0.25vw lightblue;
+}
+
+.teamOneBox {
+  border: 5px solid blue;
+  background-color: darkblue;
+}
+
+.teamTwoBox {
+  border: 5px solid red;
+  background-color: darkred;
+}
+
+.teamOneColor {
+  color: blue;
+}
+
+.teamTwoColor {
+  color: red;
+}
+
+.teamOneDarkColorBackground {
+  background-color: darkblue;
+}
+
+.teamTwoDarkColorBackground {
+  background-color: darkred;
+}
+
+#teamOnePlayerNames div {
+  background-color: darkblue;
+}
+
+#teamTwoPlayerNames div {
+  background-color: darkred;
+}
+
+@keyframes correct {
+  0% {
+    color: lightgreen;
+  }
+
+  50% {
+    color: orange;
+  }
+
+  100% {
+    color: mediumpurple;
+  }
+}
