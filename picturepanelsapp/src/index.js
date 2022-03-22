@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import "./index.css";
+import "./themes/default/default.css";
 import AppWrapper from "./common/AppWrapper";
 
 const Player = lazy(() => import("./player/Player"));
