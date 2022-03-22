@@ -12,6 +12,7 @@ function TeamInfos({ gameState }) {
           teamName={gameState.teamOneName}
           teamIncorrectGuesses={gameState.teamOneIncorrectGuesses}
           teamInnerPanels={gameState.teamOneInnerpanels}
+          isTeamActive={gameState.teamTurn === 1 ? true : false}
           isTeamOne={true}
         />
         <ScoreBoard isGamePaused={false} isTeamOnePlaying={true} teamOneScore={gameState.teamOneScore} teamTwoScore={gameState.teamTwoScore} />
@@ -19,6 +20,7 @@ function TeamInfos({ gameState }) {
           teamName={gameState.teamTwoName}
           teamIncorrectGuesses={gameState.teamTwoIncorrectGuesses}
           teamInnerPanels={gameState.teamTwoInnerPanels}
+          isTeamActive={gameState.teamTurn === 2 ? true : false}
           isTeamOne={false}
         />
       </div>
