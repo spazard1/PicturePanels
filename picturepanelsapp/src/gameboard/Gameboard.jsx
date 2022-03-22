@@ -15,19 +15,14 @@ export default function Gameboard() {
   const [gameStateId, setGameStateId] = useState();
   const [gameState, setGameState] = useState({});
 
-  const { setConnection, setConnectionId } = useContext(
-    SignalRConnectionContext
-  );
+  const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
 
   useEffect(() => {
     if (!gameStateId) {
       return;
     }
 
-    const newConnection = CreateSignalRConnection(
-      "gameStateId=" + gameStateId,
-      setConnectionId
-    );
+    const newConnection = CreateSignalRConnection("gameStateId=" + gameStateId, setConnectionId);
 
     setConnection(newConnection);
     setConnectionId(newConnection.id);
@@ -53,10 +48,7 @@ export default function Gameboard() {
 
   return (
     <>
-      <Panels
-        roundNumber={gameState.roundNumber ?? 0}
-        revealedPanels={gameState.revealedPanels ?? []}
-      />
+      <Panels roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} />
     </>
   );
 }
