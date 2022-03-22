@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
-import SignalRContext from "../signalr/SignalRContext";
 import { useSignalR } from "../signalr/useSignalR";
 import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
 import Panels from "./Panels";
+import getGameState from "../common/getGameState";
 import "./Gameboard.css";
 import "animate.css";
-import getGameState from "../common/getGameState";
+import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
 import TeamInfos from "../teaminfos/TeamInfos";
 
 export default function Gameboard() {
@@ -14,18 +14,19 @@ export default function Gameboard() {
 
   const [gameStateId, setGameStateId] = useState();
   const [gameState, setGameState] = useState({});
-  const [connection, setConnection] = useState();
-  const [connectionId, setConnectionId] = useState();
+
+  const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
 
   useEffect(() => {
-    const newConnection = CreateSignalRConnection(
-      "gameStateId=" + localStorage.getItem("gameStateId"),
-      setConnectionId
-    );
+    if (!gameStateId) {
+      return;
+    }
+
+    const newConnection = CreateSignalRConnection("gameStateId=" + gameStateId, setConnectionId);
 
     setConnection(newConnection);
     setConnectionId(newConnection.id);
-  }, []);
+  }, [gameStateId]);
 
   useSignalR("GameState", (gameState) => {
     setGameState(gameState);
@@ -39,19 +40,16 @@ export default function Gameboard() {
     getGameState(gameStateId, (gameState) => {
       setGameState(gameState);
     });
-  }, [gameStateId, connectionId]);
+  }, [gameStateId]);
 
   useEffect(() => {
     setGameStateId("KDML");
   }, []);
 
   return (
-    <SignalRContext.Provider value={connection}>
-      <TeamInfos />
-      <Panels
-        roundNumber={gameState.roundNumber ?? 0}
-        revealedPanels={gameState.revealedPanels ?? []}
-      />
-    </SignalRContext.Provider>
+    <>
+      <TeamInfos gameState={gameState} />
+      <Panels roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} />
+    </>
   );
 }

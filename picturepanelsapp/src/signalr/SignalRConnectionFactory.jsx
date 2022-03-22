@@ -4,9 +4,7 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
   console.log("new signalr connection");
 
   var connection = new signalR.HubConnectionBuilder()
-    .withUrl(
-      "https://picturepanels.azurewebsites.net/signalRHub?" + queryString
-    )
+    .withUrl("https://picturepanels.azurewebsites.net/signalRHub?" + queryString)
     .withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Information)
     .build();
@@ -18,9 +16,16 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
     //const li = document.createElement("li");
     //li.textContent = `Connection lost due to error "${error}". Reconnecting.`;
     //document.getElementById("messageList").appendChild(li);
+
+    setConnectionId(connection.id);
   });
 
-  setConnectionId(connection.id);
+  connection.onreconnected((connectionId) => {
+    console.log("signalr reconnected");
+    setConnectionId(connectionId);
+  });
+
+  connection.start();
 
   return connection;
 };
