@@ -7,17 +7,12 @@ export default function AppWrapper({ children }) {
   const [connectionId, setConnectionId] = useState();
 
   return (
-    <SignalRConnectionContext.Provider
-      value={{ connection, setConnection, connectionId, setConnectionId }}
-    >
+    <SignalRConnectionContext.Provider value={{ connection, setConnection, connectionId, setConnectionId }}>
       {children}
     </SignalRConnectionContext.Provider>
   );
 }
 
 AppWrapper.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 };
