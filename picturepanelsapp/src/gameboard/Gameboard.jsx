@@ -48,12 +48,6 @@ export default function Gameboard() {
   return (
     <SignalRContext.Provider value={connection}>
       <TeamInfos />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
       <Panels
         roundNumber={gameState.roundNumber ?? 0}
         revealedPanels={gameState.revealedPanels ?? []}
