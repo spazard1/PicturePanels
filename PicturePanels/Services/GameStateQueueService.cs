@@ -15,9 +15,9 @@ namespace PicturePanels.Services
         public GameStateQueueService()
         {
             #if DEBUG
-                Client = new ServiceBusClient("Endpoint=sb://picturepanelsdev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=I8cyBw1rYVV5V/5Y9hwLFxnCQ7lLonP6OaC5cKDGPxM=");
+                Client = new ServiceBusClient("***REMOVED***");
             #else
-                Client = new ServiceBusClient("Endpoint=sb://picturepanels.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=TJLwj1a8CdqLrFrJeBaAGuUwulEbe9GbhHwK8WhQGdQ=");
+                Client = new ServiceBusClient("***REMOVED***");
             #endif
             Sender = Client.CreateSender("gamestateupdates");
         }

@@ -80,9 +80,9 @@ namespace PicturePanels
                 options.AccessTokenLifetime = TimeSpan.FromDays(1);
                 options.ClaimsProvider = context => context.User.Claims;
 #if DEBUG
-                options.ConnectionString = "Endpoint=https://picturepanelsdev.service.signalr.net;AccessKey=EKyQxbdy9uQNZV2KJqg9/dC45wD48lgQ895TdQYDARU=;Version=1.0;";
+                options.ConnectionString = "***REMOVED***";
 #else
-                options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AccessKey=k0wYaSi/4PvB9kK4G4z7KVzn+QwjsMLmBcTZtFh/PkU=;Version=1.0;";
+                options.ConnectionString = "***REMOVED***";
 #endif
             });
  
