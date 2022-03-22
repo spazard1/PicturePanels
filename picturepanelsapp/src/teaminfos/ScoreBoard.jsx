@@ -2,23 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import "./ScoreBoard.css";
 
-function ScoreBoard({
-  isTeamOnePlaying,
-  teamOneScore,
-  teamTwoScore,
-  isGamePaused,
-}) {
+function ScoreBoard({ isTeamOnePlaying, teamOneScore, teamTwoScore, isGamePaused }) {
   return (
     <div className="scoreBoard">
-      <div className="scoreTeam">{teamOneScore}</div>
-      <div className="scoreBoardStatus">
-        {isGamePaused
-          ? "Game is paused"
-          : isTeamOnePlaying
-          ? "← Open a Panel"
-          : "Open a Panel →"}
-      </div>
-      <div className="scoreTeam">{teamTwoScore}</div>
+      <div className="scoreTeam teamOneBox">{teamOneScore}</div>
+      <div className="scoreBoardStatus">{isGamePaused ? "Game is paused" : isTeamOnePlaying ? "← Open a Panel" : "Open a Panel →"}</div>
+      <div className="scoreTeam teamTwoBox">{teamTwoScore}</div>
     </div>
   );
 }

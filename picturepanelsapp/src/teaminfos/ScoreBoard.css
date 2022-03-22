@@ -29,3 +29,13 @@
   height: 7vh;
   width: 100%;
 }
+
+.teamOneBox {
+  border: 5px solid blue;
+  background-color: darkblue;
+}
+
+.teamTwoBox {
+  border: 5px solid red;
+  background-color: darkred;
+}
