@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import SignalRConnectionContext from "./SignalRConnectionContext";
 
 export function useSignalR(eventName, callback) {
-  const { connection } = useContext(SignalRConnectionContext);
+  const { connection, connectionId } = useContext(SignalRConnectionContext);
 
   useEffect(() => {
     if (!connection) {
@@ -15,4 +15,6 @@ export function useSignalR(eventName, callback) {
       connection.off(eventName, callback);
     };
   }, [connection]);
+
+  return connectionId;
 }

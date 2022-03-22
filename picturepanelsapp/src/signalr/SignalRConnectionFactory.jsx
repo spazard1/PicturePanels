@@ -1,8 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 
 export const CreateSignalRConnection = (queryString, setConnectionId) => {
-  console.log("new signalr connection");
-
   var connection = new signalR.HubConnectionBuilder()
     .withUrl("https://picturepanels.azurewebsites.net/signalRHub?" + queryString)
     .withAutomaticReconnect()
