@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import "./index.css";
+import "./themes/default/default.css";
+import AppWrapper from "./common/AppWrapper";
 
 const Player = lazy(() => import("./player/Player"));
 const Gameboard = lazy(() => import("./gameboard/Gameboard"));
@@ -10,18 +12,20 @@ const Upload = lazy(() => import("./upload/Upload"));
 const Admin = lazy(() => import("./admin/Admin"));
 
 ReactDOM.render(
-  <BrowserRouter>
-    <Suspense fallback={<div></div>}>
-      <Routes>
-        <Route path="/" element={<Player />} />
-        <Route path="gameboard" element={<Gameboard />} />
-        <Route path="upload" element={<Upload />} />
-        <Route path="admin" element={<Admin />} />
+  <AppWrapper>
+    <BrowserRouter>
+      <Suspense fallback={<div></div>}>
+        <Routes>
+          <Route path="/" element={<Player />} />
+          <Route path="gameboard" element={<Gameboard />} />
+          <Route path="upload" element={<Upload />} />
+          <Route path="admin" element={<Admin />} />
 
-        <Route path="*" element={<Navigate replace to="/" />} />
-      </Routes>
-    </Suspense>
-  </BrowserRouter>,
+          <Route path="*" element={<Navigate replace to="/" />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  </AppWrapper>,
   document.getElementById("root")
 );
 
