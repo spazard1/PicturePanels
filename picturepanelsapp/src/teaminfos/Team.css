@@ -1,0 +1,89 @@
+/* stylelint-disable selector-id-pattern */
+/* stylelint-disable selector-class-pattern */
+
+.teamInfo {
+  position: relative;
+  box-sizing: border-box;
+  text-align: center;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.teamNameBox {
+  box-sizing: border-box;
+  flex: 6;
+  background-color: rgb(35 35 35);
+  border: 4px solid rgb(35 35 35);
+  height: 100%;
+}
+
+.teamName {
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 2.75vh;
+  line-height: 1em;
+  width: 70%;
+  margin: 0 auto 3px;
+  padding: 3px 0;
+}
+
+.teamInfoBottomContainer {
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.teamInfoPanelCounts {
+  width: 50%;
+  height: 35%;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.teamInfoPanelCounts .panelCount {
+  box-sizing: border-box;
+  width: 15%;
+  border-width: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-bottom: 3px;
+  justify-content: center;
+}
+
+.teamOneBox {
+  border: 1px solid blue;
+  background-color: blue;
+}
+
+.teamTwoBox {
+  border: 1px solid red;
+  background-color: red;
+}
+
+.negativePanelCount {
+  white-space: nowrap;
+  font-size: 1.9vh;
+  line-height: 2vh;
+  margin-left: 3px;
+}
+
+.teamInfoIncorrectGuessesContainer {
+  display: inline-flex;
+  justify-content: center;
+  background-color: pink;
+}
+
+.teamInfoIncorrectGuesses {
+  position: absolute;
+  bottom: 0;
+  color: red;
+  font-size: 2.5vh;
+  font-weight: bold;
+}
+
+.activeTeam {
+  border: 4px solid lightgreen;
+}
