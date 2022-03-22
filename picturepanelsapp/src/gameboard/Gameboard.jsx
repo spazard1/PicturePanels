@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import AllLinks from "../common/AllLinks";
 import { useBodyClass } from "../common/useBodyClass";
 import SignalRContext from "../signalr/SignalRContext";
 import { useSignalR } from "../signalr/useSignalR";
@@ -8,6 +7,7 @@ import Panels from "./Panels";
 import "./Gameboard.css";
 import "animate.css";
 import getGameState from "../common/getGameState";
+import TeamInfos from "../teaminfos/TeamInfos";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -47,7 +47,13 @@ export default function Gameboard() {
 
   return (
     <SignalRContext.Provider value={connection}>
-      <AllLinks />
+      <TeamInfos />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
       <Panels
         roundNumber={gameState.roundNumber ?? 0}
         revealedPanels={gameState.revealedPanels ?? []}
