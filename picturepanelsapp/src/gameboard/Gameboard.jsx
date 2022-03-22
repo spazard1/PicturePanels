@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
+import { usePlayers } from "../common/usePlayers";
 import { useSignalR } from "../signalr/useSignalR";
 import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
 import Panels from "./Panels";
@@ -17,6 +18,12 @@ export default function Gameboard() {
 
   const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
 
+  const players = usePlayers(gameStateId);
+
+  const connectionId = useSignalR("GameState", (gameState) => {
+    setGameState(gameState);
+  });
+
   useEffect(() => {
     if (!gameStateId) {
       return;
@@ -28,10 +35,6 @@ export default function Gameboard() {
     setConnectionId(newConnection.id);
   }, [gameStateId]);
 
-  useSignalR("GameState", (gameState) => {
-    setGameState(gameState);
-  });
-
   useEffect(() => {
     if (!gameStateId) {
       return;
@@ -40,7 +43,7 @@ export default function Gameboard() {
     getGameState(gameStateId, (gameState) => {
       setGameState(gameState);
     });
-  }, [gameStateId]);
+  }, [gameStateId, connectionId]);
 
   useEffect(() => {
     setGameStateId("KDML");
@@ -49,7 +52,7 @@ export default function Gameboard() {
   return (
     <>
       <TeamInfos gameState={gameState} />
-      <Panels roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} />
+      <Panels players={players} roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} />
     </>
   );
 }

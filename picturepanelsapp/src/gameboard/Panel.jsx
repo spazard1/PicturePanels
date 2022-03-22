@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import "./Panel.css";
 import { GetExitClass } from "../animate/Animate";
 
-export default function Panel({ isOpen, roundNumber, panelNumber, entranceClass }) {
+const Panel = ({ isOpen, roundNumber, panelNumber, entranceClass }, ref) => {
   const [exitClass, setExitClass] = useState();
 
   useEffect(() => {
@@ -12,7 +12,7 @@ export default function Panel({ isOpen, roundNumber, panelNumber, entranceClass 
   }, [isOpen]);
 
   return (
-    <div id={"panel_" + panelNumber} className="panel">
+    <div ref={ref} id={"panel_" + panelNumber} className="panel">
       <div className={"panelBackground animate__animated animate__slow " + (isOpen ? exitClass : entranceClass)}>
         <div id={"panelNumber_" + panelNumber} className="panelNumber">
           {panelNumber}
@@ -24,7 +24,9 @@ export default function Panel({ isOpen, roundNumber, panelNumber, entranceClass 
       />
     </div>
   );
-}
+};
+
+export default forwardRef(Panel);
 
 Panel.propTypes = {
   isOpen: PropTypes.bool.isRequired,
