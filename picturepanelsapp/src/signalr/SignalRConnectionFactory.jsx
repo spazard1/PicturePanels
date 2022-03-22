@@ -4,9 +4,7 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
   console.log("new signalr connection");
 
   var connection = new signalR.HubConnectionBuilder()
-    .withUrl(
-      "https://picturepanels.azurewebsites.net/signalRHub?" + queryString
-    )
+    .withUrl("https://picturepanels.azurewebsites.net/signalRHub?" + queryString)
     .withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Information)
     .build();

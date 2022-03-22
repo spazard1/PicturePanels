@@ -4,10 +4,10 @@ import { useSignalR } from "../signalr/useSignalR";
 import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
 import Panels from "./Panels";
 import getGameState from "../common/getGameState";
-
 import "./Gameboard.css";
 import "animate.css";
 import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
+import TeamInfos from "../teaminfos/TeamInfos";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -48,6 +48,7 @@ export default function Gameboard() {
 
   return (
     <>
+      <TeamInfos gameState={gameState} />
       <Panels roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} />
     </>
   );
