@@ -15,13 +15,13 @@ export default function MostVotesPanels({ panelRefs, players }) {
 
     const panelVotes = {};
     for (var i = 1; i <= 20; i++) {
-      panelVotes[i + ""] = 0;
+      panelVotes[i] = 0;
     }
 
     for (const playerId in players) {
       let player = players[playerId];
 
-      if (player === 0) {
+      if (player.teamNumber === 0) {
         continue;
       }
 
@@ -53,14 +53,15 @@ export default function MostVotesPanels({ panelRefs, players }) {
 
     let mostVotesPanelsRects = {};
 
-    for (const panelNumber in mostVotesPanels) {
+    for (const panelNumber of mostVotesPanels) {
       if (panelNumber > 20) {
-        mostVotesPanelsRects[panelNumber] = null;
+        mostVotesPanelsRects[panelNumber] = panelRefs[0].current.getBoundingClientRect();
       } else {
-        mostVotesPanelsRects[panelNumber] = panelRefs[panelNumber].current.getBoundingClientRect();
+        mostVotesPanelsRects[panelNumber] = panelRefs[panelNumber - 1].current.getBoundingClientRect();
       }
     }
 
+    console.log(mostVotesPanels);
     console.log(mostVotesPanelsRects);
 
     setMostVotesPanelsRects(mostVotesPanelsRects);
@@ -68,35 +69,21 @@ export default function MostVotesPanels({ panelRefs, players }) {
 
   return (
     <div id="mostVotesPanels">
-      {Object.keys(mostVotesPanelsRects).map((panelNumber) => (
-        <>
-          {panelNumber > 20 && (
-            <div
-              key={panelNumber}
-              className="mostVotesPanel opacity0"
-              style="transform: translate(753.927px, 528.302px); width: 300.125px; height: 212.583px;"
-            ></div>
-          )}
-          {panelNumber <= 20 && (
-            <div
-              key={panelNumber}
-              className="mostVotesPanel"
-              style={
-                "transform: translate(" +
-                mostVotesPanelsRects[panelNumber].x +
-                "px, " +
-                mostVotesPanelsRects[panelNumber].y +
-                "px); " +
-                "width: " +
-                mostVotesPanelsRects[panelNumber].width +
-                "px; height: " +
-                mostVotesPanelsRects[panelNumber].height +
-                "px;"
-              }
-            ></div>
-          )}
-        </>
-      ))}
+      {Object.keys(mostVotesPanelsRects).map((panelNumber) =>
+        parseInt(panelNumber) > 20 ? (
+          <div key={panelNumber} className="mostVotesPanel opacity0"></div>
+        ) : (
+          <div
+            key={panelNumber}
+            className="mostVotesPanel"
+            style={{
+              transform: "translate(100px, 100px)",
+              width: "100px",
+              height: "100px",
+            }}
+          ></div>
+        )
+      )}
     </div>
   );
 }
@@ -105,3 +92,20 @@ MostVotesPanels.propTypes = {
   panelRefs: PropTypes.arrayOf(PropTypes.object),
   players: PropTypes.object.isRequired,
 };
+
+/*
+          parseInt(panelNumber) > 20 ?
+            <div key={panelNumber} className="mostVotesPanel opacity0"></div>
+          :
+            <div
+              key={panelNumber}
+              className="mostVotesPanel"
+              style={
+                {
+                  transform: "translate(" + mostVotesPanelsRects[panelNumber].x + "px, " + mostVotesPanelsRects[panelNumber].y + "px)",
+                  width: mostVotesPanelsRects[panelNumber].width + "px",
+                  height: mostVotesPanelsRects[panelNumber].height + "px"
+                }
+              }
+            ></div>
+            */
