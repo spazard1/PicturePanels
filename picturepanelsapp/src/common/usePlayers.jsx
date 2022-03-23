@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 import getPlayers from "./getPlayers";
 
 export function usePlayers(gameStateId) {
   const [players, setPlayers] = useState({});
+  const playersRef = useRef();
+  playersRef.current = players;
 
   const connectionId = useSignalR("Players", (players) => {
+    console.log("setting new players", players);
     setPlayers(players);
   });
 
   useSignalR("AddPlayer", (player) => {
-    const newPlayers = { ...players };
-    newPlayers[player.id] = player;
-    setPlayers(newPlayers);
+    setPlayers({ ...playersRef.current, [player.playerId]: player });
   });
 
   useEffect(() => {
@@ -27,5 +28,5 @@ export function usePlayers(gameStateId) {
     });
   }, [gameStateId, connectionId]);
 
-  return { players, setPlayers };
+  return { players };
 }

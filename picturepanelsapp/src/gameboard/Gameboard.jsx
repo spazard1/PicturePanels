@@ -3,7 +3,7 @@ import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./Panels";
 import TeamInfos from "../teaminfos/TeamInfos";
-import { useSelectedPanels } from "../common/useSelectedPanels";
+import Players from "./Players";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../common/useSignalRConnection";
 
@@ -18,8 +18,7 @@ export default function Gameboard() {
   useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
 
   const { gameState } = useGameState(gameStateId);
-  const { players, setPlayers } = usePlayers(gameStateId);
-  useSelectedPanels(players, setPlayers);
+  const { players } = usePlayers(gameStateId);
 
   useEffect(() => {
     setGameStateId("KDML");
@@ -28,11 +27,13 @@ export default function Gameboard() {
   return (
     <>
       <TeamInfos gameState={gameState} />
+      <Players players={players}></Players>
       <Panels
         gameStateId={gameStateId}
         players={players}
         roundNumber={gameState.roundNumber ?? 0}
         revealedPanels={gameState.revealedPanels ?? []}
+        teamTurn={gameState.teamTurn ?? 1}
         turnType={gameState.turnType}
       />
     </>
