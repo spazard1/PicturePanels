@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { useSelectedPanels } from "../common/useSelectedPanels";
 
 import "./MostVotesPanels.css";
 
 const MaxMostVotesPanels = 3;
 
-export default function MostVotesPanels({ panelRefs, players, turnType }) {
+export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType }) {
   const [mostVotesPanelsRects, setMostVotesPanelsRects] = useState([]);
 
+  const { selectedPanels } = useSelectedPanels(players);
+
   useEffect(() => {
+    console.log(panelRefs);
+
     const panelVotes = {};
     for (var i = 1; i <= 20; i++) {
       panelVotes[i] = 0;
     }
 
-    for (const playerId in players) {
-      let player = players[playerId];
+    for (const playerId in selectedPanels) {
+      let playerSelectedPanels = selectedPanels[playerId];
 
-      if (player.teamNumber === 0) {
+      if (players[playerId].teamNumber !== teamTurn) {
         continue;
       }
 
-      player.selectedPanels.forEach((panel) => {
+      playerSelectedPanels.forEach((panel) => {
         panelVotes[panel]++;
       });
     }
@@ -64,7 +69,7 @@ export default function MostVotesPanels({ panelRefs, players, turnType }) {
     }
 
     setMostVotesPanelsRects(mostVotesPanelsRects);
-  }, [panelRefs, players]);
+  }, [panelRefs, players, teamTurn, selectedPanels]);
 
   return (
     <div id="mostVotesPanels">
@@ -90,5 +95,7 @@ export default function MostVotesPanels({ panelRefs, players, turnType }) {
 MostVotesPanels.propTypes = {
   panelRefs: PropTypes.arrayOf(PropTypes.object),
   players: PropTypes.object.isRequired,
+  selectedPanels: PropTypes.object,
+  teamTurn: PropTypes.number.isRequired,
   turnType: PropTypes.string.isRequired,
 };
