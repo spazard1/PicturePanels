@@ -9,6 +9,7 @@ import "./Gameboard.css";
 import "animate.css";
 import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
 import TeamInfos from "../teaminfos/TeamInfos";
+import { useSelectedPanels } from "../common/useSelectedPanels";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -18,7 +19,8 @@ export default function Gameboard() {
 
   const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
 
-  const players = usePlayers(gameStateId);
+  const { players, setPlayers } = usePlayers(gameStateId);
+  useSelectedPanels(players, setPlayers);
 
   const connectionId = useSignalR("GameState", (gameState) => {
     setGameState(gameState);

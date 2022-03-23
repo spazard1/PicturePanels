@@ -27,5 +27,5 @@ export function usePlayers(gameStateId) {
     });
   }, [gameStateId, connectionId]);
 
-  return players;
+  return { players, setPlayers };
 }
