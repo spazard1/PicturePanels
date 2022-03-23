@@ -65,11 +65,11 @@
   background-color: darkred;
 }
 
-#teamOnePlayerNames div {
+.teamOnePlayerNames div {
   background-color: darkblue;
 }
 
-#teamTwoPlayerNames div {
+.teamTwoPlayerNames div {
   background-color: darkred;
 }
 

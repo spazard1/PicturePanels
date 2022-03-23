@@ -1,0 +1,30 @@
+/* stylelint-disable selector-class-pattern */
+.playerDot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1s, transform 1s;
+}
+
+.playerDot svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.playerDot svg circle {
+  width: 100%;
+  height: 100%;
+}
+
+.playerDot div {
+  position: relative;
+  color: black;
+  text-align: center;
+  font-size: 2.5vh;
+  margin: auto;
+  vertical-align: middle;
+}

@@ -4,11 +4,12 @@ import Panel from "./Panel";
 import MostVotesPanels from "./MostVotesPanels";
 import usePrevious from "../common/usePrevious";
 import { GetEntranceClass } from "../animate/Animate";
+import PlayerDots from "./PlayerDots";
 import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-export default function Panels({ gameStateId, players, revealedPanels, roundNumber, turnType }) {
+export default function Panels({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType }) {
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
@@ -24,6 +25,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
   useEffect(() => {
     if (Object.keys(imagesLoaded).length === panelNumbers.length) {
       setAllImagesLoaded(true);
+      console.log("images loaded");
     }
   }, [imagesLoaded]);
 
@@ -35,22 +37,21 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
   return (
     <>
       <div id="panels" className="panels center">
-        {panelNumbers.map((panelNumber) => {
-          return (
-            <Panel
-              key={panelNumber}
-              ref={panelRefs[panelNumber - 1]}
-              gameStateId={gameStateId}
-              isOpen={revealedPanels.indexOf(panelNumber) >= 0}
-              entranceClass={entranceClass}
-              panelNumber={panelNumber}
-              roundNumber={roundNumber}
-              setImagesLoaded={setImagesLoaded}
-            ></Panel>
-          );
-        })}
+        {panelNumbers.map((panelNumber) => (
+          <Panel
+            key={panelNumber}
+            ref={panelRefs[panelNumber - 1]}
+            gameStateId={gameStateId}
+            isOpen={revealedPanels.indexOf(panelNumber) >= 0}
+            entranceClass={entranceClass}
+            panelNumber={panelNumber}
+            roundNumber={roundNumber}
+            setImagesLoaded={setImagesLoaded}
+          ></Panel>
+        ))}
       </div>
-      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players} turnType={turnType}></MostVotesPanels>}
+      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></MostVotesPanels>}
+      {allImagesLoaded && <PlayerDots panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></PlayerDots>}
     </>
   );
 }
@@ -60,5 +61,6 @@ Panels.propTypes = {
   players: PropTypes.object,
   revealedPanels: PropTypes.arrayOf(PropTypes.string),
   roundNumber: PropTypes.number,
+  teamTurn: PropTypes.number,
   turnType: PropTypes.string,
 };
