@@ -56,9 +56,9 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
 }
 
 Panels.propTypes = {
-  gameStateId: PropTypes.string.isRequired,
-  players: PropTypes.object.isRequired,
+  gameStateId: PropTypes.string,
+  players: PropTypes.object,
   revealedPanels: PropTypes.arrayOf(PropTypes.string),
-  roundNumber: PropTypes.number.isRequired,
-  turnType: PropTypes.string.isRequired,
+  roundNumber: PropTypes.number,
+  turnType: PropTypes.string,
 };
