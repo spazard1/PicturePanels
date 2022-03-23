@@ -1,51 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
-import { useSignalR } from "../signalr/useSignalR";
-import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
 import Panels from "./Panels";
-import getGameState from "../common/getGameState";
-import "./Gameboard.css";
-import "animate.css";
-import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
 import TeamInfos from "../teaminfos/TeamInfos";
 import { useSelectedPanels } from "../common/useSelectedPanels";
+import { useGameState } from "../common/useGameState";
+import { useSignalRConnection } from "../common/useSignalRConnection";
+
+import "./Gameboard.css";
+import "animate.css";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
   const [gameStateId, setGameStateId] = useState();
-  const [gameState, setGameState] = useState({});
 
-  const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
+  useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
 
+  const { gameState } = useGameState(gameStateId);
   const { players, setPlayers } = usePlayers(gameStateId);
   useSelectedPanels(players, setPlayers);
-
-  const connectionId = useSignalR("GameState", (gameState) => {
-    setGameState(gameState);
-  });
-
-  useEffect(() => {
-    if (!gameStateId) {
-      return;
-    }
-
-    const newConnection = CreateSignalRConnection("gameStateId=" + gameStateId, setConnectionId);
-
-    setConnection(newConnection);
-    setConnectionId(newConnection.id);
-  }, [gameStateId]);
-
-  useEffect(() => {
-    if (!gameStateId) {
-      return;
-    }
-
-    getGameState(gameStateId, (gameState) => {
-      setGameState(gameState);
-    });
-  }, [gameStateId, connectionId]);
 
   useEffect(() => {
     setGameStateId("KDML");
