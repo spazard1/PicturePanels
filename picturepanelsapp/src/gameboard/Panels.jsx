@@ -8,7 +8,7 @@ import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-export default function Panels({ gameStateId, players, revealedPanels, roundNumber }) {
+export default function Panels({ gameStateId, players, revealedPanels, roundNumber, turnType }) {
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
@@ -50,7 +50,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
           );
         })}
       </div>
-      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players}></MostVotesPanels>}
+      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players} turnType={turnType}></MostVotesPanels>}
     </>
   );
 }
@@ -60,4 +60,5 @@ Panels.propTypes = {
   players: PropTypes.object.isRequired,
   revealedPanels: PropTypes.arrayOf(PropTypes.string),
   roundNumber: PropTypes.number.isRequired,
+  turnType: PropTypes.string.isRequired,
 };
