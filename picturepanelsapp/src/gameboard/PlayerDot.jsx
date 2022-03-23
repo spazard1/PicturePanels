@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-export default function PlayerDot({ player, panelRef, turnType }) {
+const PlayerDot = ({ player, panelRef, turnType }) => {
   //className="playerDot_panelNumber_2 playerDot opacity0 playerDot_7de394af-2f2e-420b-93b8-e6829895811f"
 
   console.log(player, panelRef);
@@ -27,10 +27,12 @@ export default function PlayerDot({ player, panelRef, turnType }) {
       <div id="playerDotInitials_7de394af-2f2e-420b-93b8-e6829895811f_2">in</div>
     </div>
   );
-}
+};
 
 PlayerDot.propTypes = {
   player: PropTypes.object.isRequired,
   panelRef: PropTypes.object.isRequired,
   turnType: PropTypes.string.isRequired,
 };
+
+export default React.memo(PlayerDot);
