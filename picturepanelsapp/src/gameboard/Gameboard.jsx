@@ -54,7 +54,13 @@ export default function Gameboard() {
   return (
     <>
       <TeamInfos gameState={gameState} />
-      <Panels gameStateId={gameStateId} players={players} roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} />
+      <Panels
+        gameStateId={gameStateId}
+        players={players}
+        roundNumber={gameState.roundNumber ?? 0}
+        revealedPanels={gameState.revealedPanels ?? []}
+        turnType={gameState.turnType}
+      />
     </>
   );
 }
