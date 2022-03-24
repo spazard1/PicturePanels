@@ -13,6 +13,9 @@ function TeamInfos({ gameState }) {
           teamIncorrectGuesses={gameState.teamOneIncorrectGuesses ?? 0}
           teamInnerPanels={gameState.teamOneInnerPanels ?? 5}
           isTeamActive={gameState.teamTurn === 1 ? true : false}
+          isCountdownActive={
+            (gameState.turnType === "OpenPanel" && gameState.teamTurn === 1) || (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus)
+          }
           teamNumber={1}
           isPaused={gameState.pauseState === "Paused"}
           turnTime={gameState.turnTime}
@@ -31,6 +34,9 @@ function TeamInfos({ gameState }) {
           teamIncorrectGuesses={gameState.teamTwoIncorrectGuesses ?? 0}
           teamInnerPanels={gameState.teamTwoInnerPanels ?? 5}
           isTeamActive={gameState.teamTurn === 2 ? true : false}
+          isCountdownActive={
+            (gameState.turnType === "OpenPanel" && gameState.teamTurn === 2) || (gameState.turnType === "MakeGuess" && !gameState.teamTwoGuessStatus)
+          }
           teamNumber={2}
           isPaused={gameState.pauseState === "Paused"}
           turnTime={gameState.turnTime}
