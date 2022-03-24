@@ -5,15 +5,13 @@ import PropTypes from "prop-types";
 
 import "./PlayerDots.css";
 
+const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
+
 export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
   const [playerDots, setPlayerDots] = useState({});
   const { selectedPanels } = useSelectedPanels(players);
 
-  console.log(turnType, playerDots);
-
   useEffect(() => {
-    console.log(panelRefs);
-
     const newPlayerDots = {};
 
     for (const playerId in selectedPanels) {
@@ -30,8 +28,13 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
     <div id="playerDots">
       {Object.keys(playerDots).map((playerId) => (
         <span key={playerId}>
-          {playerDots[playerId].map((panelNumber) => (
-            <PlayerDot key={playerId + panelNumber} player={players[playerId]} panelRef={panelRefs[panelNumber - 1]} turnType={turnType}></PlayerDot>
+          {panelNumbers.map((panelNumber) => (
+            <PlayerDot
+              key={playerId + panelNumber}
+              player={players[playerId]}
+              panelRef={playerDots[playerId].indexOf(panelNumber) >= 0 ? panelRefs[panelNumber - 1] : null}
+              turnType={turnType}
+            ></PlayerDot>
           ))}
         </span>
       ))}
