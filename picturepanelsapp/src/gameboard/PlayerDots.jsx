@@ -9,7 +9,7 @@ const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 
 
 export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
   const [playerDots, setPlayerDots] = useState({});
-  const { selectedPanels } = useSelectedPanels(players);
+  const { selectedPanels } = useSelectedPanels(players, turnType);
 
   useEffect(() => {
     const newPlayerDots = {};

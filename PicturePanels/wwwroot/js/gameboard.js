@@ -755,7 +755,7 @@ function setupCanvases() {
 var framerate = 30;
 
 function updateCountdown(canvas, gameState) {
-    canvas.countdownMax = gameState.turnTimeLength * 1000;
+    canvas.countdownMax = gameState.turnTimeTotal * 1000;
     canvas.currentCountdown = new Date(gameState.turnEndTime) - new Date();
 
     if (canvas.countdownMax <= 0) {

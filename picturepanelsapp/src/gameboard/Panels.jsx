@@ -35,9 +35,14 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
   }, [gameStateId, roundNumber]);
 
   useEffect(() => {
+    if (!gameStateId) {
+      return;
+    }
+
     const resizePanelContainer = () => {
       var panelsContainerRect = panelsRef.current.getBoundingClientRect();
-      var panelsContainerMaxWidth = 85;
+      var panelsContainerMaxWidth = 84;
+      panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
       var paddingBottom = 5;
 
       while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
@@ -54,7 +59,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
     window.onresize = resizePanelContainer;
 
     resizePanelContainer();
-  });
+  }, [roundNumber, gameStateId]);
 
   return (
     <>

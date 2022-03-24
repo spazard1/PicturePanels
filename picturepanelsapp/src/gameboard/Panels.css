@@ -1,7 +1,7 @@
 .panels {
   text-align: center;
   margin-top: 1vh;
-  width: 85vw;
+  width: 84vw;
   display: flex;
   flex-wrap: wrap;
 }
