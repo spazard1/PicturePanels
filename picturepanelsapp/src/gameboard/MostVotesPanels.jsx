@@ -13,8 +13,6 @@ export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType
   const { selectedPanels } = useSelectedPanels(players);
 
   useEffect(() => {
-    console.log(panelRefs);
-
     const panelVotes = {};
     for (var i = 1; i <= 20; i++) {
       panelVotes[i] = 0;
