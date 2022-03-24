@@ -10,7 +10,7 @@ const MaxMostVotesPanels = 3;
 export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType }) {
   const [mostVotesPanelsRects, setMostVotesPanelsRects] = useState([]);
 
-  const { selectedPanels } = useSelectedPanels(players);
+  const { selectedPanels } = useSelectedPanels(players, turnType);
 
   useEffect(() => {
     const panelVotes = {};
