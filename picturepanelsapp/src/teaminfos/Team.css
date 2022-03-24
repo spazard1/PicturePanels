@@ -53,16 +53,6 @@
   justify-content: center;
 }
 
-.teamOneBox {
-  border: 1px solid blue;
-  background-color: blue;
-}
-
-.teamTwoBox {
-  border: 1px solid red;
-  background-color: red;
-}
-
 .negativePanelCount {
   white-space: nowrap;
   font-size: 1.9vh;
