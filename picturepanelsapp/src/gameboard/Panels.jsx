@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import Panel from "./Panel";
 import MostVotesPanels from "./MostVotesPanels";
@@ -10,6 +10,7 @@ import "./Panels.css";
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
 export default function Panels({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType }) {
+  const panelsRef = useRef();
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
@@ -25,7 +26,6 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
   useEffect(() => {
     if (Object.keys(imagesLoaded).length === panelNumbers.length) {
       setAllImagesLoaded(true);
-      console.log("images loaded");
     }
   }, [imagesLoaded]);
 
@@ -34,9 +34,31 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
     setAllImagesLoaded(false);
   }, [gameStateId, roundNumber]);
 
+  useEffect(() => {
+    const resizePanelContainer = () => {
+      var panelsContainerRect = panelsRef.current.getBoundingClientRect();
+      var panelsContainerMaxWidth = 85;
+      var paddingBottom = 5;
+
+      while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
+        panelsContainerMaxWidth -= 0.5;
+        if (panelsContainerMaxWidth < 10) {
+          break;
+        }
+
+        panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
+        panelsContainerRect = panelsRef.current.getBoundingClientRect();
+      }
+    };
+
+    window.onresize = resizePanelContainer;
+
+    resizePanelContainer();
+  });
+
   return (
     <>
-      <div id="panels" className="panels center">
+      <div ref={panelsRef} id="panels" className="panels center">
         {panelNumbers.map((panelNumber) => (
           <Panel
             key={panelNumber}
