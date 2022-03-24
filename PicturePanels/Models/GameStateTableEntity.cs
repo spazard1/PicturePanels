@@ -89,7 +89,9 @@ namespace PicturePanels.Models
 
         public DateTime? TurnEndTime { get; set; }
 
-        public double TurnTimeLength { get; set; }
+        public double TurnTime { get; set; }
+
+        public double TurnTimeTotal { get; set; }
 
         public string PauseState { get; set; }
 
@@ -205,7 +207,9 @@ namespace PicturePanels.Models
             switch (TurnType)
             {
                 case GameStateTableEntity.TurnTypeOpenPanel:
+                    this.TurnTime = this.OpenPanelTime;
                     this.ClearGuesses();
+
                     if (!this.RevealedPanels.Any())
                     {
                         this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.RoundStartDelayTime);
@@ -224,6 +228,8 @@ namespace PicturePanels.Models
                     }
                     break;
                 case GameStateTableEntity.TurnTypeMakeGuess:
+                    this.TurnTime = this.GuessTime;
+
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
                     if (this.GuessTime > 0)
                     {
@@ -239,20 +245,24 @@ namespace PicturePanels.Models
                     if (this.TeamOneCorrect || this.TeamTwoCorrect)
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeCorrect);
+                        this.TurnTime = GameStateTableEntity.GuessesMadeTimeCorrect;
                     }
                     else if (this.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess ||
                         this.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess)
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeIncorrect);
+                        this.TurnTime = GameStateTableEntity.GuessesMadeTimeIncorrect;
                     }
                     else
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeBothPass);
+                        this.TurnTime = GameStateTableEntity.GuessesMadeTimeBothPass;
                     }
                     break;
                 case GameStateTableEntity.TurnTypeEndRound:
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
                     this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.EndRoundTime);
+                    this.TurnTime = GameStateTableEntity.EndRoundTime;
                     break;
                 case GameStateTableEntity.TurnTypeEndGame:
                     this.TurnStartTime = DateTime.UtcNow;
@@ -262,11 +272,11 @@ namespace PicturePanels.Models
 
             if (this.TurnEndTime.HasValue)
             {
-                this.TurnTimeLength = (this.TurnEndTime.Value - this.TurnStartTime).TotalSeconds;
+                this.TurnTimeTotal = (this.TurnEndTime.Value - this.TurnStartTime).TotalSeconds;
             }
             else
             {
-                this.TurnTimeLength = 0;
+                this.TurnTimeTotal = 0;
             }
         }
 

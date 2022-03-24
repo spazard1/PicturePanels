@@ -1,0 +1,8 @@
+/* stylelint-disable selector-class-pattern */
+.teamInfos {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  width: 80%;
+  height: 7vh;
+}

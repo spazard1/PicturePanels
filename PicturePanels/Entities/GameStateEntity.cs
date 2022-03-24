@@ -28,7 +28,11 @@ namespace PicturePanels.Entities
             this.TurnType = tableEntity.TurnType;
             this.TurnStartTime = tableEntity.TurnStartTime;
             this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
-            this.TurnTimeLength = tableEntity.TurnTimeLength;
+            this.TurnStartTime = tableEntity.TurnStartTime;
+            this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
+            this.TurnTime = tableEntity.TurnTime;
+            this.TurnTimeTotal = tableEntity.TurnTimeTotal;
+            this.TurnTimeRemaining = tableEntity.TurnEndTime.HasValue ? (tableEntity.TurnEndTime.Value - DateTime.UtcNow).TotalSeconds : null;
             this.PauseState = tableEntity.PauseState;
             this.PauseTurnRemainingTime = tableEntity.PauseTurnRemainingTime;
             this.RevealedPanels = tableEntity.RevealedPanels;
@@ -86,13 +90,15 @@ namespace PicturePanels.Entities
 
         public DateTime? TurnEndTime { get; internal set; }
 
-        public double TurnTimeLength { get; set; }
+        public double? TurnTime { get; internal set; }
+
+        public double? TurnTimeTotal { get; set; }
+
+        public double? TurnTimeRemaining { get; set; }
 
         public string PauseState { get; internal set; }
 
         public double PauseTurnRemainingTime { get; internal set; }
-
-        public double TurnTimeRemaining { get; set; }
 
         public IList<string> RevealedPanels { get; set; }
 

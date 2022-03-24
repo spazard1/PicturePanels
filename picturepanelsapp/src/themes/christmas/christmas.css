@@ -1,0 +1,97 @@
+﻿/* stylelint-disable selector-id-pattern */
+/* stylelint-disable selector-class-pattern */
+@font-face {
+  font-family: christmas;
+  src: url("/fonts/PWChristmasfont.ttf");
+}
+
+.panelNumber {
+  font-family: christmas, sans-serif;
+}
+
+.activeTeam {
+  border: 4px dashed white;
+}
+
+.panel:nth-child(even) .panelBackground {
+  background: #008000;
+}
+
+.panel:nth-child(odd) .panelBackground {
+  background: #b00;
+}
+
+.panelButtonNumber {
+  color: black;
+}
+
+.panelButton .panelButtonBackground {
+  border: 3px solid black;
+}
+
+.panelButton:nth-child(even) .panelButtonBackground {
+  background-color: #d3f8d3;
+}
+
+.panelButton:nth-child(odd) .panelButtonBackground {
+  background-color: #ffe6ea;
+}
+
+.panelButtonSelected:nth-child(even) .panelButtonBackground {
+  border: 3px dashed white;
+  background-color: green;
+}
+
+.panelButtonSelected:nth-child(odd) .panelButtonBackground {
+  border: 3px dashed white;
+  background-color: red;
+}
+
+.mostVotesPanel {
+  box-shadow: 0 0 0 0.25vw red;
+  outline: dashed 0.25vw white;
+}
+
+.teamOneBox {
+  border: 5px solid green;
+  background-color: darkgreen;
+}
+
+.teamTwoBox {
+  border: 5px solid red;
+  background-color: darkred;
+}
+
+.teamOneColor {
+  color: green;
+}
+
+.teamTwoColor {
+  color: red;
+}
+
+.teamOneDarkColor {
+  color: darkgreen;
+}
+
+.teamTwoDarkColor {
+  color: darkred;
+}
+
+#teamOnePlayerNames div {
+  background-color: darkgreen;
+}
+
+#teamTwoPlayerNames div {
+  background-color: darkred;
+}
+
+@keyframes correct {
+  0% {
+    color: lightgreen;
+  }
+
+  100% {
+    color: pink;
+  }
+}

@@ -1,15 +1,41 @@
-import React from "react";
-import AllLinks from "../common/AllLinks";
+import React, { useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
+import { usePlayers } from "../common/usePlayers";
+import Panels from "./Panels";
+import TeamInfos from "../teaminfos/TeamInfos";
+import Players from "./Players";
+import { useGameState } from "../common/useGameState";
+import { useSignalRConnection } from "../common/useSignalRConnection";
+
 import "./Gameboard.css";
+import "animate.css";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
+  const [gameStateId, setGameStateId] = useState();
+
+  useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
+
+  const { gameState } = useGameState(gameStateId);
+  const { players } = usePlayers(gameStateId);
+
+  useEffect(() => {
+    setGameStateId("KDML");
+  }, []);
+
   return (
-    <main style={{ padding: "1rem 0" }}>
-      <h2>Gameboard</h2>
-      <AllLinks />
-    </main>
+    <>
+      <TeamInfos gameState={gameState} />
+      <Players players={players}></Players>
+      <Panels
+        gameStateId={gameStateId}
+        players={players}
+        roundNumber={gameState.roundNumber ?? 0}
+        revealedPanels={gameState.revealedPanels ?? []}
+        teamTurn={gameState.teamTurn ?? 1}
+        turnType={gameState.turnType}
+      />
+    </>
   );
 }

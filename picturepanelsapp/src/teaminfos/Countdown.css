@@ -1,0 +1,65 @@
+/* stylelint-disable selector-class-pattern */
+.countdown {
+  position: absolute;
+  height: 100%;
+  margin: 0;
+  top: 0;
+}
+
+.teamOne .countdown {
+  right: 0;
+}
+
+.teamTwo .countdown {
+  left: 0;
+}
+
+.countdown canvas {
+  height: 100%;
+}
+
+.countdown-number {
+  color: white;
+  display: none;
+}
+
+.countdown svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+.teamOne > svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+.teamTwo svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: rotateY(-180deg) rotateZ(-90deg);
+}
+
+.countdown svg circle {
+  stroke-dasharray: 113px;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke-width: 3px;
+  stroke: white;
+  fill: none;
+  animation: countdown 60s linear forwards;
+}
+
+@keyframes countdown {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: 60px;
+  }
+}
