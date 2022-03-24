@@ -1,8 +1,8 @@
 import React from "react";
 import Team from "./Team";
 import ScoreBoard from "./ScoreBoard";
-import "./TeamInfos.css";
 import PropTypes from "prop-types";
+import "./TeamInfos.css";
 
 function TeamInfos({ gameState }) {
   return (
@@ -13,7 +13,12 @@ function TeamInfos({ gameState }) {
           teamIncorrectGuesses={gameState.teamOneIncorrectGuesses ?? 0}
           teamInnerPanels={gameState.teamOneInnerPanels ?? 5}
           isTeamActive={gameState.teamTurn === 1 ? true : false}
-          isTeamOne={true}
+          teamNumber={1}
+          isPaused={gameState.pauseState === "Paused"}
+          turnTime={gameState.turnTime}
+          turnTimeTotal={gameState.turnTimeTotal}
+          turnTimeRemaining={gameState.turnTimeRemaining}
+          pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
         />
         <ScoreBoard
           isGamePaused={false}
@@ -26,7 +31,12 @@ function TeamInfos({ gameState }) {
           teamIncorrectGuesses={gameState.teamTwoIncorrectGuesses ?? 0}
           teamInnerPanels={gameState.teamTwoInnerPanels ?? 5}
           isTeamActive={gameState.teamTurn === 2 ? true : false}
-          isTeamOne={false}
+          teamNumber={2}
+          isPaused={gameState.pauseState === "Paused"}
+          turnTime={gameState.turnTime}
+          turnTimeTotal={gameState.turnTimeTotal}
+          turnTimeRemaining={gameState.turnTimeRemaining}
+          pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
         />
       </div>
     </>
