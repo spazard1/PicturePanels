@@ -1,4 +1,7 @@
-﻿body.player {
+﻿/* stylelint-disable keyframes-name-pattern */
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable selector-id-pattern */
+body.player {
   -webkit-overflow-scrolling: touch !important;
   overflow: auto !important;
 }
@@ -138,7 +141,7 @@
 .playerBannerPlaying {
   cursor: pointer;
   flex: 0 0 auto;
-  padding: 2px 0 2px 0;
+  padding: 2px 0;
 }
 
 .turnStatusMessage {
@@ -285,18 +288,18 @@
   font-style: normal;
   color: yellow;
   background-color: dodgerblue;
-  padding: 1px 4px 1px 4px;
+  padding: 1px 4px;
   border-radius: 10px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
 }
 
-.teamGuessVoteCount:before {
+.teamGuessVoteCount::before {
   content: "\02606";
 }
 
-.teamGuessVoteCountChosen:before {
+.teamGuessVoteCountChosen::before {
   content: "\02605";
 }
 

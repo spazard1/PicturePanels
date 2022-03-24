@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 
-export function useSelectedPanels(players) {
+export function useSelectedPanels(players, turnType) {
   const [selectedPanels, setSelectedPanels] = useState({});
   const selectedPanelsRef = useRef();
   selectedPanelsRef.current = selectedPanels;
@@ -13,6 +13,12 @@ export function useSelectedPanels(players) {
     }
     setSelectedPanels(newSelectedPanels);
   }, [players]);
+
+  useEffect(() => {
+    if (turnType && turnType !== "OpenPanel") {
+      setSelectedPanels({});
+    }
+  }, [turnType]);
 
   useSignalR("SelectPanels", (player) => {
     setSelectedPanels({ ...selectedPanelsRef.current, [player.playerId]: player.selectedPanels });
