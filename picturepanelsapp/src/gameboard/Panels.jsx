@@ -21,7 +21,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
     if (!previousRevealedPanels || revealedPanels.length < previousRevealedPanels.length) {
       setEntranceClass(GetEntranceClass());
     }
-  }, [revealedPanels]);
+  }, [previousRevealedPanels, revealedPanels]);
 
   useEffect(() => {
     if (Object.keys(imagesLoaded).length === panelNumbers.length) {

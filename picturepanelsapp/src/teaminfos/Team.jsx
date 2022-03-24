@@ -10,16 +10,21 @@ function Team({
   teamInnerPanels,
   teamNumber,
   isTeamActive,
+  isCountdownActive,
   isPaused,
   turnTime,
   turnTimeTotal,
   turnTimeRemaining,
   pauseTurnRemainingTime,
 }) {
-  const panelCountClassNames = classNames("panelCount", { teamOneBox: teamNumber === 1, teamTwoBox: teamNumber === 2 });
-  const renderPanelCount = useCallback((n) => {
-    return [...Array(n)].map((_, i) => <div key={i} className={panelCountClassNames}></div>);
-  }, []);
+  const renderPanelCount = useCallback(
+    (n) => {
+      return [...Array(n)].map((_, i) => (
+        <div key={i} className={classNames("panelCount", { teamOneBox: teamNumber === 1, teamTwoBox: teamNumber === 2 })}></div>
+      ));
+    },
+    [teamNumber]
+  );
 
   const renderIncorrectGuesses = useCallback((n) => {
     return [...Array(n)].map((_, i) => (
@@ -33,13 +38,15 @@ function Team({
 
   return (
     <div className={teamClassNames}>
-      <Countdown
-        isPaused={isPaused}
-        turnTime={turnTime}
-        turnTimeTotal={turnTimeTotal}
-        turnTimeRemaining={turnTimeRemaining}
-        pauseTurnRemainingTime={pauseTurnRemainingTime}
-      ></Countdown>
+      {isCountdownActive && (
+        <Countdown
+          isPaused={isPaused}
+          turnTime={turnTime}
+          turnTimeTotal={turnTimeTotal}
+          turnTimeRemaining={turnTimeRemaining}
+          pauseTurnRemainingTime={pauseTurnRemainingTime}
+        ></Countdown>
+      )}
       <div className="teamName">{teamName}</div>
       <div className="teamInfoIncorrectGuesses">{renderIncorrectGuesses(teamIncorrectGuesses)}</div>
       <div className="teamInfoPanelCounts center">{renderPanelCount(teamInnerPanels)}</div>
@@ -53,10 +60,11 @@ Team.propTypes = {
   teamInnerPanels: PropTypes.number.isRequired,
   teamNumber: PropTypes.number.isRequired,
   isTeamActive: PropTypes.bool.isRequired,
+  isCountdownActive: PropTypes.bool.isRequired,
   isPaused: PropTypes.bool.isRequired,
-  turnTime: PropTypes.number.isRequired,
-  turnTimeTotal: PropTypes.number.isRequired,
-  turnTimeRemaining: PropTypes.number.isRequired,
+  turnTime: PropTypes.number,
+  turnTimeTotal: PropTypes.number,
+  turnTimeRemaining: PropTypes.number,
   pauseTurnRemainingTime: PropTypes.number,
 };
 
