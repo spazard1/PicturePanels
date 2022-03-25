@@ -5,7 +5,7 @@ import Panels from "./Panels";
 import TeamInfos from "../teaminfos/TeamInfos";
 import Players from "./Players";
 import { useGameState } from "../common/useGameState";
-import { useSignalRConnection } from "../common/useSignalRConnection";
+import { useSignalRConnection } from "../signalr/useSignalRConnection";
 
 import "./Gameboard.css";
 import "animate.css";

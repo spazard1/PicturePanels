@@ -205,7 +205,9 @@ namespace PicturePanels.Services
                     teamTwoScoreChange = -1;
                 }
             }
-            
+
+            await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = teamOneScoreChange, TeamTwo = teamTwoScoreChange, ChangeType = "OpenPanel" });
+
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
                 gs.OpenPanel(panelId);
@@ -500,6 +502,8 @@ namespace PicturePanels.Services
                     gr.TeamOneScore += gameState.GetTeamScoreChange(1);
                     gr.TeamTwoScore += gameState.GetTeamScoreChange(2);
                 });
+
+                await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = gameState.GetTeamScoreChange(1), TeamTwo = gameState.GetTeamScoreChange(2), ChangeType = "OpenPanel" });
 
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
