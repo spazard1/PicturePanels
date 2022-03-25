@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import "./TeamInfos.css";
 
 function TeamInfos({ gameState }) {
+  console.log(gameState);
   return (
     <>
       <div className="teamInfos">
@@ -18,14 +19,19 @@ function TeamInfos({ gameState }) {
           }
           teamNumber={1}
           isPaused={gameState.pauseState === "Paused"}
+          turnType={gameState.turnType}
           turnTime={gameState.turnTime}
           turnTimeTotal={gameState.turnTimeTotal}
           turnTimeRemaining={gameState.turnTimeRemaining}
           pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
+          teamGuessStatus={gameState.teamOneGuessStatus}
+          teamGuess={gameState.teamOneGuess}
+          teamGuessIncorrect={!gameState.teamOneCorrect}
         />
         <ScoreBoard
-          isGamePaused={false}
-          isTeamOnePlaying={true}
+          isGamePaused={gameState.pauseState === "Paused"}
+          teamTurn={gameState.teamTurn}
+          turnType={gameState.turnType}
           teamOneScore={gameState.teamOneScore ?? 0}
           teamTwoScore={gameState.teamTwoScore ?? 0}
         />
@@ -39,10 +45,14 @@ function TeamInfos({ gameState }) {
           }
           teamNumber={2}
           isPaused={gameState.pauseState === "Paused"}
+          turnType={gameState.turnType}
           turnTime={gameState.turnTime}
           turnTimeTotal={gameState.turnTimeTotal}
           turnTimeRemaining={gameState.turnTimeRemaining}
           pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
+          teamGuessStatus={gameState.teamTwoGuessStatus}
+          teamGuess={gameState.teamTwoGuess}
+          teamGuessIncorrect={!gameState.teamTwoCorrect}
         />
       </div>
     </>
