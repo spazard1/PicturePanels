@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import "./TeamInfos.css";
 
 function TeamInfos({ gameState }) {
-  console.log(gameState);
   return (
     <>
       <div className="teamInfos">
