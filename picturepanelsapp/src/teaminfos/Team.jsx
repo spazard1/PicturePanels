@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import Countdown from "./Countdown";
+import TeamGuess from "./TeamGuess";
 import "./Team.css";
 
 function Team({
@@ -10,16 +11,32 @@ function Team({
   teamInnerPanels,
   teamNumber,
   isTeamActive,
+  isCountdownActive,
   isPaused,
   turnTime,
   turnTimeTotal,
   turnTimeRemaining,
   pauseTurnRemainingTime,
+  teamGuessStatus,
+  teamGuess,
+  teamGuessIncorrect,
+  turnType,
 }) {
-  const panelCountClassNames = classNames("panelCount", { teamOneBox: teamNumber === 1, teamTwoBox: teamNumber === 2 });
-  const renderPanelCount = useCallback((n) => {
-    return [...Array(n)].map((_, i) => <div key={i} className={panelCountClassNames}></div>);
-  }, []);
+  const renderPanelCount = useCallback(
+    (n) => {
+      return [...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className={classNames("panelCount", "animate__animated", "animate__slow", {
+            teamOneBox: teamNumber === 1,
+            teamTwoBox: teamNumber === 2,
+            animate__rollOut: i > n - 1,
+          })}
+        ></div>
+      ));
+    },
+    [teamNumber]
+  );
 
   const renderIncorrectGuesses = useCallback((n) => {
     return [...Array(n)].map((_, i) => (
@@ -33,16 +50,25 @@ function Team({
 
   return (
     <div className={teamClassNames}>
-      <Countdown
-        isPaused={isPaused}
-        turnTime={turnTime}
-        turnTimeTotal={turnTimeTotal}
-        turnTimeRemaining={turnTimeRemaining}
-        pauseTurnRemainingTime={pauseTurnRemainingTime}
-      ></Countdown>
+      {isCountdownActive && (
+        <Countdown
+          isPaused={isPaused}
+          turnTime={turnTime}
+          turnTimeTotal={turnTimeTotal}
+          turnTimeRemaining={turnTimeRemaining}
+          pauseTurnRemainingTime={pauseTurnRemainingTime}
+        ></Countdown>
+      )}
       <div className="teamName">{teamName}</div>
       <div className="teamInfoIncorrectGuesses">{renderIncorrectGuesses(teamIncorrectGuesses)}</div>
       <div className="teamInfoPanelCounts center">{renderPanelCount(teamInnerPanels)}</div>
+      <TeamGuess
+        teamNumber={teamNumber}
+        teamGuessStatus={teamGuessStatus}
+        teamGuess={teamGuess}
+        teamGuessIncorrect={teamGuessIncorrect}
+        turnType={turnType}
+      ></TeamGuess>
     </div>
   );
 }
@@ -53,11 +79,16 @@ Team.propTypes = {
   teamInnerPanels: PropTypes.number.isRequired,
   teamNumber: PropTypes.number.isRequired,
   isTeamActive: PropTypes.bool.isRequired,
+  isCountdownActive: PropTypes.bool.isRequired,
   isPaused: PropTypes.bool.isRequired,
-  turnTime: PropTypes.number.isRequired,
-  turnTimeTotal: PropTypes.number.isRequired,
-  turnTimeRemaining: PropTypes.number.isRequired,
+  turnTime: PropTypes.number,
+  turnTimeTotal: PropTypes.number,
+  turnTimeRemaining: PropTypes.number,
   pauseTurnRemainingTime: PropTypes.number,
+  teamGuessStatus: PropTypes.string,
+  teamGuess: PropTypes.string,
+  teamGuessIncorrect: PropTypes.bool,
+  turnType: PropTypes.string,
 };
 
 export default Team;

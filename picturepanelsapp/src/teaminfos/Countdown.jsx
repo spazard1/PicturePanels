@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import "./Countdown.css";
 
@@ -8,10 +8,12 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
   const endTimeRef = useRef();
   const frameRate = 30;
 
-  console.log("Countdown pauseTurnRemainingTime", pauseTurnRemainingTime);
-
-  function drawCountdown() {
+  const drawCountdown = useCallback(() => {
     const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
     var ctx = canvas.getContext("2d");
 
     var scale = 0.55;
@@ -26,7 +28,6 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
 
     ctx.beginPath();
 
-    console.log(pauseTurnRemainingTime, canvas.currentCountdown, canvas.countdownMax);
     ctx.arc(
       circlePosition,
       circlePosition,
@@ -37,7 +38,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
-  }
+  }, []);
 
   function setupCanvas() {
     const canvas = canvasRef.current;
@@ -65,7 +66,6 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
     canvas.currentCountdown = turnTimeRemaining;
     endTimeRef.current = new Date();
     endTimeRef.current.setMilliseconds(endTimeRef.current.getMilliseconds() + turnTimeRemaining * 1000);
-    console.log("countdown: ", endTimeRef.current);
 
     if (canvas.countdownMax <= 0) {
       return;
@@ -88,7 +88,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
 
       drawCountdown(canvas);
     }, 1000 / frameRate);
-  }, [isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime]);
+  }, [isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime, drawCountdown]);
 
   return (
     <div className="countdown">
@@ -99,10 +99,10 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
 
 Countdown.propTypes = {
   isPaused: PropTypes.bool.isRequired,
-  turnTime: PropTypes.number.isRequired,
-  turnTimeTotal: PropTypes.number.isRequired,
-  turnTimeRemaining: PropTypes.number.isRequired,
-  pauseTurnRemainingTime: PropTypes.number.isRequired,
+  turnTime: PropTypes.number,
+  turnTimeTotal: PropTypes.number,
+  turnTimeRemaining: PropTypes.number,
+  pauseTurnRemainingTime: PropTypes.number,
 };
 
 export default React.memo(Countdown);

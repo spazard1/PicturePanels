@@ -14,6 +14,7 @@ export function useSignalR(eventName, callback) {
     return () => {
       connection.off(eventName, callback);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connection]);
 
   return connectionId;
