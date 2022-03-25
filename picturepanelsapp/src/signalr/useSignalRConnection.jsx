@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect } from "react";
-import { CreateSignalRConnection } from "../signalr/SignalRConnectionFactory";
-import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
+import { CreateSignalRConnection } from "./SignalRConnectionFactory";
+import SignalRConnectionContext from "./SignalRConnectionContext";
 
 export function useSignalRConnection(queryString, ...stateDependencies) {
   const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
@@ -15,5 +16,5 @@ export function useSignalRConnection(queryString, ...stateDependencies) {
 
     setConnection(newConnection);
     setConnectionId(newConnection.id);
-  }, stateDependencies);
+  }, [...stateDependencies]);
 }
