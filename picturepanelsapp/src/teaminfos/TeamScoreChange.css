@@ -1,0 +1,10 @@
+/* stylelint-disable selector-class-pattern */
+.teamScoreChange {
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%;
+  top: 7.5vh;
+  z-index: 100;
+  font-size: 4vh;
+  line-height: normal;
+}
