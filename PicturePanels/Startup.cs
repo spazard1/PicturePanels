@@ -112,7 +112,7 @@ namespace PicturePanels
                         "http://localhost:3000",
                         "https://localhost:3000",
                         "https://picturepanels.net",
-                        "https://nice-pebble-0e37f8d10.1.azurestaticapps.net/"
+                        "https://nice-pebble-0e37f8d10.1.azurestaticapps.net"
                     }
                 ));
 
