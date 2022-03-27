@@ -1,0 +1,49 @@
+/* stylelint-disable selector-class-pattern */
+.fadedBox {
+  position: absolute;
+  z-index: 1000;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.fadedBox .fadedBoxTitle {
+  display: inline-block;
+  height: 100%;
+  background-color: rgba(0 0 0 / 60%);
+  border: 3px solid rgba(50 50 50 / 100%);
+  padding: 0.1em 0.3em;
+}
+
+.fadedBoxTitle * {
+  opacity: 1;
+}
+
+.remainingTurnTimeFadedBox {
+  font-size: 4vh;
+  bottom: 12vh;
+  right: 10vw;
+}
+
+.uploadedByFadedBox {
+  font-size: 3vh;
+  bottom: 1vh;
+  right: 0.5vw;
+}
+
+.roundNumberAnimateFadedBox {
+  font-size: 10vh;
+  top: 45vh;
+  width: 100%;
+}
+
+.answerTitleFadedBox {
+  font-size: 6vh;
+  top: 18vh;
+  width: 100%;
+}
+
+.gameStateIdDisplayFadedBox {
+  font-size: 3vh;
+  bottom: 1vh;
+  left: 0.5vw;
+}
