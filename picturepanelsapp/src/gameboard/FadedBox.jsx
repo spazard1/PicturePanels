@@ -3,19 +3,26 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import "./FadedBox.css";
 
-export default function FadedBox({ isDisplayed, displayText, className, entranceClassName, exitClassName }) {
-  console.log(exitClassName);
-
+export default function FadedBox({ children, displayState, className, entranceClassName, exitClassName }) {
   return (
-    <div className={classNames("fadedBox", "animate__animated", "animate__slow", className, { [`${entranceClassName}`]: isDisplayed })}>
-      <div className="fadedBoxTitle">{displayText}</div>
-    </div>
+    <>
+      {children && (
+        <div
+          className={classNames("fadedBox", "animate__animated", "animate__slow", className, {
+            [`${entranceClassName}`]: displayState,
+            [`${exitClassName}`]: !displayState,
+          })}
+        >
+          <div className="fadedBoxTitle">{children}</div>
+        </div>
+      )}
+    </>
   );
 }
 
 FadedBox.propTypes = {
-  isDisplayed: PropTypes.bool.isRequired,
-  displayText: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
+  displayState: PropTypes.bool.isRequired,
   className: PropTypes.string.isRequired,
   entranceClassName: PropTypes.string,
   exitClassName: PropTypes.string,
