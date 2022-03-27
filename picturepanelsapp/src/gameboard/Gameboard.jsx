@@ -9,6 +9,7 @@ import { useSignalRConnection } from "../signalr/useSignalRConnection";
 
 import "./Gameboard.css";
 import "animate.css";
+import FadedBox from "./FadedBox";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -36,6 +37,18 @@ export default function Gameboard() {
         teamTurn={gameState.teamTurn ?? 1}
         turnType={gameState.turnType}
       />
+      {gameStateId && (
+        <FadedBox
+          className="gameStateIdFadedBox"
+          entranceClassName=" animate__bounceInLeft"
+          exitClassName=" animate__bounceOutLeft"
+          displayText={
+            gameState.revealedPanels
+              ? "Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId
+              : gameState.gameStateId
+          }
+        ></FadedBox>
+      )}
     </>
   );
 }
