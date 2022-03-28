@@ -63,7 +63,6 @@ export default function Gameboard() {
 
       if (imageEntity.name) {
         //document.getElementById("answerTitleText").innerHTML = imageEntity.name;
-        //animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["slow", "bounceInDown"], ["bounceOutUp", "hidden"], 2000));
       }
     });
   }, [gameStateId, gameState]);
@@ -88,16 +87,14 @@ export default function Gameboard() {
         displayState={gameStateIdDisplay}
         className="gameStateIdFadedBox"
         entranceClassName=" animate__bounceInLeft"
-        exitClassName=" animate__bounceOutLeft"
-      >
+        exitClassName=" animate__bounceOutLeft">
         {gameStateIdDisplayText}
       </FadedBox>
       <FadedBox
         displayState={uploadedByDisplay}
         className="uploadedByFadedBox"
         entranceClassName=" animate__bounceInRight"
-        exitClassName=" animate__bounceOutRight"
-      >
+        exitClassName=" animate__bounceOutRight">
         {uploadedByDisplayText}
       </FadedBox>
     </>
