@@ -68,6 +68,7 @@ export default function Gameboard() {
     });
   }, [gameStateId, gameState]);
 
+  console.log("t");
   useEffect(() => {
     setGameStateId("KDML");
   }, []);
