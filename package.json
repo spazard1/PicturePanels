@@ -1,0 +1,9 @@
+{
+  "name": "picturepanelsapp",
+  "version": "0.1.0",
+  "private": true,
+  "prettier":{
+    "printWidth": 150
+  },
+  "prettier.printWidth": 150
+}
