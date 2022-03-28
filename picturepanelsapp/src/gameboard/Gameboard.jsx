@@ -64,8 +64,6 @@ export default function Gameboard() {
       if (imageEntity.name) {
         //document.getElementById("answerTitleText").innerHTML = imageEntity.name;
         //animationPromise = animationPromise.then(() => animateCSS("#answerTitle", ["slow", "bounceInDown"], ["bounceOutUp", "hidden"], 2000));
-      } else {
-        //animateCSS("#answerTitle", ["bounceOutUp"], ["slow", "bounceInDown"]);
       }
     });
   }, [gameStateId, gameState]);
