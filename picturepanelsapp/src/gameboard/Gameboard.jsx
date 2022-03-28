@@ -62,7 +62,7 @@ export default function Gameboard() {
       }
 
       if (imageEntity.name) {
-        //document.getElementById("answerTitleText").innerHTML
+        //document.getElementById("answerTitleText").
       }
     });
   }, [gameStateId, gameState]);
@@ -75,26 +75,11 @@ export default function Gameboard() {
     <>
       <TeamInfos gameState={gameState} />
       <Players players={players}></Players>
-      <Panels
-        gameStateId={gameStateId}
-        players={players}
-        roundNumber={gameState.roundNumber ?? 0}
-        revealedPanels={gameState.revealedPanels ?? []}
-        teamTurn={gameState.teamTurn ?? 1}
-        turnType={gameState.turnType}
-      />
-      <FadedBox
-        displayState={gameStateIdDisplay}
-        className="gameStateIdFadedBox"
-        entranceClassName=" animate__bounceInLeft"
-        exitClassName=" animate__bounceOutLeft">
+      <Panels gameStateId={gameStateId} players={players} roundNumber={gameState.roundNumber ?? 0} revealedPanels={gameState.revealedPanels ?? []} teamTurn={gameState.teamTurn ?? 1} turnType={gameState.turnType} />
+      <FadedBox displayState={gameStateIdDisplay} className="gameStateIdFadedBox" entranceClassName=" animate__bounceInLeft" exitClassName=" animate__bounceOutLeft">
         {gameStateIdDisplayText}
       </FadedBox>
-      <FadedBox
-        displayState={uploadedByDisplay}
-        className="uploadedByFadedBox"
-        entranceClassName=" animate__bounceInRight"
-        exitClassName=" animate__bounceOutRight">
+      <FadedBox displayState={uploadedByDisplay} className="uploadedByFadedBox" entranceClassName=" animate__bounceInRight" exitClassName=" animate__bounceOutRight">
         {uploadedByDisplayText}
       </FadedBox>
     </>
