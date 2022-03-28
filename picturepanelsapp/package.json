@@ -65,5 +65,9 @@
   "prettier":{
     "printWidth": 150
   },
-  "prettier.printWidth": 150
+  "prettier.printWidth": 150,
+  "options.editorconfig": true,
+  "options": {
+    "editorconfig": true
+  }
 }
