@@ -20,11 +20,11 @@
   "lint-staged": {
     "src/**/*.+(js|jsx|md|yml|yaml)": [
       "eslint --cache --fix",
-      "prettier --write --print-width 150"
+      "prettier --write"
     ],
     "src/**/*.+(css|scss)": [
       "stylelint --cache --fix",
-      "prettier --write --print-width 150"
+      "prettier --write"
     ]
   },
   "scripts": {
@@ -63,6 +63,7 @@
     "stylelint-config-standard": "^25.0.0"
   },
   "prettier":{
-    "printWidth": 150
+    "printWidth": 150,
+    "bracketSameLine": true
   }
 }
