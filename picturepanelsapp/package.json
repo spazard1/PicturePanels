@@ -63,8 +63,6 @@
     "stylelint-config-standard": "^25.0.0"
   },
   "prettier":{
-    "printWidth": 150,
-    "bracketSameLine": true,
-    "singleAttributePerLine": false
+    "printWidth": 150
   }
 }
