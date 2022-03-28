@@ -20,11 +20,11 @@
   "lint-staged": {
     "src/**/*.+(js|jsx|md|yml|yaml)": [
       "eslint --cache --fix",
-      "prettier --write"
+      "prettier --write --print-width 150"
     ],
     "src/**/*.+(css|scss)": [
       "stylelint --cache --fix",
-      "prettier --write"
+      "prettier --write --print-width 150"
     ]
   },
   "scripts": {
