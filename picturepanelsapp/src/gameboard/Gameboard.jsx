@@ -62,7 +62,7 @@ export default function Gameboard() {
       }
 
       if (imageEntity.name) {
-        //document.getElementById("answerTitleText").innerHTML = imageEntity.name;
+        //document.getElementById("answerTitleText").innerHTML
       }
     });
   }, [gameStateId, gameState]);
