@@ -21,6 +21,7 @@ export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType
     for (const playerId in selectedPanels) {
       let playerSelectedPanels = selectedPanels[playerId];
 
+      console.log(players);
       if (players[playerId].teamNumber !== teamTurn) {
         continue;
       }
