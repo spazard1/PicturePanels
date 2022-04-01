@@ -17,8 +17,6 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
       return;
     }
 
-    console.log(teamGuessStatus);
-
     if (teamGuessStatus === "Ready") {
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
@@ -28,7 +26,6 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
       setTeamGuessIncorrectDisplay(teamGuessIncorrect);
       setteamGuessDisplay(teamGuess);
     } else if (teamGuessStatus) {
-      console.log("passed here");
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
       setteamGuessDisplay("(team passed)");

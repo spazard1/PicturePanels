@@ -6,7 +6,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
   const canvasRef = useRef();
   const intervalRef = useRef();
   const endTimeRef = useRef();
-  const frameRate = 30;
+  const frameRate = 15;
 
   const drawCountdown = useCallback(() => {
     const canvas = canvasRef.current;
@@ -16,28 +16,47 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
 
     var ctx = canvas.getContext("2d");
 
-    var scale = 0.55;
+    var scale = 0.35;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (canvas.currentCountdown <= 0) {
       return;
     }
 
-    var circleSize = (canvas.height / 2) * scale;
-    var circlePosition = canvas.height / 2;
-    var strokeWidth = (canvas.height / 2) * scale;
+    var percentageRemaining = Math.min(canvas.currentCountdown, canvas.countdownMax) / canvas.countdownMax;
+
+    var circleSize = canvas.height * scale;
+    var circlePosition = canvas.height * 0.5;
+    var strokeWidth = canvas.height * scale * 0.5;
+
+    const canvasSize = Math.floor(canvas.clientHeight);
+    const circleRotatePosition = Math.floor(canvasSize / 2) * window.devicePixelRatio;
+
+    ctx.save();
+    ctx.translate(circleRotatePosition, circleRotatePosition); // First translate the context to the center you wish to rotate around.
+    ctx.rotate(1.5 * Math.PI); // Then do the actual rotation.
+    ctx.translate(-circleRotatePosition, -circleRotatePosition); // Then translate the context back.
 
     ctx.beginPath();
 
-    ctx.arc(
-      circlePosition,
-      circlePosition,
-      circleSize,
-      0,
-      (Math.min(canvas.currentCountdown, canvas.countdownMax) / canvas.countdownMax) * 2 * Math.PI
-    );
+    ctx.arc(circlePosition, circlePosition, circleSize, 0, percentageRemaining * 2 * Math.PI);
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(circleRotatePosition, circleRotatePosition); // First translate the context to the center you wish to rotate around.
+    ctx.rotate(0); // Then do the actual rotation.
+    ctx.translate(-circleRotatePosition, -circleRotatePosition); // Then translate the context back.
+
+    ctx.font = Math.floor(circleSize * 0.95) + "px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#FFFFFF";
+    const secondsRemaining = Math.ceil(Math.min(canvas.currentCountdown, canvas.countdownMax) / 1000);
+    if (secondsRemaining <= 15) {
+      ctx.fillText(secondsRemaining, circlePosition, circlePosition + circlePosition * 0.2);
+    }
+    ctx.restore();
   }, []);
 
   function setupCanvas() {
@@ -50,12 +69,6 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
     canvas.style.width = canvasSize + "px";
     canvas.height = canvasSize * window.devicePixelRatio;
     canvas.width = canvasSize * window.devicePixelRatio;
-
-    const circlePosition = Math.floor(canvasSize / 2) * window.devicePixelRatio;
-
-    ctx.translate(circlePosition, circlePosition); // First translate the context to the center you wish to rotate around.
-    ctx.rotate(1.5 * Math.PI); // Then do the actual rotation.
-    ctx.translate(-circlePosition, -circlePosition); // Then translate the context back.
   }
 
   useEffect(() => {
