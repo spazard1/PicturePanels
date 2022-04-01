@@ -8,7 +8,6 @@ export function usePlayers(gameStateId) {
   playersRef.current = players;
 
   const connectionId = useSignalR("Players", (players) => {
-    console.log("setting new players", players);
     setPlayers(players);
   });
 
