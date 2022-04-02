@@ -41,6 +41,13 @@ namespace PicturePanels
                 options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             });
 
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+                options.Secure = CookieSecurePolicy.Always;
+                options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
+            });
+
             services.AddSingleton<ImageTableStorage>();
             services.AddSingleton<GameStateTableStorage>();
             services.AddSingleton<PlayerTableStorage>();
@@ -123,6 +130,8 @@ namespace PicturePanels
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCookiePolicy();
 
             app.UseAuthorization();
 
