@@ -11,6 +11,7 @@ import { getImageEntity } from "./getImageEntity";
 
 import "./Gameboard.css";
 import "animate.css";
+import { useGameboardPing } from "./useGameboardPing";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -27,6 +28,7 @@ export default function Gameboard() {
 
   const { gameState } = useGameState(gameStateId);
   const { players } = usePlayers(gameStateId);
+  useGameboardPing(gameStateId);
 
   useEffect(() => {
     if (!gameStateId || !gameState) {
@@ -87,6 +89,7 @@ export default function Gameboard() {
         revealedPanels={gameState.revealedPanels ?? []}
         teamTurn={gameState.teamTurn ?? 1}
         turnType={gameState.turnType}
+        teamIsCorrect={gameState.teamOneCorrect || gameState.teamTwoCorrect}
       />
       <FadedBox
         displayState={gameStateIdDisplay}

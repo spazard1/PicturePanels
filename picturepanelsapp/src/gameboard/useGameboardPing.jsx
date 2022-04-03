@@ -6,6 +6,10 @@ export function useGameboardPing(gameStateId) {
   const { connection } = useContext(SignalRConnectionContext);
 
   const gameBoardPing = useCallback(() => {
+    if (!connection || !gameStateId) {
+      return;
+    }
+
     connection.invoke("GameboardPing", gameStateId);
   }, [connection, gameStateId]);
 
