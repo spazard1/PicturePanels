@@ -21,8 +21,7 @@ export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType
     for (const playerId in selectedPanels) {
       let playerSelectedPanels = selectedPanels[playerId];
 
-      console.log(players);
-      if (players[playerId].teamNumber !== teamTurn) {
+      if (!players[playerId] || players[playerId].teamNumber !== teamTurn) {
         continue;
       }
 
@@ -96,5 +95,5 @@ MostVotesPanels.propTypes = {
   players: PropTypes.object.isRequired,
   selectedPanels: PropTypes.object,
   teamTurn: PropTypes.number.isRequired,
-  turnType: PropTypes.string.isRequired,
+  turnType: PropTypes.string,
 };
