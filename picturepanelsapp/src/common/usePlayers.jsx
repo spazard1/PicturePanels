@@ -8,7 +8,9 @@ export function usePlayers(gameStateId) {
   playersRef.current = players;
 
   const connectionId = useSignalR("Players", (players) => {
-    setPlayers(players);
+    const newPlayers = players.reduce((aggregate, value) => ({ ...aggregate, [value.playerId]: value }), {});
+
+    setPlayers(newPlayers);
   });
 
   useSignalR("AddPlayer", (player) => {
