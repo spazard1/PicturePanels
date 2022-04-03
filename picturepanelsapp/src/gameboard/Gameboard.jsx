@@ -19,6 +19,8 @@ export default function Gameboard() {
   const [gameStateIdDisplayText, setGameStateIdDisplayText] = useState();
   const [uploadedByDisplay, setUploadedByDisplay] = useState(false);
   const [uploadedByDisplayText, setUploadedByDisplayText] = useState();
+  const [answerDisplay, setAnswerDisplay] = useState(false);
+  const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
 
   useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
@@ -62,7 +64,10 @@ export default function Gameboard() {
       }
 
       if (imageEntity.name) {
-        //document.getElementById("
+        setAnswerDisplayText(imageEntity.name);
+        setAnswerDisplay(true);
+      } else {
+        setAnswerDisplay(false);
       }
     });
   }, [gameStateId, gameState]);
@@ -98,6 +103,14 @@ export default function Gameboard() {
         exitClassName=" animate__bounceOutRight"
       >
         {uploadedByDisplayText}
+      </FadedBox>
+      <FadedBox
+        displayState={answerDisplay}
+        className="answerFadedBox"
+        entranceClassName=" animate__bounceInTop"
+        exitClassName=" animate__bounceOutTop"
+      >
+        {answerDisplayText}
       </FadedBox>
     </>
   );
