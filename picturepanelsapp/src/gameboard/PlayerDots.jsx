@@ -46,7 +46,5 @@ PlayerDots.propTypes = {
   panelRefs: PropTypes.arrayOf(PropTypes.object),
   players: PropTypes.object.isRequired,
   teamTurn: PropTypes.number.isRequired,
-  turnType: PropTypes.string.isRequired,
+  turnType: PropTypes.string,
 };
-
-//

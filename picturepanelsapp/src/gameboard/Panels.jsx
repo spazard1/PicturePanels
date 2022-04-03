@@ -9,7 +9,7 @@ import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-export default function Panels({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType }) {
+export default function Panels({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType, teamIsCorrect }) {
   const panelsRef = useRef();
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
@@ -69,7 +69,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
             key={panelNumber}
             ref={panelRefs[panelNumber - 1]}
             gameStateId={gameStateId}
-            isOpen={revealedPanels.indexOf(panelNumber) >= 0}
+            isOpen={turnType === "EndRound" || teamIsCorrect || revealedPanels.indexOf(panelNumber) >= 0}
             entranceClass={entranceClass}
             panelNumber={panelNumber}
             roundNumber={roundNumber}
@@ -90,4 +90,5 @@ Panels.propTypes = {
   roundNumber: PropTypes.number,
   teamTurn: PropTypes.number,
   turnType: PropTypes.string,
+  teamIsCorrect: PropTypes.bool,
 };

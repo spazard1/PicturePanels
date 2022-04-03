@@ -74,10 +74,15 @@ namespace PicturePanels.Services
             return gameStateId + "_all";
         }
 
-        public async Task RegisterGameBoard(string gameStateId)
+        public async Task GameboardPing(string gameStateId)
         {
             await this.gameStateService.SetGameBoardActiveAsync(gameStateId);
             await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
+
+            var allPlayerModels = await this.playerTableStorage.GetActivePlayersAsync(gameStateId).ToListAsync();
+            var allPlayers = allPlayerModels.Select(playerModel => new PlayerEntity(playerModel)).ToList();
+
+            await Clients.Caller.Players(allPlayers);
         }
 
         private static readonly Regex MultipleNewLines = new(@"([\r\n])+");
