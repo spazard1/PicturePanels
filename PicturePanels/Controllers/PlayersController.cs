@@ -86,6 +86,7 @@ namespace PicturePanels.Controllers
             else
             {
                 var newTeam = playerModel.TeamNumber != entity.TeamNumber;
+                var previousLastPingTime = playerModel.LastPingTime;
                 playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
                 {
                     pm.Name = GetPlayerName(entity.Name);
@@ -99,7 +100,7 @@ namespace PicturePanels.Controllers
                     await this.signalRHelper.SwitchTeamGroupsAsync(playerModel);
                 }
 
-                if (newTeam || playerModel.LastPingTime.AddMinutes(PlayerTableStorage.PlayerTimeoutInMinutes) <= DateTime.UtcNow)
+                if (newTeam || previousLastPingTime.AddMinutes(PlayerTableStorage.PlayerTimeoutInMinutes) <= DateTime.UtcNow)
                 {
                     await this.signalRHelper.AddPlayerAsync(playerModel);
                 }
