@@ -1,6 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 
-export const CreateSignalRConnection = (queryString, setConnectionId) => {
+export const CreateSignalRConnection = (queryString, setConnection, setConnectionId) => {
   var connection = new signalR.HubConnectionBuilder()
     .withUrl("https://picturepanels.azurewebsites.net/signalRHub?" + queryString)
     .withAutomaticReconnect()
@@ -14,8 +14,6 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
     //const li = document.createElement("li");
     //li.textContent = `Connection lost due to error "${error}". Reconnecting.`;
     //document.getElementById("messageList").appendChild(li);
-
-    setConnectionId(connection.id);
   });
 
   connection.onreconnected((connectionId) => {
@@ -23,7 +21,10 @@ export const CreateSignalRConnection = (queryString, setConnectionId) => {
     setConnectionId(connectionId);
   });
 
-  connection.start();
+  connection.start().then(() => {
+    setConnection(connection);
+    setConnectionId(connection.id);
+  });
 
   return connection;
 };
