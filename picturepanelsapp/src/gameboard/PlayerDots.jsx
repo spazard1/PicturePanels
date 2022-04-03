@@ -15,7 +15,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
     const newPlayerDots = {};
 
     for (const playerId in selectedPanels) {
-      if (players[playerId].teamNumber !== teamTurn) {
+      if (!players[playerId] || players[playerId].teamNumber !== teamTurn) {
         continue;
       }
 
