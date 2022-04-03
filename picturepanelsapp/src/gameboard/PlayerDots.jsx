@@ -28,14 +28,15 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
     <div id="playerDots">
       {Object.keys(playerDots).map((playerId) => (
         <span key={playerId}>
-          {panelNumbers.map((panelNumber) => (
-            <PlayerDot
-              key={playerId + panelNumber}
-              player={players[playerId]}
-              panelRef={playerDots[playerId].indexOf(panelNumber) >= 0 ? panelRefs[panelNumber - 1] : null}
-              turnType={turnType}
-            ></PlayerDot>
-          ))}
+          {players[playerId] &&
+            panelNumbers.map((panelNumber) => (
+              <PlayerDot
+                key={playerId + panelNumber}
+                player={players[playerId]}
+                panelRef={playerDots[playerId].indexOf(panelNumber) >= 0 ? panelRefs[panelNumber - 1] : null}
+                turnType={turnType}
+              ></PlayerDot>
+            ))}
         </span>
       ))}
     </div>

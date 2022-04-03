@@ -18,19 +18,16 @@ namespace PicturePanels.Controllers
         private readonly PlayerTableStorage playerTableStorage;
         private readonly GameStateTableStorage gameStateTableStorage;
         private readonly GameStateService gameStateService;
-        private readonly ChatService chatService;
         private readonly SignalRHelper signalRHelper;
 
         public PlayersController(PlayerTableStorage playerTableStorage,
             GameStateTableStorage gameStateTableStorage,
             GameStateService gameStateService,
-            ChatService chatService,
             SignalRHelper signalRHelper)
         {
             this.playerTableStorage = playerTableStorage;
             this.gameStateTableStorage = gameStateTableStorage;
             this.gameStateService = gameStateService;
-            this.chatService = chatService;
             this.signalRHelper = signalRHelper;
         }
 
@@ -102,7 +99,7 @@ namespace PicturePanels.Controllers
                     await this.signalRHelper.SwitchTeamGroupsAsync(playerModel);
                 }
 
-                if (newTeam || playerModel.LastPingTime.AddMinutes(5) < DateTime.UtcNow)
+                if (newTeam || playerModel.LastPingTime.AddMinutes(PlayerTableStorage.PlayerTimeoutInMinutes) <= DateTime.UtcNow)
                 {
                     await this.signalRHelper.AddPlayerAsync(playerModel);
                 }
