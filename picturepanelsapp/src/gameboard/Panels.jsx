@@ -25,6 +25,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
 
   useEffect(() => {
     if (Object.keys(imagesLoaded).length === panelNumbers.length) {
+      resizePanelContainer();
       setAllImagesLoaded(true);
     }
   }, [imagesLoaded]);
@@ -39,27 +40,27 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
       return;
     }
 
-    const resizePanelContainer = () => {
-      var panelsContainerRect = panelsRef.current.getBoundingClientRect();
-      var panelsContainerMaxWidth = 84;
-      panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
-      var paddingBottom = 5;
-
-      while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
-        panelsContainerMaxWidth -= 0.5;
-        if (panelsContainerMaxWidth < 10) {
-          break;
-        }
-
-        panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
-        panelsContainerRect = panelsRef.current.getBoundingClientRect();
-      }
-    };
-
     window.onresize = resizePanelContainer;
 
     resizePanelContainer();
   }, [roundNumber, gameStateId]);
+
+  const resizePanelContainer = () => {
+    var panelsContainerRect = panelsRef.current.getBoundingClientRect();
+    var panelsContainerMaxWidth = 84;
+    panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
+    var paddingBottom = 5;
+
+    while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
+      panelsContainerMaxWidth -= 0.5;
+      if (panelsContainerMaxWidth < 10) {
+        break;
+      }
+
+      panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
+      panelsContainerRect = panelsRef.current.getBoundingClientRect();
+    }
+  };
 
   return (
     <>

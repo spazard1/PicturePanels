@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
   const [initials, setInitials] = useState("");
-  const circleScale = 0.04;
+  const circleScale = 0.055;
   const divSize = window.innerHeight * circleScale;
   const circleBorderSize = 2;
   const circleSize = divSize / 2;
@@ -52,7 +52,7 @@ const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
       <svg>
         <circle r={circleRadius} cx={circleSize} cy={circleSize} stroke="black" strokeWidth={circleBorderSize}></circle>
       </svg>
-      <div id="playerDotInitials_7de394af-2f2e-420b-93b8-e6829895811f_2">{initials}</div>
+      <div>{initials}</div>
     </div>
   );
 };
