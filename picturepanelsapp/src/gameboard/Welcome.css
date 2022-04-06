@@ -1,0 +1,88 @@
+/* stylelint-disable selector-class-pattern */
+.welcomeContainer {
+  padding: 2vh 2vw;
+  font-size: 3vh;
+  position: absolute;
+  width: 60vw;
+  top: 15vh;
+  left: 20vw;
+  background-color: rgba(0 0 0 / 90%);
+  z-index: 900;
+  text-align: center;
+  box-sizing: border-box;
+  border: 4px solid grey;
+}
+
+.welcomeStartGame {
+  font-size: 4vh;
+}
+
+.welcomeText a {
+  color: skyblue;
+  text-decoration: none;
+}
+
+.welcomeQRCodeImg {
+  margin-top: 2vh;
+  height: 25vh;
+  background-color: rgba(0 0 0 / 100%);
+}
+
+.welcomeGameCode {
+  margin-top: 2vh;
+  font-size: 3.5vh;
+}
+
+.welcomeGameStateId {
+  font-size: 7vh;
+}
+
+.welcomeButton {
+  margin-top: 4vh;
+  font-size: 3vh;
+  width: 16vw;
+  white-space: nowrap;
+  padding: 0 5px;
+}
+
+.gameStateIdInput {
+  margin-top: 3vh;
+  font-size: 4vh;
+  width: 10vw;
+  text-align: center;
+}
+
+.welcomeGameStateInput {
+  text-align: center;
+}
+
+.welcomeGameStateOptions {
+  margin-top: 3vh;
+}
+
+.welcomeGameStateDropdownSubOptions {
+  margin-top: 1vh;
+}
+
+.welcomeGameStateTeamName {
+  margin: 0 0.75rem;
+}
+
+.startGameButtons {
+  display: flex;
+  width: 80%;
+}
+
+.welcomeTagsMessage {
+  font-size: 2vh;
+  margin-top: 5vh;
+}
+
+.tagsInputContainer {
+  display: inline-block;
+  width: 25vw;
+}
+
+.welcomeGameStateDropdownOptions {
+  margin-top: 5vh;
+}

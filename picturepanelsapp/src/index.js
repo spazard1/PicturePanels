@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import "./themes/default/default.css";
 import AppWrapper from "./common/AppWrapper";
