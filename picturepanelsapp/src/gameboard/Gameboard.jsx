@@ -8,14 +8,18 @@ import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import FadedBox from "./FadedBox";
 import { getImageEntity } from "./getImageEntity";
+import { useGameboardPing } from "./useGameboardPing";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Welcome from "./Welcome";
 
 import "./Gameboard.css";
 import "animate.css";
-import { useGameboardPing } from "./useGameboardPing";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
+  const [welcomeState, setWelcomeState] = useState("");
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
   const [gameStateIdDisplayText, setGameStateIdDisplayText] = useState();
   const [uploadedByDisplay, setUploadedByDisplay] = useState(false);
@@ -24,9 +28,23 @@ export default function Gameboard() {
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
 
+  const onWelcomeStateChange = (welcomeState) => {
+    setWelcomeState(welcomeState);
+  };
+
+  const onCancel = () => {
+    setWelcomeState("");
+  };
+
+  const onJoinGame = (gameStateId) => {
+    setGameStateId(gameStateId);
+  };
+
+  const onGameStateLoadError = () => {};
+
   useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
 
-  const { gameState } = useGameState(gameStateId);
+  const { gameState } = useGameState(gameStateId, onGameStateLoadError);
   const { players } = usePlayers(gameStateId);
   useGameboardPing(gameStateId);
 
@@ -34,6 +52,8 @@ export default function Gameboard() {
     if (!gameStateId || !gameState) {
       return;
     }
+
+    setWelcomeState("Playing");
 
     if (gameState.revealedPanels) {
       setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
@@ -74,12 +94,18 @@ export default function Gameboard() {
     });
   }, [gameStateId, gameState]);
 
-  useEffect(() => {
-    setGameStateId("KDML");
-  }, []);
-
   return (
     <>
+      <Modal show={true} centered>
+        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary">Close</Button>
+          <Button variant="primary">Save Changes</Button>
+        </Modal.Footer>
+      </Modal>
+      {welcomeState !== "Playing" && (
+        <Welcome welcomeState={welcomeState} onWelcomeStateChange={onWelcomeStateChange} onJoinGame={onJoinGame} onCancel={onCancel}></Welcome>
+      )}
       <TeamInfos gameState={gameState} />
       <Players players={players}></Players>
       <Panels
