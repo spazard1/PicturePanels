@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CreateSignalRConnection } from "./CreateSignalRConnection";
 import SignalRConnectionContext from "./SignalRConnectionContext";
 
-export function useSignalRConnection(queryString, ...stateDependencies) {
+export function useSignalRConnection() {
   const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
+  const [queryString, setQueryString] = useState();
 
   useEffect(() => {
-    // ensure that no dependencies are currently null
-    if (!stateDependencies.some((x) => x)) {
+    if (!queryString) {
       return;
     }
 
     CreateSignalRConnection(queryString, setConnection, setConnectionId);
-  }, [...stateDependencies]);
+  }, [queryString]);
+
+  return { queryString, setQueryString };
 }
