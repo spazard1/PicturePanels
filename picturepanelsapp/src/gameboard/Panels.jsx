@@ -9,7 +9,7 @@ import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-export default function Panels({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType, teamIsCorrect }) {
+const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType, teamIsCorrect }) => {
   const panelsRef = useRef();
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
@@ -82,7 +82,9 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
       {allImagesLoaded && <PlayerDots panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></PlayerDots>}
     </>
   );
-}
+};
+
+export default React.memo(Panels);
 
 Panels.propTypes = {
   gameStateId: PropTypes.string,

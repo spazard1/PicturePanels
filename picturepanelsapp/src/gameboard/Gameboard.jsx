@@ -37,6 +37,10 @@ export default function Gameboard() {
     setWelcomeState("");
   };
 
+  const onCreateGame = (gameStateId) => {
+    setGameStateId(gameStateId);
+  };
+
   const onJoinGame = (gameStateId) => {
     setGameStateId(gameStateId);
   };
@@ -121,7 +125,13 @@ export default function Gameboard() {
         </Modal.Footer>
       </Modal>
       {welcomeState !== "Playing" && (
-        <Welcome welcomeState={welcomeState} onWelcomeStateChange={onWelcomeStateChange} onJoinGame={onJoinGame} onCancel={onCancel}></Welcome>
+        <Welcome
+          welcomeState={welcomeState}
+          onWelcomeStateChange={onWelcomeStateChange}
+          onCreateGame={onCreateGame}
+          onJoinGame={onJoinGame}
+          onCancel={onCancel}
+        ></Welcome>
       )}
       <TeamInfos gameState={gameState ?? {}} />
       <Players players={players}></Players>
