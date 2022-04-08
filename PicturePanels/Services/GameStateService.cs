@@ -115,10 +115,8 @@ namespace PicturePanels.Services
             return gameState;
         }
 
-        public async Task QueueNextTurnIfNeeded(string gameStateId)
+        public async Task QueueNextTurnIfNeeded(GameStateTableEntity gameState)
         {
-            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
-
             if (gameState.TurnEndTime.HasValue && gameState.TurnEndTime.Value.AddSeconds(GameStateTableEntity.TurnEndTimeGracePeriod) < DateTime.UtcNow)
             {
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
