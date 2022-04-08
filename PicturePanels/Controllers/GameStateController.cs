@@ -120,7 +120,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            await this.gameStateService.QueueNextTurnIfNeeded(id);
+            await this.gameStateService.QueueNextTurnIfNeeded(gameState);
             await this.gameStateService.SetGameBoardActiveAsync(id);
 
             var allPlayers = await this.playerTableStorage.GetActivePlayersAsync(id).ToListAsync();
