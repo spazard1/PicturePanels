@@ -6,7 +6,7 @@ import "./Welcome.css";
 
 import WelcomeCreateGame from "./WelcomeCreateGame";
 
-const Welcome = ({ welcomeState, onWelcomeStateChange, onJoinGame, onCancel }) => {
+const Welcome = ({ welcomeState, onWelcomeStateChange, onCreateGame, onJoinGame, onCancel }) => {
   return (
     <div className="welcomeContainer">
       {welcomeState === "" && (
@@ -42,7 +42,7 @@ const Welcome = ({ welcomeState, onWelcomeStateChange, onJoinGame, onCancel }) =
         </div>
       )}
       {welcomeState === "Join" && <WelcomeJoinGame onCancel={onCancel} onJoinGame={onJoinGame}></WelcomeJoinGame>}
-      {welcomeState === "Create" && <WelcomeCreateGame onCancel={onCancel}></WelcomeCreateGame>}
+      {welcomeState === "Create" && <WelcomeCreateGame onCancel={onCancel} onCreateGame={onCreateGame}></WelcomeCreateGame>}
     </div>
   );
 };
@@ -52,6 +52,7 @@ export default Welcome;
 Welcome.propTypes = {
   welcomeState: PropTypes.string.isRequired,
   onWelcomeStateChange: PropTypes.func.isRequired,
+  onCreateGame: PropTypes.func.isRequired,
   onJoinGame: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };

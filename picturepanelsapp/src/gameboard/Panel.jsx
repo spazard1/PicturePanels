@@ -52,7 +52,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, s
   );
 };
 
-export default forwardRef(Panel);
+export default React.memo(forwardRef(Panel));
 
 Panel.propTypes = {
   gameStateId: PropTypes.string,
