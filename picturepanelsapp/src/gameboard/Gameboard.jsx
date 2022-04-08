@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./Panels";
@@ -8,6 +8,10 @@ import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import FadedBox from "./FadedBox";
 import { getImageEntity } from "./getImageEntity";
+import { useGameboardPing } from "./useGameboardPing";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Welcome from "./Welcome";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -15,21 +19,61 @@ import "animate.css";
 export default function Gameboard() {
   useBodyClass("gameboard");
 
+  const [welcomeState, setWelcomeState] = useState("");
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
   const [gameStateIdDisplayText, setGameStateIdDisplayText] = useState();
   const [uploadedByDisplay, setUploadedByDisplay] = useState(false);
   const [uploadedByDisplayText, setUploadedByDisplayText] = useState();
+  const [answerDisplay, setAnswerDisplay] = useState(false);
+  const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
+  const [showGameStateLoadError, setShowGameStateLoadError] = useState(false);
 
-  useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
+  const onWelcomeStateChange = (welcomeState) => {
+    setWelcomeState(welcomeState);
+  };
 
-  const { gameState } = useGameState(gameStateId);
+  const onCancel = () => {
+    setWelcomeState("");
+  };
+
+  const onCreateGame = (gameStateId) => {
+    setGameStateId(gameStateId);
+  };
+
+  const onJoinGame = (gameStateId) => {
+    setGameStateId(gameStateId);
+  };
+
+  const onGameStateLoadError = useCallback(() => {
+    setGameStateId("");
+    setShowGameStateLoadError(true);
+  }, []);
+
+  const { queryString, setQueryString } = useSignalRConnection();
+
+  const { gameState } = useGameState(gameStateId, onGameStateLoadError);
   const { players } = usePlayers(gameStateId);
+  useGameboardPing(gameStateId);
 
   useEffect(() => {
-    if (!gameStateId || !gameState) {
+    if (!gameState || !gameStateId) {
       return;
     }
+
+    if (!queryString) {
+      setQueryString("gameStateId=" + gameStateId);
+    }
+  }, [gameStateId, gameState, queryString, setQueryString]);
+
+  const handlGameStateLoadErrorClose = () => setShowGameStateLoadError(false);
+
+  useEffect(() => {
+    if (!gameState) {
+      return;
+    }
+
+    setWelcomeState("Playing");
 
     if (gameState.revealedPanels) {
       setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
@@ -43,14 +87,14 @@ export default function Gameboard() {
       setGameStateIdDisplay(false);
       setUploadedByDisplay(false);
     }
-  }, [gameState, gameStateId]);
+  }, [gameState]);
 
   useEffect(() => {
-    if (!gameStateId || !gameState) {
+    if (!gameState) {
       return;
     }
 
-    getImageEntity(gameStateId, (imageEntity) => {
+    getImageEntity(gameState.gameStateId, (imageEntity) => {
       if (!imageEntity) {
         return;
       }
@@ -62,26 +106,43 @@ export default function Gameboard() {
       }
 
       if (imageEntity.name) {
-        //document.getElementById("
+        setAnswerDisplayText(imageEntity.name);
+        setAnswerDisplay(true);
+      } else {
+        setAnswerDisplay(false);
       }
     });
-  }, [gameStateId, gameState]);
-
-  useEffect(() => {
-    setGameStateId("KDML");
-  }, []);
+  }, [gameState]);
 
   return (
     <>
-      <TeamInfos gameState={gameState} />
+      <Modal show={showGameStateLoadError} centered onHide={handlGameStateLoadErrorClose}>
+        <Modal.Body>{"Didn't find a game with that code. Check the code and try again."}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handlGameStateLoadErrorClose}>
+            Ok
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {welcomeState !== "Playing" && (
+        <Welcome
+          welcomeState={welcomeState}
+          onWelcomeStateChange={onWelcomeStateChange}
+          onCreateGame={onCreateGame}
+          onJoinGame={onJoinGame}
+          onCancel={onCancel}
+        ></Welcome>
+      )}
+      <TeamInfos gameState={gameState ?? {}} />
       <Players players={players}></Players>
       <Panels
         gameStateId={gameStateId}
         players={players}
-        roundNumber={gameState.roundNumber ?? 0}
-        revealedPanels={gameState.revealedPanels ?? []}
-        teamTurn={gameState.teamTurn ?? 1}
-        turnType={gameState.turnType}
+        roundNumber={gameState ? gameState.roundNumber : 0}
+        revealedPanels={gameState ? gameState.revealedPanels : []}
+        teamTurn={gameState ? gameState.teamTurn : 1}
+        turnType={gameState ? gameState.turnType : "Welcome"}
+        teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
       />
       <FadedBox
         displayState={gameStateIdDisplay}
@@ -98,6 +159,14 @@ export default function Gameboard() {
         exitClassName=" animate__bounceOutRight"
       >
         {uploadedByDisplayText}
+      </FadedBox>
+      <FadedBox
+        displayState={answerDisplay}
+        className="answerFadedBox"
+        entranceClassName=" animate__bounceInTop"
+        exitClassName=" animate__bounceOutTop"
+      >
+        {answerDisplayText}
       </FadedBox>
     </>
   );

@@ -15,7 +15,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
     const newPlayerDots = {};
 
     for (const playerId in selectedPanels) {
-      if (players[playerId].teamNumber !== teamTurn) {
+      if (!players[playerId] || players[playerId].teamNumber !== teamTurn) {
         continue;
       }
 
@@ -28,14 +28,17 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
     <div id="playerDots">
       {Object.keys(playerDots).map((playerId) => (
         <span key={playerId}>
-          {panelNumbers.map((panelNumber) => (
-            <PlayerDot
-              key={playerId + panelNumber}
-              player={players[playerId]}
-              panelRef={playerDots[playerId].indexOf(panelNumber) >= 0 ? panelRefs[panelNumber - 1] : null}
-              turnType={turnType}
-            ></PlayerDot>
-          ))}
+          {players[playerId] &&
+            panelNumbers.map((panelNumber) => (
+              <PlayerDot
+                key={playerId + panelNumber}
+                name={players[playerId].name}
+                color={players[playerId].color}
+                teamNumber={players[playerId].teamNumber}
+                panelRef={playerDots[playerId].indexOf(panelNumber) >= 0 ? panelRefs[panelNumber - 1] : null}
+                turnType={turnType}
+              ></PlayerDot>
+            ))}
         </span>
       ))}
     </div>
@@ -46,7 +49,5 @@ PlayerDots.propTypes = {
   panelRefs: PropTypes.arrayOf(PropTypes.object),
   players: PropTypes.object.isRequired,
   teamTurn: PropTypes.number.isRequired,
-  turnType: PropTypes.string.isRequired,
+  turnType: PropTypes.string,
 };
-
-//

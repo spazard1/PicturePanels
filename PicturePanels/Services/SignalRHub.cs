@@ -12,14 +12,18 @@ namespace PicturePanels.Services
 {
     public class SignalRHub : Hub<ISignalRHub>
     {
+        private readonly GameStateTableStorage gameStateTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly ChatTableStorage chatTableStorage;
         private readonly GameStateService gameStateService;
 
-        public SignalRHub(PlayerTableStorage playerTableStorage,
+        public SignalRHub(
+            GameStateTableStorage gameStateTableStorage,
+            PlayerTableStorage playerTableStorage,
             ChatTableStorage chatTableStorage,
             GameStateService gameStateService)
         {
+            this.gameStateTableStorage = gameStateTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.chatTableStorage = chatTableStorage;
             this.gameStateService = gameStateService;
@@ -74,10 +78,21 @@ namespace PicturePanels.Services
             return gameStateId + "_all";
         }
 
-        public async Task RegisterGameBoard(string gameStateId)
+        public async Task GameboardPing(string gameStateId)
         {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return;
+            }
+
+            await this.gameStateService.QueueNextTurnIfNeeded(gameState);
             await this.gameStateService.SetGameBoardActiveAsync(gameStateId);
-            await this.gameStateService.QueueNextTurnIfNeeded(gameStateId);
+
+            var allPlayerModels = await this.playerTableStorage.GetActivePlayersAsync(gameStateId).ToListAsync();
+            var allPlayers = allPlayerModels.Select(playerModel => new PlayerEntity(playerModel)).ToList();
+
+            await Clients.Caller.Players(allPlayers);
         }
 
         private static readonly Regex MultipleNewLines = new(@"([\r\n])+");

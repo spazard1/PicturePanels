@@ -11,7 +11,7 @@ namespace PicturePanels.Services.Storage
 {
     public class PlayerTableStorage : DefaultAzureTableStorage<PlayerTableEntity>
     {
-        public const int PlayerTimeoutInMinutes = 5;
+        public const int PlayerTimeoutInMinutes = 3;
 
         public PlayerTableStorage(ICloudStorageAccountProvider cloudStorageAccountProvider) : base(cloudStorageAccountProvider, "players")
         {

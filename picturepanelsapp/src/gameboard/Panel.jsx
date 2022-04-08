@@ -8,11 +8,20 @@ import { GetExitClass } from "../animate/Animate";
 const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, setImagesLoaded }, ref) => {
   const [exitClass, setExitClass] = useState();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imgSrc, setImgSrc] = useState();
 
   useEffect(() => {
     setImageLoaded(false);
     setExitClass(GetExitClass());
   }, [isOpen]);
+
+  useEffect(() => {
+    if (gameStateId && roundNumber) {
+      setImgSrc("https://picturepanels.azurewebsites.net/api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0));
+      return;
+    }
+    setImgSrc("https://picturepanels.azurewebsites.net/api/images/panels/welcome/0/" + panelNumber);
+  }, [gameStateId, roundNumber, isOpen, panelNumber]);
 
   return (
     <div id={"panel_" + panelNumber} className="panel">
@@ -28,27 +37,25 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, s
           {panelNumber}
         </div>
       </div>
-      {gameStateId && (
-        <img
-          ref={ref}
-          className={"panelImage"}
-          onLoad={() => {
-            setImageLoaded(true);
-            setImagesLoaded((imagesLoaded) => {
-              return { ...imagesLoaded, [panelNumber]: true };
-            });
-          }}
-          src={"https://picturepanels.azurewebsites.net/api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0)}
-        />
-      )}
+      <img
+        ref={ref}
+        className={"panelImage"}
+        onLoad={() => {
+          setImageLoaded(true);
+          setImagesLoaded((imagesLoaded) => {
+            return { ...imagesLoaded, [panelNumber]: true };
+          });
+        }}
+        src={imgSrc}
+      />
     </div>
   );
 };
 
-export default forwardRef(Panel);
+export default React.memo(forwardRef(Panel));
 
 Panel.propTypes = {
-  gameStateId: PropTypes.string.isRequired,
+  gameStateId: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   panelNumber: PropTypes.string.isRequired,
   roundNumber: PropTypes.number.isRequired,

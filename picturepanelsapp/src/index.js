@@ -1,17 +1,21 @@
 import React, { Suspense, lazy } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import "./themes/default/default.css";
 import AppWrapper from "./common/AppWrapper";
+
+const container = document.getElementById("root");
+const root = createRoot(container);
 
 const Player = lazy(() => import("./player/Player"));
 const Gameboard = lazy(() => import("./gameboard/Gameboard"));
 const Upload = lazy(() => import("./upload/Upload"));
 const Admin = lazy(() => import("./admin/Admin"));
 
-ReactDOM.render(
+root.render(
   <AppWrapper>
     <BrowserRouter>
       <Suspense fallback={<div></div>}>
@@ -25,8 +29,7 @@ ReactDOM.render(
         </Routes>
       </Suspense>
     </BrowserRouter>
-  </AppWrapper>,
-  document.getElementById("root")
+  </AppWrapper>
 );
 
 // If you want to start measuring performance in your app, pass a function

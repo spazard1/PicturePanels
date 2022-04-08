@@ -9,7 +9,7 @@ import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-export default function Panels({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType }) {
+const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType, teamIsCorrect }) => {
   const panelsRef = useRef();
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
@@ -25,6 +25,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
 
   useEffect(() => {
     if (Object.keys(imagesLoaded).length === panelNumbers.length) {
+      resizePanelContainer();
       setAllImagesLoaded(true);
     }
   }, [imagesLoaded]);
@@ -39,27 +40,27 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
       return;
     }
 
-    const resizePanelContainer = () => {
-      var panelsContainerRect = panelsRef.current.getBoundingClientRect();
-      var panelsContainerMaxWidth = 84;
-      panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
-      var paddingBottom = 5;
-
-      while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
-        panelsContainerMaxWidth -= 0.5;
-        if (panelsContainerMaxWidth < 10) {
-          break;
-        }
-
-        panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
-        panelsContainerRect = panelsRef.current.getBoundingClientRect();
-      }
-    };
-
     window.onresize = resizePanelContainer;
 
     resizePanelContainer();
   }, [roundNumber, gameStateId]);
+
+  const resizePanelContainer = () => {
+    var panelsContainerRect = panelsRef.current.getBoundingClientRect();
+    var panelsContainerMaxWidth = 84;
+    panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
+    var paddingBottom = 5;
+
+    while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
+      panelsContainerMaxWidth -= 0.5;
+      if (panelsContainerMaxWidth < 10) {
+        break;
+      }
+
+      panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
+      panelsContainerRect = panelsRef.current.getBoundingClientRect();
+    }
+  };
 
   return (
     <>
@@ -69,7 +70,7 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
             key={panelNumber}
             ref={panelRefs[panelNumber - 1]}
             gameStateId={gameStateId}
-            isOpen={revealedPanels.indexOf(panelNumber) >= 0}
+            isOpen={turnType === "EndRound" || teamIsCorrect || revealedPanels.indexOf(panelNumber) >= 0}
             entranceClass={entranceClass}
             panelNumber={panelNumber}
             roundNumber={roundNumber}
@@ -81,7 +82,9 @@ export default function Panels({ gameStateId, players, revealedPanels, roundNumb
       {allImagesLoaded && <PlayerDots panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></PlayerDots>}
     </>
   );
-}
+};
+
+export default React.memo(Panels);
 
 Panels.propTypes = {
   gameStateId: PropTypes.string,
@@ -90,4 +93,5 @@ Panels.propTypes = {
   roundNumber: PropTypes.number,
   teamTurn: PropTypes.number,
   turnType: PropTypes.string,
+  teamIsCorrect: PropTypes.bool,
 };
