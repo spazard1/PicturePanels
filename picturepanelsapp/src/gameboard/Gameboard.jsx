@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./Panels";
@@ -27,6 +27,7 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
+  const [showGameStateLoadError, setShowGameStateLoadError] = useState(false);
 
   const onWelcomeStateChange = (welcomeState) => {
     setWelcomeState(welcomeState);
@@ -40,16 +41,31 @@ export default function Gameboard() {
     setGameStateId(gameStateId);
   };
 
-  const onGameStateLoadError = () => {};
+  const onGameStateLoadError = useCallback(() => {
+    setGameStateId("");
+    setShowGameStateLoadError(true);
+  }, []);
 
-  useSignalRConnection("gameStateId=" + gameStateId, gameStateId);
+  const { queryString, setQueryString } = useSignalRConnection();
 
   const { gameState } = useGameState(gameStateId, onGameStateLoadError);
   const { players } = usePlayers(gameStateId);
   useGameboardPing(gameStateId);
 
   useEffect(() => {
-    if (!gameStateId || !gameState) {
+    if (!gameState || !gameStateId) {
+      return;
+    }
+
+    if (!queryString) {
+      setQueryString("gameStateId=" + gameStateId);
+    }
+  }, [gameStateId, gameState, queryString, setQueryString]);
+
+  const handlGameStateLoadErrorClose = () => setShowGameStateLoadError(false);
+
+  useEffect(() => {
+    if (!gameState) {
       return;
     }
 
@@ -67,14 +83,14 @@ export default function Gameboard() {
       setGameStateIdDisplay(false);
       setUploadedByDisplay(false);
     }
-  }, [gameState, gameStateId]);
+  }, [gameState]);
 
   useEffect(() => {
-    if (!gameStateId || !gameState) {
+    if (!gameState) {
       return;
     }
 
-    getImageEntity(gameStateId, (imageEntity) => {
+    getImageEntity(gameState.gameStateId, (imageEntity) => {
       if (!imageEntity) {
         return;
       }
@@ -92,30 +108,31 @@ export default function Gameboard() {
         setAnswerDisplay(false);
       }
     });
-  }, [gameStateId, gameState]);
+  }, [gameState]);
 
   return (
     <>
-      <Modal show={true} centered>
-        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+      <Modal show={showGameStateLoadError} centered onHide={handlGameStateLoadErrorClose}>
+        <Modal.Body>{"Didn't find a game with that code. Check the code and try again."}</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary">Close</Button>
-          <Button variant="primary">Save Changes</Button>
+          <Button variant="primary" onClick={handlGameStateLoadErrorClose}>
+            Ok
+          </Button>
         </Modal.Footer>
       </Modal>
       {welcomeState !== "Playing" && (
         <Welcome welcomeState={welcomeState} onWelcomeStateChange={onWelcomeStateChange} onJoinGame={onJoinGame} onCancel={onCancel}></Welcome>
       )}
-      <TeamInfos gameState={gameState} />
+      <TeamInfos gameState={gameState ?? {}} />
       <Players players={players}></Players>
       <Panels
         gameStateId={gameStateId}
         players={players}
-        roundNumber={gameState.roundNumber ?? 0}
-        revealedPanels={gameState.revealedPanels ?? []}
-        teamTurn={gameState.teamTurn ?? 1}
-        turnType={gameState.turnType}
-        teamIsCorrect={gameState.teamOneCorrect || gameState.teamTwoCorrect}
+        roundNumber={gameState ? gameState.roundNumber : 0}
+        revealedPanels={gameState ? gameState.revealedPanels : []}
+        teamTurn={gameState ? gameState.teamTurn : 1}
+        turnType={gameState ? gameState.turnType : "Welcome"}
+        teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
       />
       <FadedBox
         displayState={gameStateIdDisplay}
