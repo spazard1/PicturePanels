@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 
 import "./Welcome.css";
 
+import WelcomeCreateGame from "./WelcomeCreateGame";
+
 const Welcome = ({ welcomeState, onWelcomeStateChange, onJoinGame, onCancel }) => {
   return (
     <div className="welcomeContainer">
@@ -11,7 +13,14 @@ const Welcome = ({ welcomeState, onWelcomeStateChange, onJoinGame, onCancel }) =
         <div className="welcomeText welcomeStartGame">
           Welcome to Picture Panels!
           <br />
-          <div className="center defaultButton welcomeButton">Create New Game</div>
+          <div
+            className="center defaultButton welcomeButton"
+            onClick={() => {
+              onWelcomeStateChange("Create");
+            }}
+          >
+            Create New Game
+          </div>
           <div
             className="center defaultButton welcomeButton"
             onClick={() => {
@@ -33,6 +42,7 @@ const Welcome = ({ welcomeState, onWelcomeStateChange, onJoinGame, onCancel }) =
         </div>
       )}
       {welcomeState === "Join" && <WelcomeJoinGame onCancel={onCancel} onJoinGame={onJoinGame}></WelcomeJoinGame>}
+      {welcomeState === "Create" && <WelcomeCreateGame onCancel={onCancel}></WelcomeCreateGame>}
     </div>
   );
 };
