@@ -15,6 +15,7 @@ import Welcome from "./Welcome";
 
 import "./Gameboard.css";
 import "animate.css";
+import postGameState from "../common/postGameState";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -27,7 +28,7 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
-  const [showGameStateLoadError, setShowGameStateLoadError] = useState(false);
+  const [gameStateErrorMessage, setGameStateErrorMessage] = useState("");
 
   const onWelcomeStateChange = (welcomeState) => {
     setWelcomeState(welcomeState);
@@ -37,8 +38,14 @@ export default function Gameboard() {
     setWelcomeState("");
   };
 
-  const onCreateGame = (createGameOptions) => {
-    console.log(createGameOptions);
+  const onCreateGame = (gameOptions) => {
+    postGameState(gameOptions, (gameState) => {
+      if (gameState) {
+        setGameStateId(gameState.gameStateId);
+      } else {
+        setGameStateErrorMessage("There was a problem creating the game. Please try again later.");
+      }
+    });
   };
 
   const onJoinGame = (gameStateId) => {
@@ -47,7 +54,7 @@ export default function Gameboard() {
 
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
-    setShowGameStateLoadError(true);
+    setGameStateErrorMessage("Did not find a game with that code. Check the game code and try again.");
   }, []);
 
   const { queryString, setQueryString } = useSignalRConnection();
@@ -66,7 +73,7 @@ export default function Gameboard() {
     }
   }, [gameStateId, gameState, queryString, setQueryString]);
 
-  const handlGameStateLoadErrorClose = () => setShowGameStateLoadError(false);
+  const handlGameStateLoadErrorClose = () => setGameStateErrorMessage("");
 
   useEffect(() => {
     if (!gameState) {
@@ -116,8 +123,8 @@ export default function Gameboard() {
 
   return (
     <>
-      <Modal show={showGameStateLoadError} centered onHide={handlGameStateLoadErrorClose}>
-        <Modal.Body>{"Didn't find a game with that code. Check the code and try again."}</Modal.Body>
+      <Modal show={gameStateErrorMessage !== ""} centered onHide={handlGameStateLoadErrorClose}>
+        <Modal.Body>{gameStateErrorMessage}</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={handlGameStateLoadErrorClose}>
             Ok
