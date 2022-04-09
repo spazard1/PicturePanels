@@ -37,8 +37,8 @@ export default function Gameboard() {
     setWelcomeState("");
   };
 
-  const onCreateGame = (gameStateId) => {
-    setGameStateId(gameStateId);
+  const onCreateGame = (createGameOptions) => {
+    console.log(createGameOptions);
   };
 
   const onJoinGame = (gameStateId) => {
