@@ -17,6 +17,7 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
     guessTime: 90,
     wrongGuessPenalty: -1,
     includedTags: defaultTags,
+    numberOfRounds: 10,
   });
 
   const tagifySettings = {
@@ -24,17 +25,16 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
     maxTags: 6,
     userInput: false,
     dropdown: {
-      maxItems: 30, // <- mixumum allowed rendered suggestions
-      classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
-      enabled: 0, // <- show suggestions on focus
-      closeOnSelect: false, // <- do not hide the suggestions dropdown once an item has been selected
+      maxItems: 30,
+      classname: "tags-look",
+      enabled: 0,
+      closeOnSelect: false,
       placeAbove: true,
     },
   };
 
   const createGameOnClick = () => {
-    console.log(formValues);
-    onCreateGame();
+    onCreateGame(formValues);
   };
 
   const onInputChange = useCallback(
@@ -110,45 +110,51 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
             />
           </div>
           <div className="welcomeGameStateDropdownOptions">
-            <div>
-              Open Panel Time:
-              <span
-                data-toggle="tooltip"
-                title="How much time should a team be given to vote for panels to open?
-                     When time runs out, the most voted panel is automatically opened."
-              ></span>
-              <select name="openPanelTime" value={formValues.openPanelTIme} onChange={onInputNumberChange}>
-                <option value={30}>30 seconds</option>
-                <option value={60}>1 minute</option>
-                <option value={90}>1.5 minutes</option>
-                <option value={120}>2 minutes</option>
-                <option value={0}>No Limit</option>
-              </select>
-              &nbsp;&nbsp;&nbsp; Guessing Time:
-              <span
-                data-toggle="tooltip"
-                title="How much time should a team be given to add and vote for guesses?
-                      When time runs out, the most voted guess is automatically submitted."
-              ></span>
-              <select name="guessTime" value={formValues.guessTime} onChange={onInputNumberChange}>
-                <option value={30}>30 seconds</option>
-                <option value={60}>1 minute</option>
-                <option value={90}>1.5 minutes</option>
-                <option value={120}>2 minutes</option>
-                <option value={150}>2.5 minutes</option>
-                <option value={180}>3 minutes</option>
-                <option value={0}>No Limit</option>
-              </select>
-            </div>
-            <div className="welcomeGameStateDropdownSubOptions">
-              Wrong Guess Penalty:
-              <span data-toggle="tooltip" title="If a team makes a wrong guess, what should the penalty be?"></span>
-              <select name="wrongGuessPenalty" value={formValues.wrongGuessPenalty} onChange={onInputNumberChange}>
-                <option value={0}>None</option>
-                <option value={-1}>-1 Point</option>
-                <option value={-2}>-2 Points</option>
-              </select>
-            </div>
+            Open Panel Time:
+            <span
+              data-toggle="tooltip"
+              title="How much time should a team be given to vote for panels to open?
+                    When time runs out, the most voted panel is automatically opened."
+            ></span>
+            <select name="openPanelTime" value={formValues.openPanelTIme} onChange={onInputNumberChange}>
+              <option value={30}>30 seconds</option>
+              <option value={60}>1 minute</option>
+              <option value={90}>1.5 minutes</option>
+              <option value={120}>2 minutes</option>
+              <option value={0}>No Limit</option>
+            </select>
+            &nbsp;&nbsp;&nbsp; Guessing Time:
+            <span
+              data-toggle="tooltip"
+              title="How much time should a team be given to add and vote for guesses?
+                    When time runs out, the most voted guess is automatically submitted."
+            ></span>
+            <select name="guessTime" value={formValues.guessTime} onChange={onInputNumberChange}>
+              <option value={30}>30 seconds</option>
+              <option value={60}>1 minute</option>
+              <option value={90}>1.5 minutes</option>
+              <option value={120}>2 minutes</option>
+              <option value={150}>2.5 minutes</option>
+              <option value={180}>3 minutes</option>
+              <option value={0}>No Limit</option>
+            </select>
+          </div>
+          <div className="welcomeGameStateDropdownOptions">
+            Wrong Guess Penalty:
+            <span data-toggle="tooltip" title="If a team makes a wrong guess, what should the penalty be?"></span>
+            <select name="wrongGuessPenalty" value={formValues.wrongGuessPenalty} onChange={onInputNumberChange}>
+              <option value={0}>None</option>
+              <option value={-1}>-1 Point</option>
+              <option value={-2}>-2 Points</option>
+            </select>
+            &nbsp;&nbsp;&nbsp; Length of Game:
+            <span data-toggle="tooltip" title="How many rounds should the game last?"></span>
+            <select name="numberOfRounds" value={formValues.numberOfRounds} onChange={onInputNumberChange}>
+              <option value={4}>4 Rounds</option>
+              <option value={6}>6 Rounds</option>
+              <option value={8}>8 Rounds</option>
+              <option value={10}>10 Rounds</option>
+            </select>
           </div>
         </div>
       </div>
