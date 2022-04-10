@@ -1,5 +1,12 @@
-export default function getGameState(gameStateId, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/gameState/" + gameStateId)
+export default function postGameState(gameOptions, callback) {
+  fetch("https://picturepanels.azurewebsites.net/api/gameState/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: localStorage.getItem("userToken"),
+    },
+    body: JSON.stringify(gameOptions),
+  })
     .then((response) => {
       if (response.ok) {
         return response.json();
