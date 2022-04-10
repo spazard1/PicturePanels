@@ -6,9 +6,10 @@ import Tags from "@yaireo/tagify/dist/react.tagify";
 import { useTags } from "../common/useTags";
 import { useQueryString } from "../common/useQueryString";
 
-const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
+const CreateGame = ({ onCancel, onCreateGame }) => {
   const { tags } = useTags();
   const defaultTags = useQueryString("tags");
+  const theme = useQueryString("theme");
 
   const [formValues, setFormValues] = useState({
     teamOneName: "Team 1",
@@ -18,6 +19,7 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
     wrongGuessPenalty: -1,
     includedTags: defaultTags,
     numberOfRounds: 10,
+    theme: theme,
   });
 
   const tagifySettings = {
@@ -39,7 +41,6 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
 
   const onInputChange = useCallback(
     (event) => {
-      console.log(event.target.value, typeof event.target.value);
       setFormValues({ ...formValues, [event.target.name]: event.target.value });
     },
     [formValues]
@@ -60,12 +61,12 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
 
   return (
     <>
-      <div className="welcomeText welcomeCreateGame">
-        <div className="welcomeCreateGameMessage">Creating a new game... Set it up how you want!</div>
-        <div className="welcomeGameStateOptions">
+      <div className="startGameText">
+        <div>Creating a new game... Set it up how you want!</div>
+        <div className="startGameOptions">
           <input
             name="teamOneName"
-            className="welcomeGameStateTeamName welcomeGameStateInput"
+            className="startGameTeamName startGameInput"
             value={formValues.teamOneName}
             autoComplete="off"
             maxLength="30"
@@ -74,28 +75,28 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
           VS.
           <input
             name="teamTwoName"
-            className="welcomeGameStateTeamName welcomeGameStateInput"
+            className="startGameTeamName startGameInput"
             value={formValues.teamTwoName}
             autoComplete="off"
             maxLength="30"
             onChange={onInputChange}
           />
-          <div className="welcomeTagsMessage">
+          <div className="startGameTagsMessage">
             All images are included by default. Use included tags if you only want certain categories in your game.
           </div>
-          <div className="tagsInputContainer center">
+          <div className="startGameTagsInputContainer center">
             Included Tags:
             <span data-toggle="tooltip" title="If you want only certain types of images to be included in your game, add those tags here."></span>
             <Tags
-              name="includedTags"
+              name="tags"
               settings={tagifySettings}
               className="tagsInput"
               defaultValue={defaultTags}
               whitelist={tags}
-              onChange={(e) => onTagsChange("includedTags", e)}
+              onChange={(e) => onTagsChange("tags", e)}
             />
           </div>
-          <div className="tagsInputContainer center">
+          <div className="startGameTagsInputContainer center">
             Excluded Tags:
             <span
               data-toggle="tooltip"
@@ -109,7 +110,7 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
               onChange={(e) => onTagsChange("excludedTags", e)}
             />
           </div>
-          <div className="welcomeGameStateDropdownOptions">
+          <div className="startGameDropdownOptions">
             Open Panel Time:
             <span
               data-toggle="tooltip"
@@ -139,7 +140,7 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
               <option value={0}>No Limit</option>
             </select>
           </div>
-          <div className="welcomeGameStateDropdownOptions">
+          <div className="startGameDropdownOptions">
             Wrong Guess Penalty:
             <span data-toggle="tooltip" title="If a team makes a wrong guess, what should the penalty be?"></span>
             <select name="wrongGuessPenalty" value={formValues.wrongGuessPenalty} onChange={onInputNumberChange}>
@@ -159,10 +160,10 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
         </div>
       </div>
       <div className="startGameButtons center">
-        <div className="center defaultButton welcomeButton" onClick={onCancel}>
+        <div className="center defaultButton startGameButton" onClick={onCancel}>
           Cancel
         </div>
-        <div className="center defaultButton welcomeButton" onClick={createGameOnClick}>
+        <div className="center defaultButton startGameButton" onClick={createGameOnClick}>
           Create Game
         </div>
       </div>
@@ -170,9 +171,9 @@ const WelcomeCreateGame = ({ onCancel, onCreateGame }) => {
   );
 };
 
-export default WelcomeCreateGame;
+export default CreateGame;
 
-WelcomeCreateGame.propTypes = {
+CreateGame.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onCreateGame: PropTypes.func.isRequired,
 };

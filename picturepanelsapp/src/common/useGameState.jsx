@@ -21,6 +21,7 @@ export function useGameState(gameStateId, onError) {
       }
 
       setGameState(gs);
+      localStorage.setItem("gameStateId", gs.gameStateId);
     });
   }, [gameStateId, connectionId, onError]);
 
