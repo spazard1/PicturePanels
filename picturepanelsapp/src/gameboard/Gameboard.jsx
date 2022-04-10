@@ -11,6 +11,7 @@ import { getImageEntity } from "./getImageEntity";
 import { useGameboardPing } from "./useGameboardPing";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import StartGame from "./StartGame";
 import Welcome from "./Welcome";
 
 import "./Gameboard.css";
@@ -20,7 +21,7 @@ import postGameState from "../common/postGameState";
 export default function Gameboard() {
   useBodyClass("gameboard");
 
-  const [welcomeState, setWelcomeState] = useState("");
+  const [startGameState, setStartGameState] = useState("");
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
   const [gameStateIdDisplayText, setGameStateIdDisplayText] = useState();
   const [uploadedByDisplay, setUploadedByDisplay] = useState(false);
@@ -30,12 +31,12 @@ export default function Gameboard() {
   const [gameStateId, setGameStateId] = useState();
   const [gameStateErrorMessage, setGameStateErrorMessage] = useState("");
 
-  const onWelcomeStateChange = (welcomeState) => {
-    setWelcomeState(welcomeState);
+  const onStartGameStateChange = (startGameState) => {
+    setStartGameState(startGameState);
   };
 
   const onCancel = () => {
-    setWelcomeState("");
+    setStartGameState("");
   };
 
   const onCreateGame = (gameOptions) => {
@@ -80,16 +81,15 @@ export default function Gameboard() {
       return;
     }
 
-    setWelcomeState("Playing");
-
-    if (gameState.revealedPanels) {
-      setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
-    } else {
-      setGameStateIdDisplayText(gameState.gameStateId);
-    }
+    setStartGameState("Playing");
 
     if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
       setGameStateIdDisplay(true);
+      if (gameState.revealedPanels) {
+        setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
+      } else {
+        setGameStateIdDisplayText(gameState.gameStateId);
+      }
     } else {
       setGameStateIdDisplay(false);
       setUploadedByDisplay(false);
@@ -98,6 +98,12 @@ export default function Gameboard() {
 
   useEffect(() => {
     if (!gameState) {
+      return;
+    }
+
+    if (gameState.turnType === "Welcome") {
+      setUploadedByDisplay(false);
+      setAnswerDisplay(false);
       return;
     }
 
@@ -131,17 +137,18 @@ export default function Gameboard() {
           </Button>
         </Modal.Footer>
       </Modal>
-      {welcomeState !== "Playing" && (
-        <Welcome
-          welcomeState={welcomeState}
-          onWelcomeStateChange={onWelcomeStateChange}
+      {startGameState !== "Playing" && (
+        <StartGame
+          startGameState={startGameState}
+          onStartGameStateChange={onStartGameStateChange}
           onCreateGame={onCreateGame}
           onJoinGame={onJoinGame}
           onCancel={onCancel}
-        ></Welcome>
+        ></StartGame>
       )}
+      {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
       <TeamInfos gameState={gameState ?? {}} />
-      <Players players={players}></Players>
+      <Players players={players} turnType={gameState ? gameState.turnType : ""}></Players>
       <Panels
         gameStateId={gameStateId}
         players={players}
