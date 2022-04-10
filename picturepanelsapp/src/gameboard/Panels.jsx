@@ -14,8 +14,17 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const [openWelcomePanels, setOpenWelcomePanels] = useState([]);
+  const welcomeIntervalRef = useRef();
+  const previousRandomPanelNumber = useRef();
   const previousRevealedPanels = usePrevious(revealedPanels);
   const panelRefs = useMemo(() => panelNumbers.map(() => React.createRef()), []);
+
+  const onImageLoaded = (panelNumber) => {
+    setImagesLoaded((currentImagesLoaded) => {
+      return { ...currentImagesLoaded, [panelNumber]: true };
+    });
+  };
 
   useEffect(() => {
     if (!previousRevealedPanels || revealedPanels.length < previousRevealedPanels.length) {
@@ -45,6 +54,34 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
     resizePanelContainer();
   }, [roundNumber, gameStateId]);
 
+  useEffect(() => {
+    clearInterval(welcomeIntervalRef.current);
+
+    if (turnType !== "Welcome") {
+      setOpenWelcomePanels([]);
+      return;
+    }
+
+    let randomPanelNumber = 0;
+    welcomeIntervalRef.current = setInterval(() => {
+      setOpenWelcomePanels((owp) => {
+        do {
+          randomPanelNumber = Math.ceil(Math.random() * panelNumbers.length);
+        } while (randomPanelNumber === previousRandomPanelNumber.current);
+        previousRandomPanelNumber.current = randomPanelNumber;
+
+        const panelNumberIndex = owp.indexOf(randomPanelNumber + "");
+        if (panelNumberIndex >= 0) {
+          owp.splice(panelNumberIndex, 1);
+        } else {
+          owp.push(randomPanelNumber + "");
+        }
+
+        return [...owp];
+      });
+    }, 5000);
+  }, [turnType]);
+
   const resizePanelContainer = () => {
     var panelsContainerRect = panelsRef.current.getBoundingClientRect();
     var panelsContainerMaxWidth = 84;
@@ -70,11 +107,14 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
             key={panelNumber}
             ref={panelRefs[panelNumber - 1]}
             gameStateId={gameStateId}
-            isOpen={turnType === "EndRound" || teamIsCorrect || revealedPanels.indexOf(panelNumber) >= 0}
+            isOpen={
+              turnType === "EndRound" || teamIsCorrect || revealedPanels.indexOf(panelNumber) >= 0 || openWelcomePanels.indexOf(panelNumber) >= 0
+            }
             entranceClass={entranceClass}
             panelNumber={panelNumber}
             roundNumber={roundNumber}
-            setImagesLoaded={setImagesLoaded}
+            onImageLoaded={onImageLoaded}
+            turnType={turnType}
           ></Panel>
         ))}
       </div>

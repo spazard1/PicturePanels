@@ -7,6 +7,7 @@ import "./TeamGuess.css";
 const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect, turnType }) => {
   const [teamGuessDisplay, setteamGuessDisplay] = useState();
   const [teamGuessVisible, setTeamGuessVisible] = useState(false);
+  const [hasTeamGuessBeenVisible, setHasTeamGuessBeenVisible] = useState(false);
   const [teamGuessIncorrectDisplay, setTeamGuessIncorrectDisplay] = useState(false);
 
   // const intervalRef = useRef();
@@ -40,19 +41,26 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
     //}, changeType === "OpenPanel" ? 4000 : 6000);
   }, [teamGuessStatus, teamGuess, turnType, teamGuessIncorrect]);
 
+  useEffect(() => {
+    if (teamGuessVisible) {
+      setHasTeamGuessBeenVisible(true);
+    }
+  }, [teamGuessVisible]);
+
   return (
     <div
-      className={classNames("teamGuess", "hideIfEmpty", "animate__animated", {
+      className={classNames("teamGuess", "animate__animated", {
         teamOneBox: teamNumber === 1,
         teamTwoBox: teamNumber === 2,
+        hidden: !hasTeamGuessBeenVisible,
         animate__bounceInDown: teamGuessVisible,
         animate__bounceOutUp: !teamGuessVisible,
         animate__slow: teamGuessVisible,
       })}
     >
-      <div className={classNames("teamGuessChild", "hideIfEmpty", "animate__animated", { opacity0: teamGuessStatus !== "Ready" })}>Ready!</div>
+      <div className={classNames("teamGuessChild", "animate__animated", { opacity0: teamGuessStatus !== "Ready" })}>Ready!</div>
       <div
-        className={classNames("teamGuessReady", "teamGuessChild", "hideIfEmpty", "animate__animated", {
+        className={classNames("teamGuessReady", "teamGuessChild", "animate__animated", {
           opacity0: teamGuessStatus === "Ready",
           teamGuessIncorrect: teamGuessIncorrectDisplay,
         })}

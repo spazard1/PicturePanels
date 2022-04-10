@@ -1,0 +1,69 @@
+/* stylelint-disable selector-class-pattern */
+.startGameContainer {
+  padding: 2vh 2vw;
+  font-size: 3vh;
+  position: absolute;
+  width: 60vw;
+  top: 15vh;
+  left: 20vw;
+  background-color: rgba(0 0 0 / 90%);
+  z-index: 900;
+  text-align: center;
+  box-sizing: border-box;
+  border: 4px solid grey;
+}
+
+.startGame {
+  font-size: 4vh;
+}
+
+.startGameText a {
+  color: skyblue;
+  text-decoration: none;
+}
+
+.startGameButton {
+  margin-top: 4vh;
+  font-size: 3vh;
+  width: 16vw;
+  white-space: nowrap;
+  padding: 0 5px;
+}
+
+.joinGameStateIdInput {
+  margin-top: 3vh;
+  font-size: 4vh;
+  width: 10vw;
+  text-align: center;
+}
+
+.startGameInput {
+  text-align: center;
+}
+
+.startGameOptions {
+  margin-top: 3vh;
+}
+
+.startGameTeamName {
+  margin: 0 0.75rem;
+}
+
+.startGameButtons {
+  display: flex;
+  width: 80%;
+}
+
+.startGameTagsMessage {
+  font-size: 2vh;
+  margin-top: 5vh;
+}
+
+.startGameTagsInputContainer {
+  display: inline-block;
+  width: 25vw;
+}
+
+.startGameDropdownOptions {
+  margin-top: 5vh;
+}

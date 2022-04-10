@@ -11,15 +11,17 @@ import { getImageEntity } from "./getImageEntity";
 import { useGameboardPing } from "./useGameboardPing";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import StartGame from "./StartGame";
 import Welcome from "./Welcome";
 
 import "./Gameboard.css";
 import "animate.css";
+import postGameState from "../common/postGameState";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
-  const [welcomeState, setWelcomeState] = useState("");
+  const [startGameState, setStartGameState] = useState("");
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
   const [gameStateIdDisplayText, setGameStateIdDisplayText] = useState();
   const [uploadedByDisplay, setUploadedByDisplay] = useState(false);
@@ -27,18 +29,24 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
-  const [showGameStateLoadError, setShowGameStateLoadError] = useState(false);
+  const [gameStateErrorMessage, setGameStateErrorMessage] = useState("");
 
-  const onWelcomeStateChange = (welcomeState) => {
-    setWelcomeState(welcomeState);
+  const onStartGameStateChange = (startGameState) => {
+    setStartGameState(startGameState);
   };
 
   const onCancel = () => {
-    setWelcomeState("");
+    setStartGameState("");
   };
 
-  const onCreateGame = (gameStateId) => {
-    setGameStateId(gameStateId);
+  const onCreateGame = (gameOptions) => {
+    postGameState(gameOptions, (gameState) => {
+      if (gameState) {
+        setGameStateId(gameState.gameStateId);
+      } else {
+        setGameStateErrorMessage("There was a problem creating the game. Please try again later.");
+      }
+    });
   };
 
   const onJoinGame = (gameStateId) => {
@@ -47,7 +55,7 @@ export default function Gameboard() {
 
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
-    setShowGameStateLoadError(true);
+    setGameStateErrorMessage("Did not find a game with that code. Check the game code and try again.");
   }, []);
 
   const { queryString, setQueryString } = useSignalRConnection();
@@ -66,23 +74,22 @@ export default function Gameboard() {
     }
   }, [gameStateId, gameState, queryString, setQueryString]);
 
-  const handlGameStateLoadErrorClose = () => setShowGameStateLoadError(false);
+  const handlGameStateLoadErrorClose = () => setGameStateErrorMessage("");
 
   useEffect(() => {
     if (!gameState) {
       return;
     }
 
-    setWelcomeState("Playing");
-
-    if (gameState.revealedPanels) {
-      setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
-    } else {
-      setGameStateIdDisplayText(gameState.gameStateId);
-    }
+    setStartGameState("Playing");
 
     if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
       setGameStateIdDisplay(true);
+      if (gameState.revealedPanels) {
+        setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
+      } else {
+        setGameStateIdDisplayText(gameState.gameStateId);
+      }
     } else {
       setGameStateIdDisplay(false);
       setUploadedByDisplay(false);
@@ -91,6 +98,12 @@ export default function Gameboard() {
 
   useEffect(() => {
     if (!gameState) {
+      return;
+    }
+
+    if (gameState.turnType === "Welcome") {
+      setUploadedByDisplay(false);
+      setAnswerDisplay(false);
       return;
     }
 
@@ -116,25 +129,26 @@ export default function Gameboard() {
 
   return (
     <>
-      <Modal show={showGameStateLoadError} centered onHide={handlGameStateLoadErrorClose}>
-        <Modal.Body>{"Didn't find a game with that code. Check the code and try again."}</Modal.Body>
+      <Modal show={gameStateErrorMessage !== ""} centered onHide={handlGameStateLoadErrorClose}>
+        <Modal.Body>{gameStateErrorMessage}</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={handlGameStateLoadErrorClose}>
             Ok
           </Button>
         </Modal.Footer>
       </Modal>
-      {welcomeState !== "Playing" && (
-        <Welcome
-          welcomeState={welcomeState}
-          onWelcomeStateChange={onWelcomeStateChange}
+      {startGameState !== "Playing" && (
+        <StartGame
+          startGameState={startGameState}
+          onStartGameStateChange={onStartGameStateChange}
           onCreateGame={onCreateGame}
           onJoinGame={onJoinGame}
           onCancel={onCancel}
-        ></Welcome>
+        ></StartGame>
       )}
+      {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
       <TeamInfos gameState={gameState ?? {}} />
-      <Players players={players}></Players>
+      <Players players={players} turnType={gameState ? gameState.turnType : ""}></Players>
       <Panels
         gameStateId={gameStateId}
         players={players}
