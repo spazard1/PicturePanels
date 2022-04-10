@@ -114,6 +114,7 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
             panelNumber={panelNumber}
             roundNumber={roundNumber}
             onImageLoaded={onImageLoaded}
+            turnType={turnType}
           ></Panel>
         ))}
       </div>
