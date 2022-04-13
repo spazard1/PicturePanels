@@ -7,8 +7,6 @@ export default function Players({ players, turnType }) {
   const teamOneClassNames = classNames("teamPlayerNames", "teamOnePlayerNames", "hideIfEmpty", { welcomePlayerNames: turnType === "Welcome" });
   const teamTwoClassNames = classNames("teamPlayerNames", "teamTwoPlayerNames", "hideIfEmpty", { welcomePlayerNames: turnType === "Welcome" });
 
-  console.log(turnType);
-
   const teamOnePlayers = {};
   const teamTwoPlayers = {};
 
