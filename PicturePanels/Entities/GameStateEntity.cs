@@ -80,6 +80,7 @@ namespace PicturePanels.Entities
 
         public int? RoundNumber { get; set; }
 
+        [Range(4, 10)]
         public int? FinalRoundNumber { get; set; }
 
         public int? TeamTurn { get; set; }

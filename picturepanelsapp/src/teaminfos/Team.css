@@ -60,18 +60,20 @@
   margin-left: 3px;
 }
 
-.teamInfoIncorrectGuessesContainer {
-  display: inline-flex;
-  justify-content: center;
-  background-color: pink;
-}
-
 .teamInfoIncorrectGuesses {
   position: absolute;
   bottom: 0;
   color: red;
   font-size: 2.5vh;
   font-weight: bold;
+}
+
+.teamOne > .teamInfoIncorrectGuesses {
+  left: 4px;
+}
+
+.teamTwo > .teamInfoIncorrectGuesses {
+  right: 4px;
 }
 
 .activeTeam {
