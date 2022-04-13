@@ -151,8 +151,6 @@ namespace PicturePanels.Models
                 TeamTwoScore = 0,
                 TeamOneIncorrectGuesses = 0,
                 TeamTwoIncorrectGuesses = 0,
-                TeamOneInnerPanels = 5,
-                TeamTwoInnerPanels = 5,
                 RevealedPanels = new List<string>()
             };
         }
