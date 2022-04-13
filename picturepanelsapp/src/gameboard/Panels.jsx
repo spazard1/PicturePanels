@@ -38,6 +38,8 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   };
 
   useEffect(() => {
+    console.log(previousRevealedPanels, revealedPanels.length);
+
     if (!previousRevealedPanels || revealedPanels.length < previousRevealedPanels.length) {
       setEntranceClass(GetEntranceClass());
     }
@@ -79,10 +81,10 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
         welcomePanelIndex.current = 0;
         welcomePanelNumbers.current = shuffleArray([...panelNumbers]);
         setOpenWelcomePanels([]);
+        setEntranceClass(GetEntranceClass());
         return;
       }
       setOpenWelcomePanels((owp) => {
-        console.log(welcomePanelNumbers.current);
         owp.push(welcomePanelNumbers.current[welcomePanelIndex.current]);
         welcomePanelIndex.current++;
         return [...owp];
