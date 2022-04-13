@@ -86,6 +86,9 @@ namespace PicturePanels.Controllers
             gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
             gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
             gameState.ExcludedTags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            gameState.FinalRoundNumber = entity.FinalRoundNumber ?? GameStateTableEntity.MaxRounds;
+            gameState.TeamOneInnerPanels = gameState.FinalRoundNumber / 2;
+            gameState.TeamTwoInnerPanels = gameState.FinalRoundNumber / 2;
 
             if (!string.IsNullOrWhiteSpace(entity.Theme))
             {
