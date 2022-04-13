@@ -9,11 +9,15 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   const [hasExited, setHasExited] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState();
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setExitClass(GetExitClass());
       setHasExited(true);
+      setTimeout(() => setHidden(true), 2000);
+    } else {
+      setHidden(false);
     }
   }, [isOpen]);
 
@@ -38,6 +42,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
           [`${entranceClass}`]: !isOpen && hasExited,
           animate__infinite: isOpen && !imageLoaded,
           animate__pulse: isOpen && !imageLoaded,
+          hidden: hidden,
         })}
       >
         <div id={"panelNumber_" + panelNumber} className="panelNumber">
