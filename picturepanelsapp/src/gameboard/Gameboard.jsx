@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./Panels";
@@ -30,6 +30,7 @@ export default function Gameboard() {
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
   const [gameStateErrorMessage, setGameStateErrorMessage] = useState("");
+  const roundNumberRef = useRef();
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -92,7 +93,6 @@ export default function Gameboard() {
       }
     } else {
       setGameStateIdDisplay(false);
-      setUploadedByDisplay(false);
     }
   }, [gameState]);
 
@@ -107,10 +107,22 @@ export default function Gameboard() {
       return;
     }
 
+    if (
+      gameState.roundNumber === roundNumberRef.current &&
+      gameState.turnType !== "EndRound" &&
+      !(gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect))
+    ) {
+      return;
+    }
+    roundNumberRef.current = gameState.roundNumber;
+
     getImageEntity(gameState.gameStateId, (imageEntity) => {
       if (!imageEntity) {
+        setUploadedByDisplay(false);
+        setAnswerDisplay(false);
         return;
       }
+
       if (imageEntity.uploadedBy) {
         setUploadedByDisplay(true);
         setUploadedByDisplayText("Uploaded by: " + imageEntity.uploadedBy);
