@@ -49,6 +49,7 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
       return;
     }
 
+    panelsRef.current.style.maxWidth = "";
     window.onresize = resizePanelContainer;
 
     resizePanelContainer();
@@ -83,19 +84,18 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   }, [turnType]);
 
   const resizePanelContainer = () => {
-    var panelsContainerRect = panelsRef.current.getBoundingClientRect();
     var panelsContainerMaxWidth = 84;
-    panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
+    var panelsContainerRect = panelsRef.current.getBoundingClientRect();
     var paddingBottom = 5;
 
     while (panelsContainerRect.height + panelsContainerRect.y >= window.innerHeight - paddingBottom) {
-      panelsContainerMaxWidth -= 0.5;
       if (panelsContainerMaxWidth < 10) {
         break;
       }
 
       panelsRef.current.style.maxWidth = panelsContainerMaxWidth + "vw";
       panelsContainerRect = panelsRef.current.getBoundingClientRect();
+      panelsContainerMaxWidth -= 0.5;
     }
   };
 
