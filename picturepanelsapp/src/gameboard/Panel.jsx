@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import "./Panel.css";
@@ -10,12 +10,15 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState();
   const [hidden, setHidden] = useState(false);
+  const hiddenTimeoutRef = useRef();
 
   useEffect(() => {
+    clearTimeout(hiddenTimeoutRef.current);
+
     if (isOpen) {
       setExitClass(GetExitClass());
       setHasExited(true);
-      setTimeout(() => setHidden(true), 2000);
+      hiddenTimeoutRef.current = setTimeout(() => setHidden(true), 2100); // two second annimation, make sure it finishes before adding hidden
     } else {
       setHidden(false);
     }

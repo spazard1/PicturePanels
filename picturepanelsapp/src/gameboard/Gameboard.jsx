@@ -187,8 +187,8 @@ export default function Gameboard() {
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"
-        entranceClassName=" animate__bounceInLeft"
-        exitClassName="animate__bounceOutRight"
+        entranceClassName=" animate__backInLeft"
+        exitClassName="animate__backOutRight"
       >
         {roundNumberAnimateDisplayText}
       </FadedBox>
