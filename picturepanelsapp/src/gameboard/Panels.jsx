@@ -10,13 +10,24 @@ import "./Panels.css";
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
 const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, turnType, teamIsCorrect }) => {
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  };
+
   const panelsRef = useRef();
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
   const [openWelcomePanels, setOpenWelcomePanels] = useState([]);
+  const welcomePanelIndex = useRef(0);
+  const welcomePanelNumbers = useRef(shuffleArray([...panelNumbers]));
   const welcomeIntervalRef = useRef();
-  const previousRandomPanelNumber = useRef();
   const previousRevealedPanels = usePrevious(revealedPanels);
   const panelRefs = useMemo(() => panelNumbers.map(() => React.createRef()), []);
 
@@ -63,24 +74,20 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
       return;
     }
 
-    let randomPanelNumber = 0;
     welcomeIntervalRef.current = setInterval(() => {
+      if (welcomePanelIndex.current >= panelNumbers.length) {
+        welcomePanelIndex.current = 0;
+        welcomePanelNumbers.current = shuffleArray([...panelNumbers]);
+        setOpenWelcomePanels([]);
+        return;
+      }
       setOpenWelcomePanels((owp) => {
-        do {
-          randomPanelNumber = Math.ceil(Math.random() * panelNumbers.length);
-        } while (randomPanelNumber === previousRandomPanelNumber.current);
-        previousRandomPanelNumber.current = randomPanelNumber;
-
-        const panelNumberIndex = owp.indexOf(randomPanelNumber + "");
-        if (panelNumberIndex >= 0) {
-          owp.splice(panelNumberIndex, 1);
-        } else {
-          owp.push(randomPanelNumber + "");
-        }
-
+        console.log(welcomePanelNumbers.current);
+        owp.push(welcomePanelNumbers.current[welcomePanelIndex.current]);
+        welcomePanelIndex.current++;
         return [...owp];
       });
-    }, 5000);
+    }, 6000);
   }, [turnType]);
 
   const resizePanelContainer = () => {
