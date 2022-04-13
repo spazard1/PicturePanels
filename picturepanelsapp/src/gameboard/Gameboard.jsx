@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./Panels";
@@ -17,11 +17,14 @@ import Welcome from "./Welcome";
 import "./Gameboard.css";
 import "animate.css";
 import postGameState from "../common/postGameState";
+import RoundNumber from "./RoundNumber";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
   const [startGameState, setStartGameState] = useState("");
+  const [roundNumberAnimateDisplay, setRoundNumberAnimateDisplay] = useState(false);
+  const [roundNumberAnimateDisplayText, setRoundNumberAnimateDisplayText] = useState();
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
   const [gameStateIdDisplayText, setGameStateIdDisplayText] = useState();
   const [uploadedByDisplay, setUploadedByDisplay] = useState(false);
@@ -30,6 +33,7 @@ export default function Gameboard() {
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
   const [gameStateErrorMessage, setGameStateErrorMessage] = useState("");
+  const roundNumberRef = useRef();
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -85,14 +89,13 @@ export default function Gameboard() {
 
     if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
       setGameStateIdDisplay(true);
-      if (gameState.revealedPanels) {
+      if (gameState.revealedPanels.length === 0) {
         setGameStateIdDisplayText("Join the game!\u00A0\u00A0\u00A0picturepanels.net\u00A0\u00A0\u00A0" + gameState.gameStateId);
       } else {
         setGameStateIdDisplayText(gameState.gameStateId);
       }
     } else {
       setGameStateIdDisplay(false);
-      setUploadedByDisplay(false);
     }
   }, [gameState]);
 
@@ -107,10 +110,30 @@ export default function Gameboard() {
       return;
     }
 
+    if (
+      gameState.roundNumber === roundNumberRef.current &&
+      gameState.turnType !== "EndRound" &&
+      gameState.turnType !== "EndGame" &&
+      !(gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect))
+    ) {
+      return;
+    }
+
+    setRoundNumberAnimateDisplay(true);
+    setTimeout(() => {
+      setRoundNumberAnimateDisplay(false);
+    }, 4000);
+
+    roundNumberRef.current = gameState.roundNumber;
+    setRoundNumberAnimateDisplayText("Round " + gameState.roundNumber);
+
     getImageEntity(gameState.gameStateId, (imageEntity) => {
       if (!imageEntity) {
+        setUploadedByDisplay(false);
+        setAnswerDisplay(false);
         return;
       }
+
       if (imageEntity.uploadedBy) {
         setUploadedByDisplay(true);
         setUploadedByDisplayText("Uploaded by: " + imageEntity.uploadedBy);
@@ -149,6 +172,9 @@ export default function Gameboard() {
       {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
       <TeamInfos gameState={gameState ?? {}} />
       <Players players={players} turnType={gameState ? gameState.turnType : ""}></Players>
+      {gameState && gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame" && (
+        <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber}></RoundNumber>
+      )}
       <Panels
         gameStateId={gameStateId}
         players={players}
@@ -159,10 +185,18 @@ export default function Gameboard() {
         teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
       />
       <FadedBox
+        displayState={roundNumberAnimateDisplay}
+        className="roundNumberAnimateFadedBox"
+        entranceClassName=" animate__bounceInLeft"
+        exitClassName="animate__bounceOutRight"
+      >
+        {roundNumberAnimateDisplayText}
+      </FadedBox>
+      <FadedBox
         displayState={gameStateIdDisplay}
         className="gameStateIdFadedBox"
         entranceClassName=" animate__bounceInLeft"
-        exitClassName=" animate__bounceOutLeft"
+        exitClassName="animate__bounceOutLeft"
       >
         {gameStateIdDisplayText}
       </FadedBox>
@@ -170,7 +204,7 @@ export default function Gameboard() {
         displayState={uploadedByDisplay}
         className="uploadedByFadedBox"
         entranceClassName=" animate__bounceInRight"
-        exitClassName=" animate__bounceOutRight"
+        exitClassName="animate__bounceOutRight"
       >
         {uploadedByDisplayText}
       </FadedBox>
@@ -178,7 +212,7 @@ export default function Gameboard() {
         displayState={answerDisplay}
         className="answerFadedBox"
         entranceClassName=" animate__bounceInTop"
-        exitClassName=" animate__bounceOutTop"
+        exitClassName="animate__bounceOutTop"
       >
         {answerDisplayText}
       </FadedBox>

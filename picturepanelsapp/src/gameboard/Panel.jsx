@@ -22,7 +22,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
     if (gameStateId && roundNumber && turnType !== "Welcome") {
       newImgSrc = "https://picturepanels.azurewebsites.net/api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0);
     } else {
-      newImgSrc = "https://picturepanels.azurewebsites.net/api/images/panels/welcome/0/" + panelNumber;
+      newImgSrc = "https://picturepanels.azurewebsites.net/api/images/panels/welcome/0/" + (isOpen ? panelNumber : 0);
     }
     if (imgSrc !== newImgSrc) {
       setImageLoaded(false);
