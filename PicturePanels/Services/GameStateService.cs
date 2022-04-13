@@ -603,7 +603,7 @@ namespace PicturePanels.Services
 
             var populatedImages = new HashSet<string>();
 
-            while (populatedImages.Count < GameStateTableEntity.MaxRounds)
+            while (populatedImages.Count < gameState.FinalRoundNumber)
             {
                 var imageTag = GetRandomTag(imageTags);
                 if (imageTag == null)
