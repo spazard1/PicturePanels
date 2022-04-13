@@ -38,14 +38,6 @@ function Team({
     [teamNumber]
   );
 
-  const renderIncorrectGuesses = useCallback((n) => {
-    return [...Array(n)].map((_, i) => (
-      <div key={i} className="teamInfoIncorrectGuesses">
-        ⦻
-      </div>
-    ));
-  }, []);
-
   const teamClassNames = classNames("teamInfo", "teamNameBox", { activeTeam: isTeamActive, teamOne: teamNumber === 1, teamTwo: teamNumber === 2 });
 
   return (
@@ -60,7 +52,10 @@ function Team({
         ></Countdown>
       )}
       <div className="teamName">{teamName}</div>
-      <div className="teamInfoIncorrectGuesses">{renderIncorrectGuesses(teamIncorrectGuesses)}</div>
+      <div className="teamInfoIncorrectGuesses">
+        {teamIncorrectGuesses <= 3 && [...Array(teamIncorrectGuesses)].map((_, i) => <span key={i}>⦻</span>)}
+        {teamIncorrectGuesses > 3 && <>{teamIncorrectGuesses}⦻</>}
+      </div>
       <div className="teamInfoPanelCounts center">{renderPanelCount(teamInnerPanels)}</div>
       <TeamGuess
         teamNumber={teamNumber}
