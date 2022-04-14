@@ -10,10 +10,15 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState();
   const [hidden, setHidden] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const hiddenTimeoutRef = useRef();
 
   useEffect(() => {
     clearTimeout(hiddenTimeoutRef.current);
+
+    if (!imageLoaded) {
+      return;
+    }
 
     if (isOpen) {
       setExitClass(GetExitClass());
@@ -22,7 +27,13 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
     } else {
       setHidden(false);
     }
-  }, [isOpen]);
+  }, [isOpen, imageLoaded]);
+
+  useEffect(() => {
+    if (imageLoaded) {
+      setHasLoaded(true);
+    }
+  }, [imageLoaded]);
 
   useEffect(() => {
     let newImgSrc = "";
@@ -48,9 +59,11 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
           hidden: hidden,
         })}
       >
-        <div id={"panelNumber_" + panelNumber} className="panelNumber">
-          {panelNumber}
-        </div>
+        {hasLoaded && (
+          <div id={"panelNumber_" + panelNumber} className="panelNumber">
+            {panelNumber}
+          </div>
+        )}
       </div>
       <img
         ref={ref}
