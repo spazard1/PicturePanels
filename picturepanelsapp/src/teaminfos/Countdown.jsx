@@ -53,7 +53,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
     ctx.textAlign = "center";
     ctx.fillStyle = "#FFFFFF";
     const secondsRemaining = Math.ceil(Math.min(canvas.currentCountdown, canvas.countdownMax) / 1000);
-    if (secondsRemaining <= 15) {
+    if (secondsRemaining <= 60) {
       ctx.fillText(secondsRemaining, circlePosition, circlePosition + circlePosition * 0.2);
     }
     ctx.restore();
