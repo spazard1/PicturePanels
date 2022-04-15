@@ -24,10 +24,10 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   const [entranceClass, setEntranceClass] = useState("");
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
-  const [openWelcomePanels, setOpenWelcomePanels] = useState([]);
-  const welcomePanelIndex = useRef(0);
-  const welcomePanelNumbers = useRef(shuffleArray([...panelNumbers]));
-  const welcomeIntervalRef = useRef();
+  const [openPanelsOverride, setOpenPanelsOverride] = useState([]);
+  const openPanelOverrideIndex = useRef(0);
+  const openPanelOverridePanelNumbers = useRef(shuffleArray([...panelNumbers]));
+  const openPanelOverrideIntervalRef = useRef();
   const previousRevealedPanels = usePrevious(revealedPanels);
   const panelRefs = useMemo(() => panelNumbers.map(() => React.createRef()), []);
 
@@ -67,24 +67,52 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   }, [roundNumber, gameStateId]);
 
   useEffect(() => {
-    clearInterval(welcomeIntervalRef.current);
-
-    if (turnType !== "Welcome") {
-      setOpenWelcomePanels([]);
+    if (turnType !== "Welcome" && turnType !== "EndRound" && !(turnType === "GuessesMade" && teamIsCorrect)) {
+      setOpenPanelsOverride([]);
+      clearInterval(openPanelOverrideIntervalRef.current);
       return;
     }
+  }, [turnType, teamIsCorrect]);
 
-    welcomeIntervalRef.current = setInterval(() => {
-      if (welcomePanelIndex.current >= panelNumbers.length) {
-        welcomePanelIndex.current = 0;
-        welcomePanelNumbers.current = shuffleArray([...panelNumbers]);
-        setOpenWelcomePanels([]);
+  useEffect(() => {
+    if (!(turnType === "EndRound" || teamIsCorrect)) {
+      return;
+    }
+    clearInterval(openPanelOverrideIntervalRef.current);
+
+    openPanelOverrideIndex.current = 0;
+    const remainingPanelNumbers = [...panelNumbers].filter((pn) => !revealedPanels.includes(pn));
+    openPanelOverridePanelNumbers.current = shuffleArray(remainingPanelNumbers);
+
+    openPanelOverrideIntervalRef.current = setInterval(() => {
+      if (openPanelOverrideIndex.current >= openPanelOverridePanelNumbers.current.length) {
+        clearInterval(openPanelOverrideIntervalRef.current);
+      }
+      setOpenPanelsOverride((owp) => {
+        owp.push(openPanelOverridePanelNumbers.current[openPanelOverrideIndex.current]);
+        openPanelOverrideIndex.current++;
+        return [...owp];
+      });
+    }, 150);
+  }, [turnType, teamIsCorrect, revealedPanels]);
+
+  useEffect(() => {
+    if (turnType !== "Welcome") {
+      return;
+    }
+    clearInterval(openPanelOverrideIntervalRef.current);
+
+    openPanelOverrideIntervalRef.current = setInterval(() => {
+      if (openPanelOverrideIndex.current >= panelNumbers.length) {
+        openPanelOverrideIndex.current = 0;
+        openPanelOverridePanelNumbers.current = shuffleArray([...panelNumbers]);
+        setOpenPanelsOverride([]);
         setEntranceClass(GetEntranceClass());
         return;
       }
-      setOpenWelcomePanels((owp) => {
-        owp.push(welcomePanelNumbers.current[welcomePanelIndex.current]);
-        welcomePanelIndex.current++;
+      setOpenPanelsOverride((owp) => {
+        owp.push(openPanelOverrideIndex.current[openPanelOverrideIndex.current]);
+        openPanelOverrideIndex.current++;
         return [...owp];
       });
     }, 6000);
@@ -114,9 +142,7 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
             key={panelNumber}
             ref={panelRefs[panelNumber - 1]}
             gameStateId={gameStateId}
-            isOpen={
-              turnType === "EndRound" || teamIsCorrect || revealedPanels.indexOf(panelNumber) >= 0 || openWelcomePanels.indexOf(panelNumber) >= 0
-            }
+            isOpen={revealedPanels.indexOf(panelNumber) >= 0 || openPanelsOverride.indexOf(panelNumber) >= 0}
             entranceClass={entranceClass}
             panelNumber={panelNumber}
             roundNumber={roundNumber}
