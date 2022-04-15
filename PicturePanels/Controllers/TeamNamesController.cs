@@ -30,7 +30,10 @@ namespace PicturePanels.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Json(new TeamNameEntity() { TeamName = "The " + adjectives[random.Next(adjectives.Length)] + " " + nouns[random.Next(nouns.Length)] });
+            return Json(new TeamNamesEntity() { 
+                TeamOneName = "The " + adjectives[random.Next(adjectives.Length)] + " " + nouns[random.Next(nouns.Length)],
+                TeamTwoName = "The " + adjectives[random.Next(adjectives.Length)] + " " + nouns[random.Next(nouns.Length)]
+            });
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿namespace PicturePanels.Entities
 {
-    public class TeamNameEntity
+    public class TeamNamesEntity
     {
-        public string TeamName { get; set; }
+        public string TeamOneName { get; set; }
+
+        public string TeamTwoName { get; set; }
+
     }
 }
