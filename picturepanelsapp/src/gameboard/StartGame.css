@@ -46,6 +46,7 @@
 }
 
 .startGameTeamName {
+  width: 25vw;
   margin: 0 0.75rem;
 }
 
@@ -66,4 +67,8 @@
 
 .startGameDropdownOptions {
   margin-top: 5vh;
+}
+
+.teamNameRefresh {
+  cursor: pointer;
 }

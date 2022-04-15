@@ -4,11 +4,15 @@ import getTeamNames from "../common/getTeamNames";
 export function useTeamNames() {
   const [teamNames, setTeamNames] = useState();
 
-  useEffect(() => {
+  const refreshTeamNames = () => {
     getTeamNames((tn) => {
       setTeamNames(tn);
     });
+  };
+
+  useEffect(() => {
+    refreshTeamNames();
   }, []);
 
-  return { teamNames };
+  return { teamNames, refreshTeamNames };
 }

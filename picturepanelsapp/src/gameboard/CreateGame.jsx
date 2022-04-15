@@ -1,19 +1,21 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import "@yaireo/tagify/dist/tagify.css";
 import "../common/Tagify.css";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 import { useTags } from "../common/useTags";
 import { useQueryString } from "../common/useQueryString";
+import { useTeamNames } from "./useTeamNames";
 
 const CreateGame = ({ onCancel, onCreateGame }) => {
   const { tags } = useTags();
   const defaultTags = useQueryString("tags");
   const theme = useQueryString("theme");
+  const { teamNames, refreshTeamNames } = useTeamNames();
 
   const [formValues, setFormValues] = useState({
-    teamOneName: "Team 1",
-    teamTwoName: "Team 2",
+    teamOneName: "",
+    teamTwoName: "",
     openPanelTime: 30,
     guessTime: 90,
     wrongGuessPenalty: -1,
@@ -21,6 +23,15 @@ const CreateGame = ({ onCancel, onCreateGame }) => {
     numberOfRounds: 10,
     theme: theme,
   });
+
+  useEffect(() => {
+    if (!teamNames) {
+      return;
+    }
+    setFormValues((fv) => {
+      return { ...fv, teamOneName: teamNames.teamOneName, teamTwoName: teamNames.teamTwoName };
+    });
+  }, [teamNames]);
 
   const tagifySettings = {
     originalInputValueFormat: (valuesArr) => valuesArr.map((item) => item.value).join(","),
@@ -69,7 +80,7 @@ const CreateGame = ({ onCancel, onCreateGame }) => {
             className="startGameTeamName startGameInput"
             value={formValues.teamOneName}
             autoComplete="off"
-            maxLength="30"
+            maxLength="40"
             onChange={onInputChange}
           />
           VS.
@@ -78,9 +89,12 @@ const CreateGame = ({ onCancel, onCreateGame }) => {
             className="startGameTeamName startGameInput"
             value={formValues.teamTwoName}
             autoComplete="off"
-            maxLength="30"
+            maxLength="40"
             onChange={onInputChange}
           />
+          <span className="teamNameRefresh" onClick={refreshTeamNames}>
+            ⟳
+          </span>
           <div className="startGameTagsMessage">
             All images are included by default. Use included tags if you only want certain categories in your game.
           </div>
