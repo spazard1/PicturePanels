@@ -121,30 +121,23 @@ export default function Gameboard() {
     }
 
     getImageEntity(gameState.gameStateId, (imageEntity) => {
-      console.log("got it", imageEntity);
       if (!imageEntity) {
         setUploadedByDisplay(false);
         setAnswerDisplay(false);
-        console.log("exiting", imageEntity);
         return;
       }
 
       if (imageEntity.uploadedBy) {
-        console.log("uploaded by", imageEntity.uploadedBy);
         setUploadedByDisplay(true);
         setUploadedByDisplayText("Uploaded by: " + imageEntity.uploadedBy);
       } else {
         setUploadedByDisplay(false);
-        console.log("uploaded by false");
       }
 
       if (imageEntity.name) {
-        console.log("answer", imageEntity.name);
-
         setAnswerDisplayText(imageEntity.name);
         setAnswerDisplay(true);
       } else {
-        console.log("answer display false");
         setAnswerDisplay(false);
       }
     });
