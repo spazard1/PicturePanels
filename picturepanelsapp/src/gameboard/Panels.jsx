@@ -38,8 +38,6 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   };
 
   useEffect(() => {
-    console.log(previousRevealedPanels, revealedPanels.length);
-
     if (!previousRevealedPanels || revealedPanels.length < previousRevealedPanels.length) {
       setEntranceClass(GetEntranceClass());
     }
