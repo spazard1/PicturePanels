@@ -16,6 +16,7 @@ import Welcome from "./Welcome";
 
 import "./Gameboard.css";
 import "animate.css";
+import "../animate/animate.css";
 import postGameState from "../common/postGameState";
 import RoundNumber from "./RoundNumber";
 
@@ -158,7 +159,7 @@ export default function Gameboard() {
     setRoundNumberAnimateDisplay(true);
     setTimeout(() => {
       setRoundNumberAnimateDisplay(false);
-    }, 6000);
+    }, 8000);
   }, [gameState]);
 
   return (
@@ -198,28 +199,33 @@ export default function Gameboard() {
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"
-        entranceClassName=" animate__backInLeft"
-        exitClassName="animate__backOutRight"
+        entranceClassNames="animate__backInLeft animate__slow animate__delay-2s"
+        exitClassNames="animate__backOutRight animate__slow "
       >
         {roundNumberAnimateDisplayText}
       </FadedBox>
       <FadedBox
         displayState={gameStateIdDisplay}
         className="gameStateIdFadedBox"
-        entranceClassName=" animate__bounceInLeft"
-        exitClassName="animate__bounceOutLeft"
+        entranceClassNames="animate__backInLeft animate__slow"
+        exitClassNames="animate__backOutLeft"
       >
         {gameStateIdDisplayText}
       </FadedBox>
       <FadedBox
         displayState={uploadedByDisplay}
         className="uploadedByFadedBox"
-        entranceClassName=" animate__bounceInRight"
-        exitClassName="animate__bounceOutRight"
+        entranceClassNames="animate__backInRight animate__slow"
+        exitClassNames="animate__backOutRight"
       >
         {uploadedByDisplayText}
       </FadedBox>
-      <FadedBox displayState={answerDisplay} className="answerFadedBox" entranceClassName=" animate__bounceInUp" exitClassName="animate__bounceOutUp">
+      <FadedBox
+        displayState={answerDisplay}
+        className="answerFadedBox"
+        entranceClassNames="animate__bounceInDown animate__slow animate__delay-7s"
+        exitClassNames="animate__bounceOutUp"
+      >
         {answerDisplayText}
       </FadedBox>
     </>
