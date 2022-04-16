@@ -34,11 +34,6 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
       setTeamGuessVisible(false);
       setTeamGuessIncorrectDisplay(false);
     }
-
-    //clearInterval(intervalRef.current);
-    //intervalRef.current = setTimeout(() => {
-    //  setScoreChangeVisible(false);
-    //}, changeType === "OpenPanel" ? 4000 : 6000);
   }, [teamGuessStatus, teamGuess, turnType, teamGuessIncorrect]);
 
   useEffect(() => {
