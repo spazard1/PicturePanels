@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import "./FadedBox.css";
 
-export default function FadedBox({ children, displayState, className, entranceClassName, exitClassName }) {
+export default function FadedBox({ children, displayState, className, entranceClassNames, exitClassNames }) {
   return (
     <>
       {children && (
         <div
-          className={classNames("fadedBox", "animate__animated", "animate__slow", className, {
-            [`${entranceClassName}`]: displayState,
-            [`${exitClassName}`]: !displayState,
+          className={classNames("fadedBox", "animate__animated", className, {
+            [`${entranceClassNames}`]: displayState,
+            [`${exitClassNames}`]: !displayState,
           })}
         >
           <div className="fadedBoxTitle">{children}</div>
@@ -24,7 +24,7 @@ FadedBox.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
   displayState: PropTypes.bool.isRequired,
   className: PropTypes.string.isRequired,
-  entranceClassName: PropTypes.string,
-  exitClassName: PropTypes.string,
+  entranceClassNames: PropTypes.string,
+  exitClassNames: PropTypes.string,
   autoExit: PropTypes.number,
 };
