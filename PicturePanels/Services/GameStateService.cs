@@ -501,7 +501,7 @@ namespace PicturePanels.Services
                     gr.TeamTwoScore += gameState.GetTeamScoreChange(2);
                 });
 
-                await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = gameState.GetTeamScoreChange(1), TeamTwo = gameState.GetTeamScoreChange(2), ChangeType = "OpenPanel" });
+                await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = gameState.GetTeamScoreChange(1), TeamTwo = gameState.GetTeamScoreChange(2), ChangeType = "GuessesMade" });
 
                 await this.playerTableStorage.ResetPlayersAsync(gameState.GameStateId);
                 await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
