@@ -156,7 +156,6 @@ body.player {
   vertical-align: middle;
   text-align: center;
   flex-direction: column;
-  transition: opacity 1s;
 }
 
 .turnStatusMessageHighlight {
@@ -184,10 +183,6 @@ body.player {
 .playerReadyButton {
   position: relative;
   background-color: lightgreen;
-}
-
-.confirmButtonChild {
-  transition: opacity 1s ease-in;
 }
 
 .confirmReady {
