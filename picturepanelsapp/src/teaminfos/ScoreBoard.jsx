@@ -52,12 +52,12 @@ function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnTy
     <div className="scoreBoard">
       <div className="teamScore teamOneBox">
         <div>{scoreDisplay.teamOne}</div>
-        <TeamScoreChange teamNumber={1} scoreChange={scoreChange.teamOne}></TeamScoreChange>
+        <TeamScoreChange teamNumber={1} scoreChange={scoreChange.teamOne} turnType={turnType}></TeamScoreChange>
       </div>
       <div className="teamInfo gameStatus">{turnTypeDisplay}</div>
       <div className="teamScore teamTwoBox">
         <div>{scoreDisplay.teamTwo}</div>
-        <TeamScoreChange teamNumber={2} scoreChange={scoreChange.teamTwo}></TeamScoreChange>
+        <TeamScoreChange teamNumber={2} scoreChange={scoreChange.teamTwo} turnType={turnType}></TeamScoreChange>
       </div>
     </div>
   );
