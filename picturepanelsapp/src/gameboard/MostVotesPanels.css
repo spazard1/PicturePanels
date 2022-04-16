@@ -1,7 +1,7 @@
 /* stylelint-disable selector-class-pattern */
 .mostVotesPanel {
   position: absolute;
-  transition: opacity 1s, transform 1s;
+  transition: transform 1s;
 }
 
 .mostVotesPanel .panelImage {

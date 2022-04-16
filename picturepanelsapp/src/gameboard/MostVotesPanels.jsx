@@ -76,8 +76,9 @@ export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType
           key={key}
           className={classNames(
             "mostVotesPanel",
-            { opacity0: parseInt(mostVotesPanelsRects[key].panelNumber) > 20 },
-            { opacity0: turnType !== "OpenPanel" }
+            "animate__animated",
+            { animate__fadeOut: parseInt(mostVotesPanelsRects[key].panelNumber) > 20 },
+            { animate__fadeOut: turnType !== "OpenPanel" }
           )}
           style={{
             transform: "translate(" + mostVotesPanelsRects[key].rect.x + "px, " + mostVotesPanelsRects[key].rect.y + "px)",
