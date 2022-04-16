@@ -23,7 +23,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
     if (isOpen) {
       setExitClass(GetExitClass());
       setHasExited(true);
-      hiddenTimeoutRef.current = setTimeout(() => setHidden(true), 2100); // two second annimation, make sure it finishes before adding hidden
+      //hiddenTimeoutRef.current = setTimeout(() => setHidden(true), 6100); // make sure it finishes before adding hidden
     } else {
       setHidden(false);
     }
@@ -53,9 +53,10 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
       <div
         className={classNames("panelBackground", "animate__animated", "animate__slow", {
           [`${exitClass}`]: isOpen && imageLoaded,
+          "animate__delay-5s": isOpen && imageLoaded && (turnType === "GuessesMade" || turnType === "EndRound"),
           [`${entranceClass}`]: !isOpen && hasExited,
-          animate__infinite: isOpen && !imageLoaded,
-          animate__pulse: isOpen && !imageLoaded,
+          //animate__infinite: isOpen && !imageLoaded,
+          //animate__pulse: isOpen && !imageLoaded && turnType === "MakeGuess",
           hidden: hidden,
         })}
       >

@@ -351,7 +351,7 @@ namespace PicturePanels.Controllers
 
             if (panelNumber > 0 && !gameState.RevealedPanels.Contains(panelNumber.ToString()) && !gameState.IsRoundOver())
             {
-                // return StatusCode((int)HttpStatusCode.Forbidden);
+                return StatusCode((int)HttpStatusCode.Forbidden);
             }
 
             var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameStateId, gameState.RoundNumber);
