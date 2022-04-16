@@ -12,10 +12,6 @@
   text-align: center;
 }
 
-.teamGuessChild {
-  transition: opacity 1.5s ease-in;
-}
-
 .teamGuessReady {
   position: absolute;
   top: 0;
