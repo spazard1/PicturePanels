@@ -119,6 +119,10 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   }, [turnType]);
 
   const resizePanelContainer = () => {
+    if (!panelsRef) {
+      return;
+    }
+
     var panelsContainerMaxWidth = 84;
     var panelsContainerRect = panelsRef.current.getBoundingClientRect();
     var paddingBottom = 5;
