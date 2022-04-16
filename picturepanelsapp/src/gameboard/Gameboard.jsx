@@ -19,6 +19,7 @@ import "animate.css";
 import "../animate/animate.css";
 import postGameState from "../common/postGameState";
 import RoundNumber from "./RoundNumber";
+import EndGame from "./EndGame";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -105,7 +106,7 @@ export default function Gameboard() {
       return;
     }
 
-    if (gameState.turnType === "Welcome") {
+    if (gameState.turnType === "Welcome" || gameState.turnType === "EndGame") {
       setUploadedByDisplay(false);
       setAnswerDisplay(false);
       return;
@@ -114,7 +115,6 @@ export default function Gameboard() {
     if (
       gameState.roundNumber === roundNumberRef.current &&
       gameState.turnType !== "EndRound" &&
-      gameState.turnType !== "EndGame" &&
       !(gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect))
     ) {
       setAnswerDisplay(false);
@@ -187,15 +187,18 @@ export default function Gameboard() {
       {gameState && gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame" && (
         <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber}></RoundNumber>
       )}
-      <Panels
-        gameStateId={gameStateId}
-        players={players}
-        roundNumber={gameState ? gameState.roundNumber : 0}
-        revealedPanels={gameState ? gameState.revealedPanels : []}
-        teamTurn={gameState ? gameState.teamTurn : 1}
-        turnType={gameState ? gameState.turnType : "Welcome"}
-        teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
-      />
+      {(!gameState || gameState.turnType !== "EndGame") && (
+        <Panels
+          gameStateId={gameStateId}
+          players={players}
+          roundNumber={gameState ? gameState.roundNumber : 0}
+          revealedPanels={gameState ? gameState.revealedPanels : []}
+          teamTurn={gameState ? gameState.teamTurn : 1}
+          turnType={gameState ? gameState.turnType : "Welcome"}
+          teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
+        />
+      )}
+      {gameState && gameState.turnType === "EndGame" && <EndGame gameStateId={gameState.gameStateId}></EndGame>}
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"
