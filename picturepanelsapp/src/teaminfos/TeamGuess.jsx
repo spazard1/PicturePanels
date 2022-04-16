@@ -5,12 +5,11 @@ import classNames from "classnames";
 import "./TeamGuess.css";
 
 const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect, turnType }) => {
-  const [teamGuessDisplay, setteamGuessDisplay] = useState();
+  const [teamGuessDisplay, setTeamGuessDisplay] = useState();
   const [teamGuessVisible, setTeamGuessVisible] = useState(false);
   const [hasTeamGuessBeenVisible, setHasTeamGuessBeenVisible] = useState(false);
   const [teamGuessIncorrectDisplay, setTeamGuessIncorrectDisplay] = useState(false);
-
-  // const intervalRef = useRef();
+  const [readyDisplay, setReadyDisplay] = useState(true);
 
   useEffect(() => {
     if (turnType !== "MakeGuess" && turnType !== "GuessesMade") {
@@ -21,18 +20,25 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
     if (teamGuessStatus === "Ready") {
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
-      setteamGuessDisplay("Ready!");
+      setTeamGuessDisplay("Ready!");
     } else if (teamGuessStatus === "Guess") {
       setTeamGuessVisible(true);
-      setTeamGuessIncorrectDisplay(teamGuessIncorrect);
-      setteamGuessDisplay(teamGuess);
+      setTimeout(() => {
+        setTeamGuessIncorrectDisplay(teamGuessIncorrect);
+      }, 8000);
+      setTeamGuessDisplay(teamGuess);
+      setReadyDisplay(false);
     } else if (teamGuessStatus) {
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
-      setteamGuessDisplay("(team passed)");
+      setTeamGuessDisplay("(team passed)");
+      setReadyDisplay(false);
     } else {
       setTeamGuessVisible(false);
       setTeamGuessIncorrectDisplay(false);
+      setTimeout(() => {
+        setReadyDisplay(true);
+      }, 2000);
     }
   }, [teamGuessStatus, teamGuess, turnType, teamGuessIncorrect]);
 
@@ -48,15 +54,18 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
         teamOneBox: teamNumber === 1,
         teamTwoBox: teamNumber === 2,
         hidden: !hasTeamGuessBeenVisible,
-        animate__bounceInDown: teamGuessVisible,
-        animate__bounceOutUp: !teamGuessVisible,
+        animate__backInDown: teamGuessVisible,
+        animate__backOutUp: !teamGuessVisible,
         animate__slow: teamGuessVisible,
       })}
     >
-      <div className={classNames("teamGuessChild", "animate__animated", { opacity0: teamGuessStatus !== "Ready" })}>Ready!</div>
+      <div className={classNames("teamGuessChild", "animate__animated", "animate__slow", "animate__delay-4s", { animate__fadeOut: !readyDisplay })}>
+        Ready!
+      </div>
       <div
-        className={classNames("teamGuessReady", "teamGuessChild", "animate__animated", {
-          opacity0: teamGuessStatus === "Ready",
+        className={classNames("teamGuessChild", "teamGuessReady", "animate__animated", "animate__slow", "animate__delay-4s", {
+          hidden: readyDisplay,
+          animate__fadeIn: !readyDisplay,
           teamGuessIncorrect: teamGuessIncorrectDisplay,
         })}
       >

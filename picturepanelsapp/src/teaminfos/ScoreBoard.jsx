@@ -7,7 +7,7 @@ import "./ScoreBoard.css";
 function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnType }) {
   const [turnTypeDisplay, setTurnTypeDisplay] = useState("");
   const [scoreChange, setScoreChange] = useState({});
-  const [scoreDisplay, setScoreDisplay] = useState({ teamOne: 0, teamTwo: 0 });
+  const [scoreDisplay, setScoreDisplay] = useState({ teamOne: teamOneScore, teamTwo: teamTwoScore });
   const intervalRef = useRef();
 
   useSignalR("ScoreChange", (scoreChange) => {
@@ -21,6 +21,10 @@ function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnTy
       intervalRef.current = setTimeout(() => {
         setScoreDisplay({ teamOne: teamOneScore, teamTwo: teamTwoScore });
       }, 3000);
+    } else if (turnType === "GuessesMade") {
+      intervalRef.current = setTimeout(() => {
+        setScoreDisplay({ teamOne: teamOneScore, teamTwo: teamTwoScore });
+      }, 12000);
     } else {
       setScoreDisplay({ teamOne: teamOneScore, teamTwo: teamTwoScore });
     }
@@ -52,12 +56,12 @@ function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnTy
     <div className="scoreBoard">
       <div className="teamScore teamOneBox">
         <div>{scoreDisplay.teamOne}</div>
-        <TeamScoreChange teamNumber={1} scoreChange={scoreChange.teamOne} turnType={turnType}></TeamScoreChange>
+        <TeamScoreChange teamNumber={1} scoreChange={scoreChange.teamOne} changeType={scoreChange.changeType} turnType={turnType}></TeamScoreChange>
       </div>
       <div className="teamInfo gameStatus">{turnTypeDisplay}</div>
       <div className="teamScore teamTwoBox">
         <div>{scoreDisplay.teamTwo}</div>
-        <TeamScoreChange teamNumber={2} scoreChange={scoreChange.teamTwo} turnType={turnType}></TeamScoreChange>
+        <TeamScoreChange teamNumber={2} scoreChange={scoreChange.teamTwo} changeType={scoreChange.changeType} turnType={turnType}></TeamScoreChange>
       </div>
     </div>
   );
