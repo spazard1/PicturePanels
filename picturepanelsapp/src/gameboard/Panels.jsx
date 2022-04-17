@@ -155,7 +155,15 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
           ></Panel>
         ))}
       </div>
-      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></MostVotesPanels>}
+      {allImagesLoaded && (
+        <MostVotesPanels
+          panelRefs={panelRefs}
+          revealedPanels={revealedPanels}
+          players={players}
+          teamTurn={teamTurn}
+          turnType={turnType}
+        ></MostVotesPanels>
+      )}
       {allImagesLoaded && <PlayerDots panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></PlayerDots>}
     </>
   );
