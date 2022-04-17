@@ -4,7 +4,7 @@ import Chat from "./Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
-import { useErrorMessageModal } from "../common/useErrorMessageModal";
+import ErrorMessageModal from "../common/ErrorMessageModal";
 import TeamGuesses from "./TeamGuesses";
 import StartGameButtons from "./StartGameButtons";
 import ChooseTeam from "./ChooseTeam";
@@ -15,7 +15,7 @@ export default function Player() {
   useBodyClass("player");
 
   const [gameStateId, setGameStateId] = useState();
-  const { ErrorMessageModal, setErrorMessage } = useErrorMessageModal();
+  const [errorMessage, setErrorMessage] = useState("");
   const { queryString, setQueryString } = useSignalRConnection();
   const { gameState } = useGameState(gameStateId, onGameStateLoadError);
 
@@ -36,11 +36,11 @@ export default function Player() {
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
     setErrorMessage("Did not find a game with that code. Check the game code and try again.");
-  }, [setErrorMessage]);
+  }, []);
 
   return (
     <div className="main">
-      <ErrorMessageModal></ErrorMessageModal>
+      <ErrorMessageModal errorMessage={errorMessage}></ErrorMessageModal>
 
       <JoinGame onJoinGame={onJoinGame}></JoinGame>
 
