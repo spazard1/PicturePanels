@@ -140,7 +140,7 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
 
   return (
     <>
-      <div ref={panelsRef} id="panels" className="panels center">
+      <div ref={panelsRef} className="panels center">
         {panelNumbers.map((panelNumber) => (
           <Panel
             key={panelNumber}
