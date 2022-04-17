@@ -49,7 +49,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   }, [imgSrc, gameStateId, roundNumber, isOpen, panelNumber, turnType]);
 
   return (
-    <div id={"panel_" + panelNumber} className="panel">
+    <div className="panel">
       <div
         className={classNames("panelBackground", "animate__animated", "animate__slow", {
           [`${exitClass}`]: isOpen && imageLoaded,
@@ -60,11 +60,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
           hidden: hidden,
         })}
       >
-        {hasLoaded && (
-          <div id={"panelNumber_" + panelNumber} className="panelNumber">
-            {panelNumber}
-          </div>
-        )}
+        {hasLoaded && <div className="panelNumber">{panelNumber}</div>}
       </div>
       <img
         ref={ref}
