@@ -1,0 +1,166 @@
+/* stylelint-disable selector-class-pattern */
+.chats {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: visible;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  margin-bottom: 2px;
+}
+
+.chatsHighlight {
+  border: 3px solid dodgerblue;
+}
+
+.chat {
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  margin-left: 1vw;
+  margin-right: auto;
+  margin-bottom: 4px;
+  font-size: 0.5em;
+  max-width: 70%;
+  padding: 0 10px;
+  border-radius: 15px;
+  text-align: left;
+}
+
+.systemChat {
+  background-color: rgb(60 60 60);
+  max-width: 90%;
+  font-style: italic;
+  color: skyblue;
+  border: 2px solid dodgerblue;
+}
+
+.othersChat {
+  background-color: rgb(60 60 60);
+}
+
+.selfChat {
+  margin-left: auto;
+  margin-right: 1vw;
+  background-color: rgb(63 81 181);
+  border-radius: 15px;
+}
+
+.adminPlayerName::after {
+  color: #f33;
+  font-style: italic;
+  content: " (admin)";
+}
+
+.chatInputContainer {
+  flex: 0 0 auto;
+  width: 100vw;
+  display: flex;
+  margin-bottom: 3px;
+  align-items: flex-end;
+}
+
+.chatInputText {
+  font-size: 0.7em;
+  text-align: left;
+  border-radius: 15px;
+  padding: 2px;
+  margin: 3px 0;
+  flex: 1;
+  width: 0;
+}
+
+.chatSendButton {
+  flex: none;
+}
+
+.chat img {
+  object-fit: contain;
+  width: 100%;
+}
+
+.ellipsis {
+  position: relative;
+  animation: ellipsis 1s infinite;
+  font-weight: bold;
+}
+
+.ellipsis1 {
+  animation-delay: 0s;
+}
+
+.ellipsis2 {
+  animation-delay: 0.1s;
+}
+
+.ellipsis3 {
+  animation-delay: 0.2s;
+}
+
+@keyframes ellipsis {
+  0% {
+    top: 0;
+  }
+
+  20% {
+    top: -15%;
+  }
+
+  40% {
+    top: 0;
+  }
+
+  100% {
+    top: 0;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .chat {
+    font-size: 0.55em;
+  }
+
+  .chatInputContainer {
+    width: 50vw;
+  }
+
+  .chatInputTextContainer {
+    width: 85%;
+  }
+}
+
+.grow-wrap {
+  /* easy way to plop the elements on top of each other and have them both sized based on the tallest one's height */
+  display: grid;
+}
+
+.grow-wrap::after {
+  /* Note the weird space! Needed to preventy jumpy behavior */
+  content: attr(data-replicated-value) " ";
+
+  /* This is how textarea text behaves */
+  white-space: pre-wrap;
+
+  /* Hidden from view, clicks, and screen readers */
+  visibility: hidden;
+}
+
+.grow-wrap > textarea {
+  /* You could leave this, but after a user resizes, then it ruins the auto sizing */
+  resize: none;
+
+  /* Firefox shows scrollbar on growth, you can hide like this. */
+  overflow: hidden;
+}
+
+.grow-wrap > textarea,
+.grow-wrap::after {
+  /* Identical styling required!! */
+  box-sizing: border-box;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 1px 3px;
+  font: inherit;
+
+  /* Place on top of each other */
+  grid-area: 1 / 1 / 2 / 2;
+}
