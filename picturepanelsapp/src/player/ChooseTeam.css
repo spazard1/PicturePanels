@@ -1,0 +1,44 @@
+/* stylelint-disable selector-class-pattern */
+.chooseTeam {
+  flex-grow: 1;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.chooseTeamName {
+  flex-grow: 1;
+  padding: 4px;
+  margin-bottom: 2em;
+  cursor: pointer;
+}
+
+.chooseSmallestTeamBox {
+  margin-top: 4em;
+  color: black;
+  background-color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 5px solid grey;
+}
+
+.playerBannerTeamNames {
+  overflow: hidden;
+  white-space: nowrap;
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.playerBannerChooseTeam {
+  flex-grow: 3;
+  flex-direction: column;
+  width: 70%;
+}
+
+.playerBannerChooseTeam .playerBannerItem {
+  margin-bottom: 2em;
+  height: 2em;
+}
