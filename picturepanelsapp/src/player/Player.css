@@ -29,11 +29,6 @@ body.player {
   border: 3px solid black;
 }
 
-#colorPicker {
-  flex: 0 0 auto;
-  margin-top: 1rem;
-}
-
 .choosePlayerName {
   flex: 0 0 auto;
   margin-top: 2rem;

@@ -1,0 +1,5 @@
+/* stylelint-disable selector-id-pattern */
+#colorPicker {
+  flex: 0 0 auto;
+  margin-top: 1rem;
+}
