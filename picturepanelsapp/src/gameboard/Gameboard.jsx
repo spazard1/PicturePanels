@@ -19,12 +19,13 @@ import "../animate/animate.css";
 import postGameState from "../common/postGameState";
 import RoundNumber from "./RoundNumber";
 import EndGame from "./EndGame";
-import { useErrorMessageModal } from "../common/useErrorMessageModal";
+import ErrorMessageModal from "../common/ErrorMessageModal";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
   const [startGameState, setStartGameState] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [roundNumberAnimateDisplay, setRoundNumberAnimateDisplay] = useState(false);
   const [roundNumberAnimateDisplayText, setRoundNumberAnimateDisplayText] = useState();
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
@@ -35,7 +36,6 @@ export default function Gameboard() {
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
   const roundNumberRef = useRef();
-  const { ErrorMessageModal, setErrorMessage } = useErrorMessageModal();
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -62,7 +62,7 @@ export default function Gameboard() {
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
     setErrorMessage("Did not find a game with that code. Check the game code and try again.");
-  }, [setErrorMessage]);
+  }, []);
 
   const { queryString, setQueryString } = useSignalRConnection();
 
@@ -162,7 +162,7 @@ export default function Gameboard() {
 
   return (
     <>
-      <ErrorMessageModal></ErrorMessageModal>
+      <ErrorMessageModal errorMessage={errorMessage}></ErrorMessageModal>
       {gameState && (
         <Pause
           gameStateId={gameState.gameStateId}
