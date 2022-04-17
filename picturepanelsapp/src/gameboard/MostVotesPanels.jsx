@@ -70,7 +70,7 @@ export default function MostVotesPanels({ panelRefs, players, teamTurn, turnType
   }, [panelRefs, players, teamTurn, selectedPanels]);
 
   return (
-    <div id="mostVotesPanels">
+    <div>
       {Object.keys(mostVotesPanelsRects).map((key) => (
         <div
           key={key}

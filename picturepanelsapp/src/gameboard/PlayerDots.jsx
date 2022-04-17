@@ -25,7 +25,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
   }, [panelRefs, players, teamTurn, selectedPanels]);
 
   return (
-    <div id="playerDots">
+    <div>
       {Object.keys(playerDots).map((playerId) => (
         <span key={playerId}>
           {players[playerId] &&

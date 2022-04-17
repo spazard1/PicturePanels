@@ -40,75 +40,50 @@ export default function Player() {
   return (
     <>
       <ErrorMessageModal></ErrorMessageModal>
-      <div id="mainDiv" className="center flexColumns">
-        <div id="choosePlayerNameLabel" className="center hidden">
-          Welcome to Picture Panels!
+      <div className="center flexColumns">
+        <div className="center hidden">Welcome to Picture Panels!</div>
+
+        <div className="center hidden">
+          <input className="playerTextInput" type="text" maxLength="14" autoComplete="off" placeholder="your name" />
+
+          <input className="playerTextInput gameStateId uppercase" type="text" maxLength="4" autoComplete="off" placeholder="game code" />
         </div>
 
-        <div id="playerNameInputDiv" className="center hidden">
-          <input id="playerNameInput" className="playerTextInput" type="text" maxLength="14" autoComplete="off" placeholder="your name" />
+        <div className="center hidden"></div>
 
-          <input
-            id="gameStateId"
-            className="playerTextInput gameStateId uppercase"
-            type="text"
-            maxLength="4"
-            autoComplete="off"
-            placeholder="game code"
-          />
+        <div className="choosePlayerName center hidden">
+          <input className="center" type="button" value="Play!" onClick={onJoinGame} />
         </div>
 
-        <div id="colorPicker" className="center hidden"></div>
-
-        <div id="choosePlayerName" className="choosePlayerName center hidden">
-          <input id="choosePlayerNameButton" className="center" type="button" value="Play!" onClick={onJoinGame} />
-        </div>
-
-        <div id="playerHelp" className="playerHelp center hidden">
+        <div className="playerHelp center hidden">
           Want to start a game?
           <br />
           Go to picturepanels.net/gameboard on a screen that all players can see.
           <br />
         </div>
 
-        <div id="chooseTeam" className="center hidden">
-          Choose your team
-        </div>
+        <div className="center hidden">Choose your team</div>
 
-        <div id="playerBanner" className="playerBanner playerBannerChooseTeam center hidden">
-          <div id="playerName" className="playerBannerItem playerName hidden"></div>
-          <div id="playerBannerTeamNames" className="playerBannerItem">
-            <div id="teamOneName" className="teamName chooseTeamName teamBox teamOneBox">
-              Loading...
-            </div>
-            <div id="teamTwoName" className="teamName chooseTeamName teamBox teamTwoBox">
-              Loading...
-            </div>
-            <div id="chooseSmallestTeam" className="teamName chooseTeamName chooseSmallestTeamBox">
-              Choose for me
-            </div>
+        <div className="playerBanner playerBannerChooseTeam center hidden">
+          <div className="playerBannerItem playerName hidden"></div>
+          <div className="playerBannerItem">
+            <div className="teamName chooseTeamName teamBox teamOneBox">Loading...</div>
+            <div className="teamName chooseTeamName teamBox teamTwoBox">Loading...</div>
+            <div className="teamName chooseTeamName chooseSmallestTeamBox">Choose for me</div>
           </div>
         </div>
-        <div id="turnStatusMessage" className="turnStatusMessage center"></div>
+        <div className="turnStatusMessage center"></div>
 
         <PanelButtons></PanelButtons>
 
         <TeamGuesses></TeamGuesses>
 
-        <div id="teamButtons" className="teamButtons hidden">
-          <div id="startGameButton" className="defaultButton playerReadyButton hidden">
-            Start the Game!
-          </div>
-          <div id="cancelStartGameButton" className="defaultButton playerReadyButton hidden">
-            Cancel Start Game
-          </div>
+        <div className="teamButtons hidden">
+          <div className="defaultButton playerReadyButton hidden">Start the Game!</div>
+          <div className="defaultButton playerReadyButton hidden">Cancel Start Game</div>
 
-          <div id="playerReadyButton" className="defaultButton playerReadyButton hidden">
-            We are ready!
-          </div>
-          <div id="teamGuessButton" className="defaultButton teamGuessButton hidden">
-            Add a Guess
-          </div>
+          <div className="defaultButton playerReadyButton hidden">We are ready!</div>
+          <div className="defaultButton teamGuessButton hidden">Add a Guess</div>
         </div>
 
         <Chat></Chat>
