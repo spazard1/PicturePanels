@@ -7,11 +7,13 @@ import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import "./Player.css";
 import { useErrorMessageModal } from "../common/useErrorMessageModal";
 import TeamGuesses from "./TeamGuesses";
+import ColorPicker from "./ColorPicker";
 
 export default function Player() {
   useBodyClass("player");
 
   const [gameStateId, setGameStateId] = useState();
+  const [color, setColor] = useState();
   const { ErrorMessageModal, setErrorMessage } = useErrorMessageModal();
 
   const { queryString, setQueryString } = useSignalRConnection();
@@ -21,6 +23,10 @@ export default function Player() {
   const onJoinGame = (gameStateId) => {
     setGameStateId(gameStateId);
   };
+
+  const onColorChange = useCallback((c) => {
+    setColor(c);
+  }, []);
 
   useEffect(() => {
     if (!gameState || !gameStateId) {
@@ -44,12 +50,19 @@ export default function Player() {
         <div className="center hidden">Welcome to Picture Panels!</div>
 
         <div className="center hidden">
-          <input className="playerTextInput" type="text" maxLength="14" autoComplete="off" placeholder="your name" />
+          <input style={{ color: color }} className="playerTextInput" type="text" maxLength="14" autoComplete="off" placeholder="your name" />
 
-          <input className="playerTextInput gameStateId uppercase" type="text" maxLength="4" autoComplete="off" placeholder="game code" />
+          <input
+            style={{ color: color }}
+            className="playerTextInput gameStateId uppercase"
+            type="text"
+            maxLength="4"
+            autoComplete="off"
+            placeholder="game code"
+          />
         </div>
 
-        <div className="center hidden"></div>
+        <ColorPicker onColorChange={onColorChange}></ColorPicker>
 
         <div className="choosePlayerName center hidden">
           <input className="center" type="button" value="Play!" onClick={onJoinGame} />
