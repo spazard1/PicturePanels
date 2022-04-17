@@ -13,6 +13,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import StartGame from "./StartGame";
 import Welcome from "./Welcome";
+import Pause from "./Pause";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -172,6 +173,15 @@ export default function Gameboard() {
           </Button>
         </Modal.Footer>
       </Modal>
+      {gameState && (
+        <Pause
+          gameStateId={gameState.gameStateId}
+          guessTime={gameState.guessTime}
+          openPanelTime={gameState.openPanelTime}
+          pauseState={gameState.pauseState}
+          turnType={gameState.turnType}
+        ></Pause>
+      )}
       {startGameState !== "Playing" && (
         <StartGame
           startGameState={startGameState}
