@@ -12,20 +12,20 @@ import { useGameboardPing } from "./useGameboardPing";
 import StartGame from "./StartGame";
 import Welcome from "./Welcome";
 import Pause from "./Pause";
+import postGameState from "../common/postGameState";
+import RoundNumber from "./RoundNumber";
+import EndGame from "./EndGame";
+import MessageModal from "../common/ModalMessage";
+import { useModalMessage } from "../common/useModalMessage";
 
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
-import postGameState from "../common/postGameState";
-import RoundNumber from "./RoundNumber";
-import EndGame from "./EndGame";
-import ErrorMessageModal from "../common/ErrorMessageModal";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
 
   const [startGameState, setStartGameState] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [roundNumberAnimateDisplay, setRoundNumberAnimateDisplay] = useState(false);
   const [roundNumberAnimateDisplayText, setRoundNumberAnimateDisplayText] = useState();
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
@@ -36,6 +36,7 @@ export default function Gameboard() {
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
   const roundNumberRef = useRef();
+  const { modalMessage, setModalMessage, onModalClose } = useModalMessage();
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -50,7 +51,7 @@ export default function Gameboard() {
       if (gameState) {
         setGameStateId(gameState.gameStateId);
       } else {
-        setErrorMessage("There was a problem creating the game. Please try again later.");
+        setModalMessage("There was a problem creating the game. Please try again later.");
       }
     });
   };
@@ -61,8 +62,8 @@ export default function Gameboard() {
 
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
-    setErrorMessage("Did not find a game with that code. Check the game code and try again.");
-  }, []);
+    setModalMessage("Did not find a game with that code. Check the game code and try again.");
+  }, [setModalMessage]);
 
   const { queryString, setQueryString } = useSignalRConnection();
 
@@ -162,7 +163,7 @@ export default function Gameboard() {
 
   return (
     <>
-      <ErrorMessageModal errorMessage={errorMessage}></ErrorMessageModal>
+      <MessageModal modalMessage={modalMessage} onModalClose={onModalClose}></MessageModal>
       {gameState && (
         <Pause
           gameStateId={gameState.gameStateId}

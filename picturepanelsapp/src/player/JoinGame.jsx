@@ -4,38 +4,63 @@ import ColorPicker from "./ColorPicker";
 
 import "./JoinGame.css";
 
-const JoinGame = ({ gameStateId, onJoinGame }) => {
-  const [color, setColor] = useState();
+const JoinGame = ({ color, onJoinGame, onColorChange }) => {
+  const [formValues, setFormValues] = useState({
+    playerName: "2",
+    gameStateId: "",
+  });
 
-  const onColorChange = useCallback((c) => {
-    setColor(c);
-  }, []);
+  const onInputChange = useCallback(
+    (event) => {
+      setFormValues({ ...formValues, [event.target.name]: event.target.value });
+    },
+    [formValues]
+  );
+
+  const joinGameOnClick = () => {
+    onJoinGame({
+      ...formValues,
+    });
+  };
 
   return (
     <>
       <div className="center flexColumns">
-        <div className="center hidden">Welcome to Picture Panels! {gameStateId}</div>
+        <div className="center">Welcome to Picture Panels!</div>
 
-        <div className="center hidden">
-          <input style={{ color: color }} className="playerTextInput" type="text" maxLength="14" autoComplete="off" placeholder="your name" />
+        <div className="center">
+          <input
+            name="playerName"
+            style={{ color: color }}
+            className="playerTextInput"
+            value={formValues.playerName}
+            type="text"
+            maxLength="14"
+            autoComplete="off"
+            placeholder="your name"
+            onChange={onInputChange}
+          />
 
           <input
+            name="gameStateId"
             style={{ color: color }}
             className="playerTextInput gameStateId uppercase"
+            value={formValues.gameStateId}
             type="text"
             maxLength="4"
             autoComplete="off"
             placeholder="game code"
+            onChange={onInputChange}
           />
         </div>
 
         <ColorPicker onColorChange={onColorChange}></ColorPicker>
 
-        <div className="choosePlayerName center hidden">
-          <input className="center" type="button" value="Play!" onClick={onJoinGame} />
+        <div className="choosePlayerName center">
+          <input className="center" type="button" value="Play!" onClick={joinGameOnClick} />
         </div>
 
-        <div className="playerHelp center hidden">
+        <div className="playerHelp center">
           Want to start a game?
           <br />
           Go to picturepanels.net/gameboard on a screen that all players can see.
@@ -49,6 +74,7 @@ const JoinGame = ({ gameStateId, onJoinGame }) => {
 export default JoinGame;
 
 JoinGame.propTypes = {
-  gameStateId: PropTypes.string.isRequired,
+  color: PropTypes.string,
   onJoinGame: PropTypes.func.isRequired,
+  onColorChange: PropTypes.func.isRequired,
 };

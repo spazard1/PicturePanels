@@ -3,15 +3,15 @@ import PropTypes from "prop-types";
 
 import "./ChooseTeam.css";
 
-const ChooseTeam = ({ gameStateId }) => {
+const ChooseTeam = ({ teamOneName, teamTwoName }) => {
   return (
     <>
-      <div className="chooseTeam center">Choose your team {gameStateId}</div>
+      <div className="chooseTeam center">Choose your team</div>
       <div className="playerBanner playerBannerChooseTeam center">
         <div className="playerBannerItem playerName"></div>
         <div className="playerBannerItem">
-          <div className="teamName chooseTeamName teamBox teamOneBox">Loading...</div>
-          <div className="teamName chooseTeamName teamBox teamTwoBox">Loading...</div>
+          <div className="teamName chooseTeamName teamBox teamOneBox">{teamOneName}</div>
+          <div className="teamName chooseTeamName teamBox teamTwoBox">{teamTwoName}</div>
           <div className="teamName chooseTeamName chooseSmallestTeamBox">Choose for me</div>
         </div>
       </div>
@@ -22,5 +22,6 @@ const ChooseTeam = ({ gameStateId }) => {
 export default ChooseTeam;
 
 ChooseTeam.propTypes = {
-  gameStateId: PropTypes.string.isRequired,
+  teamOneName: PropTypes.string.isRequired,
+  teamTwoName: PropTypes.string.isRequired,
 };
