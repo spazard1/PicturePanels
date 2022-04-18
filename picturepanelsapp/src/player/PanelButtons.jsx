@@ -26,6 +26,6 @@ export default PanelButtons;
 
 PanelButtons.propTypes = {
   gameStateId: PropTypes.string.isRequired,
-  roundNumber: PropTypes.roundNumber.isRequired,
+  roundNumber: PropTypes.number.isRequired,
   revealedPanels: PropTypes.array.isRequired,
 };
