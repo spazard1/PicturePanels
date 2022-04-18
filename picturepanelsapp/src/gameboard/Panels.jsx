@@ -140,7 +140,7 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
 
   return (
     <>
-      <div ref={panelsRef} id="panels" className="panels center">
+      <div ref={panelsRef} className="panels center">
         {panelNumbers.map((panelNumber) => (
           <Panel
             key={panelNumber}
@@ -155,7 +155,15 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
           ></Panel>
         ))}
       </div>
-      {allImagesLoaded && <MostVotesPanels panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></MostVotesPanels>}
+      {allImagesLoaded && (
+        <MostVotesPanels
+          panelRefs={panelRefs}
+          revealedPanels={revealedPanels}
+          players={players}
+          teamTurn={teamTurn}
+          turnType={turnType}
+        ></MostVotesPanels>
+      )}
       {allImagesLoaded && <PlayerDots panelRefs={panelRefs} players={players} teamTurn={teamTurn} turnType={turnType}></PlayerDots>}
     </>
   );

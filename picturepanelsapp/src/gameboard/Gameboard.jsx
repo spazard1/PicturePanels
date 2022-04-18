@@ -9,17 +9,18 @@ import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import FadedBox from "./FadedBox";
 import { getImageEntity } from "./getImageEntity";
 import { useGameboardPing } from "./useGameboardPing";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import StartGame from "./StartGame";
 import Welcome from "./Welcome";
+import Pause from "./Pause";
+import postGameState from "../common/postGameState";
+import RoundNumber from "./RoundNumber";
+import EndGame from "./EndGame";
+import MessageModal from "../common/ModalMessage";
+import { useModalMessage } from "../common/useModalMessage";
 
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
-import postGameState from "../common/postGameState";
-import RoundNumber from "./RoundNumber";
-import EndGame from "./EndGame";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -34,8 +35,8 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [gameStateId, setGameStateId] = useState();
-  const [gameStateErrorMessage, setGameStateErrorMessage] = useState("");
   const roundNumberRef = useRef();
+  const { modalMessage, setModalMessage, onModalClose } = useModalMessage();
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -50,7 +51,7 @@ export default function Gameboard() {
       if (gameState) {
         setGameStateId(gameState.gameStateId);
       } else {
-        setGameStateErrorMessage("There was a problem creating the game. Please try again later.");
+        setModalMessage("There was a problem creating the game. Please try again later.");
       }
     });
   };
@@ -61,8 +62,8 @@ export default function Gameboard() {
 
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
-    setGameStateErrorMessage("Did not find a game with that code. Check the game code and try again.");
-  }, []);
+    setModalMessage("Did not find a game with that code. Check the game code and try again.");
+  }, [setModalMessage]);
 
   const { queryString, setQueryString } = useSignalRConnection();
 
@@ -79,8 +80,6 @@ export default function Gameboard() {
       setQueryString("gameStateId=" + gameStateId);
     }
   }, [gameStateId, gameState, queryString, setQueryString]);
-
-  const handlGameStateLoadErrorClose = () => setGameStateErrorMessage("");
 
   useEffect(() => {
     if (!gameState) {
@@ -164,14 +163,16 @@ export default function Gameboard() {
 
   return (
     <>
-      <Modal show={gameStateErrorMessage !== ""} centered onHide={handlGameStateLoadErrorClose}>
-        <Modal.Body>{gameStateErrorMessage}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handlGameStateLoadErrorClose}>
-            Ok
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <MessageModal modalMessage={modalMessage} onModalClose={onModalClose}></MessageModal>
+      {gameState && (
+        <Pause
+          gameStateId={gameState.gameStateId}
+          guessTime={gameState.guessTime}
+          openPanelTime={gameState.openPanelTime}
+          pauseState={gameState.pauseState}
+          turnType={gameState.turnType}
+        ></Pause>
+      )}
       {startGameState !== "Playing" && (
         <StartGame
           startGameState={startGameState}
