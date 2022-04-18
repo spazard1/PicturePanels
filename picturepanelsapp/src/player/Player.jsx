@@ -56,7 +56,7 @@ export default function Player() {
   }, [gameStateId, gameState, queryString, setQueryString]);
 
   return (
-    <div className="main">
+    <div className="main center">
       <MessageModal modalMessage={modalMessage} onModalClose={onModalClose}></MessageModal>
 
       <JoinGame color={color} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>
