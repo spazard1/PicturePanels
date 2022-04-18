@@ -46,19 +46,5 @@ namespace PicturePanels.Entities
         public bool IsAdmin { get; }
 
         public string ConnectionId { get; set; }
-
-        public PlayerTableEntity ToModel()
-        {
-            return new PlayerTableEntity()
-            {
-                GameStateId = this.GameStateId,
-                PlayerId = this.PlayerId,
-                Name = this.Name,
-                TeamNumber = this.TeamNumber,
-                SelectedPanels = this.SelectedPanels,
-                Color = this.Color,
-                ConnectionId = this.ConnectionId
-            };
-        }
     }
 }

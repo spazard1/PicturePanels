@@ -56,6 +56,7 @@ export default function Player() {
     setGameStateId(gameOptions.gameStateId);
     setPlayerName(gameOptions.playerName);
     localStorage.setItem("playerName", gameOptions.playerName);
+    localStorage.setItem("playerColor", color);
     console.log(playerName);
   };
 
@@ -79,10 +80,10 @@ export default function Player() {
 
       <div className="turnStatusMessage center"></div>
 
+      {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
+
       {gameState && <PanelButtons></PanelButtons>}
       {gameState && <TeamGuesses></TeamGuesses>}
-
-      {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
       <Chat></Chat>
     </div>

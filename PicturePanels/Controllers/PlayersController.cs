@@ -62,11 +62,6 @@ namespace PicturePanels.Controllers
         {
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, entity.PlayerId ?? string.Empty);
 
-            if (entity.GameStateId != gameStateId)
-            {
-                return StatusCode(400);
-            }
-
             if (playerModel == null)
             {
                 playerModel = new PlayerTableEntity()
