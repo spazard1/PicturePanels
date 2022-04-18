@@ -4,10 +4,10 @@ import ColorPicker from "./ColorPicker";
 
 import "./JoinGame.css";
 
-const JoinGame = ({ color, onJoinGame, onColorChange }) => {
+const JoinGame = ({ color, isLoading, onJoinGame, onColorChange }) => {
   const [formValues, setFormValues] = useState({
-    playerName: "",
-    gameStateId: "",
+    playerName: localStorage.getItem("playerName"),
+    gameStateId: localStorage.getItem("gameStateId"),
   });
 
   const onInputChange = useCallback(
@@ -56,7 +56,13 @@ const JoinGame = ({ color, onJoinGame, onColorChange }) => {
       <ColorPicker onColorChange={onColorChange}></ColorPicker>
 
       <div className="choosePlayerName center">
-        <input className="joinGameButton center" type="button" value="Play!" onClick={joinGameOnClick} />
+        <input
+          className="joinGameButton center"
+          disabled={isLoading}
+          type="button"
+          value={isLoading ? "Joining..." : "Join!"}
+          onClick={joinGameOnClick}
+        />
       </div>
 
       <div className="playerHelp center">
@@ -73,6 +79,7 @@ export default JoinGame;
 
 JoinGame.propTypes = {
   color: PropTypes.string,
+  isLoading: PropTypes.bool,
   onJoinGame: PropTypes.func.isRequired,
   onColorChange: PropTypes.func.isRequired,
 };

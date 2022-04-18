@@ -66,8 +66,7 @@ export default function Gameboard() {
   }, [setModalMessage]);
 
   const { queryString, setQueryString } = useSignalRConnection();
-
-  const { gameState } = useGameState(gameStateId, onGameStateLoadError);
+  const { gameState } = useGameState(gameStateId, () => {}, onGameStateLoadError);
   const { players } = usePlayers(gameStateId);
   useGameboardPing(gameStateId);
 
