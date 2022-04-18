@@ -19,6 +19,7 @@ export default function Player() {
   const [playerName, setPlayerName] = useState();
   const { queryString, setQueryString } = useSignalRConnection();
   const { modalMessage, setModalMessage, onModalClose } = useModalMessage();
+  const [isLoading, setIsLoading] = useState(false);
 
   let initialColor;
   if (localStorage.getItem("playerColor")) {
@@ -35,13 +36,26 @@ export default function Player() {
   const onGameStateLoadError = useCallback(() => {
     setGameStateId("");
     setModalMessage("Did not find a game with that code. Check the game code and try again.");
+    setIsLoading(false);
   }, [setModalMessage]);
 
-  const { gameState } = useGameState(gameStateId, onGameStateLoadError);
+  const onGameStateLoad = useCallback(() => {
+    localStorage.setItem("gameStateId", gameStateId);
+    setIsLoading(false);
+  }, [gameStateId]);
+
+  const { gameState } = useGameState(gameStateId, onGameStateLoad, onGameStateLoadError);
 
   const onJoinGame = (gameOptions) => {
+    if (gameOptions.gameStateId.length < 4) {
+      setModalMessage("Did not find a game with that code. Check the game code and try again.");
+      return;
+    }
+
+    setIsLoading(true);
     setGameStateId(gameOptions.gameStateId);
     setPlayerName(gameOptions.playerName);
+    localStorage.setItem("playerName", gameOptions.playerName);
     console.log(playerName);
   };
 
@@ -59,7 +73,7 @@ export default function Player() {
     <div className="main center">
       <MessageModal modalMessage={modalMessage} onModalClose={onModalClose}></MessageModal>
 
-      <JoinGame color={color} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>
+      <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>
 
       {gameState && <ChooseTeam teamOneName={gameState.teamOneName} teamTwoName={gameState.teamTwoName}></ChooseTeam>}
 

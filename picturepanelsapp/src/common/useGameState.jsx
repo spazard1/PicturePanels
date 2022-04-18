@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 import getGameState from "./getGameState";
 
-export function useGameState(gameStateId, onError) {
+export function useGameState(gameStateId, onLoad, onError) {
   const [gameState, setGameState] = useState();
 
   const connectionId = useSignalR("GameState", (gameState) => {
@@ -21,9 +21,10 @@ export function useGameState(gameStateId, onError) {
       }
 
       setGameState(gs);
+      onLoad();
       localStorage.setItem("gameStateId", gs.gameStateId);
     });
-  }, [gameStateId, connectionId, onError]);
+  }, [gameStateId, connectionId, onLoad, onError]);
 
   return { gameState };
 }
