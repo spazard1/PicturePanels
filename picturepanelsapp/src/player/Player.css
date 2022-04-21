@@ -5,6 +5,11 @@ body.player {
   overflow: auto !important;
 }
 
+.main {
+  padding: 0;
+  height: 100%;
+}
+
 .playerBannerFlex {
   display: flex;
 }

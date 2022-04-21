@@ -1,7 +1,7 @@
 /* stylelint-disable selector-class-pattern */
 .welcomePlayerMessage {
   flex: 0 0 auto;
-  margin-top: 0.5rem;
+  margin-top: 1em;
   width: 100%;
   vertical-align: middle;
   text-align: center;
