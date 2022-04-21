@@ -135,16 +135,4 @@ body.player {
   .chat img {
     max-width: 40vw;
   }
-
-  .panelButtons {
-    width: 48vw;
-  }
-
-  .panelButton {
-    font-size: 1.1em;
-  }
-
-  .panelImages {
-    width: 48vw;
-  }
 }
