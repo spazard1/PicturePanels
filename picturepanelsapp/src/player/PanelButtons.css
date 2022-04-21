@@ -8,7 +8,6 @@
 }
 
 .panelButton {
-  font-size: 2em;
   position: relative;
   cursor: pointer;
   width: 20%;
@@ -22,7 +21,7 @@
 
 .panelButtonNumber {
   color: black;
-  font-size: 3vw;
+  font-size: 6vw;
 }
 
 .panelButton .panelButtonBackground {
@@ -51,4 +50,18 @@
   z-index: 100;
   width: 100%;
   vertical-align: bottom;
+}
+
+@media only screen and (min-width: 1000px) {
+  .panelButtons {
+    width: 48vw;
+  }
+
+  .panelButtonNumber {
+    font-size: 4vw;
+  }
+
+  .panelImages {
+    width: 48vw;
+  }
 }
