@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
+import getGameState from "../common/getGameState";
 import Chat from "./Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
@@ -15,11 +16,10 @@ import "./Player.css";
 export default function Player() {
   useBodyClass("player");
 
-  const [gameStateId, setGameStateId] = useState();
-  const [playerName, setPlayerName] = useState();
   const { queryString, setQueryString } = useSignalRConnection();
   const { modalMessage, setModalMessage, onModalClose } = useModalMessage();
   const [isLoading, setIsLoading] = useState(false);
+  const { gameState, gameStateId, setGameState } = useGameState();
 
   let initialColor;
   if (localStorage.getItem("playerColor")) {
@@ -33,19 +33,6 @@ export default function Player() {
     setColor(c);
   }, []);
 
-  const onGameStateLoadError = useCallback(() => {
-    setGameStateId("");
-    setModalMessage("Did not find a game with that code. Check the game code and try again.");
-    setIsLoading(false);
-  }, [setModalMessage]);
-
-  const onGameStateLoad = useCallback(() => {
-    localStorage.setItem("gameStateId", gameStateId);
-    setIsLoading(false);
-  }, [gameStateId]);
-
-  const { gameState } = useGameState(gameStateId, onGameStateLoad, onGameStateLoadError);
-
   const onJoinGame = (gameOptions) => {
     if (gameOptions.gameStateId.length < 4) {
       setModalMessage("Did not find a game with that code. Check the game code and try again.");
@@ -53,10 +40,18 @@ export default function Player() {
     }
 
     setIsLoading(true);
-    setGameStateId(gameOptions.gameStateId);
-    setPlayerName(gameOptions.playerName);
+
+    getGameState(gameOptions.gameStateId, (gs) => {
+      setIsLoading(false);
+      if (gs) {
+        setGameState(gs);
+      } else {
+        setModalMessage("Did not find a game with that code. Check the game code and try again.");
+      }
+    });
+
     localStorage.setItem("playerName", gameOptions.playerName);
-    console.log(playerName);
+    localStorage.setItem("playerColor", color);
   };
 
   useEffect(() => {
@@ -79,10 +74,10 @@ export default function Player() {
 
       <div className="turnStatusMessage center"></div>
 
+      {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
+
       {gameState && <PanelButtons></PanelButtons>}
       {gameState && <TeamGuesses></TeamGuesses>}
-
-      {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
       <Chat></Chat>
     </div>
