@@ -233,8 +233,8 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpGet("{id}/{playerId}/smallestTeam")]
-        public async Task<IActionResult> GetSmallestTeamAsync(string id, string playerId)
+        [HttpGet("{id}/smallestTeam")]
+        public async Task<IActionResult> GetSmallestTeamAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
             if (gameState == null)
@@ -242,15 +242,9 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var playerModel = await this.playerTableStorage.GetAsync(id, playerId);
-            if (playerModel == null)
-            {
-                return StatusCode(404);
-            }
-
             var allPlayers = this.playerTableStorage.GetActivePlayersAsync(id);
-            var teamOneCount = await allPlayers.CountAsync(player => player.TeamNumber == 1 && player.PlayerId != playerId);
-            var teamTwoCount = await allPlayers.CountAsync(player => player.TeamNumber == 2 && player.PlayerId != playerId);
+            var teamOneCount = await allPlayers.CountAsync(player => player.TeamNumber == 1);
+            var teamTwoCount = await allPlayers.CountAsync(player => player.TeamNumber == 2);
 
             if (teamOneCount == teamTwoCount)
             {

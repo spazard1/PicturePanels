@@ -1,4 +1,4 @@
-export default function putPlayer(gameStateId, playerOptions, callback) {
+const putPlayer = (gameStateId, playerOptions, callback) => {
   fetch("https://picturepanels.azurewebsites.net/api/players/" + gameStateId, {
     method: "PUT",
     headers: {
@@ -15,4 +15,6 @@ export default function putPlayer(gameStateId, playerOptions, callback) {
     .then((responseJson) => {
       callback(responseJson);
     });
-}
+};
+
+export default putPlayer;
