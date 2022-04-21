@@ -13,6 +13,7 @@ import MessageModal from "../common/ModalMessage";
 import { useModalMessage } from "../common/useModalMessage";
 import "./Player.css";
 import putPlayer from "./putPlayer";
+import { usePlayerPing } from "./usePlayerPing";
 
 export default function Player() {
   useBodyClass("player");
@@ -23,6 +24,7 @@ export default function Player() {
   const [player, setPlayer] = useState();
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
+  usePlayerPing(gameStateId, player);
 
   let initialColor;
   if (localStorage.getItem("playerColor")) {
@@ -90,14 +92,14 @@ export default function Player() {
   }, [gameStateId, teamNumber, color, player, setModalMessage]);
 
   useEffect(() => {
-    if (!gameState || !gameStateId) {
+    if (!gameState || !gameStateId || !player) {
       return;
     }
 
     if (!queryString) {
-      setQueryString("gameStateId=" + gameStateId);
+      setQueryString("gameStateId=" + gameStateId + "&playerId=" + player.playerId);
     }
-  }, [gameStateId, gameState, queryString, setQueryString]);
+  }, [gameStateId, gameState, queryString, player, setQueryString]);
 
   return (
     <div className="main center flexColumns">
@@ -120,8 +122,17 @@ export default function Player() {
 
           {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
-          {gameState && <PanelButtons></PanelButtons>}
-          {gameState && <TeamGuesses></TeamGuesses>}
+          {gameState && gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && (
+            <PanelButtons
+              gameStateId={gameState.gameStateId}
+              playerId={player.playerId}
+              revealedPanels={gameState.revealedPanels}
+              roundNumber={gameState.roundNumber}
+              initialSelectedPanels={player.selectedPanels}
+            ></PanelButtons>
+          )}
+
+          {gameState && gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId}></TeamGuesses>}
 
           <Chat></Chat>
         </>
