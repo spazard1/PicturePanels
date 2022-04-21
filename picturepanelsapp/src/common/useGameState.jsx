@@ -1,30 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 import getGameState from "./getGameState";
 
-export function useGameState(gameStateId, onLoad, onError) {
+export function useGameState() {
   const [gameState, setGameState] = useState();
+  const [gameStateId, setGameStateId] = useState();
+  const connectionIdRef = useRef();
 
   const connectionId = useSignalR("GameState", (gameState) => {
     setGameState(gameState);
   });
 
   useEffect(() => {
-    if (!gameStateId) {
+    if (!gameState || !gameState.gameStateId || gameState.gameStateId === gameStateId) {
+      return;
+    }
+
+    setGameStateId(gameState.gameStateId);
+    localStorage.setItem("gameStateId", gameState.gameStateId);
+  }, [gameState, gameStateId]);
+
+  useEffect(() => {
+    if (!gameStateId || !connectionId) {
+      return;
+    }
+
+    // don't need to query for gamestate on first connection to signalr
+    if (!connectionIdRef.current) {
+      connectionIdRef.current = connectionId;
       return;
     }
 
     getGameState(gameStateId, (gs) => {
       if (!gs) {
-        onError();
         return;
       }
 
       setGameState(gs);
-      onLoad();
-      localStorage.setItem("gameStateId", gs.gameStateId);
     });
-  }, [gameStateId, connectionId, onLoad, onError]);
+  }, [gameStateId, connectionId]);
 
-  return { gameState };
+  return { gameState, gameStateId, setGameState };
 }
