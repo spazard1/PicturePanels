@@ -95,6 +95,26 @@ namespace PicturePanels.Services
             await Clients.Caller.Players(allPlayers);
         }
 
+        public async Task PlayerPing(string gameStateId, string playerId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return;
+            }
+
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (playerModel == null)
+            {
+                return;
+            }
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.LastPingTime = DateTime.UtcNow;
+            });
+        }
+
         private static readonly Regex MultipleNewLines = new(@"([\r\n])+");
 
         public async Task Chat(PlayerEntity entity, string message)
@@ -156,6 +176,7 @@ namespace PicturePanels.Services
             playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
             {
                 pm.SelectedPanels = entity.SelectedPanels;
+                pm.LastPingTime = DateTime.UtcNow;
             });
 
             await Clients.Group(GameBoardGroup(entity.GameStateId)).SelectPanels(new PlayerEntity(playerModel));
