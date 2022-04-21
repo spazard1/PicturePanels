@@ -46,7 +46,7 @@ export default function Player() {
 
     setIsLoading(true);
 
-    getGameState(gameOptions.gameStateId, (gs) => {
+    getGameState(gameOptions.gameStateId.toUpperCase(), (gs) => {
       setIsLoading(false);
       if (gs) {
         setGameState(gs);
