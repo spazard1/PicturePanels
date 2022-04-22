@@ -185,6 +185,51 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
+        [HttpPut("{gameStateId}/{playerId}/openPanelVote")]
+        public async Task<IActionResult> PutOpenPanelVoteAsync(string gameStateId, string playerId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (playerModel.IsAdmin)
+            {
+                return StatusCode(400);
+            }
+
+            if (playerModel.IsReady)
+            {
+                return StatusCode(400);
+            }
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.IsReady = true;
+            });
+
+            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber).ToListAsync();
+
+            if (players.All(p => p.IsReady))
+            {
+                await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
+            }
+
+            return Json(new PlayerEntity(playerModel));
+        }
+
         [HttpGet("{gameStateId}/{playerId}/ready")]
         public async Task<IActionResult> GetReadyAsync(string gameStateId, string playerId)
         {

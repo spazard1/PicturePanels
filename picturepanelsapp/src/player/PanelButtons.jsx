@@ -11,9 +11,9 @@ const PanelButtons = ({ initialSelectedPanels, gameStateId, playerId, roundNumbe
   const [selectedPanels, setSelectedPanels] = useSendSelectedPanels(gameStateId, playerId, initialSelectedPanels);
 
   const onSelected = useCallback(
-    (panelNumber) => {
+    (panelNumber, isOpen) => {
       setSelectedPanels((sp) => {
-        if (sp.indexOf(panelNumber) < 0) {
+        if (!isOpen && sp.indexOf(panelNumber) < 0) {
           return [...sp, panelNumber];
         } else {
           const newSelectedPanels = sp.filter((t) => t !== panelNumber);
