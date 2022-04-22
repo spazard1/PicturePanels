@@ -2,10 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import "./Pause.css";
-import { putPauseGame, putResumeGame } from "./putPauseGame";
+import { putPauseGame, putResumeGame } from "../common/putPauseGame";
 
 const Pause = ({ gameStateId, pauseState, turnType, openPanelTime, guessTime }) => {
-  console.log(turnType, openPanelTime, pauseState);
   return (
     <>
       {((turnType === "OpenPanel" && openPanelTime > 0) || (turnType === "MakeGuess" && guessTime > 0)) && pauseState !== "Paused" && (
