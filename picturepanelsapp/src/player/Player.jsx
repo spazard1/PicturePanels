@@ -17,6 +17,8 @@ import Button from "react-bootstrap/Button";
 import "./Player.css";
 import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
 import getPlayer from "./getPlayer";
+import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 
 export default function Player() {
   useBodyClass("player");
@@ -90,7 +92,7 @@ export default function Player() {
   const [isResuming, setIsResuming] = useState(true);
 
   const tryResumeGame = useCallback(() => {
-    if (resumeGameRef.current.gameState && !resumeGameRef.current.isResumed) {
+    if (resumeGameRef.current.player && resumeGameRef.current.gameState && !resumeGameRef.current.isResumed) {
       resumeGameRef.current.isResumed = true;
       setGameState(resumeGameRef.current.gameState);
       setPlayer(resumeGameRef.current.player);
@@ -128,7 +130,7 @@ export default function Player() {
   }, []);
 
   useEffect(() => {
-    if (!gameStateId || !teamNumber || player) {
+    if (!gameStateId || !gameState || !teamNumber || player) {
       return;
     }
 
@@ -149,7 +151,7 @@ export default function Player() {
         }
       }
     );
-  }, [gameStateId, teamNumber, color, player, setModalMessage]);
+  }, [gameStateId, gameState, teamNumber, color, player, setModalMessage]);
 
   useEffect(() => {
     if (!gameState || !gameStateId || !player || queryString) {
@@ -166,6 +168,7 @@ export default function Player() {
   return (
     <div className="main center">
       <MessageModal modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></MessageModal>
+      <SignalRConnectionStatus></SignalRConnectionStatus>
 
       {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>}
 
@@ -178,13 +181,32 @@ export default function Player() {
         ></ChooseTeam>
       )}
 
-      {player && (
+      {gameState && player && teamNumber && (
         <>
-          <div className="turnStatusMessage center"></div>
+          <DropdownButton className="playerSettingsButton" variant={"secondary"} title="⚙" size="sm">
+            <Dropdown.Item
+              onClick={() => {
+                setGameState(null);
+                setPlayer(null);
+              }}
+            >
+              Change Name/Color
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => {
+                setPlayer(null);
+                setTeamNumber(0);
+              }}
+            >
+              Change Team
+            </Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item>Pause Game</Dropdown.Item>
+          </DropdownButton>
 
-          {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
+          {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
-          {gameState && gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && !player.isReady && (
+          {gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && !player.isReady && (
             <>
               <PanelButtons
                 gameStateId={gameState.gameStateId}
@@ -198,7 +220,7 @@ export default function Player() {
             </>
           )}
 
-          {gameState && gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId}></TeamGuesses>}
+          {gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId}></TeamGuesses>}
 
           <Chat></Chat>
         </>
