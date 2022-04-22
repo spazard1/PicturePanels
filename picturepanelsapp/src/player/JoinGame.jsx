@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "./ColorPicker";
+import Button from "react-bootstrap/Button";
 
 import "./JoinGame.css";
 
@@ -55,17 +56,13 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange }) => {
 
       <ColorPicker onColorChange={onColorChange}></ColorPicker>
 
-      <div className="choosePlayerName center">
-        <input
-          className="joinGameButton center"
-          disabled={isLoading}
-          type="button"
-          value={isLoading ? "Joining..." : "Join!"}
-          onClick={joinGameOnClick}
-        />
+      <div>
+        <Button className="joinGameButton" variant="primary" size="lg" disabled={isLoading} onClick={joinGameOnClick}>
+          {isLoading ? "Joining..." : "Join Game"}
+        </Button>
       </div>
 
-      <div className="playerHelp center">
+      <div className="startGameHelp center">
         Want to start a game?
         <br />
         Go to picturepanels.net/gameboard on a screen that all players can see.

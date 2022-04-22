@@ -11,9 +11,11 @@ import ChooseTeam from "./ChooseTeam";
 import JoinGame from "./JoinGame";
 import MessageModal from "../common/ModalMessage";
 import { useModalMessage } from "../common/useModalMessage";
-import "./Player.css";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
+import Button from "react-bootstrap/Button";
+import "./Player.css";
+import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
 
 export default function Player() {
   useBodyClass("player");
@@ -67,6 +69,18 @@ export default function Player() {
     }
   };
 
+  const openPanelVoteOnClick = () => {
+    setIsLoading(true);
+    putPlayerOpenPanelVote(gameStateId, player.playerId, (p) => {
+      setIsLoading(false);
+      if (!p) {
+        setModalMessage("Could not send your vote. Refresh the page and try again.");
+      } else {
+        setPlayer(p);
+      }
+    });
+  };
+
   useEffect(() => {
     if (!gameStateId || !teamNumber || player) {
       return;
@@ -92,17 +106,15 @@ export default function Player() {
   }, [gameStateId, teamNumber, color, player, setModalMessage]);
 
   useEffect(() => {
-    if (!gameState || !gameStateId || !player) {
+    if (!gameState || !gameStateId || !player || queryString) {
       return;
     }
 
-    if (!queryString) {
-      setQueryString("gameStateId=" + gameStateId + "&playerId=" + player.playerId);
-    }
+    setQueryString("gameStateId=" + gameStateId + "&playerId=" + player.playerId);
   }, [gameStateId, gameState, queryString, player, setQueryString]);
 
   return (
-    <div className="main center flexColumns">
+    <div className="main center">
       <MessageModal modalMessage={modalMessage} onModalClose={onModalClose}></MessageModal>
 
       {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>}
@@ -123,13 +135,18 @@ export default function Player() {
           {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
           {gameState && gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && (
-            <PanelButtons
-              gameStateId={gameState.gameStateId}
-              playerId={player.playerId}
-              revealedPanels={gameState.revealedPanels}
-              roundNumber={gameState.roundNumber}
-              initialSelectedPanels={player.selectedPanels}
-            ></PanelButtons>
+            <>
+              <PanelButtons
+                gameStateId={gameState.gameStateId}
+                playerId={player.playerId}
+                revealedPanels={gameState.revealedPanels}
+                roundNumber={gameState.roundNumber}
+                initialSelectedPanels={player.selectedPanels}
+              ></PanelButtons>
+              <Button variant="primary" size="lg" onClick={openPanelVoteOnClick}>
+                Vote!
+              </Button>
+            </>
           )}
 
           {gameState && gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId}></TeamGuesses>}
