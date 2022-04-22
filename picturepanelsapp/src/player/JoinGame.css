@@ -40,16 +40,15 @@
   margin-top: 2rem;
 }
 
-.playerHelp {
+.startGameHelp {
   font-size: 1rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
   color: white;
   flex: 1;
   width: 95%;
 }
 
 .joinGameButton {
-  font-size: 2em;
-  width: 100%;
-  flex: 1;
+  font-size: 1.5rem;
+  margin-top: 2rem;
 }
