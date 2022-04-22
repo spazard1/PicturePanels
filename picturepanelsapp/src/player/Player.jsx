@@ -89,6 +89,17 @@ export default function Player() {
   const resumeGameRef = useRef({});
   const [isResuming, setIsResuming] = useState(true);
 
+  const tryResumeGame = useCallback(() => {
+    if (resumeGameRef.current.gameState && !resumeGameRef.current.isResumed) {
+      resumeGameRef.current.isResumed = true;
+      setGameState(resumeGameRef.current.gameState);
+      setPlayer(resumeGameRef.current.player);
+      setTeamNumber(resumeGameRef.current.player.teamNumber);
+      setIsResuming(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!localStorage.getItem("gameStateId") || !localStorage.getItem("playerId")) {
       setIsResuming(false);
@@ -102,13 +113,7 @@ export default function Player() {
         setIsResuming(false);
         return;
       }
-      if (resumeGameRef.current.gameState && !resumeGameRef.current.isResumed) {
-        resumeGameRef.current.isResumed = true;
-        setGameState(resumeGameRef.current.gameState);
-        setPlayer(resumeGameRef.current.player);
-        setTeamNumber(resumeGameRef.current.player.teamNumber);
-        setIsResuming(false);
-      }
+      tryResumeGame();
     });
     getGameState(localStorage.getItem("gameStateId"), (gs) => {
       if (gs) {
@@ -117,13 +122,7 @@ export default function Player() {
         setIsResuming(false);
         return;
       }
-      if (resumeGameRef.current.player && !resumeGameRef.current.isResumed) {
-        resumeGameRef.current.isResumed = true;
-        setGameState(resumeGameRef.current.gameState);
-        setPlayer(resumeGameRef.current.player);
-        setTeamNumber(resumeGameRef.current.player.teamNumber);
-        setIsResuming(false);
-      }
+      tryResumeGame();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
