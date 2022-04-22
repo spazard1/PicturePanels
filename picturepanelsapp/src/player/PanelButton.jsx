@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import PropTypes from "prop-types";
-
-import "./PanelButtons.css";
 import classNames from "classnames";
+import "./PanelButtons.css";
 
 const PanelButton = ({ gameStateId, panelNumber, roundNumber, isOpen, isSelected, onSelected }) => {
+  const onSelectedClick = useCallback(
+    (pn) => {
+      onSelected(pn, isOpen);
+    },
+    [onSelected, isOpen]
+  );
+
   return (
-    <div className={classNames("panelButton", "noHighlights", { panelButtonSelected: isSelected })} onClick={() => onSelected(panelNumber)}>
+    <div className={classNames("panelButton", "noHighlights", { panelButtonSelected: isSelected })} onClick={() => onSelectedClick(panelNumber)}>
       <div className="panelButtonBackground">
         <div className="panelButtonNumber">{panelNumber}</div>
       </div>
