@@ -3,12 +3,12 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 
-const ModalMessage = ({ modalMessage, onModalClose }) => {
+const ModalMessage = ({ modalMessage, onModalMessageClose }) => {
   return (
-    <Modal show={modalMessage !== ""} centered onHide={onModalClose}>
+    <Modal show={modalMessage !== ""} centered onHide={onModalMessageClose}>
       <Modal.Body>{modalMessage}</Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={onModalClose}>
+        <Button variant="primary" onClick={onModalMessageClose}>
           Ok
         </Button>
       </Modal.Footer>
@@ -20,5 +20,5 @@ export default ModalMessage;
 
 ModalMessage.propTypes = {
   modalMessage: PropTypes.string,
-  onModalClose: PropTypes.func.isRequired,
+  onModalMessageClose: PropTypes.func.isRequired,
 };

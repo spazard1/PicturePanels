@@ -3,9 +3,9 @@ import { useState } from "react";
 export function useModalMessage() {
   const [modalMessage, setModalMessage] = useState("");
 
-  const onModalClose = () => {
+  const onModalMessageClose = () => {
     setModalMessage("");
   };
 
-  return { modalMessage, setModalMessage, onModalClose };
+  return [modalMessage, setModalMessage, onModalMessageClose];
 }
