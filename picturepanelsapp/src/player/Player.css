@@ -1,13 +1,24 @@
 ﻿/* stylelint-disable keyframes-name-pattern */
 /* stylelint-disable selector-class-pattern */
-body.player {
+html body.player {
   -webkit-overflow-scrolling: touch !important;
   overflow: auto !important;
+  height: 100% !important;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  background-color: #000;
 }
 
 .main {
   padding: 0;
   height: 100%;
+}
+
+.playerSettingsButton {
+  position: fixed;
+  top: 0;
+  right: 0;
 }
 
 .playerBannerFlex {
@@ -120,6 +131,10 @@ body.player {
 }
 
 @media only screen and (min-width: 1000px) {
+  .playerSettingsButton {
+    right: 25vw;
+  }
+
   .main {
     width: 50vw;
   }
