@@ -22,6 +22,7 @@ import { useModalMessage } from "../common/useModalMessage";
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
+import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -162,6 +163,8 @@ export default function Gameboard() {
   return (
     <>
       <MessageModal modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></MessageModal>
+      <SignalRConnectionStatus></SignalRConnectionStatus>
+
       {gameState && (
         <Pause
           gameStateId={gameState.gameStateId}
