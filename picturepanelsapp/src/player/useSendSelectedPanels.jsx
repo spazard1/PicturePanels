@@ -1,12 +1,16 @@
 import { useContext, useEffect, useState } from "react";
 import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
 
-export function useSendSelectedPanels(gameStateId, playerId, initialSelectedPanels) {
-  const [selectedPanels, setSelectedPanels] = useState(initialSelectedPanels);
+export function useSendSelectedPanels(gameStateId, playerId) {
+  const [selectedPanels, setSelectedPanels] = useState(false);
   const { connection } = useContext(SignalRConnectionContext);
 
   useEffect(() => {
     if (!connection) {
+      return;
+    }
+
+    if (selectedPanels === false) {
       return;
     }
 

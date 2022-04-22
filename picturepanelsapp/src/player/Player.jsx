@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import getGameState from "../common/getGameState";
 import Chat from "./Chat";
@@ -16,12 +16,13 @@ import { usePlayerPing } from "./usePlayerPing";
 import Button from "react-bootstrap/Button";
 import "./Player.css";
 import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
+import getPlayer from "./getPlayer";
 
 export default function Player() {
   useBodyClass("player");
 
   const { queryString, setQueryString } = useSignalRConnection();
-  const { modalMessage, setModalMessage, onModalClose } = useModalMessage();
+  const [modalMessage, setModalMessage, onModalMessageClose] = useModalMessage();
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
   const [teamNumber, setTeamNumber] = useState();
@@ -70,6 +71,10 @@ export default function Player() {
   };
 
   const openPanelVoteOnClick = () => {
+    if (isLoading) {
+      return;
+    }
+
     setIsLoading(true);
     putPlayerOpenPanelVote(gameStateId, player.playerId, (p) => {
       setIsLoading(false);
@@ -80,6 +85,48 @@ export default function Player() {
       }
     });
   };
+
+  const resumeGameRef = useRef({});
+  const [isResuming, setIsResuming] = useState(true);
+
+  useEffect(() => {
+    if (!localStorage.getItem("gameStateId") || !localStorage.getItem("playerId")) {
+      setIsResuming(false);
+      return;
+    }
+
+    getPlayer(localStorage.getItem("gameStateId"), localStorage.getItem("playerId"), (p) => {
+      if (p) {
+        resumeGameRef.current.player = p;
+      } else {
+        setIsResuming(false);
+        return;
+      }
+      if (resumeGameRef.current.gameState && !resumeGameRef.current.isResumed) {
+        resumeGameRef.current.isResumed = true;
+        setGameState(resumeGameRef.current.gameState);
+        setPlayer(resumeGameRef.current.player);
+        setTeamNumber(resumeGameRef.current.player.teamNumber);
+        setIsResuming(false);
+      }
+    });
+    getGameState(localStorage.getItem("gameStateId"), (gs) => {
+      if (gs) {
+        resumeGameRef.current.gameState = gs;
+      } else {
+        setIsResuming(false);
+        return;
+      }
+      if (resumeGameRef.current.player && !resumeGameRef.current.isResumed) {
+        resumeGameRef.current.isResumed = true;
+        setGameState(resumeGameRef.current.gameState);
+        setPlayer(resumeGameRef.current.player);
+        setTeamNumber(resumeGameRef.current.player.teamNumber);
+        setIsResuming(false);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!gameStateId || !teamNumber || player) {
@@ -113,9 +160,13 @@ export default function Player() {
     setQueryString("gameStateId=" + gameStateId + "&playerId=" + player.playerId);
   }, [gameStateId, gameState, queryString, player, setQueryString]);
 
+  if (isResuming) {
+    return <></>;
+  }
+
   return (
     <div className="main center">
-      <MessageModal modalMessage={modalMessage} onModalClose={onModalClose}></MessageModal>
+      <MessageModal modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></MessageModal>
 
       {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>}
 
@@ -134,17 +185,16 @@ export default function Player() {
 
           {gameState && gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
-          {gameState && gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && (
+          {gameState && gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && !player.isReady && (
             <>
               <PanelButtons
                 gameStateId={gameState.gameStateId}
                 playerId={player.playerId}
                 revealedPanels={gameState.revealedPanels}
                 roundNumber={gameState.roundNumber}
-                initialSelectedPanels={player.selectedPanels}
               ></PanelButtons>
-              <Button variant="primary" size="lg" onClick={openPanelVoteOnClick}>
-                Vote!
+              <Button variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
+                {isLoading ? "Voting..." : "Vote!"}
               </Button>
             </>
           )}

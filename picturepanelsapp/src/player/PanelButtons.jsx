@@ -7,12 +7,15 @@ import { useSendSelectedPanels } from "./useSendSelectedPanels";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-const PanelButtons = ({ initialSelectedPanels, gameStateId, playerId, roundNumber, revealedPanels }) => {
-  const [selectedPanels, setSelectedPanels] = useSendSelectedPanels(gameStateId, playerId, initialSelectedPanels);
+const PanelButtons = ({ gameStateId, playerId, roundNumber, revealedPanels }) => {
+  const [selectedPanels, setSelectedPanels] = useSendSelectedPanels(gameStateId, playerId);
 
   const onSelected = useCallback(
     (panelNumber, isOpen) => {
       setSelectedPanels((sp) => {
+        if (!sp) {
+          return [panelNumber];
+        }
         if (!isOpen && sp.indexOf(panelNumber) < 0) {
           return [...sp, panelNumber];
         } else {
@@ -33,7 +36,7 @@ const PanelButtons = ({ initialSelectedPanels, gameStateId, playerId, roundNumbe
           panelNumber={panelNumber}
           roundNumber={roundNumber}
           isOpen={revealedPanels.indexOf(panelNumber) >= 0}
-          isSelected={selectedPanels.indexOf(panelNumber) >= 0}
+          isSelected={selectedPanels && selectedPanels.indexOf(panelNumber) >= 0}
           onSelected={onSelected}
         ></PanelButton>
       ))}
@@ -44,7 +47,6 @@ const PanelButtons = ({ initialSelectedPanels, gameStateId, playerId, roundNumbe
 export default PanelButtons;
 
 PanelButtons.propTypes = {
-  initialSelectedPanels: PropTypes.arrayOf(PropTypes.string),
   gameStateId: PropTypes.string.isRequired,
   playerId: PropTypes.string.isRequired,
   roundNumber: PropTypes.number.isRequired,
