@@ -72,13 +72,11 @@ export default function Gameboard() {
   useGameboardPing(gameStateId);
 
   useEffect(() => {
-    if (!gameState) {
+    if (!gameState || queryString) {
       return;
     }
 
-    if (!queryString) {
-      setQueryString("gameStateId=" + gameState.gameStateId);
-    }
+    setQueryString("gameStateId=" + gameState.gameStateId);
   }, [gameState, queryString, setQueryString]);
 
   useEffect(() => {
