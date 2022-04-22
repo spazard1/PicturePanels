@@ -48,6 +48,12 @@ namespace PicturePanels.Controllers
         [HttpGet("{gameStateId}/{playerId}")]
         public async Task<IActionResult> GetAsync(string gameStateId, string playerId)
         {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null || gameState.TurnType == GameStateTableEntity.TurnTypeEndGame)
+            {
+                return StatusCode(404);
+            }
+
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
             if (playerModel == null)
             {
