@@ -14,11 +14,13 @@ import { useModalMessage } from "../common/useModalMessage";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
 import Button from "react-bootstrap/Button";
-import "./Player.css";
 import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
 import getPlayer from "./getPlayer";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import SettingsDropDown from "./SettingsDropDown";
+import { putTogglePauseGame } from "../common/putTogglePauseGame";
+
+import "./Player.css";
 
 export default function Player() {
   useBodyClass("player");
@@ -64,7 +66,21 @@ export default function Player() {
     localStorage.setItem("playerColor", color);
   };
 
-  const onTeamNumberChange = (teamNumber) => {
+  const onPlayerNameChange = () => {
+    setGameState(null);
+    setPlayer(null);
+  };
+
+  const onTeamChange = () => {
+    setPlayer(null);
+    setTeamNumber(0);
+  };
+
+  const onTogglePauseGame = () => {
+    putTogglePauseGame(gameStateId, () => {});
+  };
+
+  const onTeamNumberSelect = (teamNumber) => {
     if (!teamNumber) {
       setModalMessage("Could not join the game. Refresh the page and try again.");
     } else {
@@ -177,32 +193,18 @@ export default function Player() {
           gameStateId={gameState.gameStateId}
           teamOneName={gameState.teamOneName}
           teamTwoName={gameState.teamTwoName}
-          onTeamNumberChange={onTeamNumberChange}
+          onTeamNumberSelect={onTeamNumberSelect}
         ></ChooseTeam>
       )}
 
       {gameState && player && teamNumber && (
         <>
-          <DropdownButton className="playerSettingsButton" variant={"secondary"} title="⚙" size="sm">
-            <Dropdown.Item
-              onClick={() => {
-                setGameState(null);
-                setPlayer(null);
-              }}
-            >
-              Change Name/Color
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                setPlayer(null);
-                setTeamNumber(0);
-              }}
-            >
-              Change Team
-            </Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item>Pause Game</Dropdown.Item>
-          </DropdownButton>
+          <SettingsDropDown
+            pauseState={gameState.pauseState}
+            onPlayerNameChange={onPlayerNameChange}
+            onTeamChange={onTeamChange}
+            onTogglePauseGame={onTogglePauseGame}
+          ></SettingsDropDown>
 
           {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
