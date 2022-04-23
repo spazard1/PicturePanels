@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Button from "react-bootstrap/Button";
 
 import "./TeamGuesses.css";
 
@@ -16,7 +17,9 @@ const TeamGuesses = ({ gameStateId }) => {
       </div>
 
       <div className="teamButtons">
-        <div className="defaultButton playerReadyButton">We are ready!</div>
+        <Button variant="primary" size="lg">
+          Make a Guess
+        </Button>
         <div className="defaultButton teamGuessButton">Confirm</div>
       </div>
     </div>
