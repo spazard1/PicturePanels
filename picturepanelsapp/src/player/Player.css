@@ -15,12 +15,6 @@ html body.player {
   height: 100%;
 }
 
-.playerSettingsButton {
-  position: fixed;
-  top: 0;
-  right: 0;
-}
-
 .playerBannerFlex {
   display: flex;
 }
