@@ -123,6 +123,15 @@ namespace PicturePanels.Services
             }
         }
 
+        public Task<GameStateTableEntity> TogglePauseGameAsync(GameStateTableEntity gameState)
+        {
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return this.ResumeGameAsync(gameState);
+            }
+            return this.PauseGameAsync(gameState);
+        }
+
         public async Task<GameStateTableEntity> PauseGameAsync(GameStateTableEntity gameState)
         {
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
