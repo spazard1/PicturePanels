@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import "./ChooseTeam.css";
 import getSmallestTeam from "./getSmallestTeam";
 
-const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberChange }) => {
+const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const chooseSmallestTeamOnClick = () => {
@@ -15,15 +15,15 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberChange 
     setIsLoading(true);
     getSmallestTeam(gameStateId, (teamNumber) => {
       setIsLoading(false);
-      onTeamNumberChange(teamNumber);
+      onTeamNumberSelect(teamNumber);
     });
   };
 
-  const onTeamNumberChangeClick = (teamNumber) => {
+  const onTeamNumberClick = (teamNumber) => {
     if (isLoading) {
       return;
     }
-    onTeamNumberChange(teamNumber);
+    onTeamNumberSelect(teamNumber);
   };
 
   return (
@@ -32,10 +32,10 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberChange 
       <div className="chooseTeamNames">
         {!isLoading && (
           <>
-            <div className="chooseTeamName teamBox teamOneBox center" onClick={() => onTeamNumberChangeClick(1)}>
+            <div className="chooseTeamName teamBox teamOneBox center" onClick={() => onTeamNumberClick(1)}>
               {teamOneName}
             </div>
-            <div className="chooseTeamName teamBox teamTwoBox center" onClick={() => onTeamNumberChangeClick(2)}>
+            <div className="chooseTeamName teamBox teamTwoBox center" onClick={() => onTeamNumberClick(2)}>
               {teamTwoName}
             </div>
             <div className="chooseTeamName chooseSmallestTeamBox center" onClick={chooseSmallestTeamOnClick}>
@@ -54,5 +54,5 @@ ChooseTeam.propTypes = {
   gameStateId: PropTypes.string.isRequired,
   teamOneName: PropTypes.string.isRequired,
   teamTwoName: PropTypes.string.isRequired,
-  onTeamNumberChange: PropTypes.func.isRequired,
+  onTeamNumberSelect: PropTypes.func.isRequired,
 };
