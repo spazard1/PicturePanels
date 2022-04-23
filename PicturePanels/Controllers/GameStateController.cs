@@ -233,6 +233,30 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
+        [HttpPut("{id}/togglePause")]
+        public async Task<IActionResult> PutTogglePauseAsync(string id)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(id);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel && gameState.OpenPanelTime <= 0)
+            {
+                return StatusCode(403);
+            }
+
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess && gameState.GuessTime <= 0)
+            {
+                return StatusCode(403);
+            }
+
+            gameState = await this.gameStateService.TogglePauseGameAsync(gameState);
+
+            return Json(new GameStateEntity(gameState));
+        }
+
         [HttpGet("{id}/smallestTeam")]
         public async Task<IActionResult> GetSmallestTeamAsync(string id)
         {
