@@ -36,10 +36,10 @@ const SignalRConnectionStatus = () => {
 
         if (reconnectingCount.current > 4) {
           setConnectionMessage("Reconnecting to server...");
-          setShowReloadButton(false);
+          setShowReloadButton(true);
         } else {
           setConnectionMessage("Reconnecting to server...");
-          setShowReloadButton(true);
+          setShowReloadButton(false);
         }
         return;
       }
