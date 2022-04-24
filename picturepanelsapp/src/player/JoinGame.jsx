@@ -7,8 +7,8 @@ import "./JoinGame.css";
 
 const JoinGame = ({ color, isLoading, onJoinGame, onColorChange }) => {
   const [formValues, setFormValues] = useState({
-    playerName: localStorage.getItem("playerName"),
-    gameStateId: localStorage.getItem("gameStateId"),
+    playerName: localStorage.getItem("playerName") ?? "",
+    gameStateId: localStorage.getItem("gameStateId") ?? "",
   });
 
   const onInputChange = useCallback(
