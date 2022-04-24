@@ -6,7 +6,7 @@ import "./SettingsDropDown.css";
 
 const SettingsDropDown = ({ pauseState, onPlayerNameChange, onTeamChange, onTogglePauseGame }) => {
   return (
-    <DropdownButton className="playerSettingsButton" variant={"secondary"} title="⚙" size="sm">
+    <DropdownButton className="playerSettingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark">
       <Dropdown.Item onClick={onPlayerNameChange}>Change Name/Color</Dropdown.Item>
       <Dropdown.Item onClick={onTeamChange}>Change Team</Dropdown.Item>
       <Dropdown.Divider />
