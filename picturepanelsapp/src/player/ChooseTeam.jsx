@@ -15,7 +15,11 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect 
     setIsLoading(true);
     getSmallestTeam(gameStateId, (teamNumber) => {
       setIsLoading(false);
-      onTeamNumberSelect(teamNumber);
+      if (teamNumber && teamNumber.teamNumber) {
+        onTeamNumberSelect(teamNumber.teamNumber);
+      } else {
+        onTeamNumberSelect(false);
+      }
     });
   };
 
@@ -30,6 +34,9 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect 
     <>
       <div className="chooseTeamLabel center">Choose your team</div>
       <div className="chooseTeamNames">
+        <div className="chooseTeamName chooseSmallestTeamBox center" onClick={chooseSmallestTeamOnClick}>
+          {isLoading ? "Loading..." : "Choose for me"}
+        </div>
         {!isLoading && (
           <>
             <div className="chooseTeamName teamBox teamOneBox center" onClick={() => onTeamNumberClick(1)}>
@@ -37,9 +44,6 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect 
             </div>
             <div className="chooseTeamName teamBox teamTwoBox center" onClick={() => onTeamNumberClick(2)}>
               {teamTwoName}
-            </div>
-            <div className="chooseTeamName chooseSmallestTeamBox center" onClick={chooseSmallestTeamOnClick}>
-              {isLoading ? "Loading" : "Choose for me"}
             </div>
           </>
         )}
