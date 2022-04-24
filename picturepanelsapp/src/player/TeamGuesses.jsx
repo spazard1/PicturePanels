@@ -13,13 +13,14 @@ const TeamGuesses = ({ gameStateId }) => {
           <div className="teamGuessVoteCount">0</div>
           Pass {gameStateId}
         </div>
-        <div className="teamGuessText teamGuessAdd">Add Guess</div>
+        <div>
+          <Button variant="primary" size="sm">
+            Add Guess
+          </Button>
+        </div>
       </div>
 
       <div className="teamButtons">
-        <Button variant="primary" size="lg">
-          Make a Guess
-        </Button>
         <div className="defaultButton teamGuessButton">Confirm</div>
       </div>
     </div>
