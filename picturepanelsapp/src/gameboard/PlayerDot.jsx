@@ -39,7 +39,7 @@ const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
 
   return (
     <div
-      className={classNames("playerDot", "animate__animated", { animate__fadeOut: turnType !== "OpenPanel" }, { animate__fadeOut: !panelRef })}
+      className={classNames("playerDot", "animate__animated", { animate__fadeOut: turnType !== "OpenPanel" || !panelRef })}
       style={{
         transform: "translate(" + rect.x + "px, " + rect.y + "px)",
         width: divSize + "px",

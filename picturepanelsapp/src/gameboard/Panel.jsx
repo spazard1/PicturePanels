@@ -8,32 +8,26 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   const [exitClass, setExitClass] = useState();
   const [hasExited, setHasExited] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [displayPanelNumber, setDisplayPanelNumber] = useState(false);
   const [imgSrc, setImgSrc] = useState();
   const [hidden, setHidden] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const hiddenTimeoutRef = useRef();
+  const panelElementRef = useRef();
 
   useEffect(() => {
-    clearTimeout(hiddenTimeoutRef.current);
-
-    if (!imageLoaded) {
-      return;
-    }
-
+    setHidden(false);
     if (isOpen) {
       setExitClass(GetExitClass());
       setHasExited(true);
-      //hiddenTimeoutRef.current = setTimeout(() => setHidden(true), 6100); // make sure it finishes before adding hidden
-    } else {
-      setHidden(false);
-    }
-  }, [isOpen, imageLoaded]);
 
-  useEffect(() => {
-    if (imageLoaded) {
-      setHasLoaded(true);
+      panelElementRef.current.addEventListener(
+        "animationend",
+        () => {
+          setHidden(true);
+        },
+        { once: true }
+      );
     }
-  }, [imageLoaded]);
+  }, [isOpen]);
 
   useEffect(() => {
     let newImgSrc = "";
@@ -51,16 +45,17 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   return (
     <div className="panel">
       <div
+        ref={panelElementRef}
         className={classNames("panelBackground", "animate__animated", "animate__slow", {
           [`${exitClass}`]: isOpen && imageLoaded,
           "animate__delay-5s": isOpen && imageLoaded && (turnType === "GuessesMade" || turnType === "EndRound"),
           [`${entranceClass}`]: !isOpen && hasExited,
           //animate__infinite: isOpen && !imageLoaded,
           //animate__pulse: isOpen && !imageLoaded && turnType === "MakeGuess",
-          hidden: hidden,
+          hidden: hidden && isOpen,
         })}
       >
-        {hasLoaded && <div className="panelNumber">{panelNumber}</div>}
+        {displayPanelNumber && <div className="panelNumber">{panelNumber}</div>}
       </div>
       <img
         ref={ref}
@@ -68,6 +63,7 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
         onLoad={() => {
           setImageLoaded(true);
           onImageLoaded(panelNumber);
+          setDisplayPanelNumber(true);
         }}
         src={imgSrc}
       />
