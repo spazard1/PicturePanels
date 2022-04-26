@@ -111,11 +111,11 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
         return;
       }
       setOpenPanelsOverride((owp) => {
-        owp.push(openPanelOverrideIndex.current[openPanelOverrideIndex.current]);
+        owp.push(openPanelOverridePanelNumbers.current[openPanelOverrideIndex.current]);
         openPanelOverrideIndex.current++;
         return [...owp];
       });
-    }, 6000);
+    }, 7000);
   }, [turnType]);
 
   const resizePanelContainer = () => {
