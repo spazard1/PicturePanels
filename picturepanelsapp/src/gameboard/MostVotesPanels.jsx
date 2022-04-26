@@ -72,12 +72,9 @@ export default function MostVotesPanels({ panelRefs, revealedPanels, players, te
       {Object.keys(mostVotesPanelsRects).map((key) => (
         <div
           key={key}
-          className={classNames(
-            "mostVotesPanel",
-            "animate__animated",
-            { animate__fadeOut: parseInt(mostVotesPanelsRects[key].panelNumber) > 20 },
-            { animate__fadeOut: turnType !== "OpenPanel" }
-          )}
+          className={classNames("mostVotesPanel", "animate__animated", {
+            animate__fadeOut: parseInt(mostVotesPanelsRects[key].panelNumber) > 20 || turnType !== "OpenPanel",
+          })}
           style={{
             transform: "translate(" + mostVotesPanelsRects[key].rect.x + "px, " + mostVotesPanelsRects[key].rect.y + "px)",
             width: mostVotesPanelsRects[key].rect.width + "px",
