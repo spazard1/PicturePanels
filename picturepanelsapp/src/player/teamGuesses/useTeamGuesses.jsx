@@ -25,14 +25,15 @@ export function useTeamGuesses(gameStateId, player) {
       } else if (tg.ticks === newVote) {
         tg.voteCount++;
       }
-
-      if (oldVote === "Pass") {
-        setPassVoteCount((pvc) => Math.max(0, pvc - 1));
-      }
-      if (newVote === "Pass") {
-        setPassVoteCount((pvc) => pvc + 1);
-      }
     });
+
+    if (oldVote === "Pass") {
+      setPassVoteCount((pvc) => Math.max(0, pvc - 1));
+    }
+    if (newVote === "Pass") {
+      setPassVoteCount((pvc) => pvc + 1);
+    }
+
     setTeamGuesses(newTeamGuesses);
   });
 
