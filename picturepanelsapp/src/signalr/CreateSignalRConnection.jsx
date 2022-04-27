@@ -23,7 +23,7 @@ export const CreateSignalRConnection = (queryString, setConnection, setConnectio
 
   connection.start().then(() => {
     setConnection(connection);
-    setConnectionId(connection.id);
+    setConnectionId(connection.connectionId);
   });
 
   return connection;
