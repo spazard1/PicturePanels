@@ -71,6 +71,49 @@ namespace PicturePanels.Controllers
             return Json(teamGuessEntities);
         }
 
+        [HttpGet("{gameStateId}/{playerId}/object")]
+        public async Task<IActionResult> GetAllAsObjectAsync(string gameStateId, string playerId)
+        {
+            var player = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (player == null)
+            {
+                return StatusCode(404);
+            }
+
+            var voteCounts = new Dictionary<string, int>() { { GameStateTableEntity.TeamGuessStatusPass, 0 } };
+
+            await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameStateId, player.TeamNumber))
+            {
+                if (!string.IsNullOrEmpty(p.TeamGuessVote))
+                {
+                    if (!voteCounts.TryAdd(p.TeamGuessVote, 1))
+                    {
+                        voteCounts[p.TeamGuessVote]++;
+                    }
+                }
+            }
+
+            var teamGuessEntities = new List<TeamGuessEntity>();
+
+            await foreach (var guessModel in this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber))
+            {
+                if (voteCounts.TryGetValue(guessModel.CreatedTime.Ticks.ToString(), out int voteCount))
+                {
+                    teamGuessEntities.Add(new TeamGuessEntity(guessModel) { VoteCount = voteCount });
+                }
+                else
+                {
+                    teamGuessEntities.Add(new TeamGuessEntity(guessModel));
+                }
+            }
+
+            return Json(new TeamGuessesEntity()
+            {
+                TeamGuesses = teamGuessEntities,
+                PassVoteCount = voteCounts[GameStateTableEntity.TeamGuessStatusPass]
+            });
+        }
+
         [HttpPut("{gameStateId}/{playerId}/{ticks}")]
         public async Task<IActionResult> PutVoteAsync(string gameStateId, string playerId, string ticks)
         {

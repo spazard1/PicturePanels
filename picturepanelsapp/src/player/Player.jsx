@@ -228,7 +228,7 @@ export default function Player() {
             </>
           )}
 
-          {gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId}></TeamGuesses>}
+          {gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId} player={player}></TeamGuesses>}
 
           <Chat></Chat>
         </>
