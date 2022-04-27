@@ -3,26 +3,26 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 
-const ModalYesNo = ({ modalMessage, onModalResponse, onModalClose }) => {
+const ModalConfirm = ({ modalMessage, onModalResponse, onModalClose }) => {
   return (
     <Modal show={modalMessage !== ""} centered onHide={onModalClose}>
       <Modal.Body>{modalMessage}</Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => onModalResponse(false)}>
-          No
+          Cancel
         </Button>
         <Button variant="primary" onClick={() => onModalResponse(true)}>
-          Yes
+          OK
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default ModalYesNo;
+export default ModalConfirm;
 
-ModalYesNo.propTypes = {
+ModalConfirm.propTypes = {
   modalMessage: PropTypes.string,
-  onModalResponse: PropTypes.func.isRequired,
+  onModalResponse: PropTypes.func,
   onModalClose: PropTypes.func.isRequired,
 };

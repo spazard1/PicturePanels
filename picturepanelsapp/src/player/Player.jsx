@@ -9,8 +9,8 @@ import TeamGuesses from "./teamGuesses/TeamGuesses";
 import StartGameButtons from "./StartGameButtons";
 import ChooseTeam from "./ChooseTeam";
 import JoinGame from "./JoinGame";
-import MessageModal from "../common/ModalMessage";
-import { useModalMessage } from "../common/useModalMessage";
+import ModalMessage from "../common/modal/ModalMessage";
+import { useModal } from "../common/modal/useModal";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
 import Button from "react-bootstrap/Button";
@@ -27,7 +27,7 @@ export default function Player() {
   useBodyClass("player");
 
   const { queryString, setQueryString } = useSignalRConnection();
-  const [modalMessage, setModalMessage, onModalMessageClose] = useModalMessage();
+  const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
   const [teamNumber, setTeamNumber] = useState();
@@ -189,7 +189,7 @@ export default function Player() {
 
   return (
     <div className="main center">
-      <MessageModal modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></MessageModal>
+      <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
       {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>}
