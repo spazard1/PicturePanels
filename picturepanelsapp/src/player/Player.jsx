@@ -21,6 +21,7 @@ import SettingsDropDown from "./SettingsDropDown";
 import { putTogglePauseGame } from "../common/putTogglePauseGame";
 
 import "./Player.css";
+import { usePlayerVibrate } from "./usePlayerVibrate";
 
 export default function Player() {
   useBodyClass("player");
@@ -31,6 +32,7 @@ export default function Player() {
   const [player, setPlayer] = useState();
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
+  const vibrate = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
   let initialColor;
@@ -117,6 +119,10 @@ export default function Player() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    vibrate(50);
+  }, [vibrate, gameState]);
 
   useEffect(() => {
     if (!localStorage.getItem("gameStateId") || !localStorage.getItem("playerId")) {
