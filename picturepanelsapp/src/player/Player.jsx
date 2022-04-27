@@ -5,7 +5,7 @@ import Chat from "./Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
-import TeamGuesses from "./TeamGuesses";
+import TeamGuesses from "./teamGuesses/TeamGuesses";
 import StartGameButtons from "./StartGameButtons";
 import ChooseTeam from "./ChooseTeam";
 import JoinGame from "./JoinGame";
@@ -32,7 +32,7 @@ export default function Player() {
   const [player, setPlayer] = useState();
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
-  const vibrate = usePlayerVibrate();
+  const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
   let initialColor;
