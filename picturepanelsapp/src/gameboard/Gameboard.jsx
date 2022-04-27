@@ -16,8 +16,8 @@ import getGameState from "../common/getGameState";
 import postGameState from "../common/postGameState";
 import RoundNumber from "./RoundNumber";
 import EndGame from "./EndGame";
-import MessageModal from "../common/ModalMessage";
-import { useModalMessage } from "../common/useModalMessage";
+import ModalMessage from "../common/modal/ModalMessage";
+import { useModal } from "../common/modal/useModal";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -37,7 +37,7 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const roundNumberRef = useRef();
-  const [modalMessage, setModalMessage, onModalMessageClose] = useModalMessage();
+  const [modalMessage, setModalMessage, onModalMessageClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
 
   const onStartGameStateChange = (startGameState) => {
@@ -162,7 +162,7 @@ export default function Gameboard() {
 
   return (
     <>
-      <MessageModal modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></MessageModal>
+      <ModalMessage modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
       {gameState && (

@@ -21,6 +21,7 @@ namespace PicturePanels.Entities
 
         [Required]
         [MinLength(1)]
+        [MaxLength(100)]
         public string Guess { get; set; }
 
         public TeamGuessTableEntity ToModel(PlayerTableEntity playerTableEntity)
