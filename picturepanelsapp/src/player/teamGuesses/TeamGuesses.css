@@ -1,12 +1,6 @@
 /* stylelint-disable selector-class-pattern */
-.teamGuessesInputContainer {
-  margin-top: 0.5em;
-  width: 100%;
-  display: flex;
-}
-
 .teamGuessesContainer {
-  margin-top: 0.5em;
+  margin-top: 2rem;
 }
 
 .teamGuesses {
@@ -27,7 +21,7 @@
   margin-left: 1.25rem;
   margin-right: 1.25rem;
   max-width: 95%;
-  font-size: 0.65em;
+  font-size: 1.5rem;
   padding: 3px 10px;
   margin-bottom: 1em;
   border-radius: 10px;
@@ -44,7 +38,7 @@
   white-space: nowrap;
 }
 
-.teamGuess_Pass {
+.teamGuessPass {
   margin-left: 1rem;
   margin-right: 1rem;
   background-color: #101010;

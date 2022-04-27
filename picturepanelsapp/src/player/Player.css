@@ -105,8 +105,9 @@ html body.player {
   border-radius: 8px;
 }
 
-.modal-title {
+.modal-header {
   color: black;
+  font-size: 1.5rem;
 }
 
 .bootbox-body {
