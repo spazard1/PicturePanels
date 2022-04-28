@@ -18,11 +18,11 @@
   display: inline-block;
   height: fit-content;
   overflow-wrap: break-word;
-  margin-left: 1.75rem;
-  margin-right: 1.75rem;
-  margin-bottom: 2.5rem;
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  margin-bottom: 2rem;
   max-width: 95%;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   padding: 3px 10px;
   border-radius: 10px;
   background-color: darkblue;
@@ -33,7 +33,7 @@
   margin-left: 1.5rem;
   margin-right: 1.5rem;
   white-space: nowrap;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
 }
 
 .teamGuessPass {
@@ -80,7 +80,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizelegibility;
-  border: 2px solid dodgerblue;
+  border: 3px solid dodgerblue;
 }
 
 .teamGuessVoteCountChosen {
@@ -104,7 +104,7 @@
 }
 
 .teamGuessSubmitButton {
-  font-size: 2rem;
+  font-size: 1.3rem;
 }
 
 .teamGuessSubmitButtonPass {
