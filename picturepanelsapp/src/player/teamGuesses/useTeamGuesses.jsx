@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "../../signalr/useSignalR";
 import getTeamGuesses from "./getTeamGuesses";
 
-export function useTeamGuesses(gameStateId, player) {
+export function useTeamGuesses(gameStateId, playerId, teamNumber) {
   const [teamGuesses, setTeamGuesses] = useState([]);
+  const [currentTeamGuess, setCurrentTeamGuess] = useState();
   const [passVoteCount, setPassVoteCount] = useState([]);
   const teamGuessesRef = useRef();
   teamGuessesRef.current = teamGuesses;
@@ -17,12 +18,17 @@ export function useTeamGuesses(gameStateId, player) {
     setTeamGuesses(newTeamGuesses);
   });
 
-  useSignalR("VoteTeamGuess", (oldVote, newVote, playerId) => {
-    if (playerId === player.playerId) {
+  useSignalR("VoteTeamGuess", (oldVote, newVote, votingPlayerId) => {
+    if (votingPlayerId === playerId) {
       return;
     }
 
+    updateTeamGuessVoteCounts(oldVote, newVote);
+  });
+
+  const updateTeamGuessVoteCounts = (oldVote, newVote) => {
     const newTeamGuesses = [...teamGuessesRef.current];
+
     newTeamGuesses.forEach((tg) => {
       if (tg.ticks === oldVote) {
         tg.voteCount = Math.max(0, tg.voteCount - 1);
@@ -39,14 +45,31 @@ export function useTeamGuesses(gameStateId, player) {
     }
 
     setTeamGuesses(newTeamGuesses);
-  });
+  };
 
   useEffect(() => {
-    if (!gameStateId || !player || !connectionId) {
+    let highestVoteCount = 0;
+    let highestTeamGuess;
+
+    teamGuesses.forEach((tg) => {
+      if (tg.voteCount > highestVoteCount) {
+        highestVoteCount = tg.voteCount;
+        highestTeamGuess = tg;
+      }
+    });
+    if (passVoteCount >= highestVoteCount) {
+      setCurrentTeamGuess(false);
+      return;
+    }
+    setCurrentTeamGuess(highestTeamGuess.guess);
+  }, [teamGuesses, passVoteCount]);
+
+  useEffect(() => {
+    if (!gameStateId || !playerId || !connectionId) {
       return;
     }
 
-    getTeamGuesses(gameStateId, player.playerId, (tg) => {
+    getTeamGuesses(gameStateId, playerId, (tg) => {
       if (!tg) {
         return;
       }
@@ -54,7 +77,7 @@ export function useTeamGuesses(gameStateId, player) {
       setTeamGuesses(tg.teamGuesses);
       setPassVoteCount(tg.passVoteCount);
     });
-  }, [gameStateId, player, connectionId]);
+  }, [gameStateId, playerId, teamNumber, connectionId]);
 
-  return { teamGuesses, passVoteCount };
+  return { teamGuesses, passVoteCount, currentTeamGuess, updateTeamGuessVoteCounts };
 }

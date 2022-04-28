@@ -11,9 +11,11 @@ import ModalConfirm from "../../common/modal/ModalConfirm";
 import { useModal } from "../../common/modal/useModal";
 import ModalPrompt from "../../common/modal/ModalPrompt";
 import putTeamGuessVote from "./putTeamGuessVote";
+import putPlayerReadySolo from "./putPlayerReadySolo";
+import { Button } from "react-bootstrap";
 
-const TeamGuesses = ({ gameStateId, player }) => {
-  const { teamGuesses, passVoteCount } = useTeamGuesses(gameStateId, player);
+const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
+  const { teamGuesses, passVoteCount, currentTeamGuess, updateTeamGuessVoteCounts } = useTeamGuesses(gameStateId, playerId, teamNumber);
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [modalConfirmMessage, setModalConfirmMessage, onModalConfirmClose] = useModal();
   const [modalPromptMessage, setModalPromptMessage, onModalPromptClose] = useModal();
@@ -27,7 +29,7 @@ const TeamGuesses = ({ gameStateId, player }) => {
       setModalPromptMessage("");
 
       if (response) {
-        postTeamGuess(gameStateId, player.playerId, response, (result) => {
+        postTeamGuess(gameStateId, playerId, response, (result) => {
           if (!result) {
             setModalMessage("There was a problem creating your guess. Refresh the page and try again.");
           }
@@ -39,7 +41,16 @@ const TeamGuesses = ({ gameStateId, player }) => {
   const voteTeamGuessOnClick = (e, ticks) => {
     e.stopPropagation();
 
-    putTeamGuessVote(gameStateId, player.playerId, ticks, () => {});
+    onTeamGuessVote(ticks);
+    updateTeamGuessVoteCounts(teamGuessVote, ticks);
+
+    const oldVote = teamGuessVote;
+    putTeamGuessVote(gameStateId, playerId, ticks, (result) => {
+      if (!result) {
+        onTeamGuessVote(oldVote);
+        updateTeamGuessVoteCounts(ticks, oldVote);
+      }
+    });
   };
 
   const deleteTeamGuessOnClick = (e, teamGuess) => {
@@ -51,9 +62,31 @@ const TeamGuesses = ({ gameStateId, player }) => {
       setModalConfirmMessage("");
 
       if (response) {
-        deleteTeamGuess(gameStateId, player.playerId, teamGuess.ticks, (result) => {
+        deleteTeamGuess(gameStateId, playerId, teamGuess.ticks, (result) => {
           if (!result) {
             setModalMessage("There was a problem deleting the team guess. Refresh the page and try again.");
+          }
+        });
+      }
+    });
+  };
+
+  const submitOnClick = (e) => {
+    e.stopPropagation();
+
+    if (currentTeamGuess) {
+      setModalConfirmMessage('Are you sure you want to submit the guess "' + currentTeamGuess + '" for your team?');
+    } else {
+      setModalConfirmMessage("Are you sure you want pass this turn for your team?");
+    }
+
+    setOnModalConfirmResponse(() => (response) => {
+      setModalConfirmMessage("");
+
+      if (response) {
+        putPlayerReadySolo(gameStateId, playerId, (result) => {
+          if (!result) {
+            setModalMessage("There was a problem submiting your team guess. Refresh the page and try again.");
           }
         });
       }
@@ -69,7 +102,12 @@ const TeamGuesses = ({ gameStateId, player }) => {
       <div className="teamGuessesContainer teamGuesses">
         {teamGuesses.map((teamGuess) => (
           <div key={teamGuess.ticks} className="teamGuessText" onClick={(e) => voteTeamGuessOnClick(e, teamGuess.ticks)}>
-            <div className={classNames("teamGuessVoteCount", { teamGuessVoteCountChosen: player.teamGuessVote === teamGuess.ticks })}>
+            <div
+              className={classNames("teamGuessVoteCount", "animate__animated", {
+                teamGuessVoteCountChosen: teamGuessVote === teamGuess.ticks,
+                animate__pulse: teamGuessVote === teamGuess.ticks,
+              })}
+            >
               {teamGuess.voteCount}
             </div>
             {teamGuess.guess}
@@ -81,12 +119,30 @@ const TeamGuesses = ({ gameStateId, player }) => {
       </div>
       <div className="teamGuesses">
         <div className="teamGuessText teamGuessPass" onClick={(e) => voteTeamGuessOnClick(e, "Pass")}>
-          <div className="teamGuessVoteCount">{passVoteCount}</div>
+          <div
+            className={classNames("teamGuessVoteCount", "animate__animated", {
+              teamGuessVoteCountChosen: teamGuessVote === "Pass",
+              animate__pulse: teamGuessVote === "Pass",
+            })}
+          >
+            {passVoteCount}
+          </div>
           Pass
         </div>
-        <div className="teamGuessText teamGuessAdd" onClick={addTeamGuessOnClick}>
-          Add Guess
+        <div>
+          <Button className={"teamGuessAddButton"} variant="info" onClick={addTeamGuessOnClick}>
+            Add Guess
+          </Button>
         </div>
+      </div>
+      <div className="teamGuessSubmitButtonContainer">
+        <Button
+          variant={currentTeamGuess ? "success" : "secondary"}
+          onClick={submitOnClick}
+          className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess })}
+        >
+          {currentTeamGuess ? 'Submit Guess "' + currentTeamGuess + '"' : "pass this turn"}
+        </Button>
       </div>
     </div>
   );
@@ -96,5 +152,8 @@ export default TeamGuesses;
 
 TeamGuesses.propTypes = {
   gameStateId: PropTypes.string.isRequired,
-  player: PropTypes.object.isRequired,
+  playerId: PropTypes.string,
+  teamNumber: PropTypes.number,
+  teamGuessVote: PropTypes.string,
+  onTeamGuessVote: PropTypes.func.isRequired,
 };
