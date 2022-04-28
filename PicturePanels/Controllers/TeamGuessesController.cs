@@ -184,25 +184,7 @@ namespace PicturePanels.Controllers
 
             var teamGuess = await this.teamGuessTableStorage.InsertAsync(entity.ToModel(player));
 
-            var startingVoteCount = 0;
-            if (player.TeamGuessVote != GameStateTableEntity.TeamGuessStatusPass && !allGuesses.Any(guess => guess.Ticks == player.TeamGuessVote))
-            {
-                startingVoteCount = 1;
-                await this.playerTableStorage.ReplaceAsync(player, (p) =>
-                {
-                    p.TeamGuessVote = teamGuess.Ticks;
-                });
-            }
-
-            if (startingVoteCount > 0)
-            {
-                await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess) { VoteCount = startingVoteCount }, player.TeamNumber, player.PlayerId);
-            }
-            else
-            {
-                await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess), player.TeamNumber);
-            }
-
+            await signalRHelper.AddTeamGuessAsync(gameStateId, new TeamGuessEntity(teamGuess), player.TeamNumber);
             await this.chatService.SendChatAsync(player, "added the guess '" + teamGuess.Guess + "'", true);
 
             return Json(new TeamGuessEntity(teamGuess));
