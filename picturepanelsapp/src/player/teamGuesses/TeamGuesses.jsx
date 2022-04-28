@@ -15,7 +15,11 @@ import putPlayerReadySolo from "./putPlayerReadySolo";
 import { Button } from "react-bootstrap";
 
 const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
-  const { teamGuesses, passVoteCount, currentTeamGuess, updateTeamGuessVoteCounts } = useTeamGuesses(gameStateId, playerId, teamNumber);
+  const { teamGuesses, passVoteCount, currentTeamGuess, teamGuessesLoading, updateTeamGuessVoteCounts } = useTeamGuesses(
+    gameStateId,
+    playerId,
+    teamNumber
+  );
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [modalConfirmMessage, setModalConfirmMessage, onModalConfirmClose] = useModal();
   const [modalPromptMessage, setModalPromptMessage, onModalPromptClose] = useModal();
@@ -78,6 +82,10 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
   const submitOnClick = (e) => {
     e.stopPropagation();
 
+    if (teamGuessesLoading) {
+      return;
+    }
+
     if (currentTeamGuess) {
       setModalConfirmMessage('Are you sure you want to submit the guess "' + currentTeamGuess + '" for your team?');
     } else {
@@ -121,31 +129,34 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
           </div>
         ))}
       </div>
-      <div className="teamGuesses">
-        <div className="teamGuessText teamGuessPass" onClick={(e) => voteTeamGuessOnClick(e, "Pass")}>
-          <div
-            className={classNames("teamGuessVoteCount", "animate__animated", {
-              teamGuessVoteCountChosen: teamGuessVote === "Pass",
-              animate__pulse: teamGuessVote === "Pass",
-            })}
-          >
-            {passVoteCount}
+      {!teamGuessesLoading && (
+        <div className="teamGuesses">
+          <div className="teamGuessText teamGuessPass" onClick={(e) => voteTeamGuessOnClick(e, "Pass")}>
+            <div
+              className={classNames("teamGuessVoteCount", "animate__animated", {
+                teamGuessVoteCountChosen: teamGuessVote === "Pass",
+                animate__pulse: teamGuessVote === "Pass",
+              })}
+            >
+              {passVoteCount}
+            </div>
+            Pass
           </div>
-          Pass
+          <div>
+            <Button className={"teamGuessAddButton"} variant="info" onClick={addTeamGuessOnClick}>
+              Add Guess
+            </Button>
+          </div>
         </div>
-        <div>
-          <Button className={"teamGuessAddButton"} variant="info" onClick={addTeamGuessOnClick}>
-            Add Guess
-          </Button>
-        </div>
-      </div>
+      )}
       <div className="teamGuessSubmitButtonContainer">
         <Button
           variant={currentTeamGuess ? "success" : "secondary"}
           onClick={submitOnClick}
-          className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess })}
+          className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess || teamGuessesLoading })}
+          disabled={teamGuessesLoading}
         >
-          {currentTeamGuess ? 'Submit Guess "' + currentTeamGuess + '"' : "pass this turn"}
+          {teamGuessesLoading ? "Loading..." : currentTeamGuess ? 'Submit Guess "' + currentTeamGuess + '"' : "pass this turn"}
         </Button>
       </div>
     </div>

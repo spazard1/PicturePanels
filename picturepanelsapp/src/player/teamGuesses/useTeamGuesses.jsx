@@ -6,6 +6,7 @@ export function useTeamGuesses(gameStateId, playerId, teamNumber) {
   const [teamGuesses, setTeamGuesses] = useState([]);
   const [currentTeamGuess, setCurrentTeamGuess] = useState();
   const [passVoteCount, setPassVoteCount] = useState([]);
+  const [teamGuessesLoading, setTeamGuessesLoading] = useState(true);
   const teamGuessesRef = useRef();
   teamGuessesRef.current = teamGuesses;
 
@@ -69,7 +70,9 @@ export function useTeamGuesses(gameStateId, playerId, teamNumber) {
       return;
     }
 
+    setTeamGuessesLoading(true);
     getTeamGuesses(gameStateId, playerId, (tg) => {
+      setTeamGuessesLoading(false);
       if (!tg) {
         return;
       }
@@ -79,5 +82,5 @@ export function useTeamGuesses(gameStateId, playerId, teamNumber) {
     });
   }, [gameStateId, playerId, teamNumber, connectionId]);
 
-  return { teamGuesses, passVoteCount, currentTeamGuess, updateTeamGuessVoteCounts };
+  return { teamGuesses, passVoteCount, currentTeamGuess, teamGuessesLoading, updateTeamGuessVoteCounts };
 }
