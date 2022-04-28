@@ -134,7 +134,7 @@ namespace PicturePanels.Controllers
                 pm.TeamGuessVote = ticks;
             });
 
-            await signalRHelper.VoteTeamGuessAsync(gameStateId, oldVote, playerModel.TeamGuessVote, playerModel.TeamNumber);
+            await signalRHelper.VoteTeamGuessAsync(gameStateId, playerModel.PlayerId, oldVote, playerModel.TeamGuessVote, playerModel.TeamNumber);
 
             return StatusCode(200);
         }
