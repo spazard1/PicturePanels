@@ -17,7 +17,11 @@ export function useTeamGuesses(gameStateId, player) {
     setTeamGuesses(newTeamGuesses);
   });
 
-  useSignalR("VoteTeamGuess", (oldVote, newVote) => {
+  useSignalR("VoteTeamGuess", (oldVote, newVote, playerId) => {
+    if (playerId === player.playerId) {
+      return;
+    }
+
     const newTeamGuesses = [...teamGuessesRef.current];
     newTeamGuesses.forEach((tg) => {
       if (tg.ticks === oldVote) {

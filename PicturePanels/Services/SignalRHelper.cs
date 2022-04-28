@@ -109,9 +109,9 @@ namespace PicturePanels.Services
             await hubContext.Clients.Group(SignalRHub.TeamGroup(chatEntity.GameStateId, int.Parse(chatEntity.TeamNumber))).Chat(chatEntity);
         }
 
-        public async Task VoteTeamGuessAsync(string gameStateId, string oldVote, string newVote, int teamNumber)
+        public async Task VoteTeamGuessAsync(string gameStateId, string playerId, string oldVote, string newVote, int teamNumber)
         {
-            await hubContext.Clients.Group(SignalRHub.TeamGroup(gameStateId, teamNumber)).VoteTeamGuess(oldVote, newVote);
+            await hubContext.Clients.Group(SignalRHub.TeamGroup(gameStateId, teamNumber)).VoteTeamGuess(oldVote, newVote, playerId);
         }
 
         public async Task ClearPlayerReadyAsync(PlayerTableEntity playerModel)
