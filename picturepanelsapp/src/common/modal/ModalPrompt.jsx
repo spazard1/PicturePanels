@@ -3,6 +3,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 
+import "./Modal.css";
+
 const ModalPrompt = ({ modalMessage, onModalResponse, onModalClose }) => {
   const [userInput, setUserInput] = useState("");
 
@@ -23,6 +25,7 @@ const ModalPrompt = ({ modalMessage, onModalResponse, onModalClose }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button
+          className="cancelButton"
           variant="secondary"
           onClick={() => {
             onModalResponse(false);
