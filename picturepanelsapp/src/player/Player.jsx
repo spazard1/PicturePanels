@@ -124,7 +124,11 @@ export default function Player() {
   }, []);
 
   const onTeamGuessVote = (ticks) => {
-    setPlayer({ ...player, ["teamGuessVote"]: ticks });
+    if (player.teamGuessVote === ticks) {
+      setPlayer({ ...player, ["teamGuessVote"]: "" });
+    } else {
+      setPlayer({ ...player, ["teamGuessVote"]: ticks });
+    }
   };
 
   useEffect(() => {

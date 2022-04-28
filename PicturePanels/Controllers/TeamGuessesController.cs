@@ -123,9 +123,10 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
+            // reset player vote if they vote for the same thing again
             if (playerModel.TeamGuessVote == ticks)
             {
-                return StatusCode(200);
+                ticks = string.Empty;
             }
 
             var oldVote = playerModel.TeamGuessVote ?? string.Empty;
