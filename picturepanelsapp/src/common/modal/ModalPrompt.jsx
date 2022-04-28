@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 
 const ModalPrompt = ({ modalMessage, onModalResponse, onModalClose }) => {
-  const [userInput, setUserInput] = useState();
+  const [userInput, setUserInput] = useState("");
 
   const onInputChange = useCallback((event) => {
     setUserInput(event.target.value);
