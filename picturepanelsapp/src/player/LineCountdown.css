@@ -1,0 +1,10 @@
+/* stylelint-disable selector-class-pattern */
+.lineCountdownContainer {
+  height: 5px;
+  width: 100%;
+}
+
+.lineCountdownElapsedTime {
+  background-color: dodgerblue;
+  height: 100%;
+}
