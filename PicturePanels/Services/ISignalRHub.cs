@@ -23,7 +23,7 @@ namespace PicturePanels.Services
 
         Task DeleteTeamGuess(TeamGuessEntity teamGuessEntity);
 
-        Task VoteTeamGuess(string oldVote, string newVote);
+        Task VoteTeamGuess(string oldVote, string newVote, string playerId);
 
         Task AddPlayer(PlayerEntity entity);
 
