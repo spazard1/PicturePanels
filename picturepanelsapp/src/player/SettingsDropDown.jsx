@@ -11,6 +11,8 @@ const SettingsDropDown = ({ pauseState, onPlayerNameChange, onTeamChange, onTogg
       <Dropdown.Item onClick={onTeamChange}>Change Team</Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item onClick={onTogglePauseGame}>{pauseState === "Paused" ? "Resume Game" : "Pause Game"}</Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item>Show Remaining Time ✓</Dropdown.Item>
     </DropdownButton>
   );
 };

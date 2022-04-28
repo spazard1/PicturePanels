@@ -6,7 +6,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
   const canvasRef = useRef();
   const intervalRef = useRef();
   const endTimeRef = useRef();
-  const frameRate = 15;
+  const frameRate = 30;
 
   const drawCountdown = useCallback(() => {
     const canvas = canvasRef.current;

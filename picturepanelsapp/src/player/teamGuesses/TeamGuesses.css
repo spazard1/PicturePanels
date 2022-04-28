@@ -1,6 +1,6 @@
 /* stylelint-disable selector-class-pattern */
 .teamGuessesContainer {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 
 .teamGuesses {
@@ -57,10 +57,10 @@
 
 .teamGuessDeleteButton img {
   position: absolute;
-  top: 0.8em;
-  left: 0.4em;
-  width: 0.8em;
-  height: 0.8em;
+  top: 0.8rem;
+  left: 0.4rem;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .teamGuessesMessage {
@@ -100,7 +100,7 @@
 }
 
 .teamGuessSubmitButtonContainer {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .teamGuessSubmitButton {
