@@ -4,7 +4,7 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 
 import "./SettingsDropDown.css";
 
-const SettingsDropDown = ({ pauseState, onPlayerNameChange, onTeamChange, onTogglePauseGame }) => {
+const SettingsDropDown = ({ pauseState, hideRemainingTime, onPlayerNameChange, onTeamChange, onTogglePauseGame, onToggleHideRemainingTime }) => {
   return (
     <DropdownButton className="playerSettingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark">
       <Dropdown.Item onClick={onPlayerNameChange}>Change Name/Color</Dropdown.Item>
@@ -12,7 +12,7 @@ const SettingsDropDown = ({ pauseState, onPlayerNameChange, onTeamChange, onTogg
       <Dropdown.Divider />
       <Dropdown.Item onClick={onTogglePauseGame}>{pauseState === "Paused" ? "Resume Game" : "Pause Game"}</Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item>Show Remaining Time ✓</Dropdown.Item>
+      <Dropdown.Item onClick={onToggleHideRemainingTime}>Hide Remaining Time{hideRemainingTime ? " ✓" : ""}</Dropdown.Item>
     </DropdownButton>
   );
 };
@@ -21,7 +21,9 @@ export default SettingsDropDown;
 
 SettingsDropDown.propTypes = {
   pauseState: PropTypes.string,
+  hideRemainingTime: PropTypes.string,
   onPlayerNameChange: PropTypes.func.isRequired,
   onTeamChange: PropTypes.func.isRequired,
   onTogglePauseGame: PropTypes.func.isRequired,
+  onToggleHideRemainingTime: PropTypes.func.isRequired,
 };

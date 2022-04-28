@@ -18,7 +18,6 @@ const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, t
     }
 
     countdownMax.current = turnTime * 1000;
-    currentCountdown.current = turnTimeRemaining;
 
     endTimeRef.current = new Date();
     endTimeRef.current.setMilliseconds(endTimeRef.current.getMilliseconds() + turnTimeRemaining * 1000);
@@ -36,13 +35,13 @@ const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, t
     }
 
     intervalRef.current = setInterval(function () {
-      setPercentageRemaining(100 - (Math.min(currentCountdown.current, countdownMax.current) / countdownMax.current) * 100);
-
       if (currentCountdown.current <= 0) {
         clearInterval(intervalRef.current);
       } else {
         currentCountdown.current = endTimeRef.current - new Date();
       }
+
+      setPercentageRemaining(100 - (Math.min(currentCountdown.current, countdownMax.current) / countdownMax.current) * 100);
     }, 1000 / frameRate);
   }, [isCountdownActive, isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime]);
 
@@ -56,7 +55,7 @@ const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, t
 export default LineCountdown;
 
 LineCountdown.propTypes = {
-  isCountdownActive: PropTypes.bool.isRequired,
+  isCountdownActive: PropTypes.bool,
   isPaused: PropTypes.bool.isRequired,
   turnTime: PropTypes.number,
   turnTimeTotal: PropTypes.number,

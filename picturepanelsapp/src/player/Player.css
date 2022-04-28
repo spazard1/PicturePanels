@@ -105,6 +105,11 @@ html body.player {
   border-radius: 8px;
 }
 
+.panelButtonsVoteButton {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
 .modal-header {
   color: black;
   font-size: 1.4rem;
