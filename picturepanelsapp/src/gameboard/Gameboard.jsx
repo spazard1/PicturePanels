@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./Panels";
-import TeamInfos from "../teaminfos/TeamInfos";
+import TeamInfos from "./teaminfos/TeamInfos";
 import Players from "./Players";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
@@ -18,11 +18,11 @@ import RoundNumber from "./RoundNumber";
 import EndGame from "./EndGame";
 import ModalMessage from "../common/modal/ModalMessage";
 import { useModal } from "../common/modal/useModal";
+import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
-import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 
 export default function Gameboard() {
   useBodyClass("gameboard");

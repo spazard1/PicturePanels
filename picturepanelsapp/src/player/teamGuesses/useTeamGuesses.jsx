@@ -2,13 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "../../signalr/useSignalR";
 import getTeamGuesses from "./getTeamGuesses";
 
-export function useTeamGuesses(gameStateId, playerId, teamNumber) {
+export function useTeamGuesses(gameStateId, playerId, roundNumber, teamNumber) {
   const [teamGuesses, setTeamGuesses] = useState([]);
   const [currentTeamGuess, setCurrentTeamGuess] = useState();
   const [passVoteCount, setPassVoteCount] = useState([]);
   const [teamGuessesLoading, setTeamGuessesLoading] = useState(true);
   const teamGuessesRef = useRef();
   teamGuessesRef.current = teamGuesses;
+
+  useEffect(() => {
+    if (!roundNumber) {
+      return;
+    }
+
+    setTeamGuesses([]);
+  }, [roundNumber]);
 
   const connectionId = useSignalR("AddTeamGuess", (teamGuess) => {
     setTeamGuesses([...teamGuessesRef.current, teamGuess]);
