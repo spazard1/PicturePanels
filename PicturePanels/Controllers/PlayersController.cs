@@ -95,6 +95,7 @@ namespace PicturePanels.Controllers
                     pm.TeamNumber = entity.TeamNumber;
                     pm.Color = entity.Color;
                     pm.LastPingTime = DateTime.UtcNow;
+                    pm.TeamGuessVote = newTeam ? string.Empty : playerModel.TeamGuessVote;
                 });
 
                 if (newTeam)

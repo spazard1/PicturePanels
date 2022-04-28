@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import TeamScoreChange from "./TeamScoreChange";
-import { useSignalR } from "../signalr/useSignalR";
+import { useSignalR } from "../../signalr/useSignalR";
 import "./ScoreBoard.css";
 
 function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnType }) {

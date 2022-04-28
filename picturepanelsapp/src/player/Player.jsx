@@ -20,6 +20,7 @@ import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import SettingsDropDown from "./SettingsDropDown";
 import { putTogglePauseGame } from "../common/putTogglePauseGame";
 import { usePlayerVibrate } from "./usePlayerVibrate";
+import LineCountdown from "./LineCountdown";
 
 import "./Player.css";
 import "animate.css";
@@ -35,6 +36,7 @@ export default function Player() {
   const [playerId, setPlayerId] = useState();
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
+  const [turnType, setTurnType] = useState();
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
@@ -130,6 +132,20 @@ export default function Player() {
       setPlayer({ ...player, ["teamGuessVote"]: ticks });
     }
   };
+
+  useEffect(() => {
+    if (gameState && gameState.turnType) {
+      setTurnType(gameState.turnType);
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    if (turnType) {
+      setPlayer((p) => {
+        return { ...p, ["isReady"]: false };
+      });
+    }
+  }, [turnType]);
 
   useEffect(() => {
     if (player) {
@@ -228,6 +244,17 @@ export default function Player() {
             onTeamChange={onTeamChange}
             onTogglePauseGame={onTogglePauseGame}
           ></SettingsDropDown>
+          <LineCountdown
+            isCountdownActive={
+              (gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
+              (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus)
+            }
+            isPaused={gameState.pauseState === "Paused"}
+            turnTime={gameState.turnTime}
+            turnTimeTotal={gameState.turnTimeTotal}
+            turnTimeRemaining={gameState.turnTimeRemaining}
+            pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
+          ></LineCountdown>
 
           {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
@@ -245,15 +272,15 @@ export default function Player() {
             </>
           )}
 
-          {gameState.turnType === "MakeGuess" && (
-            <TeamGuesses
-              gameStateId={gameState.gameStateId}
-              playerId={playerId}
-              teamGuessVote={player.teamGuessVote}
-              teamNumber={teamNumber}
-              onTeamGuessVote={onTeamGuessVote}
-            ></TeamGuesses>
-          )}
+          <TeamGuesses
+            turnType={gameState.turnType}
+            roundNumber={gameState.roundNumber}
+            gameStateId={gameState.gameStateId}
+            playerId={playerId}
+            teamGuessVote={player.teamGuessVote}
+            teamNumber={teamNumber}
+            onTeamGuessVote={onTeamGuessVote}
+          ></TeamGuesses>
 
           <Chat></Chat>
         </>

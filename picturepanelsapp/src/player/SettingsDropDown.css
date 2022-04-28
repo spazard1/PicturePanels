@@ -1,7 +1,7 @@
 /* stylelint-disable selector-class-pattern */
 .playerSettingsButton {
   position: fixed;
-  top: 0;
+  top: 5px;
   right: 0;
   z-index: 1000;
 }

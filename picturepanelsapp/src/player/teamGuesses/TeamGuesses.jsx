@@ -14,10 +14,11 @@ import putTeamGuessVote from "./putTeamGuessVote";
 import putPlayerReadySolo from "./putPlayerReadySolo";
 import { Button } from "react-bootstrap";
 
-const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
+const TeamGuesses = ({ turnType, roundNumber, gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
   const { teamGuesses, passVoteCount, currentTeamGuess, teamGuessesLoading, updateTeamGuessVoteCounts } = useTeamGuesses(
     gameStateId,
     playerId,
+    roundNumber,
     teamNumber
   );
   const [modalMessage, setModalMessage, onModalClose] = useModal();
@@ -43,7 +44,10 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
   };
 
   const voteTeamGuessOnClick = (e, ticks) => {
-    e.stopPropagation();
+    if (e.defaultPrevented) {
+      return;
+    }
+    e.preventDefault();
 
     onTeamGuessVote(ticks);
     if (teamGuessVote === ticks) {
@@ -62,7 +66,10 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
   };
 
   const deleteTeamGuessOnClick = (e, teamGuess) => {
-    e.stopPropagation();
+    if (e.defaultPrevented) {
+      return;
+    }
+    e.preventDefault();
 
     setModalConfirmMessage('Are you sure you want to delete the guess "' + teamGuess.guess + '"?');
 
@@ -80,7 +87,10 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
   };
 
   const submitOnClick = (e) => {
-    e.stopPropagation();
+    if (e.defaultPrevented) {
+      return;
+    }
+    e.preventDefault();
 
     if (teamGuessesLoading) {
       return;
@@ -104,6 +114,10 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
       }
     });
   };
+
+  if (turnType !== "MakeGuess") {
+    return <></>;
+  }
 
   return (
     <div className="center">
@@ -156,7 +170,7 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
           className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess || teamGuessesLoading })}
           disabled={teamGuessesLoading}
         >
-          {teamGuessesLoading ? "Loading..." : currentTeamGuess ? 'Submit Guess "' + currentTeamGuess + '"' : "pass this turn"}
+          {teamGuessesLoading ? "Loading..." : currentTeamGuess ? 'Submit "' + currentTeamGuess + '"' : "pass this turn"}
         </Button>
       </div>
     </div>
@@ -166,6 +180,8 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
 export default TeamGuesses;
 
 TeamGuesses.propTypes = {
+  turnType: PropTypes.string,
+  roundNumber: PropTypes.number,
   gameStateId: PropTypes.string.isRequired,
   playerId: PropTypes.string,
   teamNumber: PropTypes.number,
