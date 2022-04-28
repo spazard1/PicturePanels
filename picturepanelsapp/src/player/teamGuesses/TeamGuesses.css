@@ -71,7 +71,7 @@
   position: absolute;
   top: -1.2em;
   left: -1.2em;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-style: normal;
   color: yellow;
   background-color: dodgerblue;
@@ -80,7 +80,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizelegibility;
-  border: 3px solid dodgerblue;
+  border: 2px solid dodgerblue;
 }
 
 .teamGuessVoteCountChosen {
