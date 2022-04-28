@@ -42,7 +42,11 @@ const TeamGuesses = ({ gameStateId, playerId, teamGuessVote, teamNumber, onTeamG
     e.stopPropagation();
 
     onTeamGuessVote(ticks);
-    updateTeamGuessVoteCounts(teamGuessVote, ticks);
+    if (teamGuessVote === ticks) {
+      updateTeamGuessVoteCounts(teamGuessVote, "");
+    } else {
+      updateTeamGuessVoteCounts(teamGuessVote, ticks);
+    }
 
     const oldVote = teamGuessVote;
     putTeamGuessVote(gameStateId, playerId, ticks, (result) => {
