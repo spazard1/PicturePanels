@@ -19,9 +19,11 @@ import getPlayer from "./getPlayer";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import SettingsDropDown from "./SettingsDropDown";
 import { putTogglePauseGame } from "../common/putTogglePauseGame";
+import { usePlayerVibrate } from "./usePlayerVibrate";
 
 import "./Player.css";
-import { usePlayerVibrate } from "./usePlayerVibrate";
+import "animate.css";
+import "../animate/animate.css";
 
 export default function Player() {
   useBodyClass("player");
@@ -30,6 +32,7 @@ export default function Player() {
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
+  const [playerId, setPlayerId] = useState();
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
   const { vibrate } = usePlayerVibrate();
@@ -119,6 +122,16 @@ export default function Player() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const onTeamGuessVote = (ticks) => {
+    setPlayer({ ...player, ["teamGuessVote"]: ticks });
+  };
+
+  useEffect(() => {
+    if (player) {
+      setPlayerId(player.playerId);
+    }
+  }, [player]);
 
   useEffect(() => {
     vibrate(50);
@@ -228,7 +241,15 @@ export default function Player() {
             </>
           )}
 
-          {gameState.turnType === "MakeGuess" && <TeamGuesses gameStateId={gameState.gameStateId} player={player}></TeamGuesses>}
+          {gameState.turnType === "MakeGuess" && (
+            <TeamGuesses
+              gameStateId={gameState.gameStateId}
+              playerId={playerId}
+              teamGuessVote={player.teamGuessVote}
+              teamNumber={teamNumber}
+              onTeamGuessVote={onTeamGuessVote}
+            ></TeamGuesses>
+          )}
 
           <Chat></Chat>
         </>

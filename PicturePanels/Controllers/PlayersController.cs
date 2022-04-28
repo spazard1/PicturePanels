@@ -191,6 +191,36 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
+        [HttpPut("{gameStateId}/{playerId}/readySolo")]
+        public async Task<IActionResult> PutReadySoloAsync(string gameStateId, string playerId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (playerModel.IsAdmin)
+            {
+                return StatusCode(400);
+            }
+
+            await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
+
+            return Json(new PlayerEntity(playerModel));
+        }
+
         [HttpPut("{gameStateId}/{playerId}/openPanelVote")]
         public async Task<IActionResult> PutOpenPanelVoteAsync(string gameStateId, string playerId)
         {
