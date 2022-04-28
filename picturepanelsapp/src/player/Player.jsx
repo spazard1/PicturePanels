@@ -25,6 +25,7 @@ import LineCountdown from "./LineCountdown";
 import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
+import { useLocalStorageState } from "../common/useLocalStorageState";
 
 export default function Player() {
   useBodyClass("player");
@@ -37,6 +38,7 @@ export default function Player() {
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
+  const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
@@ -130,6 +132,14 @@ export default function Player() {
       setPlayer({ ...player, ["teamGuessVote"]: "" });
     } else {
       setPlayer({ ...player, ["teamGuessVote"]: ticks });
+    }
+  };
+
+  const onToggleHideRemainingTime = () => {
+    if (hideRemainingTime) {
+      setHideRemainingTime();
+    } else {
+      setHideRemainingTime("true");
     }
   };
 
@@ -240,14 +250,17 @@ export default function Player() {
         <>
           <SettingsDropDown
             pauseState={gameState.pauseState}
+            hideRemainingTime={hideRemainingTime}
             onPlayerNameChange={onPlayerNameChange}
             onTeamChange={onTeamChange}
             onTogglePauseGame={onTogglePauseGame}
+            onToggleHideRemainingTime={onToggleHideRemainingTime}
           ></SettingsDropDown>
           <LineCountdown
             isCountdownActive={
-              (gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
-              (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus)
+              !hideRemainingTime &&
+              ((gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
+                (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus))
             }
             isPaused={gameState.pauseState === "Paused"}
             turnTime={gameState.turnTime}
@@ -266,7 +279,7 @@ export default function Player() {
                 revealedPanels={gameState.revealedPanels}
                 roundNumber={gameState.roundNumber}
               ></PanelButtons>
-              <Button variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
+              <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
                 {isLoading ? "Voting..." : "Vote!"}
               </Button>
             </>
