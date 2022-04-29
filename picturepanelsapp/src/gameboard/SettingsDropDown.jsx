@@ -5,28 +5,13 @@ import { putTogglePauseGame } from "../common/putTogglePauseGame";
 
 import "./SettingsDropDown.css";
 
-const SettingsDropDown = ({
-  gameStateId,
-  pauseState,
-  hideRemainingTime,
-  disableVibrate,
-  onPlayerNameChange,
-  onTeamChange,
-  onToggleHideRemainingTime,
-  onToggleVibrate,
-}) => {
+const SettingsDropDown = ({ gameStateId, pauseState }) => {
   const onTogglePauseGame = () => {
     putTogglePauseGame(gameStateId, () => {});
   };
 
   return (
     <DropdownButton className="settingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark">
-      <Dropdown.Item onClick={onPlayerNameChange}>Change Name/Color</Dropdown.Item>
-      <Dropdown.Item onClick={onTeamChange}>Change Team</Dropdown.Item>
-      <Dropdown.Divider />
-      <Dropdown.Item onClick={onToggleHideRemainingTime}>Hide Remaining Time{hideRemainingTime ? " ✓" : ""}</Dropdown.Item>
-      <Dropdown.Item onClick={onToggleVibrate}>Vibrations{disableVibrate ? "" : " ✓"}</Dropdown.Item>
-      <Dropdown.Divider />
       <Dropdown.Item onClick={onTogglePauseGame}>{pauseState === "Paused" ? "Resume Game" : "Pause Game"}</Dropdown.Item>
     </DropdownButton>
   );

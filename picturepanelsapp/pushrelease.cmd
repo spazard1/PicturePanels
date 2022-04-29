@@ -3,3 +3,4 @@ git pull
 git merge main
 git push
 git checkout main
+git push
