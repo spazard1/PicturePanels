@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "../../signalr/useSignalR";
 import getTeamGuesses from "./getTeamGuesses";
 
-export function useTeamGuesses(gameStateId, playerId, roundNumber, teamNumber) {
+export function useTeamGuesses(gameStateId, playerId, roundNumber, teamNumber, onLoading) {
   const [teamGuesses, setTeamGuesses] = useState([]);
   const [currentTeamGuess, setCurrentTeamGuess] = useState();
   const [passVoteCount, setPassVoteCount] = useState([]);
-  const [teamGuessesLoading, setTeamGuessesLoading] = useState(true);
   const teamGuessesRef = useRef();
   teamGuessesRef.current = teamGuesses;
 
@@ -78,9 +77,9 @@ export function useTeamGuesses(gameStateId, playerId, roundNumber, teamNumber) {
       return;
     }
 
-    setTeamGuessesLoading(true);
+    onLoading(true);
     getTeamGuesses(gameStateId, playerId, (tg) => {
-      setTeamGuessesLoading(false);
+      onLoading(false);
       if (!tg) {
         return;
       }
@@ -88,7 +87,7 @@ export function useTeamGuesses(gameStateId, playerId, roundNumber, teamNumber) {
       setTeamGuesses(tg.teamGuesses);
       setPassVoteCount(tg.passVoteCount);
     });
-  }, [gameStateId, playerId, teamNumber, connectionId]);
+  }, [gameStateId, playerId, teamNumber, onLoading, connectionId]);
 
-  return { teamGuesses, passVoteCount, currentTeamGuess, teamGuessesLoading, updateTeamGuessVoteCounts };
+  return { teamGuesses, passVoteCount, currentTeamGuess, updateTeamGuessVoteCounts };
 }

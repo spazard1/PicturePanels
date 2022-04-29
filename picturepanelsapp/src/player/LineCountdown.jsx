@@ -12,38 +12,36 @@ const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, t
   const frameRate = 60;
 
   useEffect(() => {
-    if (!isCountdownActive) {
-      setPercentageRemaining(0);
-      return;
-    }
-
     countdownMax.current = turnTime * 1000;
-
     endTimeRef.current = new Date();
     endTimeRef.current.setMilliseconds(endTimeRef.current.getMilliseconds() + turnTimeRemaining * 1000);
-
-    if (countdownMax.current <= 0) {
-      return;
-    }
-
-    clearInterval(intervalRef.current);
 
     if (isPaused) {
       currentCountdown.current = turnTimeRemaining * 1000;
       setPercentageRemaining(100 - (Math.min(currentCountdown.current, countdownMax.current) / countdownMax.current) * 100);
       return;
     }
+  }, [isPaused, turnTime, turnTimeTotal, turnTimeRemaining]);
 
+  useEffect(() => {
+    if (!isCountdownActive) {
+      setPercentageRemaining(0);
+      clearInterval(intervalRef.current);
+      return;
+    }
+
+    clearInterval(intervalRef.current);
     intervalRef.current = setInterval(function () {
-      if (currentCountdown.current <= 0) {
-        clearInterval(intervalRef.current);
-      } else {
+      if (!isPaused) {
         currentCountdown.current = endTimeRef.current - new Date();
       }
-
       setPercentageRemaining(100 - (Math.min(currentCountdown.current, countdownMax.current) / countdownMax.current) * 100);
+
+      if (currentCountdown.current <= 0 || isPaused) {
+        clearInterval(intervalRef.current);
+      }
     }, 1000 / frameRate);
-  }, [isCountdownActive, isPaused, turnTime, turnTimeTotal, turnTimeRemaining]);
+  }, [isCountdownActive, isPaused, turnTimeRemaining]);
 
   return (
     <div className="lineCountdownContainer">
