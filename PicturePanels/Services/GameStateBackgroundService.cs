@@ -91,8 +91,7 @@ namespace PicturePanels.Services
             gameState = await this.gameStateService.ToNextTurnTypeAsync(gameState);
 
             var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
-            if ((activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow) &&
-                (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel || gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess))
+            if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
             {
                 await this.gameStateService.PauseGameAsync(gameState);
                 return;
