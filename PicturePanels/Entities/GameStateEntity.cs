@@ -32,7 +32,14 @@ namespace PicturePanels.Entities
             this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
             this.TurnTime = tableEntity.TurnTime;
             this.TurnTimeTotal = tableEntity.TurnTimeTotal;
-            this.TurnTimeRemaining = tableEntity.TurnEndTime.HasValue ? (tableEntity.TurnEndTime.Value - DateTime.UtcNow).TotalSeconds : null;
+            if (tableEntity.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                this.TurnTimeRemaining = tableEntity.PauseTurnRemainingTime;
+            }
+            else
+            {
+                this.TurnTimeRemaining = tableEntity.TurnEndTime.HasValue ? (tableEntity.TurnEndTime.Value - DateTime.UtcNow).TotalSeconds : null;
+            }
             this.PauseState = tableEntity.PauseState;
             this.PauseTurnRemainingTime = tableEntity.PauseTurnRemainingTime;
             this.RevealedPanels = tableEntity.RevealedPanels;

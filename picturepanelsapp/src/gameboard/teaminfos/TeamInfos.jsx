@@ -22,7 +22,6 @@ function TeamInfos({ gameState }) {
           turnTime={gameState.turnTime}
           turnTimeTotal={gameState.turnTimeTotal}
           turnTimeRemaining={gameState.turnTimeRemaining}
-          pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
           teamGuessStatus={gameState.teamOneGuessStatus}
           teamGuess={gameState.teamOneGuess}
           teamGuessIncorrect={!gameState.teamOneCorrect}
@@ -48,7 +47,6 @@ function TeamInfos({ gameState }) {
           turnTime={gameState.turnTime}
           turnTimeTotal={gameState.turnTimeTotal}
           turnTimeRemaining={gameState.turnTimeRemaining}
-          pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
           teamGuessStatus={gameState.teamTwoGuessStatus}
           teamGuess={gameState.teamTwoGuess}
           teamGuessIncorrect={!gameState.teamTwoCorrect}
