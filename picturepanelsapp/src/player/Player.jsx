@@ -19,7 +19,6 @@ import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
 import getPlayer from "./getPlayer";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import SettingsDropDown from "./SettingsDropDown";
-import { putTogglePauseGame } from "../common/putTogglePauseGame";
 import { usePlayerVibrate } from "./usePlayerVibrate";
 import LineCountdown from "./LineCountdown";
 
@@ -86,10 +85,6 @@ export default function Player() {
   const onTeamChange = () => {
     setPlayer(null);
     setTeamNumber(0);
-  };
-
-  const onTogglePauseGame = () => {
-    putTogglePauseGame(gameStateId, () => {});
   };
 
   const onTeamNumberSelect = (teamNumber) => {
@@ -267,12 +262,12 @@ export default function Player() {
           {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
 
           <SettingsDropDown
+            gameStateId={gameState.gameStateId}
             pauseState={gameState.pauseState}
             hideRemainingTime={hideRemainingTime}
             disableVibrate={disableVibrate}
             onPlayerNameChange={onPlayerNameChange}
             onTeamChange={onTeamChange}
-            onTogglePauseGame={onTogglePauseGame}
             onToggleHideRemainingTime={onToggleHideRemainingTime}
             onToggleVibrate={onToggleVibrate}
           ></SettingsDropDown>
