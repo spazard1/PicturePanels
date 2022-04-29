@@ -22,10 +22,4 @@ export default SettingsDropDown;
 SettingsDropDown.propTypes = {
   gameStateId: PropTypes.string,
   pauseState: PropTypes.string,
-  hideRemainingTime: PropTypes.string,
-  disableVibrate: PropTypes.string,
-  onPlayerNameChange: PropTypes.func.isRequired,
-  onTeamChange: PropTypes.func.isRequired,
-  onToggleHideRemainingTime: PropTypes.func.isRequired,
-  onToggleVibrate: PropTypes.func.isRequired,
 };

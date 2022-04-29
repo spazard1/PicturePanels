@@ -41,6 +41,7 @@ export default function Player() {
   const [teamTurn, setTeamTurn] = useState();
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
+  const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
@@ -182,6 +183,22 @@ export default function Player() {
   }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn]);
 
   useEffect(() => {
+    if (!gameStateId || !gameState) {
+      return;
+    }
+
+    if (
+      innerPanelCountNotify !== gameStateId &&
+      turnType === "OpenPanel" &&
+      teamTurn === teamNumber &&
+      ((teamNumber === 1 && gameState.teamOneInnerPanels <= 0) || (teamNumber === 2 && gameState.teamTwoInnerPanels <= 0))
+    ) {
+      setInnerPanelCountNotify(gameStateId);
+      setModalMessage("Your team is out of inner panels. From now on, if you open an inner panel, it will cost one point.");
+    }
+  }, [setModalMessage, setInnerPanelCountNotify, gameStateId, innerPanelCountNotify, teamNumber, turnType, teamTurn, gameState]);
+
+  useEffect(() => {
     if (!localStorage.getItem("gameStateId") || !localStorage.getItem("playerId")) {
       setIsResuming(false);
       return;
@@ -251,6 +268,22 @@ export default function Player() {
 
       {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>}
 
+      {gameState && (
+        <LineCountdown
+          isCountdownActive={
+            player &&
+            !hideRemainingTime &&
+            ((gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
+              (gameState.turnType === "MakeGuess" &&
+                ((teamNumber === 1 && !gameState.teamOneGuessStatus) || (teamNumber === 2 && !gameState.teamTwoGuessStatus))))
+          }
+          isPaused={gameState.pauseState === "Paused"}
+          turnTime={gameState.turnTime}
+          turnTimeTotal={gameState.turnTimeTotal}
+          turnTimeRemaining={gameState.turnTimeRemaining}
+        ></LineCountdown>
+      )}
+
       {gameState && !teamNumber && (
         <ChooseTeam
           gameStateId={gameState.gameStateId}
@@ -274,17 +307,6 @@ export default function Player() {
             onToggleHideRemainingTime={onToggleHideRemainingTime}
             onToggleVibrate={onToggleVibrate}
           ></SettingsDropDown>
-          <LineCountdown
-            isCountdownActive={
-              !hideRemainingTime &&
-              ((gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
-                (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus))
-            }
-            isPaused={gameState.pauseState === "Paused"}
-            turnTime={gameState.turnTime}
-            turnTimeTotal={gameState.turnTimeTotal}
-            turnTimeRemaining={gameState.turnTimeRemaining}
-          ></LineCountdown>
 
           <Alert className="pauseAlert" show={gameState && gameState.pauseState === "Paused"} variant="success">
             Game is paused
@@ -297,17 +319,23 @@ export default function Player() {
                 playerId={player.playerId}
                 revealedPanels={gameState.revealedPanels}
                 roundNumber={gameState.roundNumber}
+                isPaused={gameState.pauseState === "Paused"}
               ></PanelButtons>
-              {gameState.pauseState !== "Paused" && (
-                <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
-                  {isLoading ? "Voting..." : "Vote!"}
-                </Button>
-              )}
+              <Button
+                className="panelButtonsVoteButton"
+                variant="primary"
+                size="lg"
+                disabled={isLoading || gameState.pauseState === "Paused"}
+                onClick={openPanelVoteOnClick}
+              >
+                {isLoading ? "Voting..." : "Vote!"}
+              </Button>
             </>
           )}
 
           <TeamGuesses
             isPaused={gameState.pauseState === "Paused"}
+            hasTeamGuessed={(teamNumber === 1 && gameState.teamOneGuessStatus !== "") || (teamNumber === 2 && gameState.teamTwoGuessStatus !== "")}
             turnType={gameState.turnType}
             roundNumber={gameState.roundNumber}
             gameStateId={gameState.gameStateId}

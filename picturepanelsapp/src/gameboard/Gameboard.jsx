@@ -37,7 +37,7 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const roundNumberRef = useRef();
-  const [modalMessage, setModalMessage, onModalMessageClose] = useModal();
+  const [modalMessage, setModalMessage, onModalClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
 
   const onStartGameStateChange = (startGameState) => {
@@ -162,7 +162,7 @@ export default function Gameboard() {
 
   return (
     <>
-      <ModalMessage modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></ModalMessage>
+      <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
       {gameState && <SettingsDropDown gameStateId={gameState.gameStateId} pauseState={gameState.pauseState}></SettingsDropDown>}
