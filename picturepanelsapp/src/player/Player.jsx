@@ -38,7 +38,9 @@ export default function Player() {
   const [teamNumber, setTeamNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
+  const [teamTurn, setTeamTurn] = useState();
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
+  const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
@@ -143,9 +145,20 @@ export default function Player() {
     }
   };
 
+  const onToggleVibrate = () => {
+    if (disableVibrate) {
+      setDisableVibrate();
+    } else {
+      setDisableVibrate("true");
+    }
+  };
+
   useEffect(() => {
     if (gameState && gameState.turnType) {
       setTurnType(gameState.turnType);
+    }
+    if (gameState && gameState.teamTurn) {
+      setTeamTurn(gameState.teamTurn);
     }
   }, [gameState]);
 
@@ -164,8 +177,10 @@ export default function Player() {
   }, [player]);
 
   useEffect(() => {
-    vibrate(50);
-  }, [vibrate, gameState]);
+    if ((!disableVibrate && turnType === "OpenPanel" && teamTurn === teamNumber) || turnType === "MakeGuess") {
+      vibrate(25);
+    }
+  }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn]);
 
   useEffect(() => {
     if (!localStorage.getItem("gameStateId") || !localStorage.getItem("playerId")) {
@@ -251,10 +266,12 @@ export default function Player() {
           <SettingsDropDown
             pauseState={gameState.pauseState}
             hideRemainingTime={hideRemainingTime}
+            disableVibrate={disableVibrate}
             onPlayerNameChange={onPlayerNameChange}
             onTeamChange={onTeamChange}
             onTogglePauseGame={onTogglePauseGame}
             onToggleHideRemainingTime={onToggleHideRemainingTime}
+            onToggleVibrate={onToggleVibrate}
           ></SettingsDropDown>
           <LineCountdown
             isCountdownActive={
