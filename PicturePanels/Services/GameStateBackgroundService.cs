@@ -74,6 +74,10 @@ namespace PicturePanels.Services
             var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
             if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
             {
+                gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+                {
+                    gs.PauseState = GameStateTableEntity.PauseStatePaused;
+                });
                 return;
             }
 
