@@ -10,6 +10,10 @@ export function usePlayerPing(gameStateId, player) {
       return;
     }
 
+    if (connection.state !== "Connected") {
+      return;
+    }
+
     connection.invoke("PlayerPing", gameStateId, player.playerId);
   }, [connection, gameStateId, player]);
 

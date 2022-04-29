@@ -566,7 +566,6 @@ namespace PicturePanels.Services
             {
                 gs.NewRound();
             });
-            await this.SaveRoundCompleteAsync(gameState);
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewRound);
 
