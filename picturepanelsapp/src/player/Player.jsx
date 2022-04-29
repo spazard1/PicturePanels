@@ -161,6 +161,9 @@ export default function Player() {
   useEffect(() => {
     if (turnType) {
       setPlayer((p) => {
+        if (!p) {
+          return;
+        }
         return { ...p, ["isReady"]: false };
       });
     }
