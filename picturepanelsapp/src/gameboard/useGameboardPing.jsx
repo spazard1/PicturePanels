@@ -10,6 +10,10 @@ export function useGameboardPing(gameStateId) {
       return;
     }
 
+    if (connection.state !== "Connected") {
+      return;
+    }
+
     connection.invoke("GameboardPing", gameStateId);
   }, [connection, gameStateId]);
 

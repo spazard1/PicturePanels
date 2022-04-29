@@ -14,12 +14,15 @@ import putTeamGuessVote from "./putTeamGuessVote";
 import putPlayerReadySolo from "./putPlayerReadySolo";
 import { Button } from "react-bootstrap";
 
-const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
-  const { teamGuesses, passVoteCount, currentTeamGuess, teamGuessesLoading, updateTeamGuessVoteCounts } = useTeamGuesses(
+const TeamGuesses = ({ isPaused, hasTeamGuessed, turnType, roundNumber, gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { teamGuesses, passVoteCount, currentTeamGuess, updateTeamGuessVoteCounts } = useTeamGuesses(
     gameStateId,
     playerId,
     roundNumber,
-    teamNumber
+    teamNumber,
+    setIsLoading
   );
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [modalConfirmMessage, setModalConfirmMessage, onModalConfirmClose] = useModal();
@@ -92,7 +95,7 @@ const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, t
     }
     e.preventDefault();
 
-    if (teamGuessesLoading) {
+    if (isLoading || isPaused) {
       return;
     }
 
@@ -106,7 +109,10 @@ const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, t
       setModalConfirmMessage("");
 
       if (response) {
+        setIsLoading(true);
         putPlayerReadySolo(gameStateId, playerId, (result) => {
+          setIsLoading(false);
+
           if (!result) {
             setModalMessage("There was a problem submiting your team guess. Refresh the page and try again.");
           }
@@ -115,7 +121,7 @@ const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, t
     });
   };
 
-  if (turnType !== "MakeGuess") {
+  if (turnType !== "MakeGuess" || hasTeamGuessed) {
     return <></>;
   }
 
@@ -143,7 +149,7 @@ const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, t
           </div>
         ))}
       </div>
-      {!teamGuessesLoading && (
+      {!isLoading && (
         <div className="teamGuesses">
           <div className="teamGuessText teamGuessPass" onClick={(e) => voteTeamGuessOnClick(e, "Pass")}>
             <div
@@ -163,18 +169,16 @@ const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, t
           </div>
         </div>
       )}
-      {!isPaused && (
-        <div className="teamGuessSubmitButtonContainer">
-          <Button
-            variant={currentTeamGuess ? "success" : "secondary"}
-            onClick={submitOnClick}
-            className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess || teamGuessesLoading })}
-            disabled={teamGuessesLoading}
-          >
-            {teamGuessesLoading ? "Loading..." : currentTeamGuess ? 'Submit "' + currentTeamGuess + '"' : "pass this turn"}
-          </Button>
-        </div>
-      )}
+      <div className="teamGuessSubmitButtonContainer">
+        <Button
+          variant={currentTeamGuess ? "success" : "secondary"}
+          onClick={submitOnClick}
+          className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess || isLoading })}
+          disabled={isLoading || isPaused}
+        >
+          {isLoading ? "Loading..." : currentTeamGuess ? 'Submit "' + currentTeamGuess + '"' : "pass this turn"}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -183,6 +187,7 @@ export default TeamGuesses;
 
 TeamGuesses.propTypes = {
   isPaused: PropTypes.bool,
+  hasTeamGuessed: PropTypes.bool,
   turnType: PropTypes.string,
   roundNumber: PropTypes.number,
   gameStateId: PropTypes.string.isRequired,
