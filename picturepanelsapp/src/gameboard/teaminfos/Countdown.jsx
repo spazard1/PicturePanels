@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import "./Countdown.css";
 
-const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime }) => {
+const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => {
   const canvasRef = useRef();
   const intervalRef = useRef();
   const endTimeRef = useRef();
@@ -87,7 +87,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
     clearInterval(intervalRef.current);
 
     if (isPaused) {
-      canvas.currentCountdown = pauseTurnRemainingTime * 1000;
+      canvas.currentCountdown = turnTimeRemaining * 1000;
       drawCountdown(canvas);
       return;
     }
@@ -101,7 +101,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pause
 
       drawCountdown(canvas);
     }, 1000 / frameRate);
-  }, [isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime, drawCountdown]);
+  }, [isPaused, turnTime, turnTimeTotal, turnTimeRemaining, drawCountdown]);
 
   return (
     <div className="countdown">
@@ -115,7 +115,6 @@ Countdown.propTypes = {
   turnTime: PropTypes.number,
   turnTimeTotal: PropTypes.number,
   turnTimeRemaining: PropTypes.number,
-  pauseTurnRemainingTime: PropTypes.number,
 };
 
 export default React.memo(Countdown);
