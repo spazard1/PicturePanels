@@ -281,7 +281,6 @@ export default function Player() {
             turnTime={gameState.turnTime}
             turnTimeTotal={gameState.turnTimeTotal}
             turnTimeRemaining={gameState.turnTimeRemaining}
-            pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
           ></LineCountdown>
 
           <Alert className="pauseAlert" show={gameState && gameState.pauseState === "Paused"} variant="success">

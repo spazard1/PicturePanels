@@ -71,13 +71,6 @@ namespace PicturePanels.Services
                 return;
             }
 
-            var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
-            if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)
-            {
-                await this.gameStateService.PauseGameAsync(gameState);
-                return;
-            }
-
             var delayTime = gameState.TurnEndTime.Value - DateTime.UtcNow;
             if (delayTime.TotalMilliseconds > 0)
             {
@@ -85,12 +78,25 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
-            if (gameState == null || !gameState.TurnEndTime.HasValue || gameState.PauseState == GameStateTableEntity.PauseStatePaused || !gameState.IsUpdateAllowed(gameStateUpdate))
+            if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
             {
                 return;
             }
 
-            await this.gameStateService.ToNextTurnTypeAsync(gameState);
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return;
+            }
+
+            gameState = await this.gameStateService.ToNextTurnTypeAsync(gameState);
+
+            var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
+            if ((activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow) &&
+                (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel || gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess))
+            {
+                await this.gameStateService.PauseGameAsync(gameState);
+                return;
+            }
         }
     }
 }
