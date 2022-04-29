@@ -310,6 +310,7 @@ export default function Player() {
           )}
 
           <TeamGuesses
+            isPaused={gameState.pauseState === "Paused"}
             turnType={gameState.turnType}
             roundNumber={gameState.roundNumber}
             gameStateId={gameState.gameStateId}
