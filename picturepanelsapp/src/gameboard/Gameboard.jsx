@@ -11,7 +11,7 @@ import { getImageEntity } from "./getImageEntity";
 import { useGameboardPing } from "./useGameboardPing";
 import StartGame from "./StartGame";
 import Welcome from "./Welcome";
-import Pause from "./Pause";
+import SettingsDropDown from "./SettingsDropDown";
 import getGameState from "../common/getGameState";
 import postGameState from "../common/postGameState";
 import RoundNumber from "./RoundNumber";
@@ -165,15 +165,7 @@ export default function Gameboard() {
       <ModalMessage modalMessage={modalMessage} onModalMessageClose={onModalMessageClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
-      {gameState && (
-        <Pause
-          gameStateId={gameState.gameStateId}
-          guessTime={gameState.guessTime}
-          openPanelTime={gameState.openPanelTime}
-          pauseState={gameState.pauseState}
-          turnType={gameState.turnType}
-        ></Pause>
-      )}
+      {gameState && <SettingsDropDown gameStateId={gameState.gameStateId} pauseState={gameState.pauseState}></SettingsDropDown>}
       {startGameState !== "Playing" && (
         <StartGame
           startGameState={startGameState}
