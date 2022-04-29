@@ -14,6 +14,7 @@ import { useModal } from "../common/modal/useModal";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
 import Button from "react-bootstrap/Button";
+import Alert from "react-bootstrap/Alert";
 import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
 import getPlayer from "./getPlayer";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
@@ -263,6 +264,8 @@ export default function Player() {
 
       {gameState && player && teamNumber && (
         <>
+          {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
+
           <SettingsDropDown
             pauseState={gameState.pauseState}
             hideRemainingTime={hideRemainingTime}
@@ -286,7 +289,9 @@ export default function Player() {
             pauseTurnRemainingTime={gameState.pauseTurnRemainingTime}
           ></LineCountdown>
 
-          {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
+          <Alert className="pauseAlert" show={gameState && gameState.pauseState === "Paused"} variant="success">
+            Game is paused
+          </Alert>
 
           {gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && !player.isReady && (
             <>
@@ -296,9 +301,11 @@ export default function Player() {
                 revealedPanels={gameState.revealedPanels}
                 roundNumber={gameState.roundNumber}
               ></PanelButtons>
-              <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
-                {isLoading ? "Voting..." : "Vote!"}
-              </Button>
+              {gameState.pauseState !== "Paused" && (
+                <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
+                  {isLoading ? "Voting..." : "Vote!"}
+                </Button>
+              )}
             </>
           )}
 
