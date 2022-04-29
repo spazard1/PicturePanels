@@ -15,6 +15,10 @@ html body.player {
   height: 100%;
 }
 
+.pauseAlert {
+  font-size: 1.5rem;
+}
+
 .playerBannerFlex {
   display: flex;
 }
