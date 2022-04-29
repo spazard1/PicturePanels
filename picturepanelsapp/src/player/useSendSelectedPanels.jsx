@@ -14,6 +14,10 @@ export function useSendSelectedPanels(gameStateId, playerId) {
       return;
     }
 
+    if (connection.state !== "Connected") {
+      return;
+    }
+
     connection.invoke("SelectPanels", {
       gameStateId: gameStateId,
       playerId: playerId,

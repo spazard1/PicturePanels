@@ -13,7 +13,7 @@ const PanelButton = ({ gameStateId, panelNumber, roundNumber, isOpen, isSelected
 
   return (
     <div className={classNames("panelButton", "noHighlights", { panelButtonSelected: isSelected })} onClick={() => onSelectedClick(panelNumber)}>
-      <div className="panelButtonBackground">
+      <div className={"panelButtonBackground"}>
         <div className="panelButtonNumber">{panelNumber}</div>
       </div>
       <img
@@ -33,4 +33,5 @@ PanelButton.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool.isRequired,
   onSelected: PropTypes.func.isRequired,
+  isPaused: PropTypes.bool,
 };
