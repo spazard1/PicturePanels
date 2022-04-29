@@ -14,7 +14,7 @@ import putTeamGuessVote from "./putTeamGuessVote";
 import putPlayerReadySolo from "./putPlayerReadySolo";
 import { Button } from "react-bootstrap";
 
-const TeamGuesses = ({ turnType, roundNumber, gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
+const TeamGuesses = ({ isPaused, turnType, roundNumber, gameStateId, playerId, teamGuessVote, teamNumber, onTeamGuessVote }) => {
   const { teamGuesses, passVoteCount, currentTeamGuess, teamGuessesLoading, updateTeamGuessVoteCounts } = useTeamGuesses(
     gameStateId,
     playerId,
@@ -163,16 +163,18 @@ const TeamGuesses = ({ turnType, roundNumber, gameStateId, playerId, teamGuessVo
           </div>
         </div>
       )}
-      <div className="teamGuessSubmitButtonContainer">
-        <Button
-          variant={currentTeamGuess ? "success" : "secondary"}
-          onClick={submitOnClick}
-          className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess || teamGuessesLoading })}
-          disabled={teamGuessesLoading}
-        >
-          {teamGuessesLoading ? "Loading..." : currentTeamGuess ? 'Submit "' + currentTeamGuess + '"' : "pass this turn"}
-        </Button>
-      </div>
+      {!isPaused && (
+        <div className="teamGuessSubmitButtonContainer">
+          <Button
+            variant={currentTeamGuess ? "success" : "secondary"}
+            onClick={submitOnClick}
+            className={classNames("teamGuessSubmitButton", { teamGuessSubmitButtonPass: !currentTeamGuess || teamGuessesLoading })}
+            disabled={teamGuessesLoading}
+          >
+            {teamGuessesLoading ? "Loading..." : currentTeamGuess ? 'Submit "' + currentTeamGuess + '"' : "pass this turn"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
@@ -180,6 +182,7 @@ const TeamGuesses = ({ turnType, roundNumber, gameStateId, playerId, teamGuessVo
 export default TeamGuesses;
 
 TeamGuesses.propTypes = {
+  isPaused: PropTypes.bool,
   turnType: PropTypes.string,
   roundNumber: PropTypes.number,
   gameStateId: PropTypes.string.isRequired,

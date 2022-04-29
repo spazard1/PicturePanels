@@ -19,10 +19,10 @@ const SettingsDropDown = ({
       <Dropdown.Item onClick={onPlayerNameChange}>Change Name/Color</Dropdown.Item>
       <Dropdown.Item onClick={onTeamChange}>Change Team</Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item onClick={onTogglePauseGame}>{pauseState === "Paused" ? "Resume Game" : "Pause Game"}</Dropdown.Item>
-      <Dropdown.Divider />
       <Dropdown.Item onClick={onToggleHideRemainingTime}>Hide Remaining Time{hideRemainingTime ? " ✓" : ""}</Dropdown.Item>
       <Dropdown.Item onClick={onToggleVibrate}>Vibrations{disableVibrate ? "" : " ✓"}</Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item onClick={onTogglePauseGame}>{pauseState === "Paused" ? "Resume Game" : "Pause Game"}</Dropdown.Item>
     </DropdownButton>
   );
 };
