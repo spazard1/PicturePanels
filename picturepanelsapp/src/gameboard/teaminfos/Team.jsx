@@ -16,7 +16,6 @@ function Team({
   turnTime,
   turnTimeTotal,
   turnTimeRemaining,
-  pauseTurnRemainingTime,
   teamGuessStatus,
   teamGuess,
   teamGuessIncorrect,
@@ -43,13 +42,7 @@ function Team({
   return (
     <div className={teamClassNames}>
       {isCountdownActive && (
-        <Countdown
-          isPaused={isPaused}
-          turnTime={turnTime}
-          turnTimeTotal={turnTimeTotal}
-          turnTimeRemaining={turnTimeRemaining}
-          pauseTurnRemainingTime={pauseTurnRemainingTime}
-        ></Countdown>
+        <Countdown isPaused={isPaused} turnTime={turnTime} turnTimeTotal={turnTimeTotal} turnTimeRemaining={turnTimeRemaining}></Countdown>
       )}
       <div className="teamName">{teamName}</div>
       <div className="teamInfoIncorrectGuesses">
@@ -79,7 +72,6 @@ Team.propTypes = {
   turnTime: PropTypes.number,
   turnTimeTotal: PropTypes.number,
   turnTimeRemaining: PropTypes.number,
-  pauseTurnRemainingTime: PropTypes.number,
   teamGuessStatus: PropTypes.string,
   teamGuess: PropTypes.string,
   teamGuessIncorrect: PropTypes.bool,

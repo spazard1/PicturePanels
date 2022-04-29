@@ -54,26 +54,22 @@ namespace PicturePanels.Services
             this.signalRHelper = signalRHelper;
         }
 
-        public async Task ToNextTurnTypeAsync(GameStateTableEntity gameState)
+        public async Task<GameStateTableEntity> ToNextTurnTypeAsync(GameStateTableEntity gameState)
         {
             switch (gameState.TurnType)
             {
                 case GameStateTableEntity.TurnTypeWelcome:
-                    await this.StartGameAsync(gameState);
-                    break;
+                    return await this.StartGameAsync(gameState);
                 case GameStateTableEntity.TurnTypeOpenPanel:
-                    await this.OpenMostVotesPanelAsync(gameState);
-                    break;
+                    return await this.OpenMostVotesPanelAsync(gameState);
                 case GameStateTableEntity.TurnTypeMakeGuess:
-                    await this.SubmitMostVotesTeamGuessAsync(gameState);
-                    break;
+                    return await this.SubmitMostVotesTeamGuessAsync(gameState);
                 case GameStateTableEntity.TurnTypeGuessesMade:
-                    await this.ExitGuessesMadeAsync(gameState);
-                    break;
+                    return await this.ExitGuessesMadeAsync(gameState);
                 case GameStateTableEntity.TurnTypeEndRound:
-                    await this.ExitEndRoundAsync(gameState);
-                    break;
+                    return await this.ExitEndRoundAsync(gameState);
             }
+            return null;
         }
 
         public async Task<GameStateTableEntity> QueueStartGameAsync(GameStateTableEntity gameState, PlayerTableEntity playerModel)
@@ -134,11 +130,16 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> PauseGameAsync(GameStateTableEntity gameState)
         {
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return gameState;
+            }
+
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
                 var remainingTime = gs.TurnEndTime - DateTime.UtcNow;
                 gs.PauseState = GameStateTableEntity.PauseStatePaused;
-                gs.PauseTurnRemainingTime = remainingTime.HasValue && remainingTime.Value.TotalSeconds > 0 ? Math.Ceiling(remainingTime.Value.TotalSeconds) : -1;
+                gs.PauseTurnRemainingTime = remainingTime.HasValue && remainingTime.Value.TotalSeconds > 0 ? remainingTime.Value.TotalSeconds : -1;
             });
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
@@ -148,6 +149,11 @@ namespace PicturePanels.Services
 
         public async Task<GameStateTableEntity> ResumeGameAsync(GameStateTableEntity gameState)
         {
+            if (gameState.PauseState != GameStateTableEntity.PauseStatePaused)
+            {
+                return gameState;
+            }
+
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
                 gs.PauseState = null;
@@ -163,9 +169,9 @@ namespace PicturePanels.Services
                 {
                     gs.TurnEndTime = gs.GuessTime > 0 ? DateTime.UtcNow.AddSeconds(gs.GuessTime) : DateTime.UtcNow.AddSeconds(GameStateTableEntity.DefaultMakeGuessTime);
                 }
-                else
+                else 
                 {
-                    gs.TurnEndTime = null;
+                    gs.TurnEndTime = DateTime.UtcNow.AddSeconds(10);
                 }
                 gs.PauseTurnRemainingTime = 0;
             });

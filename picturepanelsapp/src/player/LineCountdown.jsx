@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import "./LineCountdown.css";
 
-const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime }) => {
+const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => {
   const intervalRef = useRef();
   const endTimeRef = useRef();
   const countdownMax = useRef();
@@ -29,7 +29,7 @@ const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, t
     clearInterval(intervalRef.current);
 
     if (isPaused) {
-      currentCountdown.current = pauseTurnRemainingTime * 1000;
+      currentCountdown.current = turnTimeRemaining * 1000;
       setPercentageRemaining(100 - (Math.min(currentCountdown.current, countdownMax.current) / countdownMax.current) * 100);
       return;
     }
@@ -43,7 +43,7 @@ const LineCountdown = ({ isCountdownActive, isPaused, turnTime, turnTimeTotal, t
 
       setPercentageRemaining(100 - (Math.min(currentCountdown.current, countdownMax.current) / countdownMax.current) * 100);
     }, 1000 / frameRate);
-  }, [isCountdownActive, isPaused, turnTime, turnTimeTotal, turnTimeRemaining, pauseTurnRemainingTime]);
+  }, [isCountdownActive, isPaused, turnTime, turnTimeTotal, turnTimeRemaining]);
 
   return (
     <div className="lineCountdownContainer">
@@ -60,5 +60,4 @@ LineCountdown.propTypes = {
   turnTime: PropTypes.number,
   turnTimeTotal: PropTypes.number,
   turnTimeRemaining: PropTypes.number,
-  pauseTurnRemainingTime: PropTypes.number,
 };
