@@ -32,5 +32,6 @@
 }
 
 .gameRoundScoreZero {
-  opacity: 0;
+  border: 5px solid #444;
+  background-color: #777;
 }

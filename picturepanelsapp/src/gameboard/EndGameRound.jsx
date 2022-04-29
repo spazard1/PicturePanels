@@ -12,11 +12,15 @@ const EndGameRound = ({ gameStateId, gameRound }) => {
         />
       )}
       <div className="gameRoundScoreContainer">
-        <div className={classNames("gameRoundScore", "teamOneBox", { gameRoundScoreZero: gameRound.teamOneScore === 0 })}>
-          {gameRound.teamOneScore}
-        </div>
-        <div className={classNames("gameRoundScore", "teamTwoBox", { gameRoundScoreZero: gameRound.teamTwoScore === 0 })}>
-          {gameRound.teamTwoScore}
+        <div
+          className={classNames("gameRoundScore", {
+            teamOneBox: gameRound.teamOneScore > gameRound.teamTwoScore,
+            teamTwoBox: gameRound.teamOneScore < gameRound.teamTwoScore,
+            gameRoundScoreZero: gameRound.teamOneScore === gameRound.teamTwoScore,
+          })}
+        >
+          {gameRound.teamOneScore === gameRound.teamTwoScore && <>&ndash;</>}
+          {gameRound.teamOneScore !== gameRound.teamTwoScore && <>+{Math.abs(gameRound.teamOneScore - gameRound.teamTwoScore)}</>}
         </div>
       </div>
       {gameRound.roundNumber <= 5 && (
