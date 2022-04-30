@@ -12,6 +12,7 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
   const messagesEndRef = useRef();
   const firstLoadRef = useRef(true);
   const scrolledToBottom = useRef(false);
+  const chatInputRef = useRef();
 
   const onLoading = useCallback(() => {}, []);
   const { chats, playersTyping, sendChat, sendTyping } = useChats(gameStateId, playerId, teamNumber, onLoading);
@@ -20,6 +21,7 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
     sendChat(chatInput);
     setChatInput("");
     scrollToBottom();
+    chatInputRef.current.focus();
   };
 
   const onScroll = () => {
@@ -83,18 +85,14 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
       {Object.keys(playersTyping).length > 0 && (
         <div className="chat othersChat">
           {Object.values(playersTyping).map((player, i) => (
-            <>
+            <span key={player.playerId}>
               {i > 0 && i < maxTypingPlayersDisplay && <span>, </span>}
-              {i < maxTypingPlayersDisplay && (
-                <span key={player.playerId} style={{ color: player.color }}>
-                  {player.name}
-                </span>
-              )}
+              {i < maxTypingPlayersDisplay && <span style={{ color: player.color }}>{player.name}</span>}
               {i === maxTypingPlayersDisplay && (
                 <span key={"numberOfOtherPlayers"}> (+{Object.keys(playersTyping).length - maxTypingPlayersDisplay})</span>
               )}
               {i > maxTypingPlayersDisplay && <></>}
-            </>
+            </span>
           ))}
           <span>: </span>
           <span className="ellipsis ellipsis1">.</span>
@@ -111,6 +109,7 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
             placeholder="chat with your team..."
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
+            ref={chatInputRef}
           ></textarea>
         </div>
         <Button className={"chatSendButton"} variant="primary" onClick={sendChatOnClick}>
