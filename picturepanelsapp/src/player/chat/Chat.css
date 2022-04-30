@@ -1,10 +1,18 @@
 /* stylelint-disable selector-class-pattern */
-.chats {
-  flex: 1 1 auto;
+
+.chatsContainer {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.chats {
+  display: flex;
+  flex: 1 1 auto;
   overflow-y: visible;
   overflow-x: hidden;
+  flex-direction: column;
   box-sizing: border-box;
   margin-bottom: 2px;
 }
@@ -19,7 +27,7 @@
   margin-left: 1vw;
   margin-right: auto;
   margin-bottom: 4px;
-  font-size: 0.5em;
+  font-size: 1rem;
   max-width: 70%;
   padding: 0 10px;
   border-radius: 15px;
@@ -35,7 +43,7 @@
 }
 
 .othersChat {
-  background-color: rgb(60 60 60);
+  background-color: rgb(55 55 55);
 }
 
 .selfChat {
@@ -55,27 +63,25 @@
   flex: 0 0 auto;
   width: 100vw;
   display: flex;
+  margin-top: 2px;
   margin-bottom: 3px;
   align-items: flex-end;
 }
 
 .chatInputText {
-  font-size: 0.7em;
+  font-size: 1.1rem;
   text-align: left;
   border-radius: 15px;
-  padding: 2px;
-  margin: 3px 0;
+  padding: 0s;
+  margin: 3px;
   flex: 1;
   width: 0;
 }
 
 .chatSendButton {
+  font-size: 1rem;
+  margin-left: 4px;
   flex: none;
-}
-
-.chat img {
-  object-fit: contain;
-  width: 100%;
 }
 
 .ellipsis {
@@ -116,7 +122,7 @@
 
 @media only screen and (min-width: 1000px) {
   .chat {
-    font-size: 0.55em;
+    font-size: 1rem;
   }
 
   .chatInputContainer {

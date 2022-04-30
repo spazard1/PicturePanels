@@ -39,6 +39,7 @@ export default function Gameboard() {
   const roundNumberRef = useRef();
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
+  const winningTeamName = useRef();
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -160,6 +161,24 @@ export default function Gameboard() {
     }, 8000);
   }, [gameState]);
 
+  useEffect(() => {
+    if (gameState && gameState.turnType === "EndGame") {
+      if (gameState.teamOneScore > gameState.teamTwoScore) {
+        winningTeamName.current = gameState.teamOneName;
+      } else if (gameState.teamOneScore < gameState.teamTwoScore) {
+        winningTeamName.current = gameState.teamTwoName;
+      } else {
+        if (gameState.teamOneIncorrectGuesses < gameState.teamTwoIncorrectGuesses) {
+          winningTeamName.current = gameState.teamOneName;
+        } else if (gameState.teamOneIncorrectGuesses > gameState.teamTwoIncorrectGuesses) {
+          winningTeamName.current = gameState.teamTwoName;
+        } else {
+          winningTeamName.current = "";
+        }
+      }
+    }
+  }, [gameState]);
+
   return (
     <>
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
@@ -192,7 +211,9 @@ export default function Gameboard() {
           teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
         />
       )}
-      {gameState && gameState.turnType === "EndGame" && <EndGame gameStateId={gameState.gameStateId}></EndGame>}
+      {gameState && gameState.turnType === "EndGame" && (
+        <EndGame gameStateId={gameState.gameStateId} winningTeamName={winningTeamName.current}></EndGame>
+      )}
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"
