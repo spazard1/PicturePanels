@@ -1,6 +1,7 @@
 ﻿/* stylelint-disable keyframes-name-pattern */
 /* stylelint-disable selector-class-pattern */
-html body.player {
+html,
+body.player {
   -webkit-overflow-scrolling: touch !important;
   overflow: auto !important;
   height: 100% !important;
@@ -10,9 +11,13 @@ html body.player {
   background-color: #000;
 }
 
-.main {
+body.player #root {
   padding: 0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: auto;
 }
 
 .pauseAlert {
@@ -140,7 +145,7 @@ html body.player {
     right: 25vw;
   }
 
-  .main {
+  body.player #root {
     width: 50vw;
   }
 

@@ -5,7 +5,7 @@ import EndGameRound from "./EndGameRound";
 
 import "./EndGame.css";
 
-const EndGame = ({ gameStateId }) => {
+const EndGame = ({ gameStateId, winningTeamName }) => {
   const [gameRounds, setGameRounds] = useState([]);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const EndGame = ({ gameStateId }) => {
 
   return (
     <div className="endGameContainer center">
-      <div className="endGameWinner">Placeholder winner!</div>
+      <div className="endGameWinner">{winningTeamName ? winningTeamName + " wins!" : "It's a tie game!"}</div>
       <div className="endGameRounds">
         {gameRounds.map((gr) => (
           <EndGameRound key={gr.roundNumber} gameStateId={gameStateId} gameRound={gr}></EndGameRound>
@@ -34,4 +34,5 @@ export default EndGame;
 
 EndGame.propTypes = {
   gameStateId: PropTypes.string.isRequired,
+  winningTeamName: PropTypes.string,
 };

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import getGameState from "../common/getGameState";
-import Chat from "./Chat";
+import Chat from "./chat/Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
@@ -42,6 +42,8 @@ export default function Player() {
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
+  const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
+
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
@@ -116,6 +118,13 @@ export default function Player() {
   const [isResuming, setIsResuming] = useState(true);
 
   const tryResumeGame = useCallback(() => {
+    if (resumeGameRef.current.gameState && resumeGameRef.current.gameState.turnType === "EndGame") {
+      localStorage.removeItem("gameStateId");
+      setCachedGameStateId("");
+      setIsResuming(false);
+      return;
+    }
+
     if (resumeGameRef.current.player && resumeGameRef.current.gameState && !resumeGameRef.current.isResumed) {
       resumeGameRef.current.isResumed = true;
       setGameState(resumeGameRef.current.gameState);
@@ -262,11 +271,19 @@ export default function Player() {
   }
 
   return (
-    <div className="main center">
+    <>
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
-      {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} onColorChange={onColorChange}></JoinGame>}
+      {!gameState && (
+        <JoinGame
+          color={color}
+          isLoading={isLoading}
+          onJoinGame={onJoinGame}
+          onColorChange={onColorChange}
+          cachedGameStateId={cachedGameStateId}
+        ></JoinGame>
+      )}
 
       {gameState && (
         <LineCountdown
@@ -321,15 +338,17 @@ export default function Player() {
                 roundNumber={gameState.roundNumber}
                 isPaused={gameState.pauseState === "Paused"}
               ></PanelButtons>
-              <Button
-                className="panelButtonsVoteButton"
-                variant="primary"
-                size="lg"
-                disabled={isLoading || gameState.pauseState === "Paused"}
-                onClick={openPanelVoteOnClick}
-              >
-                {isLoading ? "Voting..." : "Vote!"}
-              </Button>
+              <div>
+                <Button
+                  className="panelButtonsVoteButton"
+                  variant="primary"
+                  size="lg"
+                  disabled={isLoading || gameState.pauseState === "Paused"}
+                  onClick={openPanelVoteOnClick}
+                >
+                  {isLoading ? "Voting..." : "Vote!"}
+                </Button>
+              </div>
             </>
           )}
 
@@ -345,9 +364,9 @@ export default function Player() {
             onTeamGuessVote={onTeamGuessVote}
           ></TeamGuesses>
 
-          <Chat></Chat>
+          <Chat gameStateId={gameStateId} playerId={player.playerId} teamNumber={teamNumber}></Chat>
         </>
       )}
-    </div>
+    </>
   );
 }
