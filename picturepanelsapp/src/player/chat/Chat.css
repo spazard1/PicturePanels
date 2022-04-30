@@ -17,6 +17,10 @@
   margin-bottom: 2px;
 }
 
+.chats > :first-child {
+  margin-top: auto !important;
+}
+
 .chatsHighlight {
   border: 3px solid dodgerblue;
 }
@@ -88,6 +92,7 @@
   position: relative;
   animation: ellipsis 1s infinite;
   font-weight: bold;
+  margin-left: 1px;
 }
 
 .ellipsis1 {
