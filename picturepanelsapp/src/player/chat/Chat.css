@@ -78,6 +78,7 @@
   border-radius: 15px;
   padding: 0s;
   margin: 3px;
+  margin-left: 1vw;
   flex: 1;
   width: 0;
 }
@@ -85,6 +86,7 @@
 .chatSendButton {
   font-size: 1rem;
   margin-left: 4px;
+  margin-right: 1vw;
   flex: none;
 }
 
