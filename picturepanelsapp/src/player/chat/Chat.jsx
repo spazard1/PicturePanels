@@ -14,7 +14,7 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
   const scrolledToBottom = useRef(false);
 
   const onLoading = useCallback(() => {}, []);
-  const { chats, sendChat } = useChats(gameStateId, playerId, teamNumber, onLoading);
+  const { chats, playersTyping, sendChat, sendTyping } = useChats(gameStateId, playerId, teamNumber, onLoading);
 
   const sendChatOnClick = () => {
     sendChat(chatInput);
@@ -34,6 +34,14 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
   };
 
   useEffect(() => {
+    if (!chatInput) {
+      return;
+    }
+
+    sendTyping();
+  }, [sendTyping, chatInput]);
+
+  useEffect(() => {
     if (!chats || chats.length === 0) {
       return;
     }
@@ -48,6 +56,8 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
       scrollToBottom();
     }
   }, [chats]);
+
+  const maxTypingPlayersDisplay = 3;
 
   return (
     <div className={"chatsContainer"}>
@@ -70,6 +80,28 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
+      {Object.keys(playersTyping).length > 0 && (
+        <div className="chat othersChat">
+          {Object.values(playersTyping).map((player, i) => (
+            <>
+              {i > 0 && i < maxTypingPlayersDisplay && <span>, </span>}
+              {i < maxTypingPlayersDisplay && (
+                <span key={player.playerId} style={{ color: player.color }}>
+                  {player.name}
+                </span>
+              )}
+              {i === maxTypingPlayersDisplay && (
+                <span key={"numberOfOtherPlayers"}> (+{Object.keys(playersTyping).length - maxTypingPlayersDisplay})</span>
+              )}
+              {i > maxTypingPlayersDisplay && <></>}
+            </>
+          ))}
+          <span>: </span>
+          <span className="ellipsis ellipsis1">.</span>
+          <span className="ellipsis ellipsis2">.</span>
+          <span className="ellipsis ellipsis3">.</span>
+        </div>
+      )}
       <div className="chatInputContainer">
         <div className="chatInputText grow-wrap" data-replicated-value={chatInput}>
           <textarea
