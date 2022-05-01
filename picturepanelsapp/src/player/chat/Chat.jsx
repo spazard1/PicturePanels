@@ -110,6 +110,7 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
             ref={chatInputRef}
+            onFocus={scrollToBottom}
           ></textarea>
         </div>
         <Button className={"chatSendButton"} variant="primary" onClick={sendChatOnClick}>
