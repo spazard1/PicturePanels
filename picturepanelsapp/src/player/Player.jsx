@@ -44,7 +44,7 @@ export default function Player() {
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
   const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
-  const [teamNameDisplay, setTeamNameDisplay] = useState("");
+  const [teamNameToast, setTeamNameToast] = useState("");
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
@@ -98,9 +98,9 @@ export default function Player() {
     } else {
       setTeamNumber(teamNumber);
       if (teamNumber === 1) {
-        setTeamNameDisplay("You have joined " + gameState.teamOneName);
+        setTeamNameToast("You have joined " + gameState.teamOneName);
       } else {
-        setTeamNameDisplay("You have joined " + gameState.teamTwoName);
+        setTeamNameToast("You have joined " + gameState.teamTwoName);
       }
     }
   };
@@ -285,8 +285,8 @@ export default function Player() {
         <Toast className="pauseToast" show={gameState && gameState.pauseState === "Paused"} bg="warning">
           Game is paused
         </Toast>
-        <Toast className="teamNameToast" onClose={() => setTeamNameDisplay("")} show={teamNameDisplay !== ""} delay={6000} autohide bg="info">
-          <Toast.Body>{teamNameDisplay}</Toast.Body>
+        <Toast className="teamNameToast" onClose={() => setTeamNameToast("")} show={teamNameToast !== ""} delay={6000} autohide bg="info">
+          <Toast.Body>{teamNameToast}</Toast.Body>
         </Toast>
       </ToastContainer>
 
@@ -375,7 +375,12 @@ export default function Player() {
             onTeamGuessVote={onTeamGuessVote}
           ></TeamGuesses>
 
-          <Chat gameStateId={gameStateId} playerId={player.playerId} teamNumber={teamNumber}></Chat>
+          <Chat
+            gameStateId={gameStateId}
+            playerId={player.playerId}
+            teamNumber={teamNumber}
+            teamName={teamNumber === 1 ? gameState.teamOneName : gameState.teamTwoName}
+          ></Chat>
         </>
       )}
     </>
