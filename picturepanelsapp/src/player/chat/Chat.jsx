@@ -59,6 +59,12 @@ const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
     }
   }, [chats]);
 
+  useEffect(() => {
+    window.onresize = () => {
+      scrollToBottom();
+    };
+  }, []);
+
   const maxTypingPlayersDisplay = 3;
 
   return (
