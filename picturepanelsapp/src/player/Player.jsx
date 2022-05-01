@@ -14,7 +14,8 @@ import { useModal } from "../common/modal/useModal";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
 import Button from "react-bootstrap/Button";
-import Alert from "react-bootstrap/Alert";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
 import putPlayerOpenPanelVote from "./putPlayerOpenPanelVote";
 import getPlayer from "./getPlayer";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
@@ -43,6 +44,7 @@ export default function Player() {
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
   const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
+  const [teamNameDisplay, setTeamNameDisplay] = useState("");
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
@@ -95,6 +97,11 @@ export default function Player() {
       setModalMessage("Could not join the game. Refresh the page and try again.");
     } else {
       setTeamNumber(teamNumber);
+      if (teamNumber === 1) {
+        setTeamNameDisplay("You have joined " + gameState.teamOneName);
+      } else {
+        setTeamNameDisplay("You have joined " + gameState.teamTwoName);
+      }
     }
   };
 
@@ -274,6 +281,14 @@ export default function Player() {
     <>
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
+      <ToastContainer position={"top-center"}>
+        <Toast className="pauseToast" show={gameState && gameState.pauseState === "Paused"} bg="warning">
+          Game is paused
+        </Toast>
+        <Toast className="teamNameToast" onClose={() => setTeamNameDisplay("")} show={teamNameDisplay !== ""} delay={6000} autohide bg="info">
+          <Toast.Body>{teamNameDisplay}</Toast.Body>
+        </Toast>
+      </ToastContainer>
 
       {!gameState && (
         <JoinGame
@@ -324,10 +339,6 @@ export default function Player() {
             onToggleHideRemainingTime={onToggleHideRemainingTime}
             onToggleVibrate={onToggleVibrate}
           ></SettingsDropDown>
-
-          <Alert className="pauseAlert" show={gameState && gameState.pauseState === "Paused"} variant="success">
-            Game is paused
-          </Alert>
 
           {gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber && !player.isReady && (
             <>
