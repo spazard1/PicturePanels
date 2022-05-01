@@ -13,7 +13,7 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
 
   useEffect(() => {
     setFormValues((fv) => {
-      return { ...fv, gameStateId: cachedGameStateId };
+      return { ...fv, gameStateId: cachedGameStateId ?? "" };
     });
   }, [cachedGameStateId]);
 
