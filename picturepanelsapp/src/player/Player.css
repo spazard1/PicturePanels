@@ -20,8 +20,18 @@ body.player #root {
   margin: auto;
 }
 
-.pauseAlert {
-  font-size: 1.5rem;
+.toast-container {
+  z-index: 100;
+  margin-top: 5px;
+}
+
+.pauseToast {
+  font-size: 1.3rem;
+  user-select: none;
+}
+
+.teamNameToast {
+  font-size: 1.3rem;
   user-select: none;
 }
 
