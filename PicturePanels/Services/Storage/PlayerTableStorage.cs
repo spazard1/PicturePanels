@@ -34,7 +34,7 @@ namespace PicturePanels.Services.Storage
 
         public async Task<Dictionary<string, PlayerTableEntity>> GetAllPlayersDictionaryAsync(string gameStateId)
         {
-            var players = GetActivePlayersAsync(gameStateId);
+            var players = GetAllFromPartitionAsync(gameStateId);
             var playerDictionary = new Dictionary<string, PlayerTableEntity>();
 
             await foreach (var player in players)
