@@ -6,7 +6,7 @@ import "./Chat.css";
 import { useChats } from "./useChats";
 import classNames from "classnames";
 
-const Chat = ({ gameStateId, playerId, teamNumber }) => {
+const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
   const [chatInput, setChatInput] = useState();
   const chatsRef = useRef();
   const messagesEndRef = useRef();
@@ -106,7 +106,7 @@ const Chat = ({ gameStateId, playerId, teamNumber }) => {
             name="text"
             rows="1"
             maxLength="150"
-            placeholder="chat with your team..."
+            placeholder={"chat with " + teamName + "..."}
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
             ref={chatInputRef}
@@ -127,4 +127,5 @@ Chat.propTypes = {
   gameStateId: PropTypes.string,
   playerId: PropTypes.string,
   teamNumber: PropTypes.number,
+  teamName: PropTypes.string,
 };
