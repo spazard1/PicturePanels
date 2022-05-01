@@ -4,7 +4,7 @@ import TeamScoreChange from "./TeamScoreChange";
 import { useSignalR } from "../../signalr/useSignalR";
 import "./ScoreBoard.css";
 
-function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnType }) {
+function ScoreBoard({ teamOneScore, teamTwoScore, teamTurn, turnType }) {
   const [turnTypeDisplay, setTurnTypeDisplay] = useState("");
   const [scoreChange, setScoreChange] = useState({});
   const [scoreDisplay, setScoreDisplay] = useState({ teamOne: teamOneScore, teamTwo: teamTwoScore });
@@ -35,8 +35,6 @@ function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnTy
       setTurnTypeDisplay("");
     } else if (turnType === "Welcome") {
       setTurnTypeDisplay("Welcome");
-    } else if (isGamePaused) {
-      setTurnTypeDisplay("Paused");
     } else if (turnType === "OpenPanel" && teamTurn === 1) {
       setTurnTypeDisplay("← Open a Panel");
     } else if (turnType === "OpenPanel" && teamTurn === 2) {
@@ -50,7 +48,7 @@ function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnTy
     } else if (turnType === "EndGame") {
       setTurnTypeDisplay("Congratulations");
     }
-  }, [teamTurn, turnType, isGamePaused]);
+  }, [teamTurn, turnType]);
 
   return (
     <div className="scoreBoard">
@@ -70,7 +68,6 @@ function ScoreBoard({ teamOneScore, teamTwoScore, isGamePaused, teamTurn, turnTy
 ScoreBoard.propTypes = {
   teamOneScore: PropTypes.number.isRequired,
   teamTwoScore: PropTypes.number.isRequired,
-  isGamePaused: PropTypes.bool.isRequired,
   teamTurn: PropTypes.number,
   turnType: PropTypes.string,
 };

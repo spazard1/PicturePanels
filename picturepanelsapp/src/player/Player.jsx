@@ -22,6 +22,7 @@ import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import SettingsDropDown from "./SettingsDropDown";
 import { usePlayerVibrate } from "./usePlayerVibrate";
 import LineCountdown from "./LineCountdown";
+import { useWinningTeam } from "../common/useWinningTeam";
 
 import "./Player.css";
 import "animate.css";
@@ -45,6 +46,7 @@ export default function Player() {
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
   const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
   const [teamNameToast, setTeamNameToast] = useState("");
+  const { isWinner } = useWinningTeam(gameState, teamNumber);
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
@@ -281,14 +283,6 @@ export default function Player() {
     <>
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
-      <ToastContainer position={"top-center"}>
-        <Toast className="pauseToast" show={gameState && gameState.pauseState === "Paused"} bg="warning">
-          Game is paused
-        </Toast>
-        <Toast className="teamNameToast" onClose={() => setTeamNameToast("")} show={teamNameToast !== ""} delay={6000} autohide bg="info">
-          <Toast.Body>{teamNameToast}</Toast.Body>
-        </Toast>
-      </ToastContainer>
 
       {!gameState && (
         <JoinGame
@@ -300,20 +294,33 @@ export default function Player() {
         ></JoinGame>
       )}
 
-      {gameState && (
-        <LineCountdown
-          isCountdownActive={
-            player &&
-            !hideRemainingTime &&
-            ((gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
-              (gameState.turnType === "MakeGuess" &&
-                ((teamNumber === 1 && !gameState.teamOneGuessStatus) || (teamNumber === 2 && !gameState.teamTwoGuessStatus))))
-          }
-          isPaused={gameState.pauseState === "Paused"}
-          turnTime={gameState.turnTime}
-          turnTimeTotal={gameState.turnTimeTotal}
-          turnTimeRemaining={gameState.turnTimeRemaining}
-        ></LineCountdown>
+      {gameState && teamNumber && (
+        <>
+          <ToastContainer position={"top-center"}>
+            <Toast className="pauseToast" show={gameState.pauseState === "Paused"} bg="warning">
+              Game is paused
+            </Toast>
+            <Toast className="winnerToast" show={gameState.turnType === "EndGame"} bg={isWinner ? "success" : "danger"}>
+              <Toast.Body>{isWinner ? "Congratulations! Your team wins!" : "Your team didn't win. Maybe next time..."}</Toast.Body>
+            </Toast>
+            <Toast className="teamNameToast" onClose={() => setTeamNameToast("")} show={teamNameToast !== ""} delay={6000} autohide bg="info">
+              <Toast.Body>{teamNameToast}</Toast.Body>
+            </Toast>
+          </ToastContainer>
+          <LineCountdown
+            isCountdownActive={
+              player &&
+              !hideRemainingTime &&
+              ((gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
+                (gameState.turnType === "MakeGuess" &&
+                  ((teamNumber === 1 && !gameState.teamOneGuessStatus) || (teamNumber === 2 && !gameState.teamTwoGuessStatus))))
+            }
+            isPaused={gameState.pauseState === "Paused"}
+            turnTime={gameState.turnTime}
+            turnTimeTotal={gameState.turnTimeTotal}
+            turnTimeRemaining={gameState.turnTimeRemaining}
+          ></LineCountdown>
+        </>
       )}
 
       {gameState && !teamNumber && (
