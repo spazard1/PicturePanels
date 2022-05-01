@@ -19,6 +19,9 @@ import EndGame from "./EndGame";
 import ModalMessage from "../common/modal/ModalMessage";
 import { useModal } from "../common/modal/useModal";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
+import { useWinningTeam } from "../common/useWinningTeam";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -39,7 +42,7 @@ export default function Gameboard() {
   const roundNumberRef = useRef();
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
-  const winningTeamName = useRef();
+  const { winningTeam } = useWinningTeam(gameState);
 
   const onStartGameStateChange = (startGameState) => {
     setStartGameState(startGameState);
@@ -161,28 +164,18 @@ export default function Gameboard() {
     }, 8000);
   }, [gameState]);
 
-  useEffect(() => {
-    if (gameState && gameState.turnType === "EndGame") {
-      if (gameState.teamOneScore > gameState.teamTwoScore) {
-        winningTeamName.current = gameState.teamOneName;
-      } else if (gameState.teamOneScore < gameState.teamTwoScore) {
-        winningTeamName.current = gameState.teamTwoName;
-      } else {
-        if (gameState.teamOneIncorrectGuesses < gameState.teamTwoIncorrectGuesses) {
-          winningTeamName.current = gameState.teamOneName;
-        } else if (gameState.teamOneIncorrectGuesses > gameState.teamTwoIncorrectGuesses) {
-          winningTeamName.current = gameState.teamTwoName;
-        } else {
-          winningTeamName.current = "";
-        }
-      }
-    }
-  }, [gameState]);
-
   return (
     <>
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
+
+      {gameState && (
+        <ToastContainer position={"middle-center"}>
+          <Toast className="pauseToast" show={gameState.pauseState === "Paused"} bg="warning">
+            Game is paused
+          </Toast>
+        </ToastContainer>
+      )}
 
       {gameState && <SettingsDropDown gameStateId={gameState.gameStateId} pauseState={gameState.pauseState}></SettingsDropDown>}
       {startGameState !== "Playing" && (
@@ -211,9 +204,7 @@ export default function Gameboard() {
           teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
         />
       )}
-      {gameState && gameState.turnType === "EndGame" && (
-        <EndGame gameStateId={gameState.gameStateId} winningTeamName={winningTeamName.current}></EndGame>
-      )}
+      {gameState && gameState.turnType === "EndGame" && <EndGame gameStateId={gameState.gameStateId} winningTeamName={winningTeam}></EndGame>}
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"

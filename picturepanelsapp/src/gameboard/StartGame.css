@@ -3,9 +3,9 @@
   padding: 2vh 2vw;
   font-size: 3vh;
   position: absolute;
-  width: 60vw;
+  width: 66vw;
   top: 15vh;
-  left: 20vw;
+  left: 17vw;
   background-color: rgba(0 0 0 / 90%);
   z-index: 900;
   text-align: center;
@@ -46,7 +46,7 @@
 }
 
 .startGameTeamName {
-  width: 25vw;
+  width: 24vw;
   margin: 0 0.75rem;
 }
 
