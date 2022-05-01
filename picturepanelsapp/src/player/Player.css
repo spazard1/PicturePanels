@@ -21,16 +21,10 @@ body.player #root {
 }
 
 .toast-container {
-  z-index: 100;
   margin-top: 5px;
 }
 
-.pauseToast {
-  font-size: 1.3rem;
-  user-select: none;
-}
-
-.teamNameToast {
+.toast-body {
   font-size: 1.3rem;
   user-select: none;
 }

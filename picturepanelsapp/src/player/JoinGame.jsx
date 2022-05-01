@@ -1,15 +1,21 @@
-import React, { useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "./ColorPicker";
 import Button from "react-bootstrap/Button";
 
 import "./JoinGame.css";
 
-const JoinGame = ({ color, isLoading, onJoinGame, onColorChange }) => {
+const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameStateId }) => {
   const [formValues, setFormValues] = useState({
     playerName: localStorage.getItem("playerName") ?? "",
-    gameStateId: localStorage.getItem("gameStateId") ?? "",
+    gameStateId: cachedGameStateId ?? "",
   });
+
+  useEffect(() => {
+    setFormValues((fv) => {
+      return { ...fv, gameStateId: cachedGameStateId };
+    });
+  }, [cachedGameStateId]);
 
   const onInputChange = useCallback(
     (event) => {
@@ -79,4 +85,5 @@ JoinGame.propTypes = {
   isLoading: PropTypes.bool,
   onJoinGame: PropTypes.func.isRequired,
   onColorChange: PropTypes.func.isRequired,
+  cachedGameStateId: PropTypes.string,
 };

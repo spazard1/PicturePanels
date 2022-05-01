@@ -27,7 +27,6 @@ function TeamInfos({ gameState }) {
           teamGuessIncorrect={!gameState.teamOneCorrect}
         />
         <ScoreBoard
-          isGamePaused={gameState.pauseState === "Paused"}
           teamTurn={gameState.teamTurn}
           turnType={gameState.turnType}
           teamOneScore={gameState.teamOneScore ?? 0}

@@ -88,6 +88,10 @@ input:focus {
   color: black;
 }
 
+.toast-container {
+  z-index: 100;
+}
+
 .loginPrompt {
   color: black;
 }
@@ -99,18 +103,6 @@ input:focus {
 
 .tagsInput {
   font-size: 2vh;
-}
-
-#signalRConnectionState {
-  position: fixed;
-  bottom: 0;
-  z-index: 10000;
-  background-color: black;
-  box-sizing: border-box;
-  padding: 0.3em;
-  border: 3px solid red;
-  text-align: center;
-  width: 100%;
 }
 
 .newUser {
