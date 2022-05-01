@@ -49,7 +49,7 @@ namespace PicturePanels.Controllers
         public async Task<IActionResult> GetAsync(string gameStateId, string playerId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
-            if (gameState == null || gameState.TurnType == GameStateTableEntity.TurnTypeEndGame)
+            if (gameState == null)
             {
                 return StatusCode(404);
             }
@@ -72,12 +72,12 @@ namespace PicturePanels.Controllers
             {
                 playerModel = new PlayerTableEntity()
                 {
+                    GameStateId = gameStateId,
+                    PlayerId = Guid.NewGuid().ToString(),
                     Name = GetPlayerName(entity.Name),
                     TeamNumber = entity.TeamNumber,
                     Color = entity.Color,
                     LastPingTime = DateTime.UtcNow,
-                    GameStateId = gameStateId,
-                    PlayerId = Guid.NewGuid().ToString(),
                     SelectedPanels = new List<string>()
                 };
                 await this.playerTableStorage.InsertAsync(playerModel);
