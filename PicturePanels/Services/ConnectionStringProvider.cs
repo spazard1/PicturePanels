@@ -1,10 +1,16 @@
 ﻿using PicturePanels.Services;
+using PicturePanels.Services.Authentication;
 
 namespace PicturePanels.Services
 {
     public class ConnectionStringProvider : IConnectionStringProvider
     {
-        public string ConnectionString => "***REMOVED***";
+        public ConnectionStringProvider(SecretProvider secretProvider)
+        {
+            this.ConnectionString = secretProvider.LoadSecretAsync("picturegame-storageaccount").Result;
+        }
+
+        public string ConnectionString { get; }
 
         public string AccountKey {
             get {
