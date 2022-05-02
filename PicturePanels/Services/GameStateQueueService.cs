@@ -1,6 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 using PicturePanels.Models;
+using PicturePanels.Services.Authentication;
 using System;
 using System.Threading.Tasks;
 
@@ -12,13 +13,13 @@ namespace PicturePanels.Services
 
         public ServiceBusSender Sender { get; }
 
-        public GameStateQueueService()
+        public GameStateQueueService(SecretProvider secretProvider)
         {
             #if DEBUG
-                Client = new ServiceBusClient("***REMOVED***");
-            #else
-                Client = new ServiceBusClient("***REMOVED***");
-            #endif
+                Client = new ServiceBusClient(secretProvider.LoadSecretAsync("picturepanels-servicebus-dev").Result);
+#else
+                Client = new ServiceBusClient(secretProvider.LoadSecretAsync("picturepanels-servicebus-prod").Result);
+#endif
             Sender = Client.CreateSender("gamestateupdates");
         }
 

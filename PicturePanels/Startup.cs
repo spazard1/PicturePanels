@@ -70,6 +70,8 @@ namespace PicturePanels
             services.AddSingleton<SignalRHelper>();
             services.AddSingleton<GameStateService>();
             services.AddSingleton<ChatService>();
+            services.AddSingleton<KeyVaultProvider>();
+            services.AddSingleton<SecretProvider>();
             services.AddSingleton<CertificateProvider>();
             services.AddSingleton<SecurityProvider>();
             services.AddSingleton<GameStateQRCodeGenerator>();
@@ -78,6 +80,7 @@ namespace PicturePanels
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
@@ -87,11 +90,12 @@ namespace PicturePanels
                 options.AccessTokenLifetime = TimeSpan.FromDays(1);
                 options.ClaimsProvider = context => context.User.Claims;
 #if DEBUG
-                options.ConnectionString = "***REMOVED***";
+                options.ConnectionString = "Endpoint=https://picturepanelsdev.service.signalr.net;;AuthType=aad;Version=1.0;";
 #else
-                options.ConnectionString = "***REMOVED***";
+                options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AuthType=aad;Version=1.0;";
 #endif
             });
+            
  
             services.AddWebOptimizer(pipeline =>
             {
