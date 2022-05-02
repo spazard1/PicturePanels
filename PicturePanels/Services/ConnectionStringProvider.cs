@@ -1,10 +1,16 @@
 ﻿using PicturePanels.Services;
+using PicturePanels.Services.Authentication;
 
 namespace PicturePanels.Services
 {
     public class ConnectionStringProvider : IConnectionStringProvider
     {
-        public string ConnectionString => "DefaultEndpointsProtocol=https;AccountName=picturegame;AccountKey=3gzq80T8YC4vGwWg9PbrbIdKng0nDxnDgjt43XKKrxM9NXzCDWyZGW+iTbk4bKDlx7aqvzh2Yr853KkMQ6DSvw==;EndpointSuffix=core.windows.net";
+        public ConnectionStringProvider(SecretProvider secretProvider)
+        {
+            this.ConnectionString = secretProvider.LoadSecretAsync("picturegame-storageaccount").Result;
+        }
+
+        public string ConnectionString { get; }
 
         public string AccountKey {
             get {
