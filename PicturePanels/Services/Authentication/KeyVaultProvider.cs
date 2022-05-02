@@ -11,8 +11,11 @@ namespace PicturePanels.Services.Authentication
 
         public KeyVaultProvider()
         {
-            SecretClient=  new SecretClient(vaultUri: new Uri("https://picturepanels.vault.azure.net/"), 
-                credential: new DefaultAzureCredential());
+            var options = new DefaultAzureCredentialOptions();
+            options.VisualStudioTenantId = "f6c0e524-fbeb-44d7-851f-48fcaa6c6044";
+
+            SecretClient =  new SecretClient(vaultUri: new Uri("https://picturepanels.vault.azure.net/"), 
+                credential: new DefaultAzureCredential(options));
         }
     }
 }
