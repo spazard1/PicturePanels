@@ -6,9 +6,9 @@ import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import TeamGuesses from "./teamGuesses/TeamGuesses";
-import StartGameButtons from "./StartGameButtons";
-import ChooseTeam from "./ChooseTeam";
-import JoinGame from "./JoinGame";
+import StartGame from "./startGame/StartGame";
+import ChooseTeam from "./startGame/ChooseTeam";
+import JoinGame from "./startGame/JoinGame";
 import ModalMessage from "../common/modal/ModalMessage";
 import { useModal } from "../common/modal/useModal";
 import putPlayer from "./putPlayer";
@@ -23,11 +23,11 @@ import SettingsDropDown from "./SettingsDropDown";
 import { usePlayerVibrate } from "./usePlayerVibrate";
 import LineCountdown from "./LineCountdown";
 import { useWinningTeam } from "../common/useWinningTeam";
+import { useLocalStorageState } from "../common/useLocalStorageState";
 
 import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
-import { useLocalStorageState } from "../common/useLocalStorageState";
 
 export default function Player() {
   useBodyClass("player");
@@ -294,8 +294,9 @@ export default function Player() {
         ></JoinGame>
       )}
 
-      {gameState && teamNumber && (
+      {gameState && teamNumber > 0 && (
         <>
+          {gameState.turnType === "Welcome" && <StartGame turnEndTime={gameState.turnEndTime}></StartGame>}
           <ToastContainer position={"top-center"}>
             <Toast className="pauseToast" show={gameState.pauseState === "Paused"} bg="warning">
               Game is paused
@@ -332,10 +333,8 @@ export default function Player() {
         ></ChooseTeam>
       )}
 
-      {gameState && player && teamNumber && (
+      {gameState && player && teamNumber > 0 && (
         <>
-          {gameState.turnType === "Welcome" && <StartGameButtons turnEndTime={gameState.turnEndTime}></StartGameButtons>}
-
           <SettingsDropDown
             gameStateId={gameState.gameStateId}
             pauseState={gameState.pauseState}
