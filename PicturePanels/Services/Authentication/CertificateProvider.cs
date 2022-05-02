@@ -10,13 +10,18 @@ namespace PicturePanels.Services.Authentication
     public class CertificateProvider
     {
         private X509Certificate2 certificate;
+        private readonly KeyVaultProvider keyVaultProvider;
+
+        public CertificateProvider(KeyVaultProvider keyVaultProvider)
+        {
+            this.keyVaultProvider = keyVaultProvider;
+        }
 
         private async Task<X509Certificate2> LoadCertificateAsync()
         {
             try
             {
-                var client = new SecretClient(vaultUri: new Uri("https://picturepanels.vault.azure.net/"), credential: new DefaultAzureCredential());
-                var certificateWithPolicy = await client.GetSecretAsync("tokensigning");
+                var certificateWithPolicy = await this.keyVaultProvider.SecretClient.GetSecretAsync("tokensigning");
                 var cert = new X509Certificate2(
                     Convert.FromBase64String(certificateWithPolicy.Value.Value),
                     (string)null,
