@@ -297,7 +297,12 @@ export default function Player() {
       {gameState && teamNumber > 0 && (
         <>
           {gameState.turnType === "Welcome" && (
-            <StartGame gameStateId={gameState.gameStateId} playerId={player.playerId} turnEndTime={gameState.turnEndTime}></StartGame>
+            <StartGame
+              gameStateId={gameState.gameStateId}
+              playerId={player.playerId}
+              turnTime={gameState.turnTime}
+              turnTimeRemaining={gameState.turnTimeRemaining}
+            ></StartGame>
           )}
 
           <ToastContainer position={"top-center"}>
