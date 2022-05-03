@@ -28,8 +28,6 @@ namespace PicturePanels.Entities
             this.TurnType = tableEntity.TurnType;
             this.TurnStartTime = tableEntity.TurnStartTime;
             this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
-            this.TurnStartTime = tableEntity.TurnStartTime;
-            this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
             this.TurnTime = tableEntity.TurnTime;
             this.TurnTimeTotal = tableEntity.TurnTimeTotal;
             if (tableEntity.PauseState == GameStateTableEntity.PauseStatePaused)

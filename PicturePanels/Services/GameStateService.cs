@@ -76,7 +76,8 @@ namespace PicturePanels.Services
         {
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
             {
-                gs.TurnEndTime = DateTime.UtcNow.AddSeconds(10);
+                gs.TurnEndTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.StartGameDelayTime);
+                gs.TurnTime = GameStateTableEntity.StartGameDelayTime;
             });
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
