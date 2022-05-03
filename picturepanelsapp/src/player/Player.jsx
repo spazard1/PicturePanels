@@ -296,15 +296,18 @@ export default function Player() {
 
       {gameState && teamNumber > 0 && (
         <>
-          {gameState.turnType === "Welcome" && <StartGame turnEndTime={gameState.turnEndTime}></StartGame>}
+          {gameState.turnType === "Welcome" && (
+            <StartGame gameStateId={gameState.gameStateId} playerId={player.playerId} turnEndTime={gameState.turnEndTime}></StartGame>
+          )}
+
           <ToastContainer position={"top-center"}>
-            <Toast className="pauseToast" show={gameState.pauseState === "Paused"} bg="warning">
-              Game is paused
+            <Toast show={gameState.pauseState === "Paused"} bg="warning">
+              <Toast.Body>Game is paused</Toast.Body>
             </Toast>
-            <Toast className="winnerToast" show={gameState.turnType === "EndGame"} bg={isWinner ? "success" : "danger"}>
+            <Toast show={gameState.turnType === "EndGame"} bg={isWinner ? "success" : "danger"}>
               <Toast.Body>{isWinner ? "Congratulations! Your team wins!" : "Your team didn't win. Maybe next time..."}</Toast.Body>
             </Toast>
-            <Toast className="teamNameToast" onClose={() => setTeamNameToast("")} show={teamNameToast !== ""} delay={6000} autohide bg="info">
+            <Toast onClose={() => setTeamNameToast("")} show={teamNameToast !== ""} delay={6000} autohide bg="info">
               <Toast.Body>{teamNameToast}</Toast.Body>
             </Toast>
           </ToastContainer>
@@ -318,7 +321,6 @@ export default function Player() {
             }
             isPaused={gameState.pauseState === "Paused"}
             turnTime={gameState.turnTime}
-            turnTimeTotal={gameState.turnTimeTotal}
             turnTimeRemaining={gameState.turnTimeRemaining}
           ></LineCountdown>
         </>

@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import useTimeRemaining from "../../common/useTimeRemaining";
 import PropTypes from "prop-types";
 import "./Countdown.css";
 
-const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => {
+const Countdown = ({ isPaused, turnTime, turnTimeRemaining }) => {
   const canvasRef = useRef();
-  const intervalRef = useRef();
-  const endTimeRef = useRef();
-  const frameRate = 30;
+  const timeRemaining = useTimeRemaining(isPaused, turnTime, turnTimeRemaining, 30);
 
-  const drawCountdown = useCallback(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
@@ -21,8 +20,6 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => 
     if (canvas.currentCountdown <= 0) {
       return;
     }
-
-    var percentageRemaining = Math.min(canvas.currentCountdown, canvas.countdownMax) / canvas.countdownMax;
 
     var circleSize = canvas.height * scale;
     var circlePosition = canvas.height * 0.5;
@@ -38,7 +35,7 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => 
 
     ctx.beginPath();
 
-    ctx.arc(circlePosition, circlePosition, circleSize, 0, percentageRemaining * 2 * Math.PI);
+    ctx.arc(circlePosition, circlePosition, circleSize, 0, timeRemaining.percentageRemaining * 2 * Math.PI);
     ctx.strokeStyle = "white";
     ctx.lineWidth = strokeWidth;
     ctx.stroke();
@@ -52,14 +49,16 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => 
     ctx.font = Math.floor(circleSize * 0.95) + "px system-ui";
     ctx.textAlign = "center";
     ctx.fillStyle = "#FFFFFF";
-    const secondsRemaining = Math.ceil(Math.min(canvas.currentCountdown, canvas.countdownMax) / 1000);
+    const secondsRemaining = Math.ceil(timeRemaining.millisecondsRemaining / 1000);
     if (secondsRemaining <= 60) {
       ctx.fillText(secondsRemaining, circlePosition, circlePosition + circlePosition * 0.2);
     }
     ctx.restore();
-  }, []);
 
-  function setupCanvas() {
+    console.log(timeRemaining.percentageRemaining, timeRemaining.millisecondsRemaining);
+  }, [timeRemaining]);
+
+  const setupCanvas = () => {
     const canvas = canvasRef.current;
     canvas.style = "";
     const ctx = canvas.getContext("2d");
@@ -69,39 +68,11 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => 
     canvas.style.width = canvasSize + "px";
     canvas.height = canvasSize * window.devicePixelRatio;
     canvas.width = canvasSize * window.devicePixelRatio;
-  }
+  };
 
   useEffect(() => {
     setupCanvas();
-
-    const canvas = canvasRef.current;
-    canvas.countdownMax = turnTime * 1000;
-    canvas.currentCountdown = turnTimeRemaining;
-    endTimeRef.current = new Date();
-    endTimeRef.current.setMilliseconds(endTimeRef.current.getMilliseconds() + turnTimeRemaining * 1000);
-
-    if (canvas.countdownMax <= 0) {
-      return;
-    }
-
-    clearInterval(intervalRef.current);
-
-    if (isPaused) {
-      canvas.currentCountdown = turnTimeRemaining * 1000;
-      drawCountdown(canvas);
-      return;
-    }
-
-    intervalRef.current = setInterval(function () {
-      if (canvas.currentCountdown <= 0) {
-        clearInterval(intervalRef.current);
-      } else {
-        canvas.currentCountdown = endTimeRef.current - new Date();
-      }
-
-      drawCountdown(canvas);
-    }, 1000 / frameRate);
-  }, [isPaused, turnTime, turnTimeTotal, turnTimeRemaining, drawCountdown]);
+  }, []);
 
   return (
     <div className="countdown">
@@ -113,7 +84,6 @@ const Countdown = ({ isPaused, turnTime, turnTimeTotal, turnTimeRemaining }) => 
 Countdown.propTypes = {
   isPaused: PropTypes.bool.isRequired,
   turnTime: PropTypes.number,
-  turnTimeTotal: PropTypes.number,
   turnTimeRemaining: PropTypes.number,
 };
 

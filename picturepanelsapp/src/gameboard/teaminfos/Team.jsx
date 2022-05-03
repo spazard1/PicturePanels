@@ -14,7 +14,6 @@ function Team({
   isCountdownActive,
   isPaused,
   turnTime,
-  turnTimeTotal,
   turnTimeRemaining,
   teamGuessStatus,
   teamGuess,
@@ -41,9 +40,7 @@ function Team({
 
   return (
     <div className={teamClassNames}>
-      {isCountdownActive && (
-        <Countdown isPaused={isPaused} turnTime={turnTime} turnTimeTotal={turnTimeTotal} turnTimeRemaining={turnTimeRemaining}></Countdown>
-      )}
+      {isCountdownActive && <Countdown isPaused={isPaused} turnTime={turnTime} turnTimeRemaining={turnTimeRemaining}></Countdown>}
       <div className="teamName">{teamName}</div>
       <div className="teamInfoIncorrectGuesses">
         {teamIncorrectGuesses <= 3 && [...Array(teamIncorrectGuesses)].map((_, i) => <span key={i}>⦻</span>)}
@@ -70,7 +67,6 @@ Team.propTypes = {
   isCountdownActive: PropTypes.bool.isRequired,
   isPaused: PropTypes.bool.isRequired,
   turnTime: PropTypes.number,
-  turnTimeTotal: PropTypes.number,
   turnTimeRemaining: PropTypes.number,
   teamGuessStatus: PropTypes.string,
   teamGuess: PropTypes.string,

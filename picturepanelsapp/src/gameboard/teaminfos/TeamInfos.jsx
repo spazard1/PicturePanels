@@ -20,7 +20,6 @@ function TeamInfos({ gameState }) {
           isPaused={gameState.pauseState === "Paused"}
           turnType={gameState.turnType}
           turnTime={gameState.turnTime}
-          turnTimeTotal={gameState.turnTimeTotal}
           turnTimeRemaining={gameState.turnTimeRemaining}
           teamGuessStatus={gameState.teamOneGuessStatus}
           teamGuess={gameState.teamOneGuess}
@@ -44,7 +43,6 @@ function TeamInfos({ gameState }) {
           isPaused={gameState.pauseState === "Paused"}
           turnType={gameState.turnType}
           turnTime={gameState.turnTime}
-          turnTimeTotal={gameState.turnTimeTotal}
           turnTimeRemaining={gameState.turnTimeRemaining}
           teamGuessStatus={gameState.teamTwoGuessStatus}
           teamGuess={gameState.teamTwoGuess}

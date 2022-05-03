@@ -26,6 +26,7 @@ namespace PicturePanels.Models
 
         public const string PauseStatePaused = "Paused";
 
+        public const int StartGameDelayTime = 30;
         public const int RoundStartDelayTime = 10;
         public const int TurnStartDelayTime = 5;
 
