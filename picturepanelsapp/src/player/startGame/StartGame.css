@@ -1,0 +1,13 @@
+/* stylelint-disable selector-class-pattern */
+.startGameButtonsContainer {
+  margin-top: 3rem;
+}
+
+.startGameButton {
+  font-size: 1.5rem;
+}
+
+.startGameTime {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}

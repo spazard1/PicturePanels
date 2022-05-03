@@ -76,11 +76,13 @@ const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
             className={classNames("chat", {
               selfChat: !chat.isSystem && chat.player && chat.player.playerId === playerId,
               othersChat: !chat.isSystem && chat.player && chat.player.playerId !== playerId,
+              systemChat: chat.isSystem,
             })}
           >
-            {chat.player && chat.player.playerId !== playerId && (
+            {chat.player && (chat.player.playerId !== playerId || chat.isSystem) && (
               <>
-                <span style={{ color: chat.player.color }}>{chat.player.name}</span>:{" "}
+                <span style={{ color: chat.player.color }}>{chat.player.name}</span>
+                {chat.isSystem ? " " : ": "}
               </>
             )}
             <span>{chat.message}</span>

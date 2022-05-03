@@ -12,6 +12,7 @@ const useTimeRemaining = (isPaused, turnTime, turnTimeRemaining, frameRate) => {
     const newEndTimeDate = new Date();
     newEndTimeDate.setMilliseconds(newEndTimeDate.getMilliseconds() + turnTimeRemaining * 1000);
     setEndTimeDate(newEndTimeDate);
+    setTimeRemaining({});
   }, [turnTime, turnTimeRemaining]);
 
   useEffect(() => {

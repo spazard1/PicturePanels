@@ -1,6 +1,7 @@
 ﻿using PicturePanels.Entities;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
+using System;
 using System.Threading.Tasks;
 
 namespace PicturePanels.Services
@@ -30,7 +31,8 @@ namespace PicturePanels.Services
                 TeamNumber = "1",
                 Message = message,
                 IsSystem = true,
-                Player = new PlayerEntity(playerModel)
+                Player = new PlayerEntity(playerModel),
+                Ticks = DateTime.UtcNow.Ticks.ToString()
             });
 
             await signalRHelper.ChatAsync(new ChatEntity()
@@ -39,7 +41,8 @@ namespace PicturePanels.Services
                 TeamNumber = "2",
                 Message = message,
                 IsSystem = true,
-                Player = new PlayerEntity(playerModel)
+                Player = new PlayerEntity(playerModel),
+                Ticks = DateTime.UtcNow.Ticks.ToString()
             });
         }
 

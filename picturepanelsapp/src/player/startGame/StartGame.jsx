@@ -5,6 +5,8 @@ import putStartGame from "./putStartGame";
 import putCancelStartGame from "./putCancelStartGame";
 import useTimeRemaining from "../../common/useTimeRemaining";
 
+import "./StartGame.css";
+
 const StartGame = ({ gameStateId, playerId, turnTime, turnTimeRemaining }) => {
   const timeRemaining = useTimeRemaining(false, turnTime, turnTimeRemaining, 2);
 
@@ -18,19 +20,21 @@ const StartGame = ({ gameStateId, playerId, turnTime, turnTimeRemaining }) => {
 
   return (
     <>
-      <div className="teamButtons">
+      <div className="startGameButtonsContainer">
         {!turnTimeRemaining && (
-          <Button variant="success" onClick={startGameOnClick}>
+          <Button className="startGameButton" variant="success" onClick={startGameOnClick}>
             Start the Game!
           </Button>
         )}
         {turnTimeRemaining && (
-          <Button variant="secondary" onClick={cancelStartGameOnClick}>
+          <Button className="startGameButton" variant="secondary" onClick={cancelStartGameOnClick}>
             Cancel Game Start
           </Button>
         )}
       </div>
-      {turnTimeRemaining && <div>Game starts in {Math.ceil(timeRemaining / 1000)}...</div>}
+      <div className="startGameTime">
+        {timeRemaining.millisecondsRemaining && <div>Game starts in {Math.ceil(timeRemaining.millisecondsRemaining / 1000)}...</div>}
+      </div>
     </>
   );
 };

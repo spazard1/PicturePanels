@@ -294,7 +294,7 @@ export default function Player() {
         ></JoinGame>
       )}
 
-      {gameState && teamNumber > 0 && (
+      {gameState && teamNumber > 0 && player && (
         <>
           {gameState.turnType === "Welcome" && (
             <StartGame
