@@ -48,7 +48,7 @@ const TeamScoreChange = ({ teamNumber, scoreChange, changeType, turnType }) => {
         teamOneBox: teamNumber === 1,
         teamTwoBox: teamNumber === 2,
         animate__bounceInDown: scoreChangeVisible,
-        animate__bounceOutUp: !scoreChangeVisible,
+        animate__backOutUp: !scoreChangeVisible,
         animate__slow: scoreChangeVisible,
         "animate__delay-10s": changeType === "GuessesMade" && scoreChangeVisible,
       })}

@@ -32,17 +32,17 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect 
 
   return (
     <>
-      <div className="chooseTeamLabel center">Choose your team</div>
+      <div className="chooseTeamLabel">Choose your team!</div>
       <div className="chooseTeamNames">
-        <div className="chooseTeamName chooseSmallestTeamBox center" onClick={chooseSmallestTeamOnClick}>
+        <div className="chooseTeamName chooseSmallestTeam" onClick={chooseSmallestTeamOnClick}>
           {isLoading ? "Loading..." : "Choose for me"}
         </div>
         {!isLoading && (
           <>
-            <div className="chooseTeamName teamBox teamOneBox center" onClick={() => onTeamNumberClick(1)}>
+            <div className="chooseTeamName teamOneBox" onClick={() => onTeamNumberClick(1)}>
               {teamOneName}
             </div>
-            <div className="chooseTeamName teamBox teamTwoBox center" onClick={() => onTeamNumberClick(2)}>
+            <div className="chooseTeamName teamTwoBox" onClick={() => onTeamNumberClick(2)}>
               {teamTwoName}
             </div>
           </>

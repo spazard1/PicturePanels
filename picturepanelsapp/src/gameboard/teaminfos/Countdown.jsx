@@ -54,8 +54,6 @@ const Countdown = ({ isPaused, turnTime, turnTimeRemaining }) => {
       ctx.fillText(secondsRemaining, circlePosition, circlePosition + circlePosition * 0.2);
     }
     ctx.restore();
-
-    console.log(timeRemaining.percentageRemaining, timeRemaining.millisecondsRemaining);
   }, [timeRemaining]);
 
   const setupCanvas = () => {

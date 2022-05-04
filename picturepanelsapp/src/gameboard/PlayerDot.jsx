@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
@@ -9,9 +9,11 @@ const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
   const circleBorderSize = 2;
   const circleSize = divSize / 2;
   const circleRadius = divSize / 2 - 2;
+  const hasBeenVisible = useRef(false);
 
   let rect;
   if (panelRef) {
+    hasBeenVisible.current = true;
     const panelRect = panelRef.current.getBoundingClientRect();
     rect = {
       x: (panelRect.right - panelRect.left - divSize) * Math.random() + panelRect.left,
@@ -39,7 +41,11 @@ const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
 
   return (
     <div
-      className={classNames("playerDot", "animate__animated", { animate__fadeOut: turnType !== "OpenPanel" || !panelRef })}
+      className={classNames("playerDot", "animate__animated", {
+        animate__fadeIn: turnType === "OpenPanel" && panelRef,
+        animate__fadeOut: turnType !== "OpenPanel" || !panelRef,
+        hidden: !hasBeenVisible.current,
+      })}
       style={{
         transform: "translate(" + rect.x + "px, " + rect.y + "px)",
         width: divSize + "px",
