@@ -32,7 +32,12 @@ const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
   };
 
   const scrollToBottom = () => {
-    setTimeout(() => messagesEndRef.current.scrollIntoView(), 0);
+    setTimeout(() => {
+      if (!messagesEndRef.current) {
+        return;
+      }
+      messagesEndRef.current.scrollIntoView();
+    }, 0);
   };
 
   useEffect(() => {

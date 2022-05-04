@@ -1,8 +1,8 @@
 /* stylelint-disable selector-class-pattern */
 .chooseTeamLabel {
   font-size: 2rem;
-  margin-top: 8rem;
-  margin-bottom: 4rem;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
 }
 
 .chooseTeamName {
@@ -17,7 +17,7 @@
 
 .chooseSmallestTeam {
   width: 60%;
-  margin-bottom: 6rem;
+  margin-bottom: 4rem;
   color: black;
   background-color: white;
   box-sizing: border-box;
