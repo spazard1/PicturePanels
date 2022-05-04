@@ -1,11 +1,11 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import Countdown from "./Countdown";
 import TeamGuess from "./TeamGuess";
 import "./Team.css";
 
-function Team({
+const Team = ({
   teamName,
   teamIncorrectGuesses,
   teamInnerPanels,
@@ -19,7 +19,21 @@ function Team({
   teamGuess,
   teamGuessIncorrect,
   turnType,
-}) {
+}) => {
+  const [teamIncorrectGuessesDisplay, setTeamIncorrectGuessesDisplay] = useState();
+  const intervalRef = useRef();
+
+  useEffect(() => {
+    clearInterval(intervalRef.current);
+    if (turnType === "GuessesMade") {
+      intervalRef.current = setTimeout(() => {
+        setTeamIncorrectGuessesDisplay(teamIncorrectGuesses);
+      }, 8000);
+    } else {
+      setTeamIncorrectGuessesDisplay(teamIncorrectGuesses);
+    }
+  }, [turnType, teamIncorrectGuesses]);
+
   const renderPanelCount = useCallback(
     (n) => {
       return [...Array(5)].map((_, i) => (
@@ -43,8 +57,8 @@ function Team({
       {isCountdownActive && <Countdown isPaused={isPaused} turnTime={turnTime} turnTimeRemaining={turnTimeRemaining}></Countdown>}
       <div className="teamName">{teamName}</div>
       <div className="teamInfoIncorrectGuesses">
-        {teamIncorrectGuesses <= 3 && [...Array(teamIncorrectGuesses)].map((_, i) => <span key={i}>⦻</span>)}
-        {teamIncorrectGuesses > 3 && <>{teamIncorrectGuesses}⦻</>}
+        {teamIncorrectGuessesDisplay <= 3 && [...Array(teamIncorrectGuessesDisplay)].map((_, i) => <span key={i}>⦻</span>)}
+        {teamIncorrectGuessesDisplay > 3 && <>{teamIncorrectGuessesDisplay}⦻</>}
       </div>
       <div className="teamInfoPanelCounts center">{renderPanelCount(teamInnerPanels)}</div>
       <TeamGuess
@@ -56,7 +70,7 @@ function Team({
       ></TeamGuess>
     </div>
   );
-}
+};
 
 Team.propTypes = {
   teamName: PropTypes.string.isRequired,

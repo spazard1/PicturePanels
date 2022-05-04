@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { useSelectedPanels } from "../common/useSelectedPanels";
@@ -10,6 +10,7 @@ const MaxMostVotesPanels = 3;
 export default function MostVotesPanels({ panelRefs, revealedPanels, players, teamTurn, turnType }) {
   const [mostVotesPanelsRects, setMostVotesPanelsRects] = useState([]);
   const { selectedPanels } = useSelectedPanels(players, turnType);
+  const hasBeenVisible = useRef({ 1: false, 2: false, 3: false });
 
   useEffect(() => {
     const panelVotes = {};
@@ -58,22 +59,26 @@ export default function MostVotesPanels({ panelRefs, revealedPanels, players, te
     let key = 1;
     for (const panelNumber of mostVotesPanels) {
       if (panelNumber > 20) {
-        mostVotesPanelsRects[key++] = { panelNumber: panelNumber, rect: panelRefs[7].current.getBoundingClientRect() };
+        mostVotesPanelsRects[key] = { panelNumber: panelNumber, rect: panelRefs[7].current.getBoundingClientRect() };
       } else {
-        mostVotesPanelsRects[key++] = { panelNumber: panelNumber, rect: panelRefs[panelNumber - 1].current.getBoundingClientRect() };
+        mostVotesPanelsRects[key] = { panelNumber: panelNumber, rect: panelRefs[panelNumber - 1].current.getBoundingClientRect() };
+        hasBeenVisible.current[key] = true;
       }
+      key++;
     }
 
     setMostVotesPanelsRects(mostVotesPanelsRects);
   }, [panelRefs, revealedPanels, players, teamTurn, selectedPanels]);
 
   return (
-    <div>
+    <div className="mostVotesPanels">
       {Object.keys(mostVotesPanelsRects).map((key) => (
         <div
           key={key}
-          className={classNames("mostVotesPanel", "animate__animated", {
+          className={classNames("mostVotesPanel", "animate__animated", key, {
             animate__fadeOut: parseInt(mostVotesPanelsRects[key].panelNumber) > 20 || turnType !== "OpenPanel",
+            animate__fadeIn: parseInt(mostVotesPanelsRects[key].panelNumber) <= 20 && turnType === "OpenPanel",
+            hidden: !hasBeenVisible.current[key],
           })}
           style={{
             transform: "translate(" + mostVotesPanelsRects[key].rect.x + "px, " + mostVotesPanelsRects[key].rect.y + "px)",

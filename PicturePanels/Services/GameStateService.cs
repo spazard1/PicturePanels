@@ -273,7 +273,6 @@ namespace PicturePanels.Services
 
             var panelIdToOpen = await this.GetMostVotesPanelAsync(gameState);
             gameState = await this.OpenPanelAsync(gameState, panelIdToOpen);
-            await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team opened panel " + panelIdToOpen + ".", true);
 
             return gameState;
         }
@@ -416,7 +415,7 @@ namespace PicturePanels.Services
                 await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState),
                        gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ? GameStateTableEntity.UpdateTypeTeamReady : GameStateTableEntity.UpdateTypeNewTurn);
 
-                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team passed.", true);
+                await this.chatService.SendChatAsync(playerModel, "passed this turn for your team.", true);
             }
             else
             {
@@ -427,7 +426,7 @@ namespace PicturePanels.Services
                     gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ? GameStateTableEntity.UpdateTypeTeamReady : GameStateTableEntity.UpdateTypeNewTurn);
 
                 await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), playerModel.TeamNumber);
-                await this.chatService.SendChatAsync(playerModel, "confirmed the team is ready! Your team submitted the guess \"" + teamGuess.Guess + ".\"", true);
+                await this.chatService.SendChatAsync(playerModel, "submitted the guess \"" + teamGuess.Guess + "\" for your team.", true);
                 await this.teamGuessTableStorage.DeleteAsync(teamGuess);
             }  
 

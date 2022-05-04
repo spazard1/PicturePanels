@@ -294,8 +294,17 @@ export default function Player() {
         ></JoinGame>
       )}
 
+      {gameState && !teamNumber && (
+        <ChooseTeam
+          gameStateId={gameState.gameStateId}
+          teamOneName={gameState.teamOneName}
+          teamTwoName={gameState.teamTwoName}
+          onTeamNumberSelect={onTeamNumberSelect}
+        ></ChooseTeam>
+      )}
+
       {gameState && teamNumber > 0 && player && (
-        <>
+        <div className="playingContainer">
           {gameState.turnType === "Welcome" && (
             <StartGame
               gameStateId={gameState.gameStateId}
@@ -328,20 +337,7 @@ export default function Player() {
             turnTime={gameState.turnTime}
             turnTimeRemaining={gameState.turnTimeRemaining}
           ></LineCountdown>
-        </>
-      )}
 
-      {gameState && !teamNumber && (
-        <ChooseTeam
-          gameStateId={gameState.gameStateId}
-          teamOneName={gameState.teamOneName}
-          teamTwoName={gameState.teamTwoName}
-          onTeamNumberSelect={onTeamNumberSelect}
-        ></ChooseTeam>
-      )}
-
-      {gameState && player && teamNumber > 0 && (
-        <>
           <SettingsDropDown
             gameStateId={gameState.gameStateId}
             pauseState={gameState.pauseState}
@@ -394,7 +390,7 @@ export default function Player() {
             teamNumber={teamNumber}
             teamName={teamNumber === 1 ? gameState.teamOneName : gameState.teamTwoName}
           ></Chat>
-        </>
+        </div>
       )}
     </>
   );

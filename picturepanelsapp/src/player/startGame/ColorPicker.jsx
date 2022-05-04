@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import iro from "@jaames/iro";
 
-import "./ColorPicker.css";
-
 const ColorPicker = ({ onColorChange }) => {
   useEffect(() => {
     let initialColor = "hsl(" + Math.ceil(Math.random() * 360) + ", 100%, 50%)";
@@ -29,7 +27,7 @@ const ColorPicker = ({ onColorChange }) => {
     });
   }, [onColorChange]);
 
-  return <div id="colorPicker" className="center"></div>;
+  return <div id="colorPicker" className="colorPicker center"></div>;
 };
 
 export default ColorPicker;

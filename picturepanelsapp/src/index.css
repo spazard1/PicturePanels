@@ -48,13 +48,7 @@ input:focus {
   display: none !important;
 }
 
-.animate__hidden {
-  display: none !important;
-  visibility: hidden;
-}
-
 .hidden {
-  display: none !important;
   visibility: hidden;
 }
 
@@ -163,11 +157,6 @@ textarea:focus::placeholder {
   color: transparent;
 }
 
-.flexColumns {
-  display: flex;
-  flex-direction: column;
-}
-
 .smoothScroll {
   scroll-behavior: smooth;
 }
@@ -176,11 +165,6 @@ textarea:focus::placeholder {
   z-index: 100;
   top: 0;
   left: 0;
-}
-
-.teamBox {
-  white-space: nowrap;
-  box-sizing: border-box;
 }
 
 .teamOneColor {

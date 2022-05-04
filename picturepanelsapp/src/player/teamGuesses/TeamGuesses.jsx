@@ -126,12 +126,12 @@ const TeamGuesses = ({ isPaused, hasTeamGuessed, turnType, roundNumber, gameStat
   }
 
   return (
-    <div className="center">
+    <div className="teamGuessesContainer center">
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <ModalConfirm modalMessage={modalConfirmMessage} onModalResponse={onModalConfirmResponse} onModalClose={onModalConfirmClose}></ModalConfirm>
       <ModalPrompt modalMessage={modalPromptMessage} onModalResponse={onModalPromptResponse} onModalClose={onModalPromptClose}></ModalPrompt>
 
-      <div className="teamGuessesContainer teamGuesses">
+      <div className="teamGuesses">
         {teamGuesses.map((teamGuess) => (
           <div key={teamGuess.ticks} className="teamGuessText" onClick={(e) => voteTeamGuessOnClick(e, teamGuess.ticks)}>
             <div

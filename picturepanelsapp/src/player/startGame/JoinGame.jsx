@@ -31,10 +31,10 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
   };
 
   return (
-    <div className="center flexColumns">
+    <>
       <div className="center welcomePlayerMessage">Welcome to Picture Panels!</div>
 
-      <div className="center">
+      <div className="playerTextInputContainer center">
         <input
           name="playerName"
           style={{ color: color }}
@@ -74,7 +74,7 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
         Go to picturepanels.net/gameboard on a screen that all players can see.
         <br />
       </div>
-    </div>
+    </>
   );
 };
 
