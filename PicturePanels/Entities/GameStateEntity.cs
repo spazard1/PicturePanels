@@ -21,7 +21,7 @@ namespace PicturePanels.Entities
             this.Theme = tableEntity.Theme;
             this.OpenPanelTime = tableEntity.OpenPanelTime;
             this.GuessTime = tableEntity.GuessTime;
-            this.GuessVoteTime = tableEntity.GuessVoteTime;
+            this.VoteGuessTime = tableEntity.VoteGuessTime;
             this.WrongGuessPenalty = tableEntity.WrongGuessPenalty;
             this.RoundNumber = tableEntity.RoundNumber;
             this.FinalRoundNumber = tableEntity.FinalRoundNumber;
@@ -82,7 +82,7 @@ namespace PicturePanels.Entities
         public int? GuessTime { get; set; }
 
         [Range(0, 60)]
-        public int? GuessVoteTime { get; set; }
+        public int? VoteGuessTime { get; set; }
 
         [Range(-2, 0)]
         public int? WrongGuessPenalty { get; set; }
