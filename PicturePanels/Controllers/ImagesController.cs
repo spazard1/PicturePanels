@@ -507,7 +507,7 @@ namespace PicturePanels.Controllers
         {
             try
             {
-                var scratchImageEntity = await imageTableStorage.UploadTemporaryAsync(new Uri(urlEntity.Url), bitmap);
+                var scratchImageEntity = await imageTableStorage.UploadTemporaryAsync(new Uri(urlEntity.Url));
                 if (!string.IsNullOrWhiteSpace(scratchImageEntity.Error))
                 {
                     return StatusCode((int)HttpStatusCode.BadRequest, scratchImageEntity.Error);
