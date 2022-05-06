@@ -1,5 +1,7 @@
+import serverUrl from "../../common/ServerUrl";
+
 export default function putTeamGuessVote(gameStateId, playerId, ticks, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/teamGuesses/" + gameStateId + "/" + playerId + "/" + ticks, {
+  fetch(serverUrl + "api/teamGuesses/" + gameStateId + "/" + playerId + "/" + ticks, {
     method: "PUT",
   })
     .then((response) => {

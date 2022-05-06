@@ -1,5 +1,7 @@
+import serverUrl from "../common/ServerUrl";
+
 const putPlayer = (gameStateId, playerOptions, callback) => {
-  fetch("https://picturepanels.azurewebsites.net/api/players/" + gameStateId, {
+  fetch(serverUrl + "api/players/" + gameStateId, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

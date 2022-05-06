@@ -1,5 +1,7 @@
+import serverUrl from "../common/ServerUrl";
+
 export function getImageEntity(gameStateId, callback) {
-  return fetch("https://picturepanels.azurewebsites.net/api/images/entity/" + gameStateId)
+  return fetch(serverUrl + "api/images/entity/" + gameStateId)
     .then((response) => {
       if (response.ok) {
         return response.json();

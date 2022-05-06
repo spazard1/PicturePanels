@@ -1,5 +1,7 @@
+import serverUrl from "../common/ServerUrl";
+
 const putPlayerOpenPanelVote = (gameStateId, playerId, callback) => {
-  fetch("https://picturepanels.azurewebsites.net/api/players/" + gameStateId + "/" + playerId + "/openPanelVote", {
+  fetch(serverUrl + "api/players/" + gameStateId + "/" + playerId + "/openPanelVote", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

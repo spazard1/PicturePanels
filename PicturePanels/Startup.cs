@@ -14,6 +14,8 @@ using PicturePanels.Filters;
 using Microsoft.AspNetCore.Http;
 using PicturePanels.Services.Storage;
 using PicturePanels.Services.Authentication;
+using Microsoft.Azure.SignalR;
+using Azure.Identity;
 
 namespace PicturePanels
 {
@@ -79,7 +81,6 @@ namespace PicturePanels
             services.AddScoped<AuthorizationFilter>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             
             services.AddSignalR(options =>
             {
@@ -88,11 +89,19 @@ namespace PicturePanels
             .AddAzureSignalR(options =>
             {
                 options.AccessTokenLifetime = TimeSpan.FromDays(1);
-                options.ClaimsProvider = context => context.User.Claims;
+                //options.ClaimsProvider = context => context.User.Claims;
+                var credentialOptions = new DefaultAzureCredentialOptions();
+                credentialOptions.VisualStudioTenantId = "f6c0e524-fbeb-44d7-851f-48fcaa6c6044";
 #if DEBUG
-                options.ConnectionString = "Endpoint=https://picturepanelsdev.service.signalr.net;;AuthType=aad;Version=1.0;";
+                options.Endpoints = new ServiceEndpoint[]
+                {
+                    new ServiceEndpoint(new Uri("https://picturepanelsdev.service.signalr.net"), new DefaultAzureCredential(credentialOptions))
+                };
 #else
-                options.ConnectionString = "Endpoint=https://picturepanels.service.signalr.net;AuthType=aad;Version=1.0;";
+                options.Endpoints = new ServiceEndpoint[]
+                {
+                    new ServiceEndpoint(new Uri("https://picturepanels.service.signalr.net"), new DefaultAzureCredential(credentialOptions))
+                };
 #endif
             });
             

@@ -2,6 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import SignalRConnectionContext from "./SignalRConnectionContext";
+import serverUrl from "../common/ServerUrl";
 
 export function useSignalRConnection() {
   const { setConnection, setConnectionId } = useContext(SignalRConnectionContext);
@@ -13,7 +14,7 @@ export function useSignalRConnection() {
     }
 
     var connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://picturepanels.azurewebsites.net/signalRHub?" + queryString)
+      .withUrl(serverUrl + "signalRHub?" + queryString)
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build();

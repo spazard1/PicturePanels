@@ -1,5 +1,7 @@
+import serverUrl from "../../common/ServerUrl";
+
 export default function getChats(gameStateId, teamNumber, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/chats/" + gameStateId + "/" + teamNumber)
+  fetch(serverUrl + "api/chats/" + gameStateId + "/" + teamNumber)
     .then((response) => {
       if (response.ok) {
         return response.json();

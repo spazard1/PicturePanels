@@ -1,5 +1,7 @@
+import serverUrl from "./ServerUrl";
+
 export function putTogglePauseGame(gameStateId, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/gameState/" + gameStateId + "/togglePause", {
+  fetch(serverUrl + "api/gameState/" + gameStateId + "/togglePause", {
     method: "PUT",
   }).then((response) => {
     if (response.ok) {

@@ -1,5 +1,7 @@
+import serverUrl from "./ServerUrl";
+
 export default function postGameState(gameOptions, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/gameState/", {
+  fetch(serverUrl + "api/gameState/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

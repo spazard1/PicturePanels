@@ -1,6 +1,8 @@
 import React, { useCallback } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import serverUrl from "../common/ServerUrl";
+
 import "./PanelButtons.css";
 
 const PanelButton = ({ gameStateId, panelNumber, roundNumber, isOpen, isSelected, onSelected }) => {
@@ -16,10 +18,7 @@ const PanelButton = ({ gameStateId, panelNumber, roundNumber, isOpen, isSelected
       <div className={classNames("panelButtonBackground", { hidden: isOpen })}>
         <div className="panelButtonNumber">{panelNumber}</div>
       </div>
-      <img
-        className="panelButtonImage"
-        src={"https://picturepanels.azurewebsites.net/api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0)}
-      />
+      <img className="panelButtonImage" src={serverUrl + "api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0)} />
     </div>
   );
 };
