@@ -1,5 +1,7 @@
+import serverUrl from "../../common/ServerUrl";
+
 export default function getTeamGuesses(gameStateId, playerId, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/teamGuesses/" + gameStateId + "/" + playerId)
+  fetch(serverUrl + gameStateId + "/" + playerId)
     .then((response) => {
       if (response.ok) {
         return response.json();

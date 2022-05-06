@@ -1,5 +1,7 @@
+import serverUrl from "../../common/ServerUrl";
+
 export default function postTeamGuess(gameStateId, playerId, guess, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/teamGuesses/" + gameStateId + "/" + playerId, {
+  fetch(serverUrl + "api/teamGuesses/" + gameStateId + "/" + playerId, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,8 +1,10 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import "./Panel.css";
 import { GetExitClass } from "../animate/Animate";
+import serverUrl from "../common/ServerUrl";
+
+import "./Panel.css";
 
 const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, onImageLoaded, turnType }, ref) => {
   const [exitClass, setExitClass] = useState();
@@ -32,9 +34,9 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
   useEffect(() => {
     let newImgSrc = "";
     if (gameStateId && roundNumber && turnType !== "Welcome") {
-      newImgSrc = "https://picturepanels.azurewebsites.net/api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0);
+      newImgSrc = serverUrl + "api/images/panels/" + gameStateId + "/" + roundNumber + "/" + (isOpen ? panelNumber : 0);
     } else {
-      newImgSrc = "https://picturepanels.azurewebsites.net/api/images/panels/welcome/0/" + (isOpen ? panelNumber : 0);
+      newImgSrc = serverUrl + "api/images/panels/welcome/0/" + (isOpen ? panelNumber : 0);
     }
     if (imgSrc !== newImgSrc) {
       setImageLoaded(false);

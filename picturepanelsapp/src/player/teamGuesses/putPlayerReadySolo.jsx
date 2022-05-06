@@ -1,5 +1,7 @@
+import serverUrl from "../../common/ServerUrl";
+
 export default function putPlayerReadySolo(gameStateId, playerId, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/players/" + gameStateId + "/" + playerId + "/readySolo", {
+  fetch(serverUrl + "api/players/" + gameStateId + "/" + playerId + "/readySolo", {
     method: "PUT",
   })
     .then((response) => {

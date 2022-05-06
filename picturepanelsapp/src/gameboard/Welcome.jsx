@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import serverUrl from "../common/ServerUrl";
 
 import "./Welcome.css";
 
@@ -12,11 +13,7 @@ const Welcome = ({ gameStateId }) => {
         To join the game, go to picturepanels.net on your device or scan this QR code.
       </div>
       <div className="welcomeQRCodeContainer">
-        <img
-          className="welcomeQRCodeImg"
-          src={"https://picturepanels.azurewebsites.net/api/images/gameStateQRCode/" + gameStateId}
-          alt="Welcome QR Code"
-        />
+        <img className="welcomeQRCodeImg" src={serverUrl + "api/images/gameStateQRCode/" + gameStateId} alt="Welcome QR Code" />
       </div>
       <div className="welcomeGameCode">
         Game Code:

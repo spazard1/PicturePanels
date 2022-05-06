@@ -1,5 +1,7 @@
+import serverUrl from "./ServerUrl";
+
 export default function getPlayers(gameStateId, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/players/" + gameStateId)
+  fetch(serverUrl + "api/players/" + gameStateId)
     .then((response) => {
       if (response.ok) {
         return response.json();

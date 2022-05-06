@@ -1,5 +1,7 @@
+import serverUrl from "../../common/ServerUrl";
+
 const getSmallestTeam = (gameStateId, callback) => {
-  fetch("https://picturepanels.azurewebsites.net/api/gameState/" + gameStateId + "/smallestTeam")
+  fetch(serverUrl + "api/gameState/" + gameStateId + "/smallestTeam")
     .then((response) => {
       if (response.ok) {
         return response.json();
