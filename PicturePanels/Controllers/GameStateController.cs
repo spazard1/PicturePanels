@@ -81,7 +81,7 @@ namespace PicturePanels.Controllers
             gameState.TeamTwoName = entity.TeamTwoName;
             gameState.OpenPanelTime = entity.OpenPanelTime ?? GameStateTableEntity.DefaultOpenPanelTime;
             gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
-            gameState.GuessVoteTime = entity.GuessVoteTime ?? GameStateTableEntity.DefaultVoteGuessTime;
+            gameState.VoteGuessTime = entity.VoteGuessTime ?? GameStateTableEntity.DefaultVoteGuessTime;
             gameState.WrongGuessPenalty = entity.WrongGuessPenalty ?? GameStateTableEntity.DefaultWrongGuessPenalty;
             gameState.Tags = entity.Tags?.Split(",").ToList();
             gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));

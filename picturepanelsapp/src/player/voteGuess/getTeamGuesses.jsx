@@ -1,5 +1,5 @@
 export default function getTeamGuesses(gameStateId, playerId, callback) {
-  fetch("https://picturepanels.azurewebsites.net/api/teamGuesses/" + gameStateId + "/" + playerId + "/object")
+  fetch("https://picturepanels.azurewebsites.net/api/teamGuesses/" + gameStateId + "/" + playerId)
     .then((response) => {
       if (response.ok) {
         return response.json();

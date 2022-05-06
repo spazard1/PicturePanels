@@ -76,7 +76,7 @@ namespace PicturePanels.Models
 
         public int GuessTime { get; set; }
 
-        public int GuessVoteTime { get; set; }
+        public int VoteGuessTime { get; set; }
 
         public int WrongGuessPenalty { get; set; }
 
@@ -244,12 +244,12 @@ namespace PicturePanels.Models
                     }
                     break;
                 case GameStateTableEntity.TurnTypeVoteGuess:
-                    this.TurnTime = this.GuessVoteTime;
+                    this.TurnTime = this.VoteGuessTime;
 
                     this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
-                    if (this.GuessVoteTime > 0)
+                    if (this.VoteGuessTime > 0)
                     {
-                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.GuessVoteTime);
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.VoteGuessTime);
                     }
                     else
                     {
