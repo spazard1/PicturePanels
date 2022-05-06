@@ -1,12 +1,14 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import putGuess from "./putGuess";
 
 import "./MakeGuess.css";
 
 const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
   const [guess, setGuess] = useState("");
+  const [confidence, setConfidence] = useState(50);
+  const [confidenceMessage, setConfidenceMessage] = useState("");
   const [guessSubmit, setGuessSubmit] = useState(false);
 
   const onInputChange = useCallback((event) => {
@@ -17,7 +19,7 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
     setGuessSubmit(true);
   };
 
-  const sendGuessOnClick = (confidence) => {
+  const sendGuessOnClick = () => {
     putGuess(gameStateId, playerId, guess, confidence, (result) => {
       if (result) {
         onSaveGuess();
@@ -32,6 +34,24 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
       }
     });
   };
+
+  useEffect(() => {
+    if (confidence >= 99) {
+      setConfidenceMessage("I'm 100% Sure");
+    } else if (confidence >= 85) {
+      setConfidenceMessage("I'm Mostly Confident");
+    } else if (confidence >= 70) {
+      setConfidenceMessage("It's a Good Guess");
+    } else if (confidence >= 56) {
+      setConfidenceMessage("I'm More Sure Than Not");
+    } else if (confidence >= 44) {
+      setConfidenceMessage("I'm About 50/50");
+    } else if (confidence >= 20) {
+      setConfidenceMessage("I'm Not Confident");
+    } else {
+      setConfidenceMessage("It's a Wild Guess");
+    }
+  }, [confidence]);
 
   return (
     <>
@@ -64,6 +84,21 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
       {guessSubmit && (
         <>
           <div className="playerLabel confidenceLabel">How confident are you in your guess &quot;{guess}&quot;?</div>
+          <div className="playerLabel confidenceRangeLabel">
+            <span>←Not Confident</span>
+            <span>Very Confident→</span>
+          </div>
+          <Form.Range className="confidenceRange" min={1} max={100} value={confidence} onChange={(e) => setConfidence(e.target.value)}></Form.Range>
+          <div className="confidenceMessageLabel">{confidenceMessage}</div>
+          <div className="confidenceButtonsContainer">
+            <Button className="confidenceButton confidenceButtonCancel" variant="secondary" onClick={() => setGuessSubmit(false)}>
+              Cancel
+            </Button>
+            <Button className="confidenceButton" variant="success" onClick={() => sendGuessOnClick()}>
+              Send Guess
+            </Button>
+          </div>
+          {/*
           <div>
             <Button className="confidenceButton" variant="success" onClick={() => sendGuessOnClick(100)}>
               100% Sure
@@ -89,6 +124,7 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
               Cancel
             </Button>
           </div>
+          */}
         </>
       )}
     </>

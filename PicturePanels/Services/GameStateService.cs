@@ -196,6 +196,10 @@ namespace PicturePanels.Services
             }
             else if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
             {
+                await this.ExitMakeGuessAsync(gameState);
+            }
+            else if (gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
+            {
                 await this.SubmitMostVotesTeamGuessAsync(gameState);
             }
         }
