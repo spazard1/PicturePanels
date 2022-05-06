@@ -415,7 +415,7 @@ namespace PicturePanels.Controllers
             }
 
             gameState = await this.gameStateService.PassAsync(gameState, teamNumber);
-            await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
+            //await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -443,7 +443,7 @@ namespace PicturePanels.Controllers
             }
 
             gameState = await this.gameStateService.GuessAsync(gameState, teamNumber, imageEntity.Name);
-            await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
+            //await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }
@@ -458,7 +458,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
             gameState = await this.gameStateService.GuessAsync(gameState, teamNumber, "incorrect");
-            await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
+            //await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }

@@ -61,7 +61,7 @@ namespace PicturePanels.Services
                 GameStateTableEntity.TurnTypeWelcome => await this.StartGameAsync(gameState),
                 GameStateTableEntity.TurnTypeOpenPanel => await this.OpenMostVotesPanelAsync(gameState),
                 GameStateTableEntity.TurnTypeMakeGuess => await this.ExitMakeGuessAsync(gameState),
-                GameStateTableEntity.TurnTypeVoteGuess => await this.SubmitMostVotesTeamGuessAsync(gameState),
+                GameStateTableEntity.TurnTypeVoteGuess => await this.ExitVoteGuessAsync(gameState),
                 GameStateTableEntity.TurnTypeGuessesMade => await this.ExitGuessesMadeAsync(gameState),
                 GameStateTableEntity.TurnTypeEndRound => await this.ExitEndRoundAsync(gameState),
                 _ => null,
@@ -200,7 +200,7 @@ namespace PicturePanels.Services
             }
             else if (gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
             {
-                await this.SubmitMostVotesTeamGuessAsync(gameState);
+                await this.ExitVoteGuessAsync(gameState);
             }
         }
 
@@ -367,99 +367,6 @@ namespace PicturePanels.Services
             return gameState;
         }
 
-        public async Task<GameStateTableEntity> SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState)
-        {
-            if (string.IsNullOrWhiteSpace(gameState.TeamOneGuessStatus))
-            {
-                gameState = await SubmitMostVotesTeamGuessAsync(gameState, 1);
-            }
-            if (string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))
-            {
-                gameState = await SubmitMostVotesTeamGuessAsync(gameState, 2);
-            }
-
-            gameState = await this.ExitMakeGuessIfNeededAsync(gameState);
-            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
-
-            return gameState;
-        }
-
-        private async Task<GameStateTableEntity> SubmitMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
-        {
-            var teamGuess = await this.GetMostVotesTeamGuessAsync(gameState, teamNumber);
-            if (teamGuess == null)
-            {
-                gameState = await this.PassAsync(gameState, teamNumber);
-                return gameState;
-            }
-
-            gameState = await this.GuessAsync(gameState, teamNumber, teamGuess.Guess);
-            await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), teamNumber);
-            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
-
-            return gameState;
-        }
-
-        public async Task<TeamGuessTableEntity> GetMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
-        {
-            var voteCounts = new Dictionary<string, int>();
-
-            await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, teamNumber))
-            {
-                if (!string.IsNullOrEmpty(p.GuessVoteId))
-                {
-                    if (!voteCounts.TryAdd(p.GuessVoteId, 1))
-                    {
-                        voteCounts[p.GuessVoteId]++;
-                    }
-                }
-            }
-
-            List<string> mostVotesTeamGuessIds = new List<string>();
-            int maxVoteCount = 0;
-
-            foreach (var voteCount in voteCounts)
-            {
-                if (voteCount.Value > maxVoteCount)
-                {
-                    maxVoteCount = voteCount.Value;
-                    mostVotesTeamGuessIds = new List<string> { voteCount.Key };
-                }
-                else if (voteCount.Value == maxVoteCount)
-                {
-                    mostVotesTeamGuessIds.Add(voteCount.Key);
-                }
-            }
-
-            if (mostVotesTeamGuessIds.Contains(GameStateTableEntity.TeamGuessStatusPass) || maxVoteCount == 0)
-            {
-                return null;
-            }
-
-            if (mostVotesTeamGuessIds.Count == 1)
-            {
-                return await this.teamGuessTableStorage.GetAsync(gameState.GameStateId, teamNumber, mostVotesTeamGuessIds.First());
-            }
-
-            var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
-
-            double maxRatio = double.MinValue;
-            TeamGuessTableEntity highestRatioGuess = null;
-            foreach (var teamGuessId in mostVotesTeamGuessIds)
-            {
-                var teamGuess = await this.teamGuessTableStorage.GetAsync(gameState.GameStateId, teamNumber, teamGuessId);
-                var ratio = GuessChecker.GetRatio(teamGuess.Guess, imageTableEntity.Answers);
-                if (ratio > maxRatio)
-                {
-                    maxRatio = ratio;
-                    highestRatioGuess = teamGuess;
-                }
-            }
-
-            return highestRatioGuess;
-        }
-
         public async Task<GameStateTableEntity> ExitMakeGuessAsync(GameStateTableEntity gameState)
         {
             var players = this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId);
@@ -537,38 +444,120 @@ namespace PicturePanels.Services
             return primary;
         }
 
-        public async Task<GameStateTableEntity> ExitMakeGuessIfNeededAsync(GameStateTableEntity gameState)
+        public async Task<GameStateTableEntity> ExitVoteGuessAsync(GameStateTableEntity gameState)
         {
-            if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess &&
-                !string.IsNullOrWhiteSpace(gameState.TeamOneGuessStatus) &&
-                !string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))
+            if (string.IsNullOrWhiteSpace(gameState.TeamOneGuessStatus))
             {
-                var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-                var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
-
-                gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
-                {
-                    gs.TeamOneCorrect = gameState.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsMatch(gs.TeamOneGuess, imageTableEntity.Answers);
-                    gs.TeamTwoCorrect = gameState.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsMatch(gs.TeamTwoGuess, imageTableEntity.Answers);
-
-                    gs.IncrementScores();
-                    gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
-                });
-
-                var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
-                gameRoundTableEntity = await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
-                {
-                    gr.TeamOneScore += gameState.GetTeamScoreChange(1);
-                    gr.TeamTwoScore += gameState.GetTeamScoreChange(2);
-                });
-
-                await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = gameState.GetTeamScoreChange(1), TeamTwo = gameState.GetTeamScoreChange(2), ChangeType = "GuessesMade" });
-
-                await this.playerTableStorage.ResetPlayersAsync(gameState);
-                await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+                gameState = await SaveMostVotesTeamGuessAsync(gameState, 1);
+            }
+            if (string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))
+            {
+                gameState = await SaveMostVotesTeamGuessAsync(gameState, 2);
             }
 
+            var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
+
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.TeamOneCorrect = gameState.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsMatch(gs.TeamOneGuess, imageTableEntity.Answers);
+                gs.TeamTwoCorrect = gameState.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusGuess && GuessChecker.IsMatch(gs.TeamTwoGuess, imageTableEntity.Answers);
+
+                gs.IncrementScores();
+                gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
+            });
+
+            var gameRoundTableEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+            gameRoundTableEntity = await this.gameRoundTableStorage.ReplaceAsync(gameRoundTableEntity, gr =>
+            {
+                gr.TeamOneScore += gameState.GetTeamScoreChange(1);
+                gr.TeamTwoScore += gameState.GetTeamScoreChange(2);
+            });
+
+            await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = gameState.GetTeamScoreChange(1), TeamTwo = gameState.GetTeamScoreChange(2), ChangeType = "GuessesMade" });
+
+            await this.playerTableStorage.ResetPlayersAsync(gameState);
+            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState), GameStateTableEntity.UpdateTypeNewTurn);
+
             return gameState;
+        }
+
+        private async Task<GameStateTableEntity> SaveMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
+        {
+            var teamGuess = await this.GetMostVotesTeamGuessAsync(gameState, teamNumber);
+            if (teamGuess == null)
+            {
+                gameState = await this.PassAsync(gameState, teamNumber);
+                return gameState;
+            }
+
+            gameState = await this.GuessAsync(gameState, teamNumber, teamGuess.Guess);
+            await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), teamNumber);
+            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
+
+            return gameState;
+        }
+
+        public async Task<TeamGuessTableEntity> GetMostVotesTeamGuessAsync(GameStateTableEntity gameState, int teamNumber)
+        {
+            var voteCounts = new Dictionary<string, int>();
+
+            await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, teamNumber))
+            {
+                if (!string.IsNullOrEmpty(p.GuessVoteId))
+                {
+                    if (!voteCounts.TryAdd(p.GuessVoteId, 1))
+                    {
+                        voteCounts[p.GuessVoteId]++;
+                    }
+                }
+            }
+
+            List<string> mostVotesTeamGuessIds = new List<string>();
+            int maxVoteCount = 0;
+
+            foreach (var voteCount in voteCounts)
+            {
+                if (voteCount.Value > maxVoteCount)
+                {
+                    maxVoteCount = voteCount.Value;
+                    mostVotesTeamGuessIds = new List<string> { voteCount.Key };
+                }
+                else if (voteCount.Value == maxVoteCount)
+                {
+                    mostVotesTeamGuessIds.Add(voteCount.Key);
+                }
+            }
+
+            if (mostVotesTeamGuessIds.Contains(GameStateTableEntity.TeamGuessStatusPass) || maxVoteCount == 0)
+            {
+                return null;
+            }
+
+            if (mostVotesTeamGuessIds.Count == 1)
+            {
+                return await this.teamGuessTableStorage.GetAsync(gameState.GameStateId, teamNumber, mostVotesTeamGuessIds.First());
+            }
+
+            var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
+            var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
+
+            double maxRatio = double.MinValue;
+            TeamGuessTableEntity highestRatioGuess = null;
+            foreach (var teamGuessId in mostVotesTeamGuessIds)
+            {
+                var teamGuess = await this.teamGuessTableStorage.GetAsync(gameState.GameStateId, teamNumber, teamGuessId);
+                var ratio = GuessChecker.GetRatio(teamGuess.Guess, imageTableEntity.Answers);
+                if (ratio > maxRatio)
+                {
+                    maxRatio = ratio;
+                    highestRatioGuess = teamGuess;
+                }
+            }
+
+            return highestRatioGuess;
         }
 
         public async Task<GameStateTableEntity> ExitGuessesMadeAsync(GameStateTableEntity gameState)
