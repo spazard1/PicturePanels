@@ -24,16 +24,7 @@ namespace PicturePanels.Entities
         [MaxLength(100)]
         public string Guess { get; set; }
 
-        public TeamGuessTableEntity ToModel(PlayerTableEntity playerTableEntity)
-        {
-            return new TeamGuessTableEntity()
-            {
-                GameStateId = playerTableEntity.GameStateId,
-                TeamNumber = playerTableEntity.TeamNumber.ToString(),
-                PlayerId = playerTableEntity.PlayerId,
-                CreatedTime = DateTime.UtcNow,
-                Guess = this.Guess
-            };
-        }
+        [Range(1, 100)]
+        public int Confidence { get; set; }
     }
 }

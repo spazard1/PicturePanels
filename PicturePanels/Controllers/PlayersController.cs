@@ -95,7 +95,7 @@ namespace PicturePanels.Controllers
                     pm.TeamNumber = entity.TeamNumber;
                     pm.Color = entity.Color;
                     pm.LastPingTime = DateTime.UtcNow;
-                    pm.TeamGuessVote = newTeam ? string.Empty : playerModel.TeamGuessVote;
+                    pm.GuessVoteId = newTeam ? string.Empty : playerModel.GuessVoteId;
                 });
 
                 if (newTeam)
@@ -139,6 +139,7 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
+        /*
         [HttpPut("{gameStateId}/{playerId}/ready")]
         public async Task<IActionResult> PutReadyAsync(string gameStateId, string playerId)
         {
@@ -178,7 +179,7 @@ namespace PicturePanels.Controllers
 
             if (players.Count == 1 || players.Any(p => p.IsReady && p.PlayerId != playerId))
             {
-                await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
+                await this.gameStateService.AllPlayerReadysAsync(gameState, playerModel);
             }
             else
             {
@@ -191,36 +192,7 @@ namespace PicturePanels.Controllers
 
             return Json(new PlayerEntity(playerModel));
         }
-
-        [HttpPut("{gameStateId}/{playerId}/readySolo")]
-        public async Task<IActionResult> PutReadySoloAsync(string gameStateId, string playerId)
-        {
-            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-
-            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
-            {
-                return StatusCode(403);
-            }
-
-            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
-            if (playerModel == null)
-            {
-                return StatusCode(404);
-            }
-
-            if (playerModel.IsAdmin)
-            {
-                return StatusCode(400);
-            }
-
-            await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
-
-            return Json(new PlayerEntity(playerModel));
-        }
+        */
 
         [HttpPut("{gameStateId}/{playerId}/openPanelVote")]
         public async Task<IActionResult> PutOpenPanelVoteAsync(string gameStateId, string playerId)
@@ -257,16 +229,95 @@ namespace PicturePanels.Controllers
                 pm.IsReady = true;
             });
 
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber).ToListAsync();
-
-            if (players.All(p => p.IsReady))
-            {
-                await this.gameStateService.PlayerReadyAsync(gameState, playerModel);
-            }
+            await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
 
             return Json(new PlayerEntity(playerModel));
         }
 
+        [HttpPut("{gameStateId}/{playerId}/guess")]
+        public async Task<IActionResult> PutGuessAsync([FromBody] GuessEntity guessEntity, string gameStateId, string playerId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (playerModel.IsAdmin)
+            {
+                return StatusCode(400);
+            }
+
+            if (playerModel.IsReady)
+            {
+                return StatusCode(400);
+            }
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.IsReady = true;
+                pm.Guess = guessEntity.Guess;
+                pm.Confidence = guessEntity.Confidence;
+            });
+
+            await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
+
+            return Json(new PlayerEntity(playerModel));
+        }
+
+        [HttpPut("{gameStateId}/{playerId}/guessVote/{guessVoteId}")]
+        public async Task<IActionResult> PutGuessVoteAsync(string gameStateId, string playerId, string guessVoteId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return StatusCode(403);
+            }
+
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            if (playerModel.IsAdmin)
+            {
+                return StatusCode(400);
+            }
+
+            if (playerModel.IsReady)
+            {
+                return StatusCode(400);
+            }
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.IsReady = true;
+                pm.GuessVoteId = guessVoteId;
+            });
+
+            await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
+
+            return Json(new PlayerEntity(playerModel));
+        }
+
+        /*
         [HttpGet("{gameStateId}/{playerId}/ready")]
         public async Task<IActionResult> GetReadyAsync(string gameStateId, string playerId)
         {
@@ -299,6 +350,7 @@ namespace PicturePanels.Controllers
 
             return StatusCode(404);
         }
+        */
 
         [HttpPut("{gameStateId}/{playerId}/admin")]
         [RequireAuthorization]

@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import getGameState from "../common/getGameState";
-import Chat from "./chat/Chat";
+//import Chat from "./chat/Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
-import TeamGuesses from "./teamGuesses/TeamGuesses";
 import StartGame from "./startGame/StartGame";
 import ChooseTeam from "./startGame/ChooseTeam";
 import JoinGame from "./startGame/JoinGame";
 import ModalMessage from "../common/modal/ModalMessage";
+import MakeGuess from "./makeGuess/MakeGuess";
 import { useModal } from "../common/modal/useModal";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
@@ -28,6 +28,7 @@ import { useLocalStorageState } from "../common/useLocalStorageState";
 import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
+import VoteGuess from "./voteGuess/VoteGuess";
 
 export default function Player() {
   useBodyClass("player");
@@ -144,6 +145,7 @@ export default function Player() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /*
   const onTeamGuessVote = (ticks) => {
     if (player.teamGuessVote === ticks) {
       setPlayer({ ...player, ["teamGuessVote"]: "" });
@@ -151,6 +153,7 @@ export default function Player() {
       setPlayer({ ...player, ["teamGuessVote"]: ticks });
     }
   };
+  */
 
   const onToggleHideRemainingTime = () => {
     if (hideRemainingTime) {
@@ -168,6 +171,15 @@ export default function Player() {
     }
   };
 
+  const setPlayerReady = (isReady) => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+      return { ...p, isReady: isReady };
+    });
+  };
+
   useEffect(() => {
     if (gameState && gameState.turnType) {
       setTurnType(gameState.turnType);
@@ -179,12 +191,7 @@ export default function Player() {
 
   useEffect(() => {
     if (turnType) {
-      setPlayer((p) => {
-        if (!p) {
-          return;
-        }
-        return { ...p, ["isReady"]: false };
-      });
+      setPlayerReady(false);
     }
   }, [turnType]);
 
@@ -372,6 +379,15 @@ export default function Player() {
             </>
           )}
 
+          {gameState.turnType === "MakeGuess" && !player.isReady && (
+            <MakeGuess gameStateId={gameStateId} playerId={playerId} onSaveGuess={() => setPlayerReady(true)}></MakeGuess>
+          )}
+
+          {gameState.turnType === "VoteGuess" && !player.isReady && (
+            <VoteGuess gameStateId={gameStateId} playerId={playerId} onVoteGuess={() => setPlayerReady(true)}></VoteGuess>
+          )}
+
+          {/*
           <TeamGuesses
             isPaused={gameState.pauseState === "Paused"}
             hasTeamGuessed={(teamNumber === 1 && gameState.teamOneGuessStatus !== "") || (teamNumber === 2 && gameState.teamTwoGuessStatus !== "")}
@@ -383,13 +399,16 @@ export default function Player() {
             teamNumber={teamNumber}
             onTeamGuessVote={onTeamGuessVote}
           ></TeamGuesses>
+          */}
 
+          {/*
           <Chat
             gameStateId={gameStateId}
             playerId={player.playerId}
             teamNumber={teamNumber}
             teamName={teamNumber === 1 ? gameState.teamOneName : gameState.teamTwoName}
           ></Chat>
+          */}
         </div>
       )}
     </>
