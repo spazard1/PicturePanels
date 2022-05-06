@@ -203,7 +203,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenPanel || gameState.PauseState == GameStateTableEntity.PauseStatePaused)
             {
                 return StatusCode(403);
             }
