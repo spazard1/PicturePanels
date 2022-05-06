@@ -25,7 +25,11 @@ namespace PicturePanels.Models
 
         public List<string> SelectedPanels { get; set; }
 
-        public string TeamGuessVote { get; set; }
+        public string Guess { get; set; }
+
+        public int Confidence { get; set; }
+
+        public string GuessVoteId { get; set; }
 
         public bool IsReady { get; set; }
 

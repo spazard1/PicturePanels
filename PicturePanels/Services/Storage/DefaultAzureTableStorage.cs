@@ -120,6 +120,26 @@ namespace PicturePanels.Services.Storage
             return tableEntity;
         }
 
+        public virtual async Task InsertAsync(IList<T> tableEntities)
+        {
+            TableBatchOperation batchOperation = new TableBatchOperation();
+            foreach (var tableEntity in tableEntities)
+            {
+                if (batchOperation.Count >= 100)
+                {
+                    await cloudTable.ExecuteBatchAsync(batchOperation);
+                    batchOperation = new TableBatchOperation();
+                }
+
+                batchOperation.Add(TableOperation.Insert(tableEntity));
+            }
+
+            if (batchOperation.Count > 0)
+            {
+                await cloudTable.ExecuteBatchAsync(batchOperation);
+            }
+        }
+
         public async Task<T> InsertOrReplaceAsync(T tableEntity)
         {
             await cloudTable.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));

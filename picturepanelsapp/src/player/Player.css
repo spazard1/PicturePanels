@@ -17,6 +17,12 @@ body.player #root {
   height: 100%;
 }
 
+.playerLabel {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .playingContainer {
   display: flex;
   flex-direction: column;

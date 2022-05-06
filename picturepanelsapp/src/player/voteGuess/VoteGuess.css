@@ -1,0 +1,6 @@
+/* stylelint-disable selector-class-pattern */
+.voteGuessLabel {
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+}

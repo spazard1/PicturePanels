@@ -14,19 +14,41 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class TeamGuessesController : Controller
     {
+        
+
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
-        private readonly SignalRHelper signalRHelper;
-        private readonly ChatService chatService;
+        //private readonly SignalRHelper signalRHelper;
+        //private readonly ChatService chatService;
 
-        public TeamGuessesController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage, SignalRHelper signalRHelper, ChatService chatService)
+        public TeamGuessesController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage) //, SignalRHelper signalRHelper, ChatService chatService)
         {
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.playerTableStorage = playerTableStorage;
-            this.signalRHelper = signalRHelper;
-            this.chatService = chatService;
+            //this.signalRHelper = signalRHelper;
+            //this.chatService = chatService;
         }
 
+        [HttpGet("{gameStateId}/{playerId}")]
+        public async Task<IActionResult> GetAllAsync(string gameStateId, string playerId)
+        {
+            var player = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+            if (player == null)
+            {
+                return StatusCode(404);
+            }
+
+            var teamGuessEntities = new List<TeamGuessEntity>();
+
+            await foreach (var guessModel in this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber))
+            {
+                teamGuessEntities.Add(new TeamGuessEntity(guessModel));
+            }
+
+            return Json(teamGuessEntities);
+        }
+
+        /*
         [HttpGet("{gameStateId}/{playerId}")]
         public async Task<IActionResult> GetAllAsync(string gameStateId, string playerId)
         {
@@ -190,5 +212,6 @@ namespace PicturePanels.Controllers
 
             return Json(new TeamGuessEntity(teamGuess));
         }
+        */
     }
 }

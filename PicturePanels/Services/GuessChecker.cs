@@ -23,7 +23,55 @@ namespace PicturePanels.Services
 
         private const double CorrectRatio = .9;
 
-        public static bool IsCorrect(string guess, IEnumerable<string> answers)
+        public static double GetRatio(string guess, string answer)
+        {
+            guess = Prepare(guess);
+            Levenshtein lev = new Levenshtein(guess);
+
+            double totalLength = answer.Length + guess.Length;
+#if DEBUG
+            Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+#endif
+            
+            return (totalLength - lev.DistanceFrom(answer)) / totalLength;
+        }
+
+        public static double GetRatio(string guess, IEnumerable<string> answers)
+        {
+            guess = Prepare(guess);
+            Levenshtein lev = new Levenshtein(guess);
+
+            var maxRatio = double.MinValue;
+
+            foreach (var answer in answers.Select(a => Prepare(a)))
+            {
+                double totalLength = answer.Length + guess.Length;
+#if DEBUG
+                Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+#endif
+                Math.Max(maxRatio, (totalLength - lev.DistanceFrom(answer)) / totalLength);
+            }
+
+            return maxRatio;
+        }
+
+        public static bool IsMatch(string guess, string answer)
+        {
+            guess = Prepare(guess);
+            Levenshtein lev = new Levenshtein(guess);
+
+            double totalLength = answer.Length + guess.Length;
+#if DEBUG
+            Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+#endif
+            if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsMatch(string guess, IEnumerable<string> answers)
         {
             guess = Prepare(guess);
             Levenshtein lev = new Levenshtein(guess);
@@ -41,7 +89,7 @@ namespace PicturePanels.Services
             return false;
         }
 
-        public static async Task<bool> IsCorrectAsync(string guess, IAsyncEnumerable<string> answers)
+        public static async Task<bool> IsMatchAsync(string guess, IAsyncEnumerable<string> answers)
         {
             guess = Prepare(guess);
             Levenshtein lev = new Levenshtein(guess);

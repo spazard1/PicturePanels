@@ -13,28 +13,31 @@ namespace PicturePanels.Models
             return gameStateId + "_" + teamNumber;
         }
 
+        public static string GetPartitionKey(string gameStateId, int teamNumber)
+        {
+            return GetPartitionKey(gameStateId, teamNumber.ToString());
+        }
+
         public string GetPartitionKey()
         {
-            return GetPartitionKey(GameStateId, TeamNumber);
+            return GetPartitionKey(GameStateId, TeamNumber.ToString());
         }
 
         public string GameStateId { get; set; }
 
-        public string TeamNumber { get; set; }
+        public int TeamNumber { get; set; }
 
-        public DateTime CreatedTime
+        public string TeamGuessId
         {
-            get { return new DateTime(long.Parse(this.RowKey), DateTimeKind.Utc); }
-            set { this.RowKey = value.Ticks.ToString(); }
-        }
-
-        public string Ticks {
-            get => this.RowKey;
+            get { return this.RowKey; }
+            set { this.RowKey = value; }
         }
 
         public string Guess { get; set; }
 
-        public string PlayerId { get; set; }
+        public int Confidence { get; set; }
+
+        public List<string> PlayerIds { get; set; }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {

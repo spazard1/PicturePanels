@@ -13,6 +13,7 @@ namespace PicturePanels.Models
         public const string TurnTypeWelcome = "Welcome";
         public const string TurnTypeOpenPanel = "OpenPanel";
         public const string TurnTypeMakeGuess = "MakeGuess";
+        public const string TurnTypeVoteGuess = "VoteGuess";
         public const string TurnTypeGuessesMade = "GuessesMade";
         public const string TurnTypeEndRound = "EndRound";
         public const string TurnTypeEndGame = "EndGame";
@@ -42,7 +43,8 @@ namespace PicturePanels.Models
         public const int EndRoundTime = 25;
 
         public const int DefaultOpenPanelTime = 30;
-        public const int DefaultMakeGuessTime = 120;
+        public const int DefaultMakeGuessTime = 60;
+        public const int DefaultVoteGuessTime = 30;
         public const int DefaultWrongGuessPenalty = 0;
 
         public const int MaxOpenPanels = 8;
@@ -73,6 +75,8 @@ namespace PicturePanels.Models
         public int OpenPanelTime { get; set; }
 
         public int GuessTime { get; set; }
+
+        public int GuessVoteTime { get; set; }
 
         public int WrongGuessPenalty { get; set; }
 
@@ -233,6 +237,19 @@ namespace PicturePanels.Models
                     if (this.GuessTime > 0)
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(this.GuessTime);
+                    }
+                    else
+                    {
+                        this.TurnEndTime = null;
+                    }
+                    break;
+                case GameStateTableEntity.TurnTypeVoteGuess:
+                    this.TurnTime = this.GuessVoteTime;
+
+                    this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                    if (this.GuessVoteTime > 0)
+                    {
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(this.GuessVoteTime);
                     }
                     else
                     {

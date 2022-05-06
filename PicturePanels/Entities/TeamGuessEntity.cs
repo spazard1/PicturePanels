@@ -16,14 +16,15 @@ namespace PicturePanels.Entities
 
         public TeamGuessEntity(TeamGuessTableEntity tableEntity)
         {
+            this.TeamGuessId = tableEntity.TeamGuessId;
             this.Guess = tableEntity.Guess;
-            this.Ticks = tableEntity.CreatedTime.Ticks.ToString();
+            this.Confidence = tableEntity.Confidence;
         }
+
+        public string TeamGuessId { get; set; }
 
         public string Guess { get; set; }
 
-        public string Ticks { get; set; }
-
-        public int VoteCount { get; internal set; }
+        public int Confidence { get; set; }
     }
 }

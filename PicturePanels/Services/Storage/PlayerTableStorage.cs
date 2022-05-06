@@ -45,10 +45,10 @@ namespace PicturePanels.Services.Storage
             return playerDictionary;
         }
 
-        public async Task ResetPlayersAsync(string gameStateId)
+        public async Task ResetPlayersAsync(GameStateTableEntity gameState)
         {
             TableBatchOperation batchOperation = new TableBatchOperation();
-            await foreach (var playerModel in this.GetActivePlayersAsync(gameStateId))
+            await foreach (var playerModel in this.GetActivePlayersAsync(gameState.GameStateId))
             {
                 if (batchOperation.Count >= 100)
                 {
@@ -56,9 +56,16 @@ namespace PicturePanels.Services.Storage
                     batchOperation = new TableBatchOperation();
                 }
 
-                playerModel.SelectedPanels = new List<string>();
                 playerModel.IsReady = false;
-                playerModel.TeamGuessVote = null;
+                if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+                {
+                    playerModel.SelectedPanels = new List<string>();
+                }
+                else if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade)
+                {
+                    playerModel.GuessVoteId = null;
+                    playerModel.Guess = null;
+                }
 
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
             }
