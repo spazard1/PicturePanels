@@ -20,19 +20,38 @@
 
 .confidenceLabel {
   margin-top: 4rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   font-size: 1.75rem;
 }
 
-.confidenceButton {
-  width: 70%;
-  margin-bottom: 1.4rem;
+.confidenceRangeLabel {
+  font-size: 1.1rem;
+  display: flex;
+}
+
+.confidenceRangeLabel span {
+  flex: 1;
+}
+
+.confidenceRange {
+  width: 80%;
+  font-size: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.confidenceMessageLabel {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.confidenceButtonsContainer {
   font-size: 1.4rem;
 }
 
-.confidenceButtonCancel {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
+.confidenceButton {
+  font-size: 1.4rem;
+  margin: 0 1rem;
 }
 
 .makeGuessButton {
