@@ -44,6 +44,7 @@ namespace PicturePanels.Controllers
             {
                 teamGuessEntities.Add(new TeamGuessEntity(guessModel));
             }
+            teamGuessEntities.Sort();
 
             return Json(teamGuessEntities);
         }

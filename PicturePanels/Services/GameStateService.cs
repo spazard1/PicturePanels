@@ -381,6 +381,8 @@ namespace PicturePanels.Services
                 gs.NewTurnType(GameStateTableEntity.TurnTypeVoteGuess);
             });
 
+            await this.playerTableStorage.ResetPlayersAsync(gameState);
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;

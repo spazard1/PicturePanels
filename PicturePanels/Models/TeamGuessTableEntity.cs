@@ -18,14 +18,26 @@ namespace PicturePanels.Models
             return GetPartitionKey(gameStateId, teamNumber.ToString());
         }
 
-        public string GetPartitionKey()
-        {
-            return GetPartitionKey(GameStateId, TeamNumber.ToString());
+        private string gameStateId;
+        public string GameStateId {
+            get { return gameStateId; }
+            set
+            {
+                this.gameStateId = value;
+                this.PartitionKey = GetPartitionKey(gameStateId, teamNumber);
+            }
         }
 
-        public string GameStateId { get; set; }
-
-        public int TeamNumber { get; set; }
+        private int teamNumber;
+        public int TeamNumber
+        {
+            get { return teamNumber; }
+            set
+            {
+                this.teamNumber = value;
+                this.PartitionKey = GetPartitionKey(gameStateId, teamNumber);
+            }
+        }
 
         public string TeamGuessId
         {
@@ -35,14 +47,28 @@ namespace PicturePanels.Models
 
         public string Guess { get; set; }
 
-        public int Confidence { get; set; }
+        public double Confidence { get; set; }
 
         public List<string> PlayerIds { get; set; }
+
+        public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
+        {
+            base.ReadEntity(properties, operationContext);
+
+            if (properties.ContainsKey(nameof(this.PlayerIds)))
+            {
+                this.PlayerIds = properties[nameof(this.PlayerIds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+        }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
             var result = base.WriteEntity(operationContext);
-            result[nameof(this.PartitionKey)] = new EntityProperty(GetPartitionKey());
+
+            if (this.PlayerIds != null)
+            {
+                result[nameof(this.PlayerIds)] = new EntityProperty(string.Join(",", this.PlayerIds));
+            }
 
             return result;
         }
