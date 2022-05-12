@@ -16,7 +16,7 @@ namespace PicturePanels.Entities
             this.Message = tableEntity.Message;
             this.Ticks = tableEntity.CreatedTime.Ticks.ToString();
             this.IsSystem = tableEntity.IsSystem;
-            this.Player = new PlayerEntity(playerEntity);
+            this.Player = new PlayerNameEntity(playerEntity);
         }
 
         public ChatEntity(ChatTableEntity tableEntity)
@@ -38,6 +38,6 @@ namespace PicturePanels.Entities
 
         public bool IsSystem { get; set; }
 
-        public PlayerEntity Player { get; set; }
+        public PlayerNameEntity Player { get; set; }
     }
 }

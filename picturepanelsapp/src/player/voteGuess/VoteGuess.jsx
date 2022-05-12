@@ -3,13 +3,21 @@ import PropTypes from "prop-types";
 import getTeamGuesses from "./getTeamGuesses";
 
 import "./VoteGuess.css";
+import PlayerName from "../../common/PlayerName";
+import { Button } from "react-bootstrap";
+import putGuessVote from "./putGuessVote";
 
 const VoteGuess = ({ gameStateId, playerId }) => {
   const [teamGuesses, setTeamGuesses] = useState([]);
 
-  const voteGuessOnClick = useCallback((teamGuessId) => {
-    console.log(teamGuessId);
-  }, []);
+  const voteGuessOnClick = useCallback(
+    (teamGuessId) => {
+      putGuessVote(gameStateId, playerId, teamGuessId, (result) => {
+        console.log(result);
+      });
+    },
+    [gameStateId, playerId]
+  );
 
   useEffect(() => {
     if (!gameStateId || !playerId) {
@@ -25,13 +33,19 @@ const VoteGuess = ({ gameStateId, playerId }) => {
     <>
       <div className="playerLabel makeGuessLabel">Vote for a guess or pass.</div>
       {teamGuesses.map((teamGuess) => (
-        <div key={teamGuess.teamGuessId} className="teamGuess" onClick={() => voteGuessOnClick(teamGuess.teamGuessId)}>
-          {teamGuess.confidence}: {teamGuess.guess}
-        </div>
+        <Button key={teamGuess.teamGuessId} className="teamGuess" onClick={() => voteGuessOnClick(teamGuess.teamGuessId)}>
+          <div className="teamGuessConfidence">{teamGuess.confidence}%</div>
+          <div className="teamGuessText">{teamGuess.guess}</div>
+          <div className="teamGuessPlayers">
+            {teamGuess.players.map((player) => (
+              <PlayerName key={player.playerId} player={player}></PlayerName>
+            ))}
+          </div>
+        </Button>
       ))}
-      <div className="teamGuess teamGuessPass" onClick={() => voteGuessOnClick("Pass")}>
+      <Button className="teamGuessPass" variant="secondary" onClick={() => voteGuessOnClick("Pass")}>
         Pass
-      </div>
+      </Button>
     </>
   );
 };

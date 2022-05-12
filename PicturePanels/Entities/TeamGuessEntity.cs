@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PicturePanels.Entities
 {
-    public class TeamGuessEntity : IComparable<TeamGuessTableEntity>
+    public class TeamGuessEntity : IComparable<TeamGuessEntity>
     {
         public TeamGuessEntity()
         {
@@ -19,6 +19,7 @@ namespace PicturePanels.Entities
             this.TeamGuessId = tableEntity.TeamGuessId;
             this.Guess = tableEntity.Guess;
             this.Confidence = tableEntity.Confidence;
+            this.Players = new List<PlayerNameEntity>();
         }
 
         public string TeamGuessId { get; set; }
@@ -27,9 +28,11 @@ namespace PicturePanels.Entities
 
         public double Confidence { get; set; }
 
-        public int CompareTo(TeamGuessTableEntity other)
+        public List<PlayerNameEntity> Players { get; set; }
+
+        public int CompareTo(TeamGuessEntity other)
         {
-            return (int) (this.Confidence - other.Confidence);
+            return (int) (other.Confidence - this.Confidence);
         }
     }
 }
