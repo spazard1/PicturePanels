@@ -35,5 +35,12 @@ namespace PicturePanels.Services
             // subtract a small extra grace period to handle latency
             await this.Sender.ScheduleMessageAsync(message, gameState.TurnEndTime.Value.Subtract(TimeSpan.FromSeconds(2)));
         }
+
+        public async Task QueueAllPlayersReadyGameStateChangeAsync(GameStateTableEntity gameState)
+        {
+            var message = new ServiceBusMessage(JsonConvert.SerializeObject(new GameStateUpdateMessage(gameState, true)));
+
+            await this.Sender.SendMessageAsync(message);
+        }
     }
 }

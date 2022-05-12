@@ -137,7 +137,7 @@ namespace PicturePanels.Models
             return RoundNumber == gameStateUpdate.RoundNumber &&
                 TurnType == gameStateUpdate.TurnType &&
                 TurnNumber == gameStateUpdate.TurnNumber &&
-                TurnEndTime == gameStateUpdate.TurnEndTime;
+                (TurnEndTime == gameStateUpdate.TurnEndTime || gameStateUpdate.AllPlayersReady);
         }
 
         public static GameStateTableEntity NewGameState()

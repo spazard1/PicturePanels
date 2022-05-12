@@ -28,7 +28,7 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
   };
 
   const passOnClick = () => {
-    putGuess(gameStateId, playerId, "Pass", (result) => {
+    putGuess(gameStateId, playerId, "Pass", -1, (result) => {
       if (result) {
         onSaveGuess();
       }

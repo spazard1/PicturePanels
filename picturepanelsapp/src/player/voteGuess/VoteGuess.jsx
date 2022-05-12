@@ -1,23 +1,22 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import getTeamGuesses from "./getTeamGuesses";
-
-import "./VoteGuess.css";
 import PlayerName from "../../common/PlayerName";
 import { Button } from "react-bootstrap";
 import putGuessVote from "./putGuessVote";
 
-const VoteGuess = ({ gameStateId, playerId }) => {
+import "./VoteGuess.css";
+
+const VoteGuess = ({ gameStateId, playerId, onVoteGuess }) => {
   const [teamGuesses, setTeamGuesses] = useState([]);
 
-  const voteGuessOnClick = useCallback(
-    (teamGuessId) => {
-      putGuessVote(gameStateId, playerId, teamGuessId, (result) => {
-        console.log(result);
-      });
-    },
-    [gameStateId, playerId]
-  );
+  const voteGuessOnClick = (teamGuessId) => {
+    putGuessVote(gameStateId, playerId, teamGuessId, (result) => {
+      if (result) {
+        onVoteGuess();
+      }
+    });
+  };
 
   useEffect(() => {
     if (!gameStateId || !playerId) {
@@ -55,4 +54,5 @@ export default VoteGuess;
 VoteGuess.propTypes = {
   gameStateId: PropTypes.string,
   playerId: PropTypes.string,
+  onVoteGuess: PropTypes.func,
 };
