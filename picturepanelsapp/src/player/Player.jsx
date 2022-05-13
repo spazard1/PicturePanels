@@ -337,8 +337,7 @@ export default function Player() {
               player &&
               !hideRemainingTime &&
               ((gameState.turnType === "OpenPanel" && gameState.teamTurn === teamNumber) ||
-                (gameState.turnType === "MakeGuess" &&
-                  ((teamNumber === 1 && !gameState.teamOneGuessStatus) || (teamNumber === 2 && !gameState.teamTwoGuessStatus))))
+                ((gameState.turnType === "MakeGuess" || gameState.turnType === "VoteGuess") && !player.isReady))
             }
             isPaused={gameState.pauseState === "Paused"}
             turnTime={gameState.turnTime}

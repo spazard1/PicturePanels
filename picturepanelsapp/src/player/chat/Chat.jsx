@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import "./Chat.css";
 import { useChats } from "./useChats";
 import classNames from "classnames";
+import PlayerName from "../../common/PlayerName";
 
 const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
   const [chatInput, setChatInput] = useState();
@@ -86,7 +87,7 @@ const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
           >
             {chat.player && (chat.player.playerId !== playerId || chat.isSystem) && (
               <>
-                <span style={{ color: chat.player.color }}>{chat.player.name}</span>
+                <PlayerName player={chat.player}></PlayerName>
                 {chat.isSystem ? " " : ": "}
               </>
             )}
@@ -100,7 +101,7 @@ const Chat = ({ gameStateId, playerId, teamNumber, teamName }) => {
           {Object.values(playersTyping).map((player, i) => (
             <span key={player.playerId}>
               {i > 0 && i < maxTypingPlayersDisplay && <span>, </span>}
-              {i < maxTypingPlayersDisplay && <span style={{ color: player.color }}>{player.name}</span>}
+              {i < maxTypingPlayersDisplay && <PlayerName player={player}></PlayerName>}
               {i === maxTypingPlayersDisplay && (
                 <span key={"numberOfOtherPlayers"}> (+{Object.keys(playersTyping).length - maxTypingPlayersDisplay})</span>
               )}

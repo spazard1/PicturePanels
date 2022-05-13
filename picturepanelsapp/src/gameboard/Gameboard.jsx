@@ -26,6 +26,7 @@ import { useWinningTeam } from "../common/useWinningTeam";
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
+import classNames from "classnames";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -161,7 +162,7 @@ export default function Gameboard() {
     setRoundNumberAnimateDisplay(true);
     setTimeout(() => {
       setRoundNumberAnimateDisplay(false);
-    }, 8000);
+    }, 7000);
   }, [gameState]);
 
   return (
@@ -208,8 +209,8 @@ export default function Gameboard() {
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"
-        entranceClassNames="animate__backInLeft animate__slow animate__delay-2s"
-        exitClassNames="animate__backOutRight animate__slow "
+        entranceClassNames="animate__backInLeft animate__delay-2s"
+        exitClassNames="animate__backOutRight"
       >
         {roundNumberAnimateDisplayText}
       </FadedBox>
@@ -229,14 +230,19 @@ export default function Gameboard() {
       >
         {uploadedByDisplayText}
       </FadedBox>
-      <FadedBox
-        displayState={answerDisplay}
-        className="answerFadedBox"
-        entranceClassNames="animate__bounceInDown animate__slow animate__delay-7s"
-        exitClassNames="animate__bounceOutUp"
-      >
-        {answerDisplayText}
-      </FadedBox>
+      {gameState && (
+        <FadedBox
+          displayState={answerDisplay}
+          className="answerFadedBox"
+          entranceClassNames={classNames("animate__backInUp", "animate__slow", {
+            "animate__delay-2s": gameState.turnType === "EndRound",
+            "animate__delay-10s": gameState.turnType === "GuessesMade",
+          })}
+          exitClassNames="animate__backOutDown"
+        >
+          {answerDisplayText}
+        </FadedBox>
+      )}
     </>
   );
 }

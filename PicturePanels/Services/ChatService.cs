@@ -31,7 +31,7 @@ namespace PicturePanels.Services
                 TeamNumber = "1",
                 Message = message,
                 IsSystem = true,
-                Player = new PlayerEntity(playerModel),
+                Player = new PlayerNameEntity(playerModel),
                 Ticks = DateTime.UtcNow.Ticks.ToString()
             });
 
@@ -41,7 +41,7 @@ namespace PicturePanels.Services
                 TeamNumber = "2",
                 Message = message,
                 IsSystem = true,
-                Player = new PlayerEntity(playerModel),
+                Player = new PlayerNameEntity(playerModel),
                 Ticks = DateTime.UtcNow.Ticks.ToString()
             });
         }

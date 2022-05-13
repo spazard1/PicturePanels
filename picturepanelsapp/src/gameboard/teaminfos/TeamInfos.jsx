@@ -14,7 +14,9 @@ function TeamInfos({ gameState }) {
           teamInnerPanels={gameState.teamOneInnerPanels ?? 5}
           isTeamActive={gameState.teamTurn === 1 ? true : false}
           isCountdownActive={
-            (gameState.turnType === "OpenPanel" && gameState.teamTurn === 1) || (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus)
+            (gameState.turnType === "OpenPanel" && gameState.teamTurn === 1) ||
+            (gameState.turnType === "MakeGuess" && !gameState.teamOneGuessStatus) ||
+            gameState.turnType === "VoteGuess"
           }
           teamNumber={1}
           isPaused={gameState.pauseState === "Paused"}
@@ -37,7 +39,9 @@ function TeamInfos({ gameState }) {
           teamInnerPanels={gameState.teamTwoInnerPanels ?? 5}
           isTeamActive={gameState.teamTurn === 2 ? true : false}
           isCountdownActive={
-            (gameState.turnType === "OpenPanel" && gameState.teamTurn === 2) || (gameState.turnType === "MakeGuess" && !gameState.teamTwoGuessStatus)
+            (gameState.turnType === "OpenPanel" && gameState.teamTurn === 2) ||
+            (gameState.turnType === "MakeGuess" && !gameState.teamTwoGuessStatus) ||
+            gameState.turnType === "VoteGuess"
           }
           teamNumber={2}
           isPaused={gameState.pauseState === "Paused"}

@@ -28,7 +28,7 @@ const PanelButtons = ({ gameStateId, playerId, roundNumber, revealedPanels }) =>
   );
 
   return (
-    <div className="panelButtons center">
+    <div className="panelButtons">
       {panelNumbers.map((panelNumber) => (
         <PanelButton
           key={panelNumber}

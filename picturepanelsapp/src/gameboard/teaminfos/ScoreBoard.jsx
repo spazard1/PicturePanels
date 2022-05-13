@@ -41,6 +41,8 @@ function ScoreBoard({ teamOneScore, teamTwoScore, teamTurn, turnType }) {
       setTurnTypeDisplay("Open a Panel →");
     } else if (turnType === "MakeGuess") {
       setTurnTypeDisplay("Guess or Pass");
+    } else if (turnType === "VoteGuess") {
+      setTurnTypeDisplay("Vote for a Guess");
     } else if (turnType === "GuessesMade") {
       setTurnTypeDisplay("Who was right?");
     } else if (turnType === "EndRound") {

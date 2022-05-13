@@ -50,7 +50,8 @@ const Panel = ({ gameStateId, isOpen, roundNumber, panelNumber, entranceClass, o
         ref={panelElementRef}
         className={classNames("panelBackground", "animate__animated", "animate__slow", {
           [`${exitClass}`]: isOpen && imageLoaded,
-          "animate__delay-5s": isOpen && imageLoaded && (turnType === "GuessesMade" || turnType === "EndRound"),
+          "animate__delay-7s": isOpen && imageLoaded && turnType === "GuessesMade",
+          "animate__delay-1s": isOpen && imageLoaded && turnType === "EndRound",
           [`${entranceClass}`]: !isOpen && hasExited,
           //animate__infinite: isOpen && !imageLoaded,
           //animate__pulse: isOpen && !imageLoaded && turnType === "MakeGuess",

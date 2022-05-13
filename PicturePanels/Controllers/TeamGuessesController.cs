@@ -38,12 +38,23 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
+            var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync(gameStateId);
+
             var teamGuessEntities = new List<TeamGuessEntity>();
 
             await foreach (var guessModel in this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber))
             {
-                teamGuessEntities.Add(new TeamGuessEntity(guessModel));
+                var teamGuessEntity = new TeamGuessEntity(guessModel);
+                foreach (var teamGuessPlayerId in guessModel.PlayerIds)
+                {
+                    if (players.TryGetValue(teamGuessPlayerId, out PlayerTableEntity playerModel))
+                    {
+                        teamGuessEntity.Players.Add(new PlayerNameEntity(playerModel));
+                    }
+                }
+                teamGuessEntities.Add(teamGuessEntity);
             }
+            teamGuessEntities.Sort();
 
             return Json(teamGuessEntities);
         }

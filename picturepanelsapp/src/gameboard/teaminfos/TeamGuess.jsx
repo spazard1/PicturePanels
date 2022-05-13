@@ -10,6 +10,7 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
   const [hasTeamGuessBeenVisible, setHasTeamGuessBeenVisible] = useState(false);
   const [teamGuessIncorrectDisplay, setTeamGuessIncorrectDisplay] = useState(false);
   const [readyDisplay, setReadyDisplay] = useState(true);
+  const [skipReady, setSkipReady] = useState(false);
 
   useEffect(() => {
     if (turnType !== "MakeGuess" && turnType !== "GuessesMade") {
@@ -21,6 +22,7 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
       setTeamGuessDisplay("Ready!");
+      setSkipReady(false);
     } else if (teamGuessStatus === "Guess") {
       setTeamGuessVisible(true);
       setTimeout(() => {
@@ -28,17 +30,26 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
       }, 8000);
       setTeamGuessDisplay(teamGuess);
       setReadyDisplay(false);
-    } else if (teamGuessStatus) {
+      setSkipReady(false);
+    } else if (teamGuessStatus === "Pass") {
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
       setTeamGuessDisplay("(team passed)");
       setReadyDisplay(false);
+      setSkipReady(false);
+    } else if (teamGuessStatus === "Skip") {
+      setTeamGuessVisible(true);
+      setTeamGuessIncorrectDisplay(false);
+      setTeamGuessDisplay("(team passed)");
+      setReadyDisplay(false);
+      setSkipReady(true);
     } else {
       setTeamGuessVisible(false);
       setTeamGuessIncorrectDisplay(false);
       setTimeout(() => {
         setReadyDisplay(true);
       }, 2000);
+      setSkipReady(false);
     }
   }, [teamGuessStatus, teamGuess, turnType, teamGuessIncorrect]);
 
@@ -59,13 +70,18 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
         animate__slow: teamGuessVisible,
       })}
     >
-      <div className={classNames("teamGuessChild", "animate__animated", "animate__slow", "animate__delay-4s", { animate__fadeOut: !readyDisplay })}>
+      <div
+        className={classNames("teamGuessChild", "animate__animated", "animate__slow", "animate__delay-4s", {
+          hidden: skipReady,
+          animate__fadeOut: !readyDisplay,
+        })}
+      >
         Ready!
       </div>
       <div
-        className={classNames("teamGuessChild", "teamGuessReady", "animate__animated", "animate__slow", "animate__delay-4s", {
+        className={classNames("teamGuessChild", "teamGuessReady", "animate__animated", "animate__delay-4s", {
           hidden: readyDisplay,
-          animate__fadeIn: !readyDisplay,
+          animate__fadeIn: !readyDisplay && !skipReady,
           teamGuessIncorrect: teamGuessIncorrectDisplay,
         })}
       >

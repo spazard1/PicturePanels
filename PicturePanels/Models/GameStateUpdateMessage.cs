@@ -18,7 +18,12 @@ namespace PicturePanels.Models
             RoundNumber = gameState.RoundNumber;
             TurnType = gameState.TurnType;
             TurnNumber = gameState.TurnNumber;
-            TurnEndTime = gameState.TurnEndTime.Value;
+            TurnEndTime = gameState.TurnEndTime;
+        }
+
+        public GameStateUpdateMessage(GameStateTableEntity gameState, bool allPlayersReady) : this(gameState)
+        {
+            this.AllPlayersReady = allPlayersReady;
         }
 
         public string GameStateId { get; set; }
@@ -29,6 +34,8 @@ namespace PicturePanels.Models
 
         public int TurnNumber { get; set; }
 
-        public DateTime TurnEndTime { get; set; }
+        public DateTime? TurnEndTime { get; set; }
+
+        public bool AllPlayersReady { get; set; }
     }
 }

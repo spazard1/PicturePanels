@@ -4,3 +4,34 @@
   margin-bottom: 2rem;
   font-size: 1.75rem;
 }
+
+.teamGuess {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+.teamGuessConfidence {
+  flex: 1;
+  font-size: 2rem;
+}
+
+.teamGuessText {
+  flex: 5;
+  font-size: 1.5rem;
+}
+
+.teamGuessPlayers {
+  flex: 1;
+}
+
+.teamGuessPass {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}

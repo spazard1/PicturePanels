@@ -66,21 +66,24 @@ namespace PicturePanels.Services
 
             var gameStateUpdate = JsonConvert.DeserializeObject<GameStateUpdateMessage>(receivedMessage.Body.ToString());
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
-            if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
+            if (gameState == null || !gameState.IsUpdateAllowed(gameStateUpdate))
             {
                 return;
             }
 
-            var delayTime = gameState.TurnEndTime.Value - DateTime.UtcNow;
-            if (delayTime.TotalMilliseconds > 0)
+            if (!gameStateUpdate.AllPlayersReady)
             {
-                await Task.Delay(delayTime, args.CancellationToken);
-            }
+                var delayTime = gameState.TurnEndTime.Value - DateTime.UtcNow;
+                if (delayTime.TotalMilliseconds > 0)
+                {
+                    await Task.Delay(delayTime, args.CancellationToken);
+                }
 
-            gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
-            if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
-            {
-                return;
+                gameState = await this.gameStateTableStorage.GetAsync(gameStateUpdate.GameStateId);
+                if (gameState == null || !gameState.TurnEndTime.HasValue || !gameState.IsUpdateAllowed(gameStateUpdate))
+                {
+                    return;
+                }
             }
 
             if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)

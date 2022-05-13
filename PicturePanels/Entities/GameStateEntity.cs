@@ -28,7 +28,7 @@ namespace PicturePanels.Entities
             this.TeamTurn = tableEntity.TeamTurn;
             this.TurnType = tableEntity.TurnType;
             this.TurnStartTime = tableEntity.TurnStartTime;
-            this.TurnEndTime = tableEntity.TurnEndTime.HasValue ? tableEntity.TurnEndTime.Value : null;
+            this.TurnEndTime = tableEntity.TurnEndTime;
             this.TurnTime = tableEntity.TurnTime;
             this.TurnTimeTotal = tableEntity.TurnTimeTotal;
             if (tableEntity.PauseState == GameStateTableEntity.PauseStatePaused)
@@ -62,8 +62,8 @@ namespace PicturePanels.Entities
             }
             else
             {
-                this.TeamOneGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamOneGuessStatus) ? "Ready" : string.Empty;
-                this.TeamTwoGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamTwoGuessStatus) ? "Ready" : string.Empty;
+                this.TeamOneGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamOneGuessStatus) ? GameStateTableEntity.TeamGuessStatusReady : string.Empty;
+                this.TeamTwoGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamTwoGuessStatus) ? GameStateTableEntity.TeamGuessStatusReady : string.Empty;
             }
         }
 
