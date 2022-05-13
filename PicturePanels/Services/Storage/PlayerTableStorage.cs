@@ -85,7 +85,7 @@ namespace PicturePanels.Services.Storage
             return await base.InsertAsync(tableEntity);
         }
 
-        private string GenerateRandomColor(string playerId)
+        private static string GenerateRandomColor(string playerId)
         {
             var random = new Random(playerId.GetHashCode());
             return "hsl(" + random.Next(0, 360) + "," + random.Next(70, 100) + "%," + random.Next(75, 100) + "%)";

@@ -20,10 +20,8 @@ namespace PicturePanels.Models
 
         public const string TeamGuessStatusPass = "Pass";
         public const string TeamGuessStatusGuess = "Guess";
-
-        public const string UpdateTypeNewRound = "NewRound";
-        public const string UpdateTypeNewTurn = "NewTurn";
-        public const string UpdateTypeTeamReady = "TeamReady";
+        public const string TeamGuessStatusSkip = "Skip";
+        public const string TeamGuessStatusReady = "Ready";
 
         public const string PauseStatePaused = "Paused";
 
@@ -37,15 +35,18 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
-        public const int GuessesMadeTimeBothPass = 6;
-        public const int GuessesMadeTimeIncorrect = 15;
-        public const int GuessesMadeTimeCorrect = 25;
+        public const int GuessesMadeTimeBothSkip = 7;
+        public const int GuessesMadeTimeBothPass = 10;
+        public const int GuessesMadeTimeIncorrect = 18;
+        public const int GuessesMadeTimeCorrect = 30;
         public const int EndRoundTime = 25;
 
         public const int DefaultOpenPanelTime = 30;
         public const int DefaultMakeGuessTime = 60;
         public const int DefaultVoteGuessTime = 30;
         public const int DefaultWrongGuessPenalty = 0;
+
+        public const int ResumeTime = 6;
 
         public const int MaxOpenPanels = 8;
 
@@ -160,7 +161,7 @@ namespace PicturePanels.Models
             };
         }
 
-        private static char[] gameStateIdLetters = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Z' };
+        private static readonly char[] gameStateIdLetters = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Z' };
 
         private static string GenerateGameStateId()
         {
@@ -257,7 +258,8 @@ namespace PicturePanels.Models
                     }
                     break;
                 case GameStateTableEntity.TurnTypeGuessesMade:
-                    this.TurnStartTime = DateTime.UtcNow.AddSeconds(GameStateTableEntity.TurnStartDelayTime);
+                    this.TurnStartTime = DateTime.UtcNow;
+
                     if (this.TeamOneCorrect || this.TeamTwoCorrect)
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeCorrect);
@@ -268,6 +270,12 @@ namespace PicturePanels.Models
                     {
                         this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeIncorrect);
                         this.TurnTime = GameStateTableEntity.GuessesMadeTimeIncorrect;
+                    }
+                    else if (this.TeamOneGuessStatus == GameStateTableEntity.TeamGuessStatusSkip &&
+                        this.TeamTwoGuessStatus == GameStateTableEntity.TeamGuessStatusSkip)
+                    {
+                        this.TurnEndTime = this.TurnStartTime.AddSeconds(GameStateTableEntity.GuessesMadeTimeBothSkip);
+                        this.TurnTime = GameStateTableEntity.GuessesMadeTimeBothSkip;
                     }
                     else
                     {

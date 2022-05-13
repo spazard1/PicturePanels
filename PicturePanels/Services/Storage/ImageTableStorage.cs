@@ -21,7 +21,7 @@ namespace PicturePanels.Services.Storage
     public class ImageTableStorage : DefaultAzureTableStorage<ImageTableEntity>
     {
         private readonly IConnectionStringProvider connectionStringProvider;
-        private BlobServiceClient blobServiceClient;
+        private readonly BlobServiceClient blobServiceClient;
 
         public const int ThumbnailCacheDays = 90;
         public const int Across = 5;
@@ -372,11 +372,9 @@ namespace PicturePanels.Services.Storage
                 graphics.SmoothingMode = SmoothingMode.HighQuality;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                }
+                using var wrapMode = new ImageAttributes();
+                wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
             }
 
             return destImage;
@@ -397,11 +395,9 @@ namespace PicturePanels.Services.Storage
                 graphics.SmoothingMode = SmoothingMode.HighQuality;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, x, y, width, height, GraphicsUnit.Pixel, wrapMode);
-                }
+                using var wrapMode = new ImageAttributes();
+                wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                graphics.DrawImage(image, destRect, x, y, width, height, GraphicsUnit.Pixel, wrapMode);
             }
 
             return destImage;
@@ -443,8 +439,10 @@ namespace PicturePanels.Services.Storage
 
         public Task GenerateCacheAsync(ImageTableEntity entity)
         {
-            var tasks = new List<Task>();
-            tasks.Add(this.GetThumbnailUrlAsync(entity));
+            var tasks = new List<Task>
+            {
+                this.GetThumbnailUrlAsync(entity)
+            };
 
             for (var i = 0; i <= Across * Down; i++)
             {

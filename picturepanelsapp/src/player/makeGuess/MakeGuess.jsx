@@ -36,7 +36,7 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
   };
 
   useEffect(() => {
-    if (confidence >= 99) {
+    if (confidence >= 100) {
       setConfidenceMessage("I'm 100% Sure");
     } else if (confidence >= 85) {
       setConfidenceMessage("I'm Mostly Confident");
