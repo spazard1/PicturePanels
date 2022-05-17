@@ -382,9 +382,12 @@ export default function Player() {
             <MakeGuess gameStateId={gameStateId} playerId={playerId} onSaveGuess={() => setPlayerReady(true)}></MakeGuess>
           )}
 
-          {gameState.turnType === "VoteGuess" && !player.isReady && (
-            <VoteGuess gameStateId={gameStateId} playerId={playerId} onVoteGuess={() => setPlayerReady(true)}></VoteGuess>
-          )}
+          <VoteGuess
+            isVisible={gameState.turnType === "VoteGuess" && !player.isReady}
+            gameStateId={gameStateId}
+            playerId={playerId}
+            onVoteGuess={() => setPlayerReady(true)}
+          ></VoteGuess>
 
           {/*
           <TeamGuesses

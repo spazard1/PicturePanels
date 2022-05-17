@@ -14,19 +14,17 @@ namespace PicturePanels.Controllers
     [Route("api/[controller]")]
     public class TeamGuessesController : Controller
     {
-        
-
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
-        //private readonly SignalRHelper signalRHelper;
-        //private readonly ChatService chatService;
+        private readonly TeamGuessesService teamGuessesService;
 
-        public TeamGuessesController(TeamGuessTableStorage teamGuessTableStorage, PlayerTableStorage playerTableStorage) //, SignalRHelper signalRHelper, ChatService chatService)
+        public TeamGuessesController(TeamGuessTableStorage teamGuessTableStorage,
+            PlayerTableStorage playerTableStorage,
+            TeamGuessesService teamGuessesService)
         {
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.playerTableStorage = playerTableStorage;
-            //this.signalRHelper = signalRHelper;
-            //this.chatService = chatService;
+            this.teamGuessesService = teamGuessesService;
         }
 
         [HttpGet("{gameStateId}/{playerId}")]
@@ -38,23 +36,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var players = await this.playerTableStorage.GetAllPlayersDictionaryAsync(gameStateId);
-
-            var teamGuessEntities = new List<TeamGuessEntity>();
-
-            await foreach (var guessModel in this.teamGuessTableStorage.GetTeamGuessesAsync(gameStateId, player.TeamNumber))
-            {
-                var teamGuessEntity = new TeamGuessEntity(guessModel);
-                foreach (var teamGuessPlayerId in guessModel.PlayerIds)
-                {
-                    if (players.TryGetValue(teamGuessPlayerId, out PlayerTableEntity playerModel))
-                    {
-                        teamGuessEntity.Players.Add(new PlayerNameEntity(playerModel));
-                    }
-                }
-                teamGuessEntities.Add(teamGuessEntity);
-            }
-            teamGuessEntities.Sort();
+            var teamGuessEntities = await this.teamGuessesService.GetTeamGuessesAsync(gameStateId, player.TeamNumber);
 
             return Json(teamGuessEntities);
         }

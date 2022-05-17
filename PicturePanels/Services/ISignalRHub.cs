@@ -15,6 +15,8 @@ namespace PicturePanels.Services
 
         Task ScoreChange(ScoreChangeEntity entity);
 
+        Task TeamGuesses(List<TeamGuessEntity> teamGuessEntities);
+
         Task AddTeamGuess(TeamGuessEntity teamGuessEntity);
 
         Task AddTeamGuess(TeamGuessEntity teamGuessEntity, string creatorPlayerId);
