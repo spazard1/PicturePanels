@@ -1,7 +1,7 @@
 import serverUrl from "../../common/ServerUrl";
 
-export default function putOk(gameStateId, playerId, callback) {
-  fetch(serverUrl + "api/players/" + gameStateId + "/" + playerId + "/ok", {
+export default function putReady(gameStateId, playerId, callback) {
+  fetch(serverUrl + "api/players/" + gameStateId + "/" + playerId + "/ready", {
     method: "PUT",
   })
     .then((response) => {

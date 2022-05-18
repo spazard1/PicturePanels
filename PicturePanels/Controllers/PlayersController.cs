@@ -82,13 +82,12 @@ namespace PicturePanels.Controllers
                 };
                 await this.playerTableStorage.InsertAsync(playerModel);
 
-                await this.signalRHelper.AddPlayerAsync(playerModel);
+                await this.signalRHelper.PlayerAsync(playerModel, true);
             }
             else
             {
                 var newTeam = playerModel.TeamNumber != entity.TeamNumber;
                 var previousLastPingTime = playerModel.LastPingTime;
-                var notifyAddPlayer = newTeam || playerModel.Name != entity.Name || playerModel.Color != entity.Color;
                 playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
                 {
                     pm.Name = GetPlayerName(entity.Name);
@@ -103,11 +102,28 @@ namespace PicturePanels.Controllers
                     await this.signalRHelper.SwitchTeamGroupsAsync(playerModel);
                 }
 
-                if (notifyAddPlayer || previousLastPingTime.AddMinutes(PlayerTableStorage.PlayerTimeoutInMinutes) <= DateTime.UtcNow)
-                {
-                    await this.signalRHelper.AddPlayerAsync(playerModel);
-                }
+                await this.signalRHelper.PlayerAsync(playerModel, newTeam);
             }
+
+            return Json(new PlayerEntity(playerModel));
+        }
+
+        [HttpPut("{gameStateId}/{playerId}")]
+        public async Task<IActionResult> PutPlayerResumeAsync(string gameStateId, string playerId)
+        {
+            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
+
+            if (playerModel == null)
+            {
+                return StatusCode(404);
+            }
+
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.LastPingTime = DateTime.UtcNow;
+            });
+
+            await this.signalRHelper.PlayerAsync(playerModel, false);
 
             return Json(new PlayerEntity(playerModel));
         }
@@ -139,7 +155,6 @@ namespace PicturePanels.Controllers
             return Json(new PlayerEntity(playerModel));
         }
 
-        /*
         [HttpPut("{gameStateId}/{playerId}/ready")]
         public async Task<IActionResult> PutReadyAsync(string gameStateId, string playerId)
         {
@@ -147,11 +162,6 @@ namespace PicturePanels.Controllers
             if (gameState == null)
             {
                 return StatusCode(404);
-            }
-
-            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
-            {
-                return StatusCode(403);
             }
 
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -167,32 +177,21 @@ namespace PicturePanels.Controllers
 
             if (playerModel.IsReady)
             {
-                playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
-                {
-                    pm.IsReady = false;
-                });
-                await this.signalRHelper.ClearPlayerReadyAsync(playerModel);
-                return Json(new PlayerEntity(playerModel));
+                return StatusCode(400);
             }
 
-            var players = await this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber).ToListAsync();
+            playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
+            {
+                pm.IsReady = true;
+            });
 
-            if (players.Count == 1 || players.Any(p => p.IsReady && p.PlayerId != playerId))
-            {
-                await this.gameStateService.AllPlayerReadysAsync(gameState, playerModel);
-            }
-            else
-            {
-                playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
-                {
-                    pm.IsReady = true;
-                });
-                await this.signalRHelper.PlayerReadyAsync(playerModel);
-            }
+            await this.signalRHelper.PlayerReadyAsync(playerModel);
+
+            await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
 
             return Json(new PlayerEntity(playerModel));
         }
-        */
+        
 
         [HttpPut("{gameStateId}/{playerId}/openPanelVote")]
         public async Task<IActionResult> PutOpenPanelVoteAsync(string gameStateId, string playerId)
@@ -203,7 +202,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenPanel || gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenPanel)
             {
                 return StatusCode(403);
             }
@@ -229,6 +228,8 @@ namespace PicturePanels.Controllers
                 pm.IsReady = true;
             });
 
+            await this.signalRHelper.PlayerReadyAsync(playerModel);
+
             await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
 
             return Json(new PlayerEntity(playerModel));
@@ -241,11 +242,6 @@ namespace PicturePanels.Controllers
             if (gameState == null)
             {
                 return StatusCode(404);
-            }
-
-            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
-            {
-                return StatusCode(403);
             }
 
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -271,6 +267,8 @@ namespace PicturePanels.Controllers
                 pm.Confidence = guessEntity.Confidence;
             });
 
+            await this.signalRHelper.PlayerReadyAsync(playerModel);
+
             await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
 
             return Json(new PlayerEntity(playerModel));
@@ -283,11 +281,6 @@ namespace PicturePanels.Controllers
             if (gameState == null)
             {
                 return StatusCode(404);
-            }
-
-            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
-            {
-                return StatusCode(403);
             }
 
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
@@ -312,45 +305,12 @@ namespace PicturePanels.Controllers
                 pm.GuessVoteId = guessVoteId;
             });
 
+            await this.signalRHelper.PlayerReadyAsync(playerModel);
+
             await this.gameStateService.AdvanceIfAllPlayersReadyAsync(gameState);
 
             return Json(new PlayerEntity(playerModel));
         }
-
-        /*
-        [HttpGet("{gameStateId}/{playerId}/ready")]
-        public async Task<IActionResult> GetReadyAsync(string gameStateId, string playerId)
-        {
-            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-
-            var playerModel = await this.playerTableStorage.GetAsync(gameStateId, playerId);
-            if (playerModel == null)
-            {
-                return StatusCode(404);
-            }
-
-            // don't return a ready player if the team has already submitted
-            if ((playerModel.TeamNumber == 1 && !string.IsNullOrWhiteSpace(gameState.TeamOneGuessStatus)) ||
-                (playerModel.TeamNumber == 2 && !string.IsNullOrWhiteSpace(gameState.TeamTwoGuessStatus))) {
-                return StatusCode(404);
-            }
-
-            var players = this.playerTableStorage.GetActivePlayersAsync(gameStateId, playerModel.TeamNumber);
-
-            var readyPlayer = await players.FirstOrDefaultAsync(p => p.IsReady);
-
-            if (readyPlayer != null)
-            {
-                return Json(new PlayerEntity(readyPlayer));
-            }
-
-            return StatusCode(404);
-        }
-        */
 
         [HttpPut("{gameStateId}/{playerId}/admin")]
         [RequireAuthorization]

@@ -29,6 +29,7 @@ import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
 import VoteGuess from "./voteGuess/VoteGuess";
+import putPlayerResume from "./putPlayerResume";
 
 export default function Player() {
   useBodyClass("player");
@@ -42,6 +43,7 @@ export default function Player() {
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
+  const [teamGuessStatus, setTeamGuessStatus] = useState();
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
@@ -141,19 +143,10 @@ export default function Player() {
       setPlayer(resumeGameRef.current.player);
       setTeamNumber(resumeGameRef.current.player.teamNumber);
       setIsResuming(false);
+      putPlayerResume(resumeGameRef.current.player.gameStateId, resumeGameRef.current.player.playerId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /*
-  const onTeamGuessVote = (ticks) => {
-    if (player.teamGuessVote === ticks) {
-      setPlayer({ ...player, ["teamGuessVote"]: "" });
-    } else {
-      setPlayer({ ...player, ["teamGuessVote"]: ticks });
-    }
-  };
-  */
 
   const onToggleHideRemainingTime = () => {
     if (hideRemainingTime) {
@@ -181,13 +174,19 @@ export default function Player() {
   };
 
   useEffect(() => {
-    if (gameState && gameState.turnType) {
-      setTurnType(gameState.turnType);
+    if (!gameState) {
+      return;
     }
-    if (gameState && gameState.teamTurn) {
-      setTeamTurn(gameState.teamTurn);
+
+    setTurnType(gameState.turnType);
+    setTeamTurn(gameState.teamTurn);
+
+    if (teamNumber === 1) {
+      setTeamGuessStatus(gameState.teamOneGuessStatus);
+    } else {
+      setTeamGuessStatus(gameState.teamTwoGuessStatus);
     }
-  }, [gameState]);
+  }, [gameState, teamNumber]);
 
   useEffect(() => {
     if (turnType) {
@@ -202,10 +201,18 @@ export default function Player() {
   }, [player]);
 
   useEffect(() => {
-    if ((!disableVibrate && turnType === "OpenPanel" && teamTurn === teamNumber) || turnType === "MakeGuess") {
+    if (disableVibrate) {
+      return;
+    }
+
+    if (
+      (turnType === "OpenPanel" && teamTurn === teamNumber) ||
+      turnType === "MakeGuess" ||
+      (turnType === "VoteGuess" && teamGuessStatus !== "Skip")
+    ) {
       vibrate(25);
     }
-  }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn]);
+  }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn, teamGuessStatus]);
 
   useEffect(() => {
     if (!gameStateId || !gameState) {

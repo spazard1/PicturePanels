@@ -4,7 +4,7 @@ import getTeamGuesses from "./getTeamGuesses";
 import PlayerName from "../../common/PlayerName";
 import { Button } from "react-bootstrap";
 import putGuessVote from "./putGuessVote";
-import putOk from "./putOk";
+import putReady from "./putReady";
 import { useSignalR } from "../../signalr/useSignalR";
 
 import "./VoteGuess.css";
@@ -14,7 +14,7 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const okOnClick = () => {
-    putOk(gameStateId, playerId, (result) => {
+    putReady(gameStateId, playerId, (result) => {
       if (result) {
         onVoteGuess();
       }
@@ -59,15 +59,17 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
     <>
       {isLoaded && teamGuesses.length === 0 && (
         <>
-          <div>No one from your team entered a guess. Wait for the other team to vote for their guess.</div>
-          <Button className="teamGuessPass" variant="secondary" onClick={() => okOnClick("Pass")}>
-            OK!
-          </Button>
+          <div className="voteGuessMessage">No one from your team entered a guess. Wait for the other team to vote for their guess.</div>
+          <div>
+            <Button className="teamGuessOk" variant="info" onClick={() => okOnClick("Pass")}>
+              OK!
+            </Button>
+          </div>
         </>
       )}
       {isLoaded && teamGuesses.length > 0 && (
         <>
-          <div className="playerLabel makeGuessLabel">Vote for a guess or pass.</div>
+          <div className="playerLabel voteGuessLabel">Vote for a guess or pass.</div>
           {teamGuesses.map((teamGuess) => (
             <Button key={teamGuess.teamGuessId} className="teamGuess" onClick={() => voteGuessOnClick(teamGuess.teamGuessId)}>
               <div className="teamGuessConfidence">{teamGuess.confidence}%</div>

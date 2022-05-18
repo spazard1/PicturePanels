@@ -24,7 +24,6 @@ namespace PicturePanels.Services
         private readonly GameStateQueueService gameStateQueueService;
         private readonly TeamGuessesService teamGuessesService;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
-        private readonly SignalRHelper signalRHelper;
 
         public GameStateService(GameStateTableStorage gameStateTableStorage, 
             PlayerTableStorage playerTableStorage,
@@ -38,8 +37,7 @@ namespace PicturePanels.Services
             ChatService chatService,
             GameStateQueueService gameStateQueueService,
             TeamGuessesService teamGuessesService,
-            IHubContext<SignalRHub, ISignalRHub> hubContext,
-            SignalRHelper signalRHelper)
+            IHubContext<SignalRHub, ISignalRHub> hubContext)
         {
             this.gameStateTableStorage = gameStateTableStorage;
             this.playerTableStorage = playerTableStorage;
@@ -54,7 +52,6 @@ namespace PicturePanels.Services
             this.gameStateQueueService = gameStateQueueService;
             this.teamGuessesService = teamGuessesService;
             this.hubContext = hubContext;
-            this.signalRHelper = signalRHelper;
         }
 
         public async Task<GameStateTableEntity> ToNextTurnTypeAsync(GameStateTableEntity gameState)
@@ -177,6 +174,12 @@ namespace PicturePanels.Services
             });
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+
+            if (await this.AdvanceIfAllPlayersReadyAsync(gameState))
+            {
+                return gameState;
+            }
+
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
@@ -191,8 +194,13 @@ namespace PicturePanels.Services
             });
         }
 
-        public async Task AdvanceIfAllPlayersReadyAsync(GameStateTableEntity gameState)
+        public async Task<bool> AdvanceIfAllPlayersReadyAsync(GameStateTableEntity gameState)
         {
+            if (gameState.PauseState == GameStateTableEntity.PauseStatePaused)
+            {
+                return false;
+            }
+
             IAsyncEnumerable<PlayerTableEntity> players = null;
             if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
             {
@@ -200,8 +208,7 @@ namespace PicturePanels.Services
             }
             else if (gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
             {
-                if (gameState.TeamOneGuessStatus != GameStateTableEntity.TeamGuessStatusSkip
-                    && gameState.TeamOneGuessStatus != GameStateTableEntity.TeamGuessStatusSkip)
+                if (gameState.TeamOneGuessStatus != GameStateTableEntity.TeamGuessStatusSkip && gameState.TeamTwoGuessStatus != GameStateTableEntity.TeamGuessStatusSkip)
                 {
                     players = this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId);
                 }
@@ -222,11 +229,16 @@ namespace PicturePanels.Services
             if (await players.AllAsync(p => p.IsReady))
             {
                 await this.gameStateQueueService.QueueAllPlayersReadyGameStateChangeAsync(gameState);
+                return true;
             }
+
+            return false;
         }
 
-        public async Task<GameStateTableEntity> OpenPanelAsync(GameStateTableEntity gameState, string panelId)
+        public async Task<GameStateTableEntity> ExitOpenPanelAsync(GameStateTableEntity gameState)
         {
+            var panelId = await this.GetMostVotesPanelAsync(gameState);
+
             var teamOneScoreChange = 0;
             var teamTwoScoreChange = 0;
             if (GameStateTableEntity.InnerPanels.Contains(panelId))
@@ -266,20 +278,6 @@ namespace PicturePanels.Services
             await this.playerTableStorage.ResetPlayersAsync(gameState);
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
-
-            return gameState;
-        }
-
-        public async Task<GameStateTableEntity> ExitOpenPanelAsync(GameStateTableEntity gameState)
-        {
-            gameState = await this.gameStateTableStorage.GetAsync(gameState.GameStateId);
-            if (gameState.TurnType != GameStateTableEntity.TurnTypeOpenPanel)
-            {
-                return gameState;
-            }
-
-            var panelIdToOpen = await this.GetMostVotesPanelAsync(gameState);
-            gameState = await this.OpenPanelAsync(gameState, panelIdToOpen);
 
             return gameState;
         }
@@ -386,8 +384,8 @@ namespace PicturePanels.Services
 
                 if (teamOneTask.Result + teamTwoTask.Result == 0)
                 {
-                    gs.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusSkip;
-                    gs.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusSkip;
+                    gs.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusBothSkip;
+                    gs.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusBothSkip;
                     gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
                 }
                 else if (teamOneTask.Result == 0)
@@ -449,11 +447,9 @@ namespace PicturePanels.Services
             });
 
             await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).ScoreChange(new ScoreChangeEntity() { TeamOne = gameState.GetTeamScoreChange(1), TeamTwo = gameState.GetTeamScoreChange(2), ChangeType = "GuessesMade" });
-
-            await this.playerTableStorage.ResetPlayersAsync(gameState);
-            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
-
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+
+            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;
         }
@@ -468,8 +464,6 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.GuessAsync(gameState, teamNumber, teamGuess.Guess);
-            await signalRHelper.DeleteTeamGuessAsync(gameState.GameStateId, new TeamGuessEntity(teamGuess), teamNumber);
-            await this.teamGuessTableStorage.DeleteAsync(teamGuess);
 
             return gameState;
         }
@@ -557,6 +551,8 @@ namespace PicturePanels.Services
                     gs.SwitchTeamTurn();
                 }
             });
+
+            await this.playerTableStorage.ResetPlayersAsync(gameState);
 
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);

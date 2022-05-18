@@ -43,6 +43,8 @@ export default function Gameboard() {
   const roundNumberRef = useRef();
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
+  const [turnType, setTurnType] = useState();
+  const [teamTurn, setTeamTurn] = useState();
   const { winningTeam } = useWinningTeam(gameState);
 
   const onStartGameStateChange = (startGameState) => {
@@ -74,7 +76,7 @@ export default function Gameboard() {
   };
 
   const { queryString, setQueryString } = useSignalRConnection();
-  const { players } = usePlayers(gameStateId);
+  const { players } = usePlayers(gameStateId, turnType, teamTurn);
   useGameboardPing(gameStateId);
 
   useEffect(() => {
@@ -84,6 +86,15 @@ export default function Gameboard() {
 
     setQueryString("gameStateId=" + gameState.gameStateId);
   }, [gameState, queryString, setQueryString]);
+
+  useEffect(() => {
+    if (!gameState) {
+      return;
+    }
+
+    setTurnType(gameState.turnType);
+    setTeamTurn(gameState.teamTurn);
+  }, [gameState]);
 
   useEffect(() => {
     if (!gameState) {

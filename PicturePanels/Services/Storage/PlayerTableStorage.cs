@@ -56,15 +56,23 @@ namespace PicturePanels.Services.Storage
                     batchOperation = new TableBatchOperation();
                 }
 
-                playerModel.IsReady = false;
                 if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
                 {
+                    playerModel.IsReady = false;
                     playerModel.SelectedPanels = new List<string>();
+                }
+                else if (gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
+                {
+                    playerModel.IsReady = false;
                 }
                 else if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade)
                 {
                     playerModel.GuessVoteId = null;
                     playerModel.Guess = null;
+                }
+                else if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
+                {
+                    playerModel.IsReady = playerModel.TeamNumber != gameState.TeamTurn;
                 }
 
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));

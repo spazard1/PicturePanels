@@ -498,7 +498,7 @@ namespace PicturePanels.Controllers
             await this.signalRHelper.RandomizeTeamsAsync(id);
             return StatusCode((int)HttpStatusCode.Accepted);
         }
-        */
+        
 
         [HttpPost("{id}/openPanel/{panelId}")]
         [RequireAuthorization]
@@ -513,6 +513,7 @@ namespace PicturePanels.Controllers
 
             return StatusCode(200);
         }
+        */
 
         [HttpPost("{id}/openPanel/{panelId}/force")]
         [RequireAdmin]

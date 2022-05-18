@@ -23,7 +23,11 @@ export default function Players({ players, turnType }) {
       <div className={teamOneClassNames}>
         {Object.keys(teamOnePlayers).map((playerId) =>
           players[playerId].teamNumber === 1 ? (
-            <div key={playerId} className="teamPlayerName" style={{ borderColor: players[playerId].color }}>
+            <div
+              key={playerId}
+              className={classNames("teamPlayerName", "animate__animated", "animate__infinite", { animate__bounce: !players[playerId].isReady })}
+              style={{ borderColor: players[playerId].color }}
+            >
               {players[playerId].name}
             </div>
           ) : (
@@ -34,7 +38,11 @@ export default function Players({ players, turnType }) {
       <div className={teamTwoClassNames}>
         {Object.keys(teamTwoPlayers).map((playerId) =>
           players[playerId].teamNumber === 2 ? (
-            <div key={playerId} className="teamPlayerName" style={{ borderColor: players[playerId].color }}>
+            <div
+              key={playerId}
+              className={classNames("teamPlayerName", "animate__animated", "animate__infinite", { animate__bounce: !players[playerId].isReady })}
+              style={{ borderColor: players[playerId].color }}
+            >
               {players[playerId].name}
             </div>
           ) : (

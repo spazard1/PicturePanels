@@ -8,6 +8,7 @@ function ScoreBoard({ teamOneScore, teamTwoScore, teamTurn, turnType }) {
   const [turnTypeDisplay, setTurnTypeDisplay] = useState("");
   const [scoreChange, setScoreChange] = useState({});
   const [scoreDisplay, setScoreDisplay] = useState({ teamOne: teamOneScore, teamTwo: teamTwoScore });
+  const hasScoreLoaded = useRef(false);
   const intervalRef = useRef();
 
   useSignalR("ScoreChange", (scoreChange) => {
@@ -17,7 +18,10 @@ function ScoreBoard({ teamOneScore, teamTwoScore, teamTurn, turnType }) {
   useEffect(() => {
     clearInterval(intervalRef.current);
 
-    if (turnType === "OpenPanel" || turnType === "MakeGuess") {
+    if (turnType && !hasScoreLoaded.current) {
+      setScoreDisplay({ teamOne: teamOneScore, teamTwo: teamTwoScore });
+      hasScoreLoaded.current = true;
+    } else if (turnType === "OpenPanel" || turnType === "MakeGuess") {
       intervalRef.current = setTimeout(() => {
         setScoreDisplay({ teamOne: teamOneScore, teamTwo: teamTwoScore });
       }, 3000);
@@ -28,7 +32,7 @@ function ScoreBoard({ teamOneScore, teamTwoScore, teamTurn, turnType }) {
     } else {
       setScoreDisplay({ teamOne: teamOneScore, teamTwo: teamTwoScore });
     }
-  }, [teamOneScore, teamTwoScore, turnType]);
+  }, [turnType, teamOneScore, teamTwoScore]);
 
   useEffect(() => {
     if (!turnType) {
