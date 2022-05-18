@@ -47,6 +47,13 @@ namespace PicturePanels.Services.Storage
 
         public async Task ResetPlayersAsync(GameStateTableEntity gameState)
         {
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeEndGame)
+            {
+                return;
+            }
+ 
             TableBatchOperation batchOperation = new TableBatchOperation();
             await foreach (var playerModel in this.GetActivePlayersAsync(gameState.GameStateId))
             {
@@ -56,23 +63,17 @@ namespace PicturePanels.Services.Storage
                     batchOperation = new TableBatchOperation();
                 }
 
-                if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+                if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ||
+                    gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
                 {
                     playerModel.IsReady = false;
-                    playerModel.SelectedPanels = new List<string>();
-                }
-                else if (gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
-                {
-                    playerModel.IsReady = false;
-                }
-                else if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade)
-                {
-                    playerModel.GuessVoteId = null;
-                    playerModel.Guess = null;
                 }
                 else if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
                 {
                     playerModel.IsReady = playerModel.TeamNumber != gameState.TeamTurn;
+                    playerModel.SelectedPanels = new List<string>();
+                    playerModel.Guess = string.Empty;
+                    playerModel.GuessVoteId = string.Empty;
                 }
 
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));

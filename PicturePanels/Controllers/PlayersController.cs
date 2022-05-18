@@ -78,7 +78,8 @@ namespace PicturePanels.Controllers
                     TeamNumber = entity.TeamNumber,
                     Color = entity.Color,
                     LastPingTime = DateTime.UtcNow,
-                    SelectedPanels = new List<string>()
+                    SelectedPanels = new List<string>(),
+                    IsReady = false
                 };
                 await this.playerTableStorage.InsertAsync(playerModel);
 

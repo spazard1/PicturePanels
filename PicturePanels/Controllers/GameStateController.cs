@@ -83,10 +83,8 @@ namespace PicturePanels.Controllers
             gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
             gameState.VoteGuessTime = entity.VoteGuessTime ?? GameStateTableEntity.DefaultVoteGuessTime;
             gameState.WrongGuessPenalty = entity.WrongGuessPenalty ?? GameStateTableEntity.DefaultWrongGuessPenalty;
-            gameState.Tags = entity.Tags?.Split(",").ToList();
-            gameState.Tags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
-            gameState.ExcludedTags = entity.ExcludedTags?.Split(",").ToList();
-            gameState.ExcludedTags?.RemoveAll(entry => string.IsNullOrWhiteSpace(entry));
+            gameState.Tags = entity.Tags?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+            gameState.ExcludedTags = entity.ExcludedTags?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             gameState.FinalRoundNumber = entity.FinalRoundNumber ?? GameStateTableEntity.MaxRounds;
             gameState.TeamOneInnerPanels = gameState.FinalRoundNumber / 2;
             gameState.TeamTwoInnerPanels = gameState.FinalRoundNumber / 2;
@@ -102,7 +100,6 @@ namespace PicturePanels.Controllers
             }
 
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
-
             gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
 
             await this.gameStateQRCodeGenerator.GenerateAsync(gameState);
