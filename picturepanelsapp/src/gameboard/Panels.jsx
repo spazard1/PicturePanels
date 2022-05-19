@@ -138,6 +138,10 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
     }
   };
 
+  if (turnType === "EndGame") {
+    return null;
+  }
+
   return (
     <>
       <div ref={panelsRef} className="panels center">

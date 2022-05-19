@@ -18,6 +18,7 @@ namespace PicturePanels.Entities
             this.Name = tableEntity.Name;
             this.TeamNumber = tableEntity.TeamNumber;
             this.SelectedPanels = tableEntity.SelectedPanels ?? new List<string>();
+            this.PreviousGuesses = tableEntity.PreviousGuesses ?? new List<string>();
             this.GuessVoteId = tableEntity.GuessVoteId;
             this.IsReady = tableEntity.IsReady;
             this.Color = tableEntity.Color;
@@ -36,6 +37,8 @@ namespace PicturePanels.Entities
         public int TeamNumber { get; set; }
 
         public List<string> SelectedPanels { get; set; }
+
+        public List<string> PreviousGuesses { get; set; }
 
         public string GuessVoteId { get; internal set; }
 

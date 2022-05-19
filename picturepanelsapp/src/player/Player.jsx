@@ -43,6 +43,7 @@ export default function Player() {
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
+  const [roundNumber, setRoundNumber] = useState();
   const [teamGuessStatus, setTeamGuessStatus] = useState();
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
@@ -164,6 +165,18 @@ export default function Player() {
     }
   };
 
+  const onSaveGuess = (guess) => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+      if (guess && p.previousGuesses.indexOf(guess) < 0) {
+        p.previousGuesses = [...p.previousGuesses, guess];
+      }
+      return { ...p, isReady: true };
+    });
+  };
+
   const setPlayerReady = (isReady) => {
     setPlayer((p) => {
       if (!p) {
@@ -180,6 +193,7 @@ export default function Player() {
 
     setTurnType(gameState.turnType);
     setTeamTurn(gameState.teamTurn);
+    setRoundNumber(gameState.roundNumber);
 
     if (teamNumber === 1) {
       setTeamGuessStatus(gameState.teamOneGuessStatus);
@@ -193,6 +207,16 @@ export default function Player() {
       setPlayerReady(false);
     }
   }, [turnType]);
+
+  useEffect(() => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+
+      return { ...p, previousGuesses: [] };
+    });
+  }, [roundNumber]);
 
   useEffect(() => {
     if (player) {
@@ -372,13 +396,7 @@ export default function Player() {
                 isPaused={gameState.pauseState === "Paused"}
               ></PanelButtons>
               <div>
-                <Button
-                  className="panelButtonsVoteButton"
-                  variant="primary"
-                  size="lg"
-                  disabled={isLoading || gameState.pauseState === "Paused"}
-                  onClick={openPanelVoteOnClick}
-                >
+                <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
                   {isLoading ? "Voting..." : "Vote!"}
                 </Button>
               </div>
@@ -386,7 +404,7 @@ export default function Player() {
           )}
 
           {gameState.turnType === "MakeGuess" && !player.isReady && (
-            <MakeGuess gameStateId={gameStateId} playerId={playerId} onSaveGuess={() => setPlayerReady(true)}></MakeGuess>
+            <MakeGuess gameStateId={gameStateId} playerId={playerId} previousGuesses={player.previousGuesses} onSaveGuess={onSaveGuess}></MakeGuess>
           )}
 
           <VoteGuess

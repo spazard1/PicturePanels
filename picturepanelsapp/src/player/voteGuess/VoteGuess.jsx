@@ -69,14 +69,14 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
       )}
       {isLoaded && teamGuesses.length > 0 && (
         <>
-          <div className="playerLabel voteGuessLabel">Vote for a guess or pass.</div>
+          <div className="playerLabel voteGuessLabel">Vote for a guess</div>
           {teamGuesses.map((teamGuess) => (
             <Button key={teamGuess.teamGuessId} className="teamGuess" onClick={() => voteGuessOnClick(teamGuess.teamGuessId)}>
-              <div className="teamGuessConfidence">{teamGuess.confidence}%</div>
+              <div className="teamGuessConfidence">{Math.round(teamGuess.confidence)}%</div>
               <div className="teamGuessText">{teamGuess.guess}</div>
               <div className="teamGuessPlayers">
                 {teamGuess.players.map((player) => (
-                  <PlayerName key={player.playerId} player={player}></PlayerName>
+                  <PlayerName key={player.playerId} player={player} className="voteGuessPlayerName"></PlayerName>
                 ))}
               </div>
             </Button>

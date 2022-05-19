@@ -36,7 +36,7 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
-        public const int GuessesMadeTimeBothSkip = 5;
+        public const int GuessesMadeTimeBothSkip = 4;
         public const int GuessesMadeTimeBothPass = 10;
         public const int GuessesMadeTimeIncorrect = 18;
         public const int GuessesMadeTimeCorrect = 30;

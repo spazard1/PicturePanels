@@ -499,10 +499,17 @@ namespace PicturePanels.Services
                 }
             }
 
-            if (mostVotesTeamGuessIds.Contains(GameStateTableEntity.TeamGuessStatusPass) || maxVoteCount == 0)
+            if (maxVoteCount == 0)
             {
                 return null;
             }
+
+            if (mostVotesTeamGuessIds.Contains(GameStateTableEntity.TeamGuessStatusPass) && mostVotesTeamGuessIds.Count == 1)
+            {
+                return null;
+            }
+
+            mostVotesTeamGuessIds.Remove(GameStateTableEntity.TeamGuessStatusPass);
 
             if (mostVotesTeamGuessIds.Count == 1)
             {
@@ -512,11 +519,31 @@ namespace PicturePanels.Services
             var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(gameState.GameStateId, gameState.RoundNumber);
             var imageTableEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
 
-            double maxRatio = double.MinValue;
-            TeamGuessTableEntity highestRatioGuess = null;
+            double maxConfidence = double.MinValue;
+            List<TeamGuessTableEntity> highestConfidenceGuesses = new List<TeamGuessTableEntity>();
             foreach (var teamGuessId in mostVotesTeamGuessIds)
             {
                 var teamGuess = await this.teamGuessTableStorage.GetAsync(gameState.GameStateId, teamNumber, teamGuessId);
+                if (teamGuess.Confidence > maxConfidence)
+                {
+                    maxConfidence = teamGuess.Confidence;
+                    highestConfidenceGuesses = new List<TeamGuessTableEntity>() { teamGuess };
+                }
+                else if (teamGuess.Confidence == maxConfidence)
+                {
+                    highestConfidenceGuesses.Add(teamGuess);
+                }
+            }
+
+            if (highestConfidenceGuesses.Count == 1)
+            {
+                return highestConfidenceGuesses.First();
+            }
+
+            double maxRatio = double.MinValue;
+            TeamGuessTableEntity highestRatioGuess = null;
+            foreach (var teamGuess in highestConfidenceGuesses)
+            {
                 var ratio = GuessChecker.GetRatio(teamGuess.Guess, imageTableEntity.Answers);
                 if (ratio > maxRatio)
                 {

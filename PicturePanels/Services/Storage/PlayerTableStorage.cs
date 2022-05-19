@@ -76,6 +76,11 @@ namespace PicturePanels.Services.Storage
                     playerModel.GuessVoteId = string.Empty;
                 }
 
+                if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel && gameState.TurnNumber == 1)
+                {
+                    playerModel.PreviousGuesses = new List<string>();
+                }
+
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
             }
 

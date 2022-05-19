@@ -43,13 +43,13 @@ namespace PicturePanels.Services
 
             var maxRatio = double.MinValue;
 
-            foreach (var answer in answers.Select(a => Prepare(a)))
+            foreach (var answer in answers)
             {
                 double totalLength = answer.Length + guess.Length;
 #if DEBUG
                 Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
 #endif
-                Math.Max(maxRatio, (totalLength - lev.DistanceFrom(answer)) / totalLength);
+                maxRatio = Math.Max(maxRatio, (totalLength - lev.DistanceFrom(answer)) / totalLength);
             }
 
             return maxRatio;
@@ -76,32 +76,13 @@ namespace PicturePanels.Services
             guess = Prepare(guess);
             Levenshtein lev = new Levenshtein(guess);
 
-            foreach (var answer in answers.Select(a => Prepare(a)))
+            foreach (var answer in answers)
             {
                 double totalLength = answer.Length + guess.Length;
                 #if DEBUG
                     Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
                 #endif
                 if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static async Task<bool> IsMatchAsync(string guess, IAsyncEnumerable<string> answers)
-        {
-            guess = Prepare(guess);
-            Levenshtein lev = new Levenshtein(guess);
-
-            await foreach (var answer in answers.Select(a => Prepare(a)))
-            {
-                double totalLength = answer.Length + guess.Length;
-#if DEBUG
-                Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
-#endif
-                if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio)
-                {
                     return true;
                 }
             }

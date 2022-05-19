@@ -27,6 +27,8 @@ namespace PicturePanels.Models
 
         public string Guess { get; set; }
 
+        public List<string> PreviousGuesses { get; set; }
+
         public int Confidence { get; set; }
 
         public string GuessVoteId { get; set; }
@@ -56,6 +58,11 @@ namespace PicturePanels.Models
             {
                 this.SelectedPanels = properties[nameof(this.SelectedPanels)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
+
+            if (properties.ContainsKey(nameof(this.PreviousGuesses)))
+            {
+                this.PreviousGuesses = properties[nameof(this.PreviousGuesses)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
         }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
@@ -65,6 +72,11 @@ namespace PicturePanels.Models
             if (this.SelectedPanels != null)
             {
                 result[nameof(this.SelectedPanels)] = new EntityProperty(string.Join(",", this.SelectedPanels));
+            }
+
+            if (this.PreviousGuesses != null)
+            {
+                result[nameof(this.PreviousGuesses)] = new EntityProperty(string.Join(",", this.PreviousGuesses));
             }
 
             return result;

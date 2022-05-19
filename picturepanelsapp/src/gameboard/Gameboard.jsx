@@ -205,17 +205,17 @@ export default function Gameboard() {
       {gameState && gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame" && (
         <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber}></RoundNumber>
       )}
-      {(!gameState || gameState.turnType !== "EndGame") && (
-        <Panels
-          gameStateId={gameStateId}
-          players={players}
-          roundNumber={gameState ? gameState.roundNumber : 0}
-          revealedPanels={gameState ? gameState.revealedPanels : []}
-          teamTurn={gameState ? gameState.teamTurn : 1}
-          turnType={gameState ? gameState.turnType : "Welcome"}
-          teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
-        />
-      )}
+
+      <Panels
+        gameStateId={gameStateId}
+        players={players}
+        roundNumber={gameState ? gameState.roundNumber : 0}
+        revealedPanels={gameState ? gameState.revealedPanels : []}
+        teamTurn={gameState ? gameState.teamTurn : 1}
+        turnType={gameState ? gameState.turnType : "Welcome"}
+        teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
+      />
+
       {gameState && gameState.turnType === "EndGame" && <EndGame gameStateId={gameState.gameStateId} winningTeamName={winningTeam}></EndGame>}
       <FadedBox
         displayState={roundNumberAnimateDisplay}

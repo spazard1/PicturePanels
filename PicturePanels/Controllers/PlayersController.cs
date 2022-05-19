@@ -79,6 +79,7 @@ namespace PicturePanels.Controllers
                     Color = entity.Color,
                     LastPingTime = DateTime.UtcNow,
                     SelectedPanels = new List<string>(),
+                    PreviousGuesses = new List<string>(),
                     IsReady = false
                 };
                 await this.playerTableStorage.InsertAsync(playerModel);
@@ -266,6 +267,11 @@ namespace PicturePanels.Controllers
                 pm.IsReady = true;
                 pm.Guess = guessEntity.Guess;
                 pm.Confidence = guessEntity.Confidence;
+
+                if (guessEntity.Guess != GameStateTableEntity.TeamGuessStatusPass && !pm.PreviousGuesses.Contains(guessEntity.Guess))
+                {
+                    pm.PreviousGuesses.Add(guessEntity.Guess);
+                }
             });
 
             await this.signalRHelper.PlayerReadyAsync(playerModel);
