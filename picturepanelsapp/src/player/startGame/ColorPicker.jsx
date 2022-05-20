@@ -18,7 +18,7 @@ const ColorPicker = ({ onColorChange }) => {
         },
       ],
       color: initialColor,
-      width: Math.ceil(Math.min(225, window.screen.width * 0.5)),
+      width: Math.ceil(Math.min(200, window.screen.width * 0.5)),
     });
 
     colorPicker.on("color:change", function (color) {

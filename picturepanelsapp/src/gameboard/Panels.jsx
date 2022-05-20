@@ -4,7 +4,7 @@ import Panel from "./Panel";
 import MostVotesPanels from "./MostVotesPanels";
 import usePrevious from "../common/usePrevious";
 import { GetEntranceClass } from "../animate/Animate";
-import PlayerDots from "./PlayerDots";
+import PlayerDots from "./../playerDots/PlayerDots";
 import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");

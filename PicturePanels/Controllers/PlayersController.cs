@@ -77,6 +77,7 @@ namespace PicturePanels.Controllers
                     Name = GetPlayerName(entity.Name),
                     TeamNumber = entity.TeamNumber,
                     Color = entity.Color,
+                    Dot = entity.Dot,
                     LastPingTime = DateTime.UtcNow,
                     SelectedPanels = new List<string>(),
                     PreviousGuesses = new List<string>(),
@@ -88,15 +89,26 @@ namespace PicturePanels.Controllers
             }
             else
             {
+                var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+
                 var newTeam = playerModel.TeamNumber != entity.TeamNumber;
                 var previousLastPingTime = playerModel.LastPingTime;
+                var previousTeamNumber = playerModel.TeamNumber;
                 playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
                 {
                     pm.Name = GetPlayerName(entity.Name);
                     pm.TeamNumber = entity.TeamNumber;
                     pm.Color = entity.Color;
+                    pm.Dot = entity.Dot;
                     pm.LastPingTime = DateTime.UtcNow;
-                    pm.GuessVoteId = newTeam ? string.Empty : playerModel.GuessVoteId;
+                    if (newTeam)
+                    {
+                        pm.Guess = string.Empty;
+                        pm.GuessVoteId = string.Empty;
+                        pm.SelectedPanels = new List<string>();
+                        pm.PreviousGuesses = new List<string>();
+                    }
+                    pm.IsReady = GetPlayerReady(gameState, playerModel, previousTeamNumber, entity.TeamNumber);
                 });
 
                 if (newTeam)
@@ -108,6 +120,26 @@ namespace PicturePanels.Controllers
             }
 
             return Json(new PlayerEntity(playerModel));
+        }
+
+        private static bool GetPlayerReady(GameStateTableEntity gameState, PlayerTableEntity playerModel, int oldTeamNumber, int newTeamNumber)
+        {
+            if (oldTeamNumber == newTeamNumber)
+            {
+                return playerModel.IsReady;
+            }
+
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
+            {
+                return newTeamNumber != gameState.TeamTurn;
+            }
+
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess || gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         [HttpPut("{gameStateId}/{playerId}")]

@@ -7,7 +7,6 @@ export function useSelectedPanels(players, turnType) {
   useEffect(() => {
     setSelectedPanels((sp) => {
       const newSelectedPanels = { ...sp };
-      console.log("new players", sp);
 
       for (const playerId in players) {
         if (!(playerId in newSelectedPanels)) {
@@ -22,8 +21,6 @@ export function useSelectedPanels(players, turnType) {
   useEffect(() => {
     if (turnType && turnType !== "OpenPanel") {
       setSelectedPanels((sp) => {
-        console.log("resetting", sp);
-
         const newSelectedPanels = { ...sp };
 
         for (const playerId in sp) {
@@ -33,11 +30,6 @@ export function useSelectedPanels(players, turnType) {
         return newSelectedPanels;
       });
     }
-
-    return () => {
-      console.log("unmount");
-      console.log();
-    };
   }, [turnType]);
 
   useSignalR("SelectPanels", (player) => {

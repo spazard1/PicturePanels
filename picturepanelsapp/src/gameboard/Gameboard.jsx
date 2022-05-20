@@ -22,11 +22,11 @@ import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import { useWinningTeam } from "../common/useWinningTeam";
+import classNames from "classnames";
 
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
-import classNames from "classnames";
 
 export default function Gameboard() {
   useBodyClass("gameboard");

@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import getGameState from "../common/getGameState";
-//import Chat from "./chat/Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import StartGame from "./startGame/StartGame";
 import ChooseTeam from "./startGame/ChooseTeam";
 import JoinGame from "./startGame/JoinGame";
+import ChoosePlayerDot from "./startGame/ChoosePlayerDot";
 import ModalMessage from "../common/modal/ModalMessage";
 import MakeGuess from "./makeGuess/MakeGuess";
 import { useModal } from "../common/modal/useModal";
@@ -24,12 +24,12 @@ import { usePlayerVibrate } from "./usePlayerVibrate";
 import LineCountdown from "./LineCountdown";
 import { useWinningTeam } from "../common/useWinningTeam";
 import { useLocalStorageState } from "../common/useLocalStorageState";
+import VoteGuess from "./voteGuess/VoteGuess";
+import putPlayerResume from "./putPlayerResume";
 
 import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
-import VoteGuess from "./voteGuess/VoteGuess";
-import putPlayerResume from "./putPlayerResume";
 
 export default function Player() {
   useBodyClass("player");
@@ -39,7 +39,8 @@ export default function Player() {
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
   const [playerId, setPlayerId] = useState();
-  const [teamNumber, setTeamNumber] = useState();
+  const [teamNumber, setTeamNumber] = useState(0);
+  const [dot, setDot] = useState(localStorage.getItem("playerDot"));
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
@@ -51,6 +52,7 @@ export default function Player() {
   const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
   const [teamNameToast, setTeamNameToast] = useState("");
   const { isWinner } = useWinningTeam(gameState, teamNumber);
+  const isFirstLoad = useRef(true);
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
@@ -85,7 +87,6 @@ export default function Player() {
     });
 
     localStorage.setItem("playerName", gameOptions.playerName);
-    localStorage.setItem("playerColor", color);
   };
 
   const onPlayerNameChange = () => {
@@ -93,9 +94,14 @@ export default function Player() {
     setPlayer(null);
   };
 
-  const onTeamChange = () => {
+  const onPlayerDotChange = () => {
+    setDot(null);
     setPlayer(null);
+  };
+
+  const onTeamChange = () => {
     setTeamNumber(0);
+    setPlayer(null);
   };
 
   const onTeamNumberSelect = (teamNumber) => {
@@ -109,6 +115,12 @@ export default function Player() {
         setTeamNameToast("You have joined " + gameState.teamTwoName);
       }
     }
+  };
+
+  const onDotSelect = (dot) => {
+    setDot(dot);
+    localStorage.setItem("playerColor", color);
+    localStorage.setItem("playerDot", dot);
   };
 
   const openPanelVoteOnClick = () => {
@@ -204,6 +216,10 @@ export default function Player() {
 
   useEffect(() => {
     if (turnType) {
+      if (isFirstLoad.current) {
+        isFirstLoad.current = false;
+        return;
+      }
       setPlayerReady(false);
     }
   }, [turnType]);
@@ -282,7 +298,7 @@ export default function Player() {
   }, []);
 
   useEffect(() => {
-    if (!gameStateId || !gameState || !teamNumber || player) {
+    if (!gameStateId || !gameState || !teamNumber || !dot || player) {
       return;
     }
 
@@ -293,6 +309,7 @@ export default function Player() {
         Name: localStorage.getItem("playerName"),
         TeamNumber: teamNumber,
         Color: color,
+        Dot: dot,
       },
       (p) => {
         if (p) {
@@ -303,7 +320,7 @@ export default function Player() {
         }
       }
     );
-  }, [gameStateId, gameState, teamNumber, color, player, setModalMessage]);
+  }, [gameStateId, gameState, teamNumber, color, dot, player, setModalMessage]);
 
   useEffect(() => {
     if (!gameState || !gameStateId || !player || queryString) {
@@ -314,7 +331,7 @@ export default function Player() {
   }, [gameStateId, gameState, queryString, player, setQueryString]);
 
   if (isResuming) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -322,17 +339,11 @@ export default function Player() {
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
-      {!gameState && (
-        <JoinGame
-          color={color}
-          isLoading={isLoading}
-          onJoinGame={onJoinGame}
-          onColorChange={onColorChange}
-          cachedGameStateId={cachedGameStateId}
-        ></JoinGame>
-      )}
+      {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
 
-      {gameState && !teamNumber && (
+      {gameState && !dot && <ChoosePlayerDot color={color} onColorChange={onColorChange} onDotSelect={onDotSelect}></ChoosePlayerDot>}
+
+      {gameState && dot && teamNumber <= 0 && (
         <ChooseTeam
           gameStateId={gameState.gameStateId}
           teamOneName={gameState.teamOneName}
@@ -381,6 +392,7 @@ export default function Player() {
             hideRemainingTime={hideRemainingTime}
             disableVibrate={disableVibrate}
             onPlayerNameChange={onPlayerNameChange}
+            onPlayerDotChange={onPlayerDotChange}
             onTeamChange={onTeamChange}
             onToggleHideRemainingTime={onToggleHideRemainingTime}
             onToggleVibrate={onToggleVibrate}
@@ -413,29 +425,6 @@ export default function Player() {
             playerId={playerId}
             onVoteGuess={() => setPlayerReady(true)}
           ></VoteGuess>
-
-          {/*
-          <TeamGuesses
-            isPaused={gameState.pauseState === "Paused"}
-            hasTeamGuessed={(teamNumber === 1 && gameState.teamOneGuessStatus !== "") || (teamNumber === 2 && gameState.teamTwoGuessStatus !== "")}
-            turnType={gameState.turnType}
-            roundNumber={gameState.roundNumber}
-            gameStateId={gameState.gameStateId}
-            playerId={playerId}
-            teamGuessVote={player.teamGuessVote}
-            teamNumber={teamNumber}
-            onTeamGuessVote={onTeamGuessVote}
-          ></TeamGuesses>
-          */}
-
-          {/*
-          <Chat
-            gameStateId={gameStateId}
-            playerId={player.playerId}
-            teamNumber={teamNumber}
-            teamName={teamNumber === 1 ? gameState.teamOneName : gameState.teamTwoName}
-          ></Chat>
-          */}
         </div>
       )}
     </>

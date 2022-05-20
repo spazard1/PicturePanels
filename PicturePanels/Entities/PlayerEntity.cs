@@ -22,6 +22,7 @@ namespace PicturePanels.Entities
             this.GuessVoteId = tableEntity.GuessVoteId;
             this.IsReady = tableEntity.IsReady;
             this.Color = tableEntity.Color;
+            this.Dot = tableEntity.Dot;
             this.IsAdmin = tableEntity.IsAdmin;
         }
 
@@ -45,6 +46,8 @@ namespace PicturePanels.Entities
         public bool IsReady { get; internal set; }
 
         public string Color { get; set; }
+
+        public string Dot { get; set; }
 
         public bool IsAdmin { get; }
 

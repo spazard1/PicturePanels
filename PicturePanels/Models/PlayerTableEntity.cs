@@ -21,7 +21,8 @@ namespace PicturePanels.Models
 
         public string Name { get; set; }
 
-        public int TeamNumber { get; set; }
+        public int TeamNumber { get; 
+            set; }
 
         public List<string> SelectedPanels { get; set; }
 
@@ -36,6 +37,8 @@ namespace PicturePanels.Models
         public bool IsReady { get; set; }
 
         public string Color { get; set; }
+
+        public string Dot { get; set; }
 
         public DateTime LastPingTime { get; set; }
 

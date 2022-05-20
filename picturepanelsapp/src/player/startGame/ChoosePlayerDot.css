@@ -1,0 +1,34 @@
+/* stylelint-disable selector-class-pattern */
+.choosePlayerDotLabel {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.colorPicker {
+  margin-bottom: 2rem;
+}
+
+.IroWheel {
+  margin: auto;
+}
+
+.playerDots {
+  width: 90%;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+}
+
+.playerDot {
+  width: 5rem;
+  height: 5rem;
+  cursor: pointer;
+  border: 3px solid black;
+  box-sizing: border-box;
+}
+
+.playerDotSelected {
+  border: 3px solid white;
+}

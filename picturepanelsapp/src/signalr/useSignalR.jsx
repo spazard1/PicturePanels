@@ -11,11 +11,19 @@ export function useSignalR(eventName, callback) {
 
     connection.on(eventName, callback);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connection]);
+
+  useEffect(() => {
+    if (!connection) {
+      return;
+    }
+
     return () => {
       connection.off(eventName, callback);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connection]);
+  }, []);
 
   return connectionId;
 }

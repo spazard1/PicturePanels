@@ -82,7 +82,7 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
               Guess
             </Button>
           </div>
-          <div className="playerLabel previousGuessesLabel">Use one of your guesses again:</div>
+          {previousGuesses.length > 0 && <div className="playerLabel previousGuessesLabel">Use one of your guesses again:</div>}
           <div>
             {previousGuesses.map((previousGuess) => (
               <div key={previousGuess}>

@@ -4,50 +4,40 @@ import classNames from "classnames";
 import "./Players.css";
 
 export default function Players({ players, turnType }) {
-  const teamOneClassNames = classNames("teamPlayerNames", "teamOnePlayerNames", "hideIfEmpty", { welcomePlayerNames: turnType === "Welcome" });
-  const teamTwoClassNames = classNames("teamPlayerNames", "teamTwoPlayerNames", "hideIfEmpty", { welcomePlayerNames: turnType === "Welcome" });
-
-  const teamOnePlayers = {};
-  const teamTwoPlayers = {};
-
-  for (const playerId in players) {
-    if (players[playerId].teamNumber === 1) {
-      teamOnePlayers[playerId] = players[playerId];
-    } else {
-      teamTwoPlayers[playerId] = players[playerId];
-    }
-  }
-
   return (
     <>
-      <div className={teamOneClassNames}>
-        {Object.keys(teamOnePlayers).map((playerId) =>
-          players[playerId].teamNumber === 1 ? (
-            <div
-              key={playerId}
-              className={classNames("teamPlayerName", "animate__animated", "animate__infinite", { animate__bounce: !players[playerId].isReady })}
-              style={{ borderColor: players[playerId].color }}
-            >
-              {players[playerId].name}
-            </div>
-          ) : (
-            <></>
-          )
+      <div className={classNames("teamPlayerNames", "teamOnePlayerNames", "hideIfEmpty", { welcomePlayerNames: turnType === "Welcome" })}>
+        {Object.keys(players).map(
+          (playerId) =>
+            players[playerId].teamNumber === 1 && (
+              <div
+                key={playerId}
+                className={classNames("teamPlayerName", "animate__animated", "animate__infinite", {
+                  animate__pulse: !players[playerId].isReady,
+                  teamOnePlayerNameNotReady: !players[playerId].isReady,
+                })}
+                style={{ borderColor: players[playerId].color }}
+              >
+                {players[playerId].name}
+              </div>
+            )
         )}
       </div>
-      <div className={teamTwoClassNames}>
-        {Object.keys(teamTwoPlayers).map((playerId) =>
-          players[playerId].teamNumber === 2 ? (
-            <div
-              key={playerId}
-              className={classNames("teamPlayerName", "animate__animated", "animate__infinite", { animate__bounce: !players[playerId].isReady })}
-              style={{ borderColor: players[playerId].color }}
-            >
-              {players[playerId].name}
-            </div>
-          ) : (
-            <></>
-          )
+      <div className={classNames("teamPlayerNames", "teamTwoPlayerNames", "hideIfEmpty", { welcomePlayerNames: turnType === "Welcome" })}>
+        {Object.keys(players).map(
+          (playerId) =>
+            players[playerId].teamNumber === 2 && (
+              <div
+                key={playerId}
+                className={classNames("teamPlayerName", "animate__animated", "animate__infinite", {
+                  animate__pulse: !players[playerId].isReady,
+                  teamTwoPlayerNameNotReady: !players[playerId].isReady,
+                })}
+                style={{ borderColor: players[playerId].color }}
+              >
+                {players[playerId].name}
+              </div>
+            )
         )}
       </div>
     </>
