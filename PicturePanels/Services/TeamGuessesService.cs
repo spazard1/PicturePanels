@@ -1,5 +1,4 @@
-﻿using NUglify.JavaScript.Syntax;
-using PicturePanels.Entities;
+﻿using PicturePanels.Entities;
 using PicturePanels.Models;
 using PicturePanels.Services.Storage;
 using System;

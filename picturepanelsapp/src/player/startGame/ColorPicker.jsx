@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import iro from "@jaames/iro";
 
-const ColorPicker = ({ colors, onColorChange }) => {
+const ColorPicker = ({ startingColors, colors, onColorChange, colorPickerContainerRef }) => {
   const colorPickerRef = useRef();
 
   useEffect(() => {
-    if (!colors || colorPickerRef.current) {
+    if (!startingColors || colorPickerRef.current) {
       return;
     }
 
@@ -23,19 +23,26 @@ const ColorPicker = ({ colors, onColorChange }) => {
           },
         },
       ],
-      colors: colors,
-      width: window.screen.width * 0.4,
-      layoutDirection: "horizontal",
+      colors: startingColors,
+      width: colorPickerContainerRef.current.getBoundingClientRect().width,
+      // layoutDirection: "horizontal",
       borderWidth: 2,
+      handleRadius: 10,
     });
 
-    colorPickerRef.current.on("color:change", function (color) {
+    colorPickerRef.current.on(["color:init", "color:change"], function (color) {
       if (color.value < 25) {
         color.value = 25;
       }
       onColorChange(color.hexString, color.index);
     });
-  }, [colors, onColorChange]);
+  }, [startingColors, onColorChange, colorPickerContainerRef]);
+
+  useEffect(() => {
+    if (colorPickerRef.current && startingColors) {
+      colorPickerRef.current.setColors(startingColors);
+    }
+  }, [colorPickerRef, startingColors]);
 
   useEffect(() => {
     if (colorPickerRef.current && colors.length > 0) {
@@ -53,6 +60,8 @@ const ColorPicker = ({ colors, onColorChange }) => {
 export default ColorPicker;
 
 ColorPicker.propTypes = {
+  startingColors: PropTypes.arrayOf(PropTypes.string),
   colors: PropTypes.arrayOf(PropTypes.string),
   onColorChange: PropTypes.func.isRequired,
+  colorPickerContainerRef: PropTypes.object.isRequired,
 };

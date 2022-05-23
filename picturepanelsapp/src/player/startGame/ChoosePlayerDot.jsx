@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "./ColorPicker";
 import AllPlayerDots from "../../playerDots/AllPlayerDots";
@@ -8,9 +8,15 @@ import classNames from "classnames";
 
 const ChoosePlayerDot = ({ colors, onColorChange, onColorCountChange, onDotSelect }) => {
   const [selectedDot, setSelectedDot] = useState(localStorage.getItem("playerDot"));
+  const [startingColors, setStartingColors] = useState(colors);
+  const colorPickerContainerRef = useRef();
 
   const dotSelectOnClick = () => {
     onDotSelect(selectedDot);
+  };
+
+  const onSwapColors = () => {
+    setStartingColors([colors[1], colors[0]]);
   };
 
   return (
@@ -18,10 +24,20 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorCountChange, onDotSelec
       <div className="choosePlayerDotContainer">
         <div className="choosePlayerDotLabel">Choose a color and icon</div>
         <div className="colorPickerContainer">
-          <ColorPicker colors={colors} onColorChange={onColorChange}></ColorPicker>
-          <div className="twoColorModeContainer">
+          <ColorPicker
+            startingColors={startingColors}
+            colors={colors}
+            onColorChange={onColorChange}
+            colorPickerContainerRef={colorPickerContainerRef}
+          ></ColorPicker>
+          <div ref={colorPickerContainerRef} className="twoColorModeContainer">
             <div>Two Color Mode</div>
             <Form.Check type="switch" id="custom-switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
+            <div>
+              <Button onClick={onSwapColors} disabled={colors.length < 2}>
+                Swap Colors
+              </Button>
+            </div>
           </div>
         </div>
         <div className="playerDots">

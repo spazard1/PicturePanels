@@ -105,13 +105,6 @@ namespace PicturePanels
                 };
 #endif
             });
-            
- 
-            services.AddWebOptimizer(pipeline =>
-            {
-                pipeline.MinifyCssFiles();
-                pipeline.MinifyJsFiles();
-            });
 
             services.AddHostedService<GameStateBackgroundService>();
         }
@@ -122,10 +115,6 @@ namespace PicturePanels
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseWebOptimizer();
             }
 
             app.UseCors(policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins(
