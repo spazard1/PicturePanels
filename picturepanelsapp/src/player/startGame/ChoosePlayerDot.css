@@ -25,14 +25,19 @@
 }
 
 .twoColorModeContainer {
-  margin-left: 2rem;
+  margin-left: 1rem;
+  font-size: 1.25rem;
+}
+
+.twoColorModeContainer button {
+  font-size: 1.25rem;
 }
 
 .playerDots {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 100vw;
+  width: 95%;
   display: flex;
   flex-wrap: wrap;
   margin-left: auto;
@@ -41,8 +46,7 @@
 }
 
 .playerDot {
-  width: 24vw;
-  height: 24vw;
+  width: 24%;
   cursor: pointer;
   border: 3px solid black;
   box-sizing: border-box;
