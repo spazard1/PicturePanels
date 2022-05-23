@@ -25,7 +25,7 @@ namespace PicturePanels.Services
 
         public async Task QueueGameStateChangeAsync(GameStateTableEntity gameState)
         {
-            if (!gameState.TurnEndTime.HasValue)
+            if (!gameState.TurnEndTime.HasValue || gameState.PauseState == GameStateTableEntity.PauseStatePaused)
             {
                 return;
             }

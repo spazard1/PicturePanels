@@ -1,27 +1,41 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 
 export function useSelectedPanels(players, turnType) {
   const [selectedPanels, setSelectedPanels] = useState({});
-  const selectedPanelsRef = useRef();
-  selectedPanelsRef.current = selectedPanels;
 
   useEffect(() => {
-    const newSelectedPanels = {};
-    for (const playerId in players) {
-      newSelectedPanels[playerId] = players[playerId].selectedPanels;
-    }
-    setSelectedPanels(newSelectedPanels);
+    setSelectedPanels((sp) => {
+      const newSelectedPanels = { ...sp };
+
+      for (const playerId in players) {
+        if (!(playerId in newSelectedPanels)) {
+          newSelectedPanels[playerId] = players[playerId].selectedPanels;
+        }
+      }
+
+      return newSelectedPanels;
+    });
   }, [players]);
 
   useEffect(() => {
     if (turnType && turnType !== "OpenPanel") {
-      setSelectedPanels({});
+      setSelectedPanels((sp) => {
+        const newSelectedPanels = { ...sp };
+
+        for (const playerId in sp) {
+          newSelectedPanels[playerId] = [];
+        }
+
+        return newSelectedPanels;
+      });
     }
   }, [turnType]);
 
   useSignalR("SelectPanels", (player) => {
-    setSelectedPanels({ ...selectedPanelsRef.current, [player.playerId]: player.selectedPanels });
+    setSelectedPanels((sp) => {
+      return { ...sp, [player.playerId]: player.selectedPanels };
+    });
   });
 
   return { selectedPanels };

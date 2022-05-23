@@ -1,0 +1,62 @@
+/* stylelint-disable selector-class-pattern */
+
+.choosePlayerDotContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.choosePlayerDotLabel {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.colorPickerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.IroWheel {
+  margin: auto;
+}
+
+.twoColorModeContainer {
+  margin-left: 2rem;
+}
+
+.playerDots {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100vw;
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+}
+
+.playerDot {
+  width: 24vw;
+  height: 24vw;
+  cursor: pointer;
+  border: 3px solid black;
+  box-sizing: border-box;
+}
+
+.playerDotSelected {
+  border: 3px solid white;
+}
+
+.playerDotNextButton {
+  flex: 0 0 auto;
+  margin-bottom: 1rem;
+}
+
+.playerDotNextButton button {
+  font-size: 1.5rem;
+}

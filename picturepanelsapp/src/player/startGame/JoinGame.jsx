@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import ColorPicker from "./ColorPicker";
 import Button from "react-bootstrap/Button";
 
 import "./JoinGame.css";
 
-const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameStateId }) => {
+const JoinGame = ({ isLoading, onJoinGame, cachedGameStateId }) => {
   const [formValues, setFormValues] = useState({
     playerName: localStorage.getItem("playerName") ?? "",
     gameStateId: cachedGameStateId ?? "",
@@ -37,7 +36,6 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
       <div className="playerTextInputContainer center">
         <input
           name="playerName"
-          style={{ color: color }}
           className="playerTextInput"
           value={formValues.playerName}
           type="text"
@@ -49,7 +47,6 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
 
         <input
           name="gameStateId"
-          style={{ color: color }}
           className="playerTextInput gameStateIdInput uppercase"
           value={formValues.gameStateId}
           type="text"
@@ -59,8 +56,6 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
           onChange={onInputChange}
         />
       </div>
-
-      <ColorPicker onColorChange={onColorChange}></ColorPicker>
 
       <div>
         <Button className="joinGameButton" variant="primary" size="lg" disabled={isLoading} onClick={joinGameOnClick}>
@@ -81,9 +76,7 @@ const JoinGame = ({ color, isLoading, onJoinGame, onColorChange, cachedGameState
 export default JoinGame;
 
 JoinGame.propTypes = {
-  color: PropTypes.string,
   isLoading: PropTypes.bool,
   onJoinGame: PropTypes.func.isRequired,
-  onColorChange: PropTypes.func.isRequired,
   cachedGameStateId: PropTypes.string,
 };

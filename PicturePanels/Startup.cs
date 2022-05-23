@@ -72,6 +72,7 @@ namespace PicturePanels
             services.AddSingleton<SignalRHelper>();
             services.AddSingleton<GameStateService>();
             services.AddSingleton<ChatService>();
+            services.AddSingleton<TeamGuessesService>();
             services.AddSingleton<KeyVaultProvider>();
             services.AddSingleton<SecretProvider>();
             services.AddSingleton<CertificateProvider>();

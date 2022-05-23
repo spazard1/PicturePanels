@@ -15,19 +15,13 @@ namespace PicturePanels.Services
 
         Task ScoreChange(ScoreChangeEntity entity);
 
-        Task AddTeamGuess(TeamGuessEntity teamGuessEntity);
+        Task TeamGuesses(List<TeamGuessEntity> teamGuessEntities);
 
-        Task AddTeamGuess(TeamGuessEntity teamGuessEntity, string creatorPlayerId);
-
-        Task DeleteTeamGuess(TeamGuessEntity teamGuessEntity);
-
-        Task VoteTeamGuess(string oldVote, string newVote, string playerId);
-
-        Task AddPlayer(PlayerEntity entity);
+        Task Player(PlayerEntity entity, bool isNew);
 
         Task SelectPanels(PlayerEntity entity);
 
-        Task PlayerReady(PlayerEntity entity);
+        Task PlayerReady(string playerId);
 
         Task Chat(ChatEntity entity);
 

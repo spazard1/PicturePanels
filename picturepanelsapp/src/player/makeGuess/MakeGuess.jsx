@@ -5,7 +5,7 @@ import putGuess from "./putGuess";
 
 import "./MakeGuess.css";
 
-const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
+const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
   const [guess, setGuess] = useState("");
   const [confidence, setConfidence] = useState(50);
   const [confidenceMessage, setConfidenceMessage] = useState("");
@@ -22,7 +22,7 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
   const sendGuessOnClick = () => {
     putGuess(gameStateId, playerId, guess, confidence, (result) => {
       if (result) {
-        onSaveGuess();
+        onSaveGuess(guess);
       }
     });
   };
@@ -33,6 +33,11 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
         onSaveGuess();
       }
     });
+  };
+
+  const previousGuessOnClick = (previousGuess) => {
+    setGuess(previousGuess);
+    setGuessSubmit(true);
   };
 
   useEffect(() => {
@@ -57,7 +62,7 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
     <>
       {!guessSubmit && (
         <>
-          <div className="playerLabel makeGuessLabel">Enter a guess for your team, or pass.</div>
+          <div className="playerLabel makeGuessLabel">Enter a guess for your team</div>
           <div>
             <input
               name="guess"
@@ -77,7 +82,16 @@ const MakeGuess = ({ gameStateId, playerId, onSaveGuess }) => {
               Guess
             </Button>
           </div>
-          <div className="playerLabel previousGuessesLabel">Use one of your previous guesses again:</div>
+          {previousGuesses.length > 0 && <div className="playerLabel previousGuessesLabel">Use one of your guesses again:</div>}
+          <div>
+            {previousGuesses.map((previousGuess) => (
+              <div key={previousGuess}>
+                <Button className="previousGuessButton" variant="info" onClick={() => previousGuessOnClick(previousGuess)}>
+                  {previousGuess}
+                </Button>
+              </div>
+            ))}
+          </div>
         </>
       )}
 
@@ -136,5 +150,6 @@ export default MakeGuess;
 MakeGuess.propTypes = {
   gameStateId: PropTypes.string,
   playerId: PropTypes.string,
+  previousGuesses: PropTypes.arrayOf(PropTypes.string),
   onSaveGuess: PropTypes.func,
 };

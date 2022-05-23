@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import getGameState from "../common/getGameState";
-//import Chat from "./chat/Chat";
 import PanelButtons from "./PanelButtons";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import StartGame from "./startGame/StartGame";
 import ChooseTeam from "./startGame/ChooseTeam";
 import JoinGame from "./startGame/JoinGame";
+import ChoosePlayerDot from "./startGame/ChoosePlayerDot";
 import ModalMessage from "../common/modal/ModalMessage";
 import MakeGuess from "./makeGuess/MakeGuess";
 import { useModal } from "../common/modal/useModal";
@@ -24,11 +24,12 @@ import { usePlayerVibrate } from "./usePlayerVibrate";
 import LineCountdown from "./LineCountdown";
 import { useWinningTeam } from "../common/useWinningTeam";
 import { useLocalStorageState } from "../common/useLocalStorageState";
+import VoteGuess from "./voteGuess/VoteGuess";
+import putPlayerResume from "./putPlayerResume";
 
 import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
-import VoteGuess from "./voteGuess/VoteGuess";
 
 export default function Player() {
   useBodyClass("player");
@@ -38,31 +39,59 @@ export default function Player() {
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
   const [playerId, setPlayerId] = useState();
-  const [teamNumber, setTeamNumber] = useState();
+  const [teamNumber, setTeamNumber] = useState(0);
+  const [dot, setDot] = useState(localStorage.getItem("playerDot"));
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
+  const [roundNumber, setRoundNumber] = useState();
+  const [teamGuessStatus, setTeamGuessStatus] = useState();
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
   const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
   const [teamNameToast, setTeamNameToast] = useState("");
   const { isWinner } = useWinningTeam(gameState, teamNumber);
+  const isFirstLoad = useRef(true);
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
-  let initialColor;
-  if (localStorage.getItem("playerColor")) {
-    initialColor = localStorage.getItem("playerColor");
-  } else {
-    initialColor = "hsl(" + Math.ceil(Math.random() * 360) + ", 100%, 50%)";
-  }
-  const [color, setColor] = useState(initialColor);
+  const getNewColor = () => {
+    return "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
+  };
 
-  const onColorChange = useCallback((c) => {
-    setColor(c);
+  const [colors, setColors] = useState();
+
+  useEffect(() => {
+    let initialColors;
+    if (localStorage.getItem("playerColors")) {
+      try {
+        initialColors = JSON.parse(localStorage.getItem("playerColor"));
+      } catch (e) {
+        initialColors = [getNewColor()];
+      }
+    } else {
+      initialColors = [getNewColor()];
+    }
+    setColors(initialColors);
   }, []);
+
+  const onColorChange = useCallback((c, index) => {
+    setColors((cs) => {
+      const newColors = [...cs];
+      newColors[index] = c;
+      return newColors;
+    });
+  }, []);
+
+  const onColorCountChange = (e) => {
+    if (e.target.checked) {
+      setColors((cs) => [...cs, getNewColor()]);
+    } else {
+      setColors((cs) => cs.slice(0, 1));
+    }
+  };
 
   const onJoinGame = (gameOptions) => {
     if (gameOptions.gameStateId.length < 4) {
@@ -82,7 +111,6 @@ export default function Player() {
     });
 
     localStorage.setItem("playerName", gameOptions.playerName);
-    localStorage.setItem("playerColor", color);
   };
 
   const onPlayerNameChange = () => {
@@ -90,9 +118,14 @@ export default function Player() {
     setPlayer(null);
   };
 
-  const onTeamChange = () => {
+  const onPlayerDotChange = () => {
+    setDot(null);
     setPlayer(null);
+  };
+
+  const onTeamChange = () => {
     setTeamNumber(0);
+    setPlayer(null);
   };
 
   const onTeamNumberSelect = (teamNumber) => {
@@ -106,6 +139,12 @@ export default function Player() {
         setTeamNameToast("You have joined " + gameState.teamTwoName);
       }
     }
+  };
+
+  const onDotSelect = (dot) => {
+    setDot(dot);
+    localStorage.setItem("playerColors", JSON.stringify(colors));
+    localStorage.setItem("playerDot", dot);
   };
 
   const openPanelVoteOnClick = () => {
@@ -140,20 +179,14 @@ export default function Player() {
       setGameState(resumeGameRef.current.gameState);
       setPlayer(resumeGameRef.current.player);
       setTeamNumber(resumeGameRef.current.player.teamNumber);
+      if (resumeGameRef.current.player.colors) {
+        setColors(resumeGameRef.current.player.colors);
+      }
       setIsResuming(false);
+      putPlayerResume(resumeGameRef.current.player.gameStateId, resumeGameRef.current.player.playerId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /*
-  const onTeamGuessVote = (ticks) => {
-    if (player.teamGuessVote === ticks) {
-      setPlayer({ ...player, ["teamGuessVote"]: "" });
-    } else {
-      setPlayer({ ...player, ["teamGuessVote"]: ticks });
-    }
-  };
-  */
 
   const onToggleHideRemainingTime = () => {
     if (hideRemainingTime) {
@@ -171,6 +204,18 @@ export default function Player() {
     }
   };
 
+  const onSaveGuess = (guess) => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+      if (guess && p.previousGuesses.indexOf(guess) < 0) {
+        p.previousGuesses = [...p.previousGuesses, guess];
+      }
+      return { ...p, isReady: true };
+    });
+  };
+
   const setPlayerReady = (isReady) => {
     setPlayer((p) => {
       if (!p) {
@@ -181,19 +226,40 @@ export default function Player() {
   };
 
   useEffect(() => {
-    if (gameState && gameState.turnType) {
-      setTurnType(gameState.turnType);
+    if (!gameState) {
+      return;
     }
-    if (gameState && gameState.teamTurn) {
-      setTeamTurn(gameState.teamTurn);
+
+    setTurnType(gameState.turnType);
+    setTeamTurn(gameState.teamTurn);
+    setRoundNumber(gameState.roundNumber);
+
+    if (teamNumber === 1) {
+      setTeamGuessStatus(gameState.teamOneGuessStatus);
+    } else {
+      setTeamGuessStatus(gameState.teamTwoGuessStatus);
     }
-  }, [gameState]);
+  }, [gameState, teamNumber]);
 
   useEffect(() => {
     if (turnType) {
+      if (isFirstLoad.current) {
+        isFirstLoad.current = false;
+        return;
+      }
       setPlayerReady(false);
     }
   }, [turnType]);
+
+  useEffect(() => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+
+      return { ...p, previousGuesses: [] };
+    });
+  }, [roundNumber]);
 
   useEffect(() => {
     if (player) {
@@ -202,10 +268,18 @@ export default function Player() {
   }, [player]);
 
   useEffect(() => {
-    if ((!disableVibrate && turnType === "OpenPanel" && teamTurn === teamNumber) || turnType === "MakeGuess") {
+    if (disableVibrate) {
+      return;
+    }
+
+    if (
+      (turnType === "OpenPanel" && teamTurn === teamNumber) ||
+      turnType === "MakeGuess" ||
+      (turnType === "VoteGuess" && teamGuessStatus !== "Skip")
+    ) {
       vibrate(25);
     }
-  }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn]);
+  }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn, teamGuessStatus]);
 
   useEffect(() => {
     if (!gameStateId || !gameState) {
@@ -251,7 +325,7 @@ export default function Player() {
   }, []);
 
   useEffect(() => {
-    if (!gameStateId || !gameState || !teamNumber || player) {
+    if (!gameStateId || !gameState || !teamNumber || !dot || player) {
       return;
     }
 
@@ -261,7 +335,8 @@ export default function Player() {
         PlayerId: localStorage.getItem("playerId"),
         Name: localStorage.getItem("playerName"),
         TeamNumber: teamNumber,
-        Color: color,
+        Colors: colors,
+        Dot: dot,
       },
       (p) => {
         if (p) {
@@ -272,7 +347,7 @@ export default function Player() {
         }
       }
     );
-  }, [gameStateId, gameState, teamNumber, color, player, setModalMessage]);
+  }, [gameStateId, gameState, teamNumber, colors, dot, player, setModalMessage]);
 
   useEffect(() => {
     if (!gameState || !gameStateId || !player || queryString) {
@@ -283,7 +358,7 @@ export default function Player() {
   }, [gameStateId, gameState, queryString, player, setQueryString]);
 
   if (isResuming) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -291,17 +366,18 @@ export default function Player() {
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
-      {!gameState && (
-        <JoinGame
-          color={color}
-          isLoading={isLoading}
-          onJoinGame={onJoinGame}
+      {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
+
+      {gameState && !dot && (
+        <ChoosePlayerDot
+          colors={colors}
           onColorChange={onColorChange}
-          cachedGameStateId={cachedGameStateId}
-        ></JoinGame>
+          onColorCountChange={onColorCountChange}
+          onDotSelect={onDotSelect}
+        ></ChoosePlayerDot>
       )}
 
-      {gameState && !teamNumber && (
+      {gameState && dot && teamNumber <= 0 && (
         <ChooseTeam
           gameStateId={gameState.gameStateId}
           teamOneName={gameState.teamOneName}
@@ -350,6 +426,7 @@ export default function Player() {
             hideRemainingTime={hideRemainingTime}
             disableVibrate={disableVibrate}
             onPlayerNameChange={onPlayerNameChange}
+            onPlayerDotChange={onPlayerDotChange}
             onTeamChange={onTeamChange}
             onToggleHideRemainingTime={onToggleHideRemainingTime}
             onToggleVibrate={onToggleVibrate}
@@ -365,13 +442,7 @@ export default function Player() {
                 isPaused={gameState.pauseState === "Paused"}
               ></PanelButtons>
               <div>
-                <Button
-                  className="panelButtonsVoteButton"
-                  variant="primary"
-                  size="lg"
-                  disabled={isLoading || gameState.pauseState === "Paused"}
-                  onClick={openPanelVoteOnClick}
-                >
+                <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>
                   {isLoading ? "Voting..." : "Vote!"}
                 </Button>
               </div>
@@ -379,35 +450,15 @@ export default function Player() {
           )}
 
           {gameState.turnType === "MakeGuess" && !player.isReady && (
-            <MakeGuess gameStateId={gameStateId} playerId={playerId} onSaveGuess={() => setPlayerReady(true)}></MakeGuess>
+            <MakeGuess gameStateId={gameStateId} playerId={playerId} previousGuesses={player.previousGuesses} onSaveGuess={onSaveGuess}></MakeGuess>
           )}
 
-          {gameState.turnType === "VoteGuess" && !player.isReady && (
-            <VoteGuess gameStateId={gameStateId} playerId={playerId} onVoteGuess={() => setPlayerReady(true)}></VoteGuess>
-          )}
-
-          {/*
-          <TeamGuesses
-            isPaused={gameState.pauseState === "Paused"}
-            hasTeamGuessed={(teamNumber === 1 && gameState.teamOneGuessStatus !== "") || (teamNumber === 2 && gameState.teamTwoGuessStatus !== "")}
-            turnType={gameState.turnType}
-            roundNumber={gameState.roundNumber}
-            gameStateId={gameState.gameStateId}
-            playerId={playerId}
-            teamGuessVote={player.teamGuessVote}
-            teamNumber={teamNumber}
-            onTeamGuessVote={onTeamGuessVote}
-          ></TeamGuesses>
-          */}
-
-          {/*
-          <Chat
+          <VoteGuess
+            isVisible={gameState.turnType === "VoteGuess" && !player.isReady}
             gameStateId={gameStateId}
-            playerId={player.playerId}
-            teamNumber={teamNumber}
-            teamName={teamNumber === 1 ? gameState.teamOneName : gameState.teamTwoName}
-          ></Chat>
-          */}
+            playerId={playerId}
+            onVoteGuess={() => setPlayerReady(true)}
+          ></VoteGuess>
         </div>
       )}
     </>

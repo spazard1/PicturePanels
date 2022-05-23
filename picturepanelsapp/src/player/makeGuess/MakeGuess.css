@@ -1,21 +1,27 @@
 /* stylelint-disable selector-class-pattern */
 .makeGuessLabel {
   margin-top: 4rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 1.75rem;
 }
 
 .guess {
   font-size: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .makeGuessButtonContainer {
-  margin-bottom: 2em;
+  margin-bottom: 3em;
 }
 
 .previousGuessesLabel {
-  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.previousGuessButton {
+  font-size: 1.5rem;
+  margin-bottom: 1.1rem;
 }
 
 .confidenceLabel {

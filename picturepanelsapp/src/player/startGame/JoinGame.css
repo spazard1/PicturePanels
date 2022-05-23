@@ -11,6 +11,7 @@
 
 .playerTextInput {
   margin-bottom: 1rem;
+  color: white;
   caret-color: white;
   background-color: black;
   font-size: 2em;
@@ -20,14 +21,6 @@
 
 .gameStateIdInput {
   width: 60%;
-}
-
-.colorPicker {
-  margin-top: 2rem;
-}
-
-.IroWheel {
-  margin: auto;
 }
 
 .startGameHelp {

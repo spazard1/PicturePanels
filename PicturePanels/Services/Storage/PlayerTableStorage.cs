@@ -47,6 +47,13 @@ namespace PicturePanels.Services.Storage
 
         public async Task ResetPlayersAsync(GameStateTableEntity gameState)
         {
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound ||
+                gameState.TurnType == GameStateTableEntity.TurnTypeEndGame)
+            {
+                return;
+            }
+ 
             TableBatchOperation batchOperation = new TableBatchOperation();
             await foreach (var playerModel in this.GetActivePlayersAsync(gameState.GameStateId))
             {
@@ -56,15 +63,22 @@ namespace PicturePanels.Services.Storage
                     batchOperation = new TableBatchOperation();
                 }
 
-                playerModel.IsReady = false;
-                if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess)
+                if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ||
+                    gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
                 {
-                    playerModel.SelectedPanels = new List<string>();
+                    playerModel.IsReady = false;
                 }
-                else if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade)
+                else if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel)
                 {
-                    playerModel.GuessVoteId = null;
-                    playerModel.Guess = null;
+                    playerModel.IsReady = playerModel.TeamNumber != gameState.TeamTurn;
+                    playerModel.SelectedPanels = new List<string>();
+                    playerModel.Guess = string.Empty;
+                    playerModel.GuessVoteId = string.Empty;
+                }
+
+                if (gameState.TurnType == GameStateTableEntity.TurnTypeOpenPanel && gameState.TurnNumber == 1)
+                {
+                    playerModel.PreviousGuesses = new List<string>();
                 }
 
                 batchOperation.Add(TableOperation.InsertOrReplace(playerModel));
@@ -78,9 +92,9 @@ namespace PicturePanels.Services.Storage
 
         public override async Task<PlayerTableEntity> InsertAsync(PlayerTableEntity tableEntity)
         {
-            if (string.IsNullOrWhiteSpace(tableEntity.Color))
+            if (tableEntity.Colors == null || tableEntity.Colors.Count == 0 || string.IsNullOrWhiteSpace(tableEntity.Colors[0]))
             {
-                tableEntity.Color = GenerateRandomColor(tableEntity.PlayerId);
+                tableEntity.Colors = new List<string> { GenerateRandomColor(tableEntity.PlayerId) };
             }
             return await base.InsertAsync(tableEntity);
         }

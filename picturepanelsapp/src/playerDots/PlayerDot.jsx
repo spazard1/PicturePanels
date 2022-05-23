@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import AllPlayerDots from "./AllPlayerDots";
 
-const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
+const PlayerDot = ({ name, dot, colors, teamNumber, panelRef, turnType }) => {
   const [initials, setInitials] = useState("");
   const circleScale = 0.055;
   const divSize = window.innerHeight * circleScale;
-  const circleBorderSize = 2;
-  const circleSize = divSize / 2;
-  const circleRadius = divSize / 2 - 2;
+  //const circleBorderSize = 2;
+  //const circleSize = divSize / 2;
+  //const circleRadius = divSize / 2 - 2;
   const hasBeenVisible = useRef(false);
+  const PlayerDot = AllPlayerDots[dot];
 
   let rect;
   if (panelRef) {
@@ -50,13 +52,10 @@ const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
         transform: "translate(" + rect.x + "px, " + rect.y + "px)",
         width: divSize + "px",
         height: divSize + "px",
-        fill: color,
         zIndex: Math.ceil(Math.random() * 500) + 100,
       }}
     >
-      <svg>
-        <circle r={circleRadius} cx={circleSize} cy={circleSize} stroke="black" strokeWidth={circleBorderSize}></circle>
-      </svg>
+      <PlayerDot colors={colors}></PlayerDot>
       <div>{initials}</div>
     </div>
   );
@@ -64,7 +63,8 @@ const PlayerDot = ({ name, color, teamNumber, panelRef, turnType }) => {
 
 PlayerDot.propTypes = {
   name: PropTypes.string.isRequired,
-  color: PropTypes.string.isRequired,
+  dot: PropTypes.string.isRequired,
+  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
   teamNumber: PropTypes.number.isRequired,
   panelRef: PropTypes.object,
   turnType: PropTypes.string.isRequired,

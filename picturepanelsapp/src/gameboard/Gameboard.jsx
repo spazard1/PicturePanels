@@ -22,11 +22,11 @@ import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import { useWinningTeam } from "../common/useWinningTeam";
+import classNames from "classnames";
 
 import "./Gameboard.css";
 import "animate.css";
 import "../animate/animate.css";
-import classNames from "classnames";
 
 export default function Gameboard() {
   useBodyClass("gameboard");
@@ -43,6 +43,8 @@ export default function Gameboard() {
   const roundNumberRef = useRef();
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
+  const [turnType, setTurnType] = useState();
+  const [teamTurn, setTeamTurn] = useState();
   const { winningTeam } = useWinningTeam(gameState);
 
   const onStartGameStateChange = (startGameState) => {
@@ -74,7 +76,7 @@ export default function Gameboard() {
   };
 
   const { queryString, setQueryString } = useSignalRConnection();
-  const { players } = usePlayers(gameStateId);
+  const { players } = usePlayers(gameStateId, turnType, teamTurn);
   useGameboardPing(gameStateId);
 
   useEffect(() => {
@@ -84,6 +86,15 @@ export default function Gameboard() {
 
     setQueryString("gameStateId=" + gameState.gameStateId);
   }, [gameState, queryString, setQueryString]);
+
+  useEffect(() => {
+    if (!gameState) {
+      return;
+    }
+
+    setTurnType(gameState.turnType);
+    setTeamTurn(gameState.teamTurn);
+  }, [gameState]);
 
   useEffect(() => {
     if (!gameState) {
@@ -194,17 +205,17 @@ export default function Gameboard() {
       {gameState && gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame" && (
         <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber}></RoundNumber>
       )}
-      {(!gameState || gameState.turnType !== "EndGame") && (
-        <Panels
-          gameStateId={gameStateId}
-          players={players}
-          roundNumber={gameState ? gameState.roundNumber : 0}
-          revealedPanels={gameState ? gameState.revealedPanels : []}
-          teamTurn={gameState ? gameState.teamTurn : 1}
-          turnType={gameState ? gameState.turnType : "Welcome"}
-          teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
-        />
-      )}
+
+      <Panels
+        gameStateId={gameStateId}
+        players={players}
+        roundNumber={gameState ? gameState.roundNumber : 0}
+        revealedPanels={gameState ? gameState.revealedPanels : []}
+        teamTurn={gameState ? gameState.teamTurn : 1}
+        turnType={gameState ? gameState.turnType : "Welcome"}
+        teamIsCorrect={gameState ? gameState.teamOneCorrect || gameState.teamTwoCorrect : false}
+      />
+
       {gameState && gameState.turnType === "EndGame" && <EndGame gameStateId={gameState.gameStateId} winningTeamName={winningTeam}></EndGame>}
       <FadedBox
         displayState={roundNumberAnimateDisplay}

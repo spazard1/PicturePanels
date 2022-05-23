@@ -31,13 +31,13 @@ const TeamGuess = ({ teamNumber, teamGuessStatus, teamGuess, teamGuessIncorrect,
       setTeamGuessDisplay(teamGuess);
       setReadyDisplay(false);
       setSkipReady(false);
-    } else if (teamGuessStatus === "Pass") {
+    } else if (teamGuessStatus === "Pass" || teamGuessStatus === "Skip") {
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
       setTeamGuessDisplay("(team passed)");
       setReadyDisplay(false);
       setSkipReady(false);
-    } else if (teamGuessStatus === "Skip") {
+    } else if (teamGuessStatus === "BothSkip") {
       setTeamGuessVisible(true);
       setTeamGuessIncorrectDisplay(false);
       setTeamGuessDisplay("(team passed)");
