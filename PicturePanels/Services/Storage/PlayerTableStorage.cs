@@ -92,9 +92,9 @@ namespace PicturePanels.Services.Storage
 
         public override async Task<PlayerTableEntity> InsertAsync(PlayerTableEntity tableEntity)
         {
-            if (string.IsNullOrWhiteSpace(tableEntity.Color))
+            if (tableEntity.Colors == null || tableEntity.Colors.Count == 0 || string.IsNullOrWhiteSpace(tableEntity.Colors[0]))
             {
-                tableEntity.Color = GenerateRandomColor(tableEntity.PlayerId);
+                tableEntity.Colors = new List<string> { GenerateRandomColor(tableEntity.PlayerId) };
             }
             return await base.InsertAsync(tableEntity);
         }

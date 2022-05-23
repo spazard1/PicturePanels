@@ -57,17 +57,41 @@ export default function Player() {
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
-  let initialColor;
-  if (localStorage.getItem("playerColor")) {
-    initialColor = localStorage.getItem("playerColor");
-  } else {
-    initialColor = "hsl(" + Math.ceil(Math.random() * 360) + ", 100%, 50%)";
-  }
-  const [color, setColor] = useState(initialColor);
+  const getNewColor = () => {
+    return "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
+  };
 
-  const onColorChange = useCallback((c) => {
-    setColor(c);
+  const [colors, setColors] = useState();
+
+  useEffect(() => {
+    let initialColors;
+    if (localStorage.getItem("playerColors")) {
+      try {
+        initialColors = JSON.parse(localStorage.getItem("playerColor"));
+      } catch (e) {
+        initialColors = [getNewColor()];
+      }
+    } else {
+      initialColors = [getNewColor()];
+    }
+    setColors(initialColors);
   }, []);
+
+  const onColorChange = useCallback((c, index) => {
+    setColors((cs) => {
+      const newColors = [...cs];
+      newColors[index] = c;
+      return newColors;
+    });
+  }, []);
+
+  const onColorCountChange = (e) => {
+    if (e.target.checked) {
+      setColors((cs) => [...cs, getNewColor()]);
+    } else {
+      setColors((cs) => cs.slice(0, 1));
+    }
+  };
 
   const onJoinGame = (gameOptions) => {
     if (gameOptions.gameStateId.length < 4) {
@@ -119,7 +143,7 @@ export default function Player() {
 
   const onDotSelect = (dot) => {
     setDot(dot);
-    localStorage.setItem("playerColor", color);
+    localStorage.setItem("playerColors", JSON.stringify(colors));
     localStorage.setItem("playerDot", dot);
   };
 
@@ -155,6 +179,9 @@ export default function Player() {
       setGameState(resumeGameRef.current.gameState);
       setPlayer(resumeGameRef.current.player);
       setTeamNumber(resumeGameRef.current.player.teamNumber);
+      if (resumeGameRef.current.player.colors) {
+        setColors(resumeGameRef.current.player.colors);
+      }
       setIsResuming(false);
       putPlayerResume(resumeGameRef.current.player.gameStateId, resumeGameRef.current.player.playerId);
     }
@@ -308,7 +335,7 @@ export default function Player() {
         PlayerId: localStorage.getItem("playerId"),
         Name: localStorage.getItem("playerName"),
         TeamNumber: teamNumber,
-        Color: color,
+        Colors: colors,
         Dot: dot,
       },
       (p) => {
@@ -320,7 +347,7 @@ export default function Player() {
         }
       }
     );
-  }, [gameStateId, gameState, teamNumber, color, dot, player, setModalMessage]);
+  }, [gameStateId, gameState, teamNumber, colors, dot, player, setModalMessage]);
 
   useEffect(() => {
     if (!gameState || !gameStateId || !player || queryString) {
@@ -339,9 +366,16 @@ export default function Player() {
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
-      {!gameState && <JoinGame color={color} isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
+      {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
 
-      {gameState && !dot && <ChoosePlayerDot color={color} onColorChange={onColorChange} onDotSelect={onDotSelect}></ChoosePlayerDot>}
+      {gameState && !dot && (
+        <ChoosePlayerDot
+          colors={colors}
+          onColorChange={onColorChange}
+          onColorCountChange={onColorCountChange}
+          onDotSelect={onDotSelect}
+        ></ChoosePlayerDot>
+      )}
 
       {gameState && dot && teamNumber <= 0 && (
         <ChooseTeam

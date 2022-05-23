@@ -21,7 +21,7 @@ namespace PicturePanels.Entities
             this.PreviousGuesses = tableEntity.PreviousGuesses ?? new List<string>();
             this.GuessVoteId = tableEntity.GuessVoteId;
             this.IsReady = tableEntity.IsReady;
-            this.Color = tableEntity.Color;
+            this.Colors = tableEntity.Colors;
             this.Dot = tableEntity.Dot;
             this.IsAdmin = tableEntity.IsAdmin;
         }
@@ -45,7 +45,7 @@ namespace PicturePanels.Entities
 
         public bool IsReady { get; internal set; }
 
-        public string Color { get; set; }
+        public List<string> Colors { get; set; }
 
         public string Dot { get; set; }
 

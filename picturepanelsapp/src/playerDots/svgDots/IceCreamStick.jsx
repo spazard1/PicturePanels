@@ -4,6 +4,8 @@ import { memo } from "react";
 import PropTypes from "prop-types";
 import "./SvgDots.css";
 
+const defaultColor2 = "#282b24";
+
 const IceCreamStick = (props) => (
   <svg className="playerDotSvg" viewBox="-8.9 0 32 32" xmlns="http://www.w3.org/2000/svg" {...props}>
     <g data-name="ice cream2">
@@ -17,7 +19,7 @@ const IceCreamStick = (props) => (
           fill="#282b24"
         />
       </g>
-      <path data-name="Path 181" d="M7.101.5a6.6 6.6 0 0 0-6.6 6.6v16.334h13.2V7.106A6.6 6.6 0 0 0 7.101.5Z" fill={props.color} />
+      <path data-name="Path 181" d="M7.101.5a6.6 6.6 0 0 0-6.6 6.6v16.334h13.2V7.106A6.6 6.6 0 0 0 7.101.5Z" fill={props.colors[0]} />
       <g data-name="Group 180" opacity={0.35}>
         <g data-name="Group 179">
           <path data-name="Path 182" d="M2 8.606a6.594 6.594 0 0 1 10.454-5.353A6.6 6.6 0 0 0 .5 7.106V23.44H2Z" fill="#fff" />
@@ -34,12 +36,26 @@ const IceCreamStick = (props) => (
       </g>
       <g data-name="Group 184">
         <g data-name="Group 183" transform="translate(-296.876 -81.994)">
-          <rect data-name="Rectangle 13" width={1} height={13.952} rx={0.5} transform="translate(301.121 88.211)" fill="#282b24" />
+          <rect
+            data-name="Rectangle 13"
+            width={1}
+            height={13.952}
+            rx={0.5}
+            transform="translate(301.121 88.211)"
+            fill={props.colors[1] ?? defaultColor2}
+          />
         </g>
       </g>
       <g data-name="Group 186">
         <g data-name="Group 185" transform="translate(-296.876 -81.994)">
-          <rect data-name="Rectangle 14" width={1} height={13.952} rx={0.5} transform="translate(305.812 88.211)" fill="#282b24" />
+          <rect
+            data-name="Rectangle 14"
+            width={1}
+            height={13.952}
+            rx={0.5}
+            transform="translate(305.812 88.211)"
+            fill={props.colors[1] ?? defaultColor2}
+          />
         </g>
       </g>
     </g>
@@ -47,7 +63,7 @@ const IceCreamStick = (props) => (
 );
 
 IceCreamStick.propTypes = {
-  color: PropTypes.string,
+  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const Memo = memo(IceCreamStick);

@@ -76,7 +76,7 @@ namespace PicturePanels.Controllers
                     PlayerId = Guid.NewGuid().ToString(),
                     Name = GetPlayerName(entity.Name),
                     TeamNumber = entity.TeamNumber,
-                    Color = entity.Color,
+                    Colors = entity.Colors,
                     Dot = entity.Dot,
                     LastPingTime = DateTime.UtcNow,
                     SelectedPanels = new List<string>(),
@@ -98,7 +98,7 @@ namespace PicturePanels.Controllers
                 {
                     pm.Name = GetPlayerName(entity.Name);
                     pm.TeamNumber = entity.TeamNumber;
-                    pm.Color = entity.Color;
+                    pm.Colors = entity.Colors;
                     pm.Dot = entity.Dot;
                     pm.LastPingTime = DateTime.UtcNow;
                     if (newTeam)
