@@ -21,6 +21,9 @@ const Ring = (props) => {
     color4 = "rgb(" + analogous[2].r + " " + analogous[2].g + " " + analogous[2].b + ")";
   }
 
+  const outerColorAnalogous = new complementaryColors(props.colors[0]).analogous();
+  const outerColor = "rgb(" + outerColorAnalogous[1].r + " " + outerColorAnalogous[1].g + " " + outerColorAnalogous[1].b + ")";
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -39,11 +42,11 @@ const Ring = (props) => {
       <defs>
         <style>{".fil4{fill:" + color3 + "}.fil5{fill:" + color4 + "}"}</style>
       </defs>
-      <g id="Layer_x0020_1">
+      <g>
         <path
           d="M1278 451c133 51 247 142 328 259 80 117 123 255 123 398 0 187-74 366-206 498-133 133-311 206-498 206s-366-74-498-206c-133-133-206-311-206-498 0-142 43-280 123-398 80-117 195-208 328-259l56-22 14 58c10 42 33 79 67 105 34 27 75 41 118 41s84-14 118-41c33-27 57-64 67-105l14-58 56 22zm-37 139c-46 76-111 113-179 124-110 17-208-45-265-122-200 104-366 283-373 517-2 80 14 160 45 233 31 71 76 136 131 191 113 113 265 176 425 176s312-63 425-176 178-264 176-424c-2-127-47-246-129-343-60-71-164-146-254-175z"
           style={{
-            fill: "#ff8600",
+            fill: outerColor,
           }}
         />
         <path

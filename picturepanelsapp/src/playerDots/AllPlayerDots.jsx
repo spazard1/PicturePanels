@@ -1,3 +1,4 @@
+import Alien from "./svgDots/Alien";
 import Bunny from "./svgDots/Bunny";
 import Cactus from "./svgDots/Cactus";
 import ChiliPepper from "./svgDots/ChiliPepper";
@@ -13,6 +14,7 @@ import Saturn from "./svgDots/Saturn";
 import Stiletto from "./svgDots/Stiletto";
 
 const AllPlayerDots = {
+  alien: Alien,
   bunny: Bunny,
   cactus: Cactus,
   chiliPepper: ChiliPepper,

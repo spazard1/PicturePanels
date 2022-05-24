@@ -21,13 +21,13 @@ const Muffin = (props) => {
   return (
     <svg viewBox="0 0 500 500" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
       <defs>
-        <clipPath id="clip-path">
+        <clipPath id="muffin-clip-path">
           <path
             className="muffin-1"
             d="M55.54 271.33S24 247 33 207.41s42.35-47.71 42.35-47.71-2.7-36 27-43.22c0 0 26.11-74.72 102.63-42.31 0 0 72-61.22 124.24 3.6 0 0 46.82-16.21 74.73 38.71 0 0 50.41-.9 37.81 56.72 0 0 56.72 39.61 0 103.54S79 327.15 55.54 271.33Z"
           />
         </clipPath>
-        <clipPath id="clip-path-2">
+        <clipPath id="muffin-clip-path-2">
           <path
             className="muffin-1"
             d="M392.09 266.39a32.47 32.47 0 0 1-57 0 32.47 32.47 0 0 1-57 0 32.46 32.46 0 0 1-57 0 32.47 32.47 0 0 1-57 0 32.47 32.47 0 0 1-57 0C82 284.54 67 277.94 51.78 269.56l56 154.82s38.67 32.42 144 32.42c86.43 0 140.4-32.42 140.4-32.42L449.86 265c-20.99 11.14-43.2 17.14-57.77 1.39Z"
@@ -52,7 +52,7 @@ const Muffin = (props) => {
       />
       <g
         style={{
-          clipPath: "url(#clip-path)",
+          clipPath: "url(#muffin-clip-path)",
         }}
       >
         <path
@@ -80,7 +80,7 @@ const Muffin = (props) => {
       />
       <g
         style={{
-          clipPath: "url(#clip-path-2)",
+          clipPath: "url(#muffin-clip-path-2)",
         }}
       >
         <path
