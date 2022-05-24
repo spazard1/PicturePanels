@@ -33,7 +33,7 @@ const Stiletto = (props) => {
       <defs>
         <style>{".fil1{fill:" + color2 + ";fill-rule:nonzero}"}</style>
       </defs>
-      <g id="Layer_x0020_1">
+      <g>
         <path
           d="M1490 823c-2-17 10-33 27-36l206-146c9-15 28-21 44-12 15 9 21 28 12 44-142 247-125 577-111 847 4 78 8 151 7 217 0 16-11 30-28 33-17 2-33-10-36-27l-122-920z"
           style={{

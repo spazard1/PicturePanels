@@ -23,7 +23,7 @@ const SettingsDropDown = ({
   return (
     <DropdownButton className="settingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark">
       <Dropdown.Item onClick={onPlayerNameChange}>Change Name/Game</Dropdown.Item>
-      <Dropdown.Item onClick={onPlayerDotChange}>Change Color/Icon</Dropdown.Item>
+      <Dropdown.Item onClick={onPlayerDotChange}>Change Avatar</Dropdown.Item>
       <Dropdown.Item onClick={onTeamChange}>Change Team</Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item onClick={onToggleHideRemainingTime}>Show Remaining Time{hideRemainingTime ? "" : " ✓"}</Dropdown.Item>

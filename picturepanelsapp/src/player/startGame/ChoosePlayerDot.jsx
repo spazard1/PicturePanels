@@ -1,15 +1,20 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "./ColorPicker";
 import AllPlayerDots from "../../playerDots/AllPlayerDots";
-import "./ChoosePlayerDot.css";
 import { Button, Form } from "react-bootstrap";
 import classNames from "classnames";
+import shuffleSeed from "shuffle-seed";
+import { useLocalStorageState } from "../../common/useLocalStorageState";
+import { v4 as uuidv4 } from "uuid";
+import "./ChoosePlayerDot.css";
 
-const ChoosePlayerDot = ({ colors, onColorChange, onColorCountChange, onDotSelect }) => {
+const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) => {
   const [selectedDot, setSelectedDot] = useState(localStorage.getItem("playerDot"));
   const [startingColors, setStartingColors] = useState(colors);
+  const [seed] = useLocalStorageState("seed", uuidv4());
   const colorPickerContainerRef = useRef();
+  const shuffledDotsRef = useRef(shuffleSeed.shuffle(Object.keys(AllPlayerDots), seed));
 
   const dotSelectOnClick = () => {
     onDotSelect(selectedDot);
@@ -19,18 +24,48 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorCountChange, onDotSelec
     setStartingColors([colors[1], colors[0]]);
   };
 
+  const getNewColor = () => {
+    return "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
+  };
+
+  const onRandomizeColors = () => {
+    if (colors.length === 1) {
+      setStartingColors([getNewColor()]);
+    } else {
+      setStartingColors([getNewColor(), getNewColor()]);
+    }
+  };
+
+  const onColorCountChange = (e) => {
+    if (e.target.checked) {
+      setStartingColors([colors[0], getNewColor()]);
+    } else {
+      setStartingColors([colors[0]]);
+    }
+  };
+
+  useEffect(() => {
+    if (colors.length === 0) {
+      setStartingColors([getNewColor()]);
+    }
+  }, [colors]);
+
   return (
     <>
       <div className="choosePlayerDotContainer">
-        <div className="choosePlayerDotLabel">Choose a color and icon</div>
+        <div className="choosePlayerDotLabel">Choose your avatar</div>
         <div className="colorPickerContainer">
           <ColorPicker
             startingColors={startingColors}
             colors={colors}
             onColorChange={onColorChange}
+            onColorRemove={onColorRemove}
             colorPickerContainerRef={colorPickerContainerRef}
           ></ColorPicker>
           <div ref={colorPickerContainerRef} className="twoColorModeContainer">
+            <div>
+              <Button onClick={onRandomizeColors}>Randomize</Button>
+            </div>
             <div>Two Color Mode</div>
             <Form.Check type="switch" id="custom-switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
             <div>
@@ -41,7 +76,7 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorCountChange, onDotSelec
           </div>
         </div>
         <div className="playerDots">
-          {Object.keys(AllPlayerDots).map((dotName) => {
+          {shuffledDotsRef.current.map((dotName) => {
             const PlayerDot = AllPlayerDots[dotName];
             return (
               <div
@@ -68,7 +103,7 @@ export default ChoosePlayerDot;
 
 ChoosePlayerDot.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string),
-  onColorChange: PropTypes.func,
-  onColorCountChange: PropTypes.func,
-  onDotSelect: PropTypes.func,
+  onColorChange: PropTypes.func.isRequired,
+  onColorRemove: PropTypes.func.isRequired,
+  onDotSelect: PropTypes.func.isRequired,
 };

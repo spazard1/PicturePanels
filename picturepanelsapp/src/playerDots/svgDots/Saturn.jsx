@@ -8,10 +8,10 @@ const Saturn = (props) => {
   return (
     <svg className="playerDotSvg" viewBox="0 -31.13 159.345 159.345" xmlns="http://www.w3.org/2000/svg" {...props}>
       <defs>
-        <clipPath id="a">
+        <clipPath id="saturna">
           <circle data-name="Ellipse 39" cx={48.548} cy={48.548} r={48.548} transform="translate(566.856 220.497)" fill="none" />
         </clipPath>
-        <clipPath id="b">
+        <clipPath id="saturnb">
           <path
             data-name="Rectangle 9"
             d="M3.185 0h20.987a3.185 3.185 0 0 1 3.185 3.185v.326A13.678 13.678 0 0 1 13.679 17.19 13.678 13.678 0 0 1 0 3.511v-.326A3.185 3.185 0 0 1 3.185 0Z"
@@ -23,7 +23,7 @@ const Saturn = (props) => {
       <g data-name="Group 46" transform="translate(-535.731 -220.497)">
         <circle data-name="Ellipse 38" cx={48.548} cy={48.548} r={48.548} transform="translate(566.856 220.497)" fill={props.colors[0]} />
         <g data-name="Group 45">
-          <g data-name="Group 44" clipPath="url(#a)">
+          <g data-name="Group 44" clipPath="url(#saturna)">
             <path
               data-name="Path 39"
               d="M564.616 294.154s69.518 7.222 102.923 0-3.588 16.552-3.588 16.552-42.49-3.01-97.095 8.727-2.24-25.279-2.24-25.279Z"
@@ -68,7 +68,7 @@ const Saturn = (props) => {
           transform="translate(-535.731 -220.497)"
         />
         <g data-name="Group 48">
-          <g data-name="Group 47" clipPath="url(#b)" transform="translate(-535.731 -220.497)">
+          <g data-name="Group 47" clipPath="url(#saturnb)" transform="translate(-535.731 -220.497)">
             <ellipse data-name="Ellipse 40" cx={8.911} cy={6.986} rx={8.911} ry={6.986} transform="translate(607.429 302.701)" fill="#fd1a16" />
           </g>
         </g>

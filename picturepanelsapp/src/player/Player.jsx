@@ -26,6 +26,7 @@ import { useWinningTeam } from "../common/useWinningTeam";
 import { useLocalStorageState } from "../common/useLocalStorageState";
 import VoteGuess from "./voteGuess/VoteGuess";
 import putPlayerResume from "./putPlayerResume";
+import colorConvert from "color-convert";
 
 import "./Player.css";
 import "animate.css";
@@ -57,10 +58,6 @@ export default function Player() {
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
-  const getNewColor = () => {
-    return "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
-  };
-
   const [colors, setColors] = useState();
 
   useEffect(() => {
@@ -69,29 +66,30 @@ export default function Player() {
       try {
         initialColors = JSON.parse(localStorage.getItem("playerColor"));
       } catch (e) {
-        initialColors = [getNewColor()];
+        initialColors = [];
       }
     } else {
-      initialColors = [getNewColor()];
+      initialColors = [];
     }
     setColors(initialColors);
   }, []);
 
   const onColorChange = useCallback((c, index) => {
+    c.v = Math.max(35, c.v);
+    const hex = "#" + colorConvert.hsv.hex([c.h, c.s, c.v]);
+
     setColors((cs) => {
       const newColors = [...cs];
-      newColors[index] = c;
+      newColors[index] = hex;
       return newColors;
     });
   }, []);
 
-  const onColorCountChange = (e) => {
-    if (e.target.checked) {
-      setColors((cs) => [...cs, getNewColor()]);
-    } else {
-      setColors((cs) => cs.slice(0, 1));
-    }
-  };
+  const onColorRemove = useCallback(() => {
+    setColors((cs) => {
+      return cs.slice(0, 1);
+    });
+  }, []);
 
   const onJoinGame = (gameOptions) => {
     if (gameOptions.gameStateId.length < 4) {
@@ -369,12 +367,7 @@ export default function Player() {
       {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
 
       {gameState && !dot && (
-        <ChoosePlayerDot
-          colors={colors}
-          onColorChange={onColorChange}
-          onColorCountChange={onColorCountChange}
-          onDotSelect={onDotSelect}
-        ></ChoosePlayerDot>
+        <ChoosePlayerDot colors={colors} onColorChange={onColorChange} onColorRemove={onColorRemove} onDotSelect={onDotSelect}></ChoosePlayerDot>
       )}
 
       {gameState && dot && teamNumber <= 0 && (

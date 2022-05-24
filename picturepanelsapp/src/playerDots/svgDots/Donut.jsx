@@ -8,7 +8,7 @@ const defaultColor2 = "#282b24";
 
 const Donut = (props) => {
   return (
-    <svg viewBox="0 0 26 26" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg viewBox="-2 -2 30 30" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
       <g data-name="Group 310">
         <g data-name="Group 303">
           <g data-name="Group 302">
