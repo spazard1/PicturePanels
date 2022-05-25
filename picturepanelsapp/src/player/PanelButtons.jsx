@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import "./PanelButtons.css";
@@ -7,36 +7,27 @@ import { useSendSelectedPanels } from "./useSendSelectedPanels";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
-const PanelButtons = ({ gameStateId, playerId, roundNumber, revealedPanels }) => {
-  const [selectedPanels, setSelectedPanels] = useSendSelectedPanels(gameStateId, playerId);
+const PanelButtons = ({ player, roundNumber, revealedPanels, onSelectedPanels }) => {
+  useSendSelectedPanels(player);
 
-  const onSelected = useCallback(
-    (panelNumber, isOpen) => {
-      setSelectedPanels((sp) => {
-        if (!sp) {
-          return [panelNumber];
-        }
-        if (!isOpen && sp.indexOf(panelNumber) < 0) {
-          return [...sp, panelNumber];
-        } else {
-          const newSelectedPanels = sp.filter((t) => t !== panelNumber);
-          return newSelectedPanels;
-        }
-      });
-    },
-    [setSelectedPanels]
-  );
+  const onSelected = (panelNumber, isOpen) => {
+    if (!isOpen && player.selectedPanels.indexOf(panelNumber) < 0) {
+      onSelectedPanels([...player.selectedPanels, panelNumber]);
+    } else {
+      onSelectedPanels(player.selectedPanels.filter((t) => t !== panelNumber));
+    }
+  };
 
   return (
     <div className="panelButtons">
       {panelNumbers.map((panelNumber) => (
         <PanelButton
           key={panelNumber}
-          gameStateId={gameStateId}
+          gameStateId={player.gameStateId}
           panelNumber={panelNumber}
           roundNumber={roundNumber}
           isOpen={revealedPanels.indexOf(panelNumber) >= 0}
-          isSelected={selectedPanels && selectedPanels.indexOf(panelNumber) >= 0}
+          isSelected={player.selectedPanels && player.selectedPanels.indexOf(panelNumber) >= 0}
           onSelected={onSelected}
         ></PanelButton>
       ))}
@@ -47,8 +38,8 @@ const PanelButtons = ({ gameStateId, playerId, roundNumber, revealedPanels }) =>
 export default PanelButtons;
 
 PanelButtons.propTypes = {
-  gameStateId: PropTypes.string.isRequired,
-  playerId: PropTypes.string.isRequired,
+  player: PropTypes.object.isRequired,
   roundNumber: PropTypes.number.isRequired,
   revealedPanels: PropTypes.array.isRequired,
+  onSelectedPanels: PropTypes.func.isRequired,
 };

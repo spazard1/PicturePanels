@@ -223,6 +223,15 @@ export default function Player() {
     });
   };
 
+  const onSelectedPanels = (selectedPanels) => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+      return { ...p, selectedPanels: selectedPanels };
+    });
+  };
+
   useEffect(() => {
     if (!gameState) {
       return;
@@ -429,10 +438,11 @@ export default function Player() {
             <>
               <PanelButtons
                 gameStateId={gameState.gameStateId}
-                playerId={player.playerId}
+                player={player}
                 revealedPanels={gameState.revealedPanels}
                 roundNumber={gameState.roundNumber}
                 isPaused={gameState.pauseState === "Paused"}
+                onSelectedPanels={onSelectedPanels}
               ></PanelButtons>
               <div>
                 <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>

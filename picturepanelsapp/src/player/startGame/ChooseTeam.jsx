@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import "./ChooseTeam.css";
 import getSmallestTeam from "./getSmallestTeam";
+import { Button } from "react-bootstrap";
 
 const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,16 +35,22 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect 
     <>
       <div className="chooseTeamLabel">Choose your team!</div>
       <div className="chooseTeamNames">
-        <div className="chooseTeamName chooseSmallestTeam" onClick={chooseSmallestTeamOnClick}>
-          {isLoading ? "Loading..." : "Choose for me"}
+        <div className="chooseSmallestTeamContainer">
+          <Button className={"chooseTeamNameButton"} variant="info" disabled={isLoading} onClick={chooseSmallestTeamOnClick}>
+            {isLoading ? "Loading..." : "Choose for me"}
+          </Button>
         </div>
         {!isLoading && (
           <>
-            <div className="chooseTeamName teamOneBox" onClick={() => onTeamNumberClick(1)}>
-              {teamOneName}
+            <div>
+              <Button className={"chooseTeamNameButton"} variant="primary" disabled={isLoading} onClick={() => onTeamNumberClick(1)}>
+                {teamOneName}
+              </Button>
             </div>
-            <div className="chooseTeamName teamTwoBox" onClick={() => onTeamNumberClick(2)}>
-              {teamTwoName}
+            <div>
+              <Button className={"chooseTeamNameButton"} variant="danger" disabled={isLoading} onClick={() => onTeamNumberClick(2)}>
+                {teamTwoName}
+              </Button>
             </div>
           </>
         )}

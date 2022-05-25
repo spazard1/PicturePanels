@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import "./Players.css";
+import PlayerDot from "../playerDots/PlayerDot";
 
 export default function Players({ players, turnType }) {
   return (
@@ -35,6 +36,13 @@ export default function Players({ players, turnType }) {
                 })}
                 style={{ borderColor: players[playerId].color }}
               >
+                <PlayerDot
+                  key={playerId}
+                  dot={players[playerId].dot}
+                  colors={players[playerId].colors}
+                  teamNumber={players[playerId].teamNumber}
+                  turnType={turnType}
+                ></PlayerDot>
                 {players[playerId].name}
               </div>
             )

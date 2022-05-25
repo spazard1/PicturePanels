@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import SignalRConnectionContext from "../signalr/SignalRConnectionContext";
 
-export function useSendSelectedPanels(gameStateId, playerId) {
-  const [selectedPanels, setSelectedPanels] = useState(false);
+export function useSendSelectedPanels(player) {
   const { connection } = useContext(SignalRConnectionContext);
+  const panelCountRef = useRef();
 
   useEffect(() => {
     if (!connection) {
       return;
     }
 
-    if (selectedPanels === false) {
+    if (panelCountRef.current === player.selectedPanels.length) {
       return;
     }
 
@@ -19,12 +19,9 @@ export function useSendSelectedPanels(gameStateId, playerId) {
     }
 
     connection.invoke("SelectPanels", {
-      gameStateId: gameStateId,
-      playerId: playerId,
-      selectedPanels: selectedPanels,
+      gameStateId: player.gameStateId,
+      playerId: player.playerId,
+      selectedPanels: player.selectedPanels,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connection, selectedPanels]);
-
-  return [selectedPanels, setSelectedPanels];
+  }, [connection, player]);
 }

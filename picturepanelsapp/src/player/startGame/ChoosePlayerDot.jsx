@@ -7,10 +7,12 @@ import classNames from "classnames";
 import shuffleSeed from "shuffle-seed";
 import { useLocalStorageState } from "../../common/useLocalStorageState";
 import { v4 as uuidv4 } from "uuid";
+import dice64 from "./dice-64.png";
 import "./ChoosePlayerDot.css";
 
 const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) => {
   const [selectedDot, setSelectedDot] = useState(localStorage.getItem("playerDot"));
+  const [randomizeSpin, setRandomizeSpin] = useState(false);
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());
   const colorPickerContainerRef = useRef();
@@ -29,6 +31,11 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) 
   };
 
   const onRandomizeColors = () => {
+    setRandomizeSpin(true);
+    setTimeout(() => {
+      setRandomizeSpin(false);
+    }, 250);
+
     if (colors.length === 1) {
       setStartingColors([getNewColor()]);
     } else {
@@ -54,21 +61,23 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) 
     <>
       <div className="choosePlayerDotContainer">
         <div className="choosePlayerDotLabel">Choose your avatar</div>
-        <div className="colorPickerContainer">
-          <ColorPicker
-            startingColors={startingColors}
-            colors={colors}
-            onColorChange={onColorChange}
-            onColorRemove={onColorRemove}
-            colorPickerContainerRef={colorPickerContainerRef}
-          ></ColorPicker>
-          <div ref={colorPickerContainerRef} className="twoColorModeContainer">
-            <div>
-              <Button onClick={onRandomizeColors}>Randomize</Button>
+        <div className="colorOptionsContainer">
+          <div className="colorPickerContainer">
+            <div className={classNames("randomizeContainer", { randomizeContainerSpin: randomizeSpin })} onClick={onRandomizeColors}>
+              <img src={dice64} alt="randomize"></img>
             </div>
+            <ColorPicker
+              startingColors={startingColors}
+              colors={colors}
+              onColorChange={onColorChange}
+              onColorRemove={onColorRemove}
+              colorPickerContainerRef={colorPickerContainerRef}
+            ></ColorPicker>
+          </div>
+          <div ref={colorPickerContainerRef} className="twoColorModeContainer">
             <div>Two Color Mode</div>
             <Form.Check type="switch" id="custom-switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
-            <div>
+            <div className="swapColorsButtonContainer">
               <Button onClick={onSwapColors} disabled={colors.length < 2}>
                 Swap Colors
               </Button>
@@ -91,7 +100,7 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) 
         </div>
         <div className="playerDotNextButton">
           <Button onClick={dotSelectOnClick} disabled={!selectedDot}>
-            Join
+            Looks Good
           </Button>
         </div>
       </div>

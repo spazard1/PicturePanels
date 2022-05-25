@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import AllPlayerDots from "./AllPlayerDots";
 
-const PlayerDot = ({ name, dot, colors, teamNumber, panelRef, turnType }) => {
-  const [initials, setInitials] = useState("");
+const PlayerDot = ({ dot, colors, teamNumber, panelRef, turnType }) => {
+  //const [initials, setInitials] = useState("");
   const circleScale = 0.055;
   const divSize = window.innerHeight * circleScale;
   //const circleBorderSize = 2;
@@ -29,18 +29,6 @@ const PlayerDot = ({ name, dot, colors, teamNumber, panelRef, turnType }) => {
     }
   }
 
-  useEffect(() => {
-    if (!name) {
-      return;
-    }
-    const spaceIndex = name.trim().indexOf(" ");
-    if (spaceIndex > 0) {
-      setInitials(name.charAt(0) + name.charAt(spaceIndex + 1));
-    } else {
-      setInitials(name.substring(0, 2));
-    }
-  }, [name]);
-
   return (
     <div
       className={classNames("playerDot", "animate__animated", {
@@ -56,13 +44,41 @@ const PlayerDot = ({ name, dot, colors, teamNumber, panelRef, turnType }) => {
       }}
     >
       <PlayerDot colors={colors}></PlayerDot>
-      <div>{initials}</div>
     </div>
   );
 };
 
+const areEqual = (preProps, newProps) => {
+  if (preProps.dot != newProps.dot) {
+    return false;
+  }
+
+  if (preProps.colors.length !== newProps.colors.length) {
+    return false;
+  }
+
+  for (let i = 0; i < preProps.colors.length; i++) {
+    if (preProps.colors[i] !== newProps.colors[i]) {
+      return false;
+    }
+  }
+
+  if (preProps.teamNumber !== newProps.teamNumber) {
+    return false;
+  }
+
+  if (preProps.panelRef !== newProps.panelRef) {
+    return false;
+  }
+
+  if (preProps.turnType !== newProps.turnType) {
+    return false;
+  }
+
+  return true;
+};
+
 PlayerDot.propTypes = {
-  name: PropTypes.string.isRequired,
   dot: PropTypes.string.isRequired,
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
   teamNumber: PropTypes.number.isRequired,
@@ -70,4 +86,4 @@ PlayerDot.propTypes = {
   turnType: PropTypes.string.isRequired,
 };
 
-export default React.memo(PlayerDot);
+export default React.memo(PlayerDot, areEqual);

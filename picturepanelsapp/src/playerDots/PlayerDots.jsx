@@ -32,7 +32,6 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
             panelNumbers.map((panelNumber) => (
               <PlayerDot
                 key={playerId + panelNumber}
-                name={players[playerId].name}
                 dot={players[playerId].dot}
                 colors={players[playerId].colors}
                 teamNumber={players[playerId].teamNumber}

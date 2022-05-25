@@ -13,7 +13,7 @@
   margin-bottom: 1rem;
 }
 
-.colorPickerContainer {
+.colorOptionsContainer {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,6 +24,30 @@
   margin: auto;
 }
 
+.colorPickerContainer {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.randomizeContainer {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+}
+
+.randomizeContainerSpin {
+  transform: rotate(360deg);
+  transition: transform 0.25s linear;
+}
+
+.randomizeContainer img {
+  height: 100%;
+  width: 100%;
+}
+
 .twoColorModeContainer {
   margin-left: 1rem;
   font-size: 1.25rem;
@@ -31,6 +55,10 @@
 
 .twoColorModeContainer button {
   font-size: 1.25rem;
+}
+
+.swapColorsButtonContainer {
+  margin-top: 1rem;
 }
 
 .playerDots {
