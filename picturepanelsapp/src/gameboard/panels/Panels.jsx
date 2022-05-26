@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import Panel from "./Panel";
 import MostVotesPanels from "./MostVotesPanels";
-import usePrevious from "../common/usePrevious";
-import { GetEntranceClass } from "../animate/Animate";
-import PlayerDots from "./../playerDots/PlayerDots";
+import usePrevious from "../../common/usePrevious";
+import { GetEntranceClass } from "../../animate/Animate";
+import PlayerDots from "./PlayerDots";
 import "./Panels.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");

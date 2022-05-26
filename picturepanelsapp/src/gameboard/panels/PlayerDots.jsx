@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelectedPanels } from "../common/useSelectedPanels";
+import { useSelectedPanels } from "../../common/useSelectedPanels";
 import PlayerDot from "./PlayerDot";
 import PropTypes from "prop-types";
 
@@ -32,7 +32,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
             panelNumbers.map((panelNumber) => (
               <PlayerDot
                 key={playerId + panelNumber}
-                dot={players[playerId].dot}
+                avatar={players[playerId].avatar}
                 colors={players[playerId].colors}
                 teamNumber={players[playerId].teamNumber}
                 panelRef={playerDots[playerId].indexOf(panelNumber) >= 0 ? panelRefs[panelNumber - 1] : null}

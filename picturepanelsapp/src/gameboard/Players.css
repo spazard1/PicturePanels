@@ -2,47 +2,40 @@
 .teamPlayerNames {
   position: absolute;
   top: 8vh;
-  font-size: 2.5vh;
-  margin-top: 2px;
-}
-
-.teamOnePlayerNames {
-  text-align: left;
-  left: 0.25vw;
-}
-
-.teamTwoPlayerNames {
-  text-align: right;
-  right: 0.25vw;
-}
-
-.teamOnePlayerNameNotReady {
-  left: 1.5vw;
-}
-
-.teamTwoPlayerNameNotReady {
-  right: 1.5vw;
+  width: 8vw;
+  height: 92vh;
+  font-size: 1.4rem;
+  overflow: hidden;
 }
 
 .teamPlayerName {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   white-space: nowrap;
-  overflow: hidden;
   box-sizing: border-box;
-  border: 0.15vw solid black;
-  width: 7vw;
-  height: 1.45em;
-  line-height: 1.1em;
-  margin-bottom: 3px;
   z-index: 100;
 }
 
-.teamOnePlayerNames .teamPlayerName {
-  padding-left: 3px;
+.teamOnePlayerNames {
+  left: 0;
+}
+
+.teamTwoPlayerNames {
+  right: 0;
 }
 
 .teamTwoPlayerNames .teamPlayerName {
-  padding-right: 3px;
+  text-align: right;
+}
+
+.avatarContainer {
+  height: 4rem;
+  width: 4rem;
+}
+
+.playerNameContainer {
+  overflow: hidden;
 }
 
 .welcomePlayerNames {

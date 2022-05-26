@@ -2,14 +2,14 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const defaultColor2 = "#500000";
 
 const Leaf = (props) => (
   <svg
     viewBox="0 -0.5 513 513"
-    className="playerDotSvg"
+    className="playerAvatarSvg"
     style={{
       fillRule: "evenodd",
       clipRule: "evenodd",

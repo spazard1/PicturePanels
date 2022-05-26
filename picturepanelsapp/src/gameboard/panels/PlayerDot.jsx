@@ -1,17 +1,12 @@
 import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import AllPlayerDots from "./AllPlayerDots";
+import Avatar from "../../avatars/Avatar";
 
-const PlayerDot = ({ dot, colors, teamNumber, panelRef, turnType }) => {
-  //const [initials, setInitials] = useState("");
-  const circleScale = 0.055;
+const PlayerDot = ({ avatar, colors, teamNumber, panelRef, turnType }) => {
+  const circleScale = 0.07;
   const divSize = window.innerHeight * circleScale;
-  //const circleBorderSize = 2;
-  //const circleSize = divSize / 2;
-  //const circleRadius = divSize / 2 - 2;
   const hasBeenVisible = useRef(false);
-  const PlayerDot = AllPlayerDots[dot];
 
   let rect;
   if (panelRef) {
@@ -43,13 +38,13 @@ const PlayerDot = ({ dot, colors, teamNumber, panelRef, turnType }) => {
         zIndex: Math.ceil(Math.random() * 500) + 100,
       }}
     >
-      <PlayerDot colors={colors}></PlayerDot>
+      <Avatar avatar={avatar} colors={colors}></Avatar>
     </div>
   );
 };
 
 const areEqual = (preProps, newProps) => {
-  if (preProps.dot != newProps.dot) {
+  if (preProps.avatar != newProps.avatar) {
     return false;
   }
 
@@ -79,7 +74,7 @@ const areEqual = (preProps, newProps) => {
 };
 
 PlayerDot.propTypes = {
-  dot: PropTypes.string.isRequired,
+  avatar: PropTypes.string.isRequired,
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
   teamNumber: PropTypes.number.isRequired,
   panelRef: PropTypes.object,

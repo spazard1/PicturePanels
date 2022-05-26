@@ -22,7 +22,7 @@ namespace PicturePanels.Entities
             this.GuessVoteId = tableEntity.GuessVoteId;
             this.IsReady = tableEntity.IsReady;
             this.Colors = tableEntity.Colors;
-            this.Dot = tableEntity.Dot;
+            this.Avatar = tableEntity.Avatar;
             this.IsAdmin = tableEntity.IsAdmin;
         }
 
@@ -32,7 +32,7 @@ namespace PicturePanels.Entities
 
         [Required]
         [MinLength(2)]
-        [MaxLength(14)]
+        [MaxLength(12)]
         public string Name { get; set; }
 
         public int TeamNumber { get; set; }
@@ -47,7 +47,7 @@ namespace PicturePanels.Entities
 
         public List<string> Colors { get; set; }
 
-        public string Dot { get; set; }
+        public string Avatar { get; set; }
 
         public bool IsAdmin { get; }
 

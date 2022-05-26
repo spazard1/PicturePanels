@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { useSelectedPanels } from "../common/useSelectedPanels";
+import { useSelectedPanels } from "../../common/useSelectedPanels";
 
 import "./MostVotesPanels.css";
 

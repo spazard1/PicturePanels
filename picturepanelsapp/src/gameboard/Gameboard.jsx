@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
-import Panels from "./Panels";
+import Panels from "./panels/Panels";
 import TeamInfos from "./teaminfos/TeamInfos";
 import Players from "./Players";
 import { useGameState } from "../common/useGameState";

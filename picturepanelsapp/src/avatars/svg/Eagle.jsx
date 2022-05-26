@@ -2,12 +2,12 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const defaultColor2 = "#bd7f00";
 
 const Eagle = (props) => (
-  <svg viewBox="0 0 64 64" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg viewBox="0 0 64 64" className="playerAvatarSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
     <defs>
       <style>{".eagle-3{fill:#2d2d2d}"}</style>
     </defs>

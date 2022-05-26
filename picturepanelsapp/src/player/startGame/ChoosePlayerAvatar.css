@@ -1,13 +1,13 @@
 /* stylelint-disable selector-class-pattern */
 
-.choosePlayerDotContainer {
+.choosePlayerAvatarContainer {
   display: flex;
   flex-direction: column;
   min-height: 0;
   height: 100%;
 }
 
-.choosePlayerDotLabel {
+.choosePlayerAvatarLabel {
   font-size: 2rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -61,7 +61,7 @@
   margin-top: 1rem;
 }
 
-.playerDots {
+.playerAvatars {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -73,23 +73,23 @@
   justify-content: center;
 }
 
-.playerDot {
+.playerAvatar {
   width: 24%;
   cursor: pointer;
   border: 3px solid black;
   box-sizing: border-box;
 }
 
-.playerDotSelected {
+.playerAvatarSelected {
   border: 3px solid white;
 }
 
-.playerDotNextButton {
+.playerAvatarNextButton {
   flex: 0 0 auto;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.playerDotNextButton button {
+.playerAvatarNextButton button {
   font-size: 1.5rem;
 }

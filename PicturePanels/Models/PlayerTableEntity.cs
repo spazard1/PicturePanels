@@ -38,7 +38,7 @@ namespace PicturePanels.Models
 
         public List<string> Colors { get; set; }
 
-        public string Dot { get; set; }
+        public string Avatar { get; set; }
 
         public DateTime LastPingTime { get; set; }
 

@@ -1,25 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "./ColorPicker";
-import AllPlayerDots from "../../playerDots/AllPlayerDots";
+import Avatar from "../../avatars/Avatar";
+import AllAvatars from "../../avatars/AllAvatars";
 import { Button, Form } from "react-bootstrap";
 import classNames from "classnames";
 import shuffleSeed from "shuffle-seed";
 import { useLocalStorageState } from "../../common/useLocalStorageState";
 import { v4 as uuidv4 } from "uuid";
 import dice64 from "./dice-64.png";
-import "./ChoosePlayerDot.css";
+import "./ChoosePlayerAvatar.css";
 
-const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) => {
-  const [selectedDot, setSelectedDot] = useState(localStorage.getItem("playerDot"));
+const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSelect }) => {
+  const [selectedAvatar, setSelectedAvatar] = useState(localStorage.getItem("playerAvatar"));
   const [randomizeSpin, setRandomizeSpin] = useState(false);
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());
   const colorPickerContainerRef = useRef();
-  const shuffledDotsRef = useRef(shuffleSeed.shuffle(Object.keys(AllPlayerDots), seed));
+  const shuffledAvatarsRef = useRef(shuffleSeed.shuffle(Object.keys(AllAvatars), seed));
 
-  const dotSelectOnClick = () => {
-    onDotSelect(selectedDot);
+  const avatarSelectOnClick = () => {
+    onAvatarSelect(selectedAvatar);
   };
 
   const onSwapColors = () => {
@@ -59,8 +60,8 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) 
 
   return (
     <>
-      <div className="choosePlayerDotContainer">
-        <div className="choosePlayerDotLabel">Choose your avatar</div>
+      <div className="choosePlayerAvatarContainer">
+        <div className="choosePlayerAvatarLabel">Choose your avatar</div>
         <div className="colorOptionsContainer">
           <div className="colorPickerContainer">
             <div className={classNames("randomizeContainer", { randomizeContainerSpin: randomizeSpin })} onClick={onRandomizeColors}>
@@ -78,28 +79,27 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) 
             <div>Two Color Mode</div>
             <Form.Check type="switch" id="custom-switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
             <div className="swapColorsButtonContainer">
-              <Button onClick={onSwapColors} disabled={colors.length < 2}>
+              <Button onClick={onSwapColors} disabled={colors && colors.length < 2}>
                 Swap Colors
               </Button>
             </div>
           </div>
         </div>
-        <div className="playerDots">
-          {shuffledDotsRef.current.map((dotName) => {
-            const PlayerDot = AllPlayerDots[dotName];
+        <div className="playerAvatars">
+          {shuffledAvatarsRef.current.map((avatarName) => {
             return (
               <div
-                key={dotName}
-                className={classNames("playerDot", { playerDotSelected: dotName === selectedDot })}
-                onClick={() => setSelectedDot(dotName)}
+                key={avatarName}
+                className={classNames("playerAvatar", { playerAvatarSelected: avatarName === selectedAvatar })}
+                onClick={() => setSelectedAvatar(avatarName)}
               >
-                <PlayerDot colors={colors}></PlayerDot>
+                <Avatar avatar={avatarName} colors={colors}></Avatar>
               </div>
             );
           })}
         </div>
-        <div className="playerDotNextButton">
-          <Button onClick={dotSelectOnClick} disabled={!selectedDot}>
+        <div className="playerAvatarNextButton">
+          <Button onClick={avatarSelectOnClick} disabled={!selectedAvatar}>
             Looks Good
           </Button>
         </div>
@@ -108,11 +108,11 @@ const ChoosePlayerDot = ({ colors, onColorChange, onColorRemove, onDotSelect }) 
   );
 };
 
-export default ChoosePlayerDot;
+export default ChoosePlayerAvatar;
 
-ChoosePlayerDot.propTypes = {
+ChoosePlayerAvatar.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string),
   onColorChange: PropTypes.func.isRequired,
   onColorRemove: PropTypes.func.isRequired,
-  onDotSelect: PropTypes.func.isRequired,
+  onAvatarSelect: PropTypes.func.isRequired,
 };
