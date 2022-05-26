@@ -2,12 +2,12 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const defaultColor2 = "#d37b93";
 
 const Bunny = (props) => (
-  <svg className="playerDotSvg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg className="playerAvatarSvg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" {...props}>
     <defs>
       <style>{".bunny-1{fill:" + props.colors[0] + "}.bunny-3{fill:" + (props.colors[1] ?? defaultColor2) + "}.bunny-5{fill:#2d2d2d}"}</style>
     </defs>

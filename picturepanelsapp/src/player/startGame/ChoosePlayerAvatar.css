@@ -1,19 +1,19 @@
 /* stylelint-disable selector-class-pattern */
 
-.choosePlayerDotContainer {
+.choosePlayerAvatarContainer {
   display: flex;
   flex-direction: column;
   min-height: 0;
   height: 100%;
 }
 
-.choosePlayerDotLabel {
+.choosePlayerAvatarLabel {
   font-size: 2rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.colorPickerContainer {
+.colorOptionsContainer {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,6 +22,30 @@
 
 .IroWheel {
   margin: auto;
+}
+
+.colorPickerContainer {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.randomizeContainer {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+}
+
+.randomizeContainerSpin {
+  transform: rotate(360deg);
+  transition: transform 0.25s linear;
+}
+
+.randomizeContainer img {
+  height: 100%;
+  width: 100%;
 }
 
 .twoColorModeContainer {
@@ -33,7 +57,11 @@
   font-size: 1.25rem;
 }
 
-.playerDots {
+.swapColorsButtonContainer {
+  margin-top: 1rem;
+}
+
+.playerAvatars {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -45,23 +73,23 @@
   justify-content: center;
 }
 
-.playerDot {
+.playerAvatar {
   width: 24%;
   cursor: pointer;
   border: 3px solid black;
   box-sizing: border-box;
 }
 
-.playerDotSelected {
+.playerAvatarSelected {
   border: 3px solid white;
 }
 
-.playerDotNextButton {
+.playerAvatarNextButton {
   flex: 0 0 auto;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.playerDotNextButton button {
+.playerAvatarNextButton button {
   font-size: 1.5rem;
 }

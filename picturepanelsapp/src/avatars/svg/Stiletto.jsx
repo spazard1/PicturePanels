@@ -3,7 +3,7 @@ import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
 import complementaryColors from "complementary-colors";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const Stiletto = (props) => {
   let color2;
@@ -20,7 +20,7 @@ const Stiletto = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlSpace="preserve"
       viewBox="0 0 2048 2048"
-      className="playerDotSvg"
+      className="playerAvatarSvg"
       style={{
         shapeRendering: "geometricPrecision",
         textRendering: "geometricPrecision",

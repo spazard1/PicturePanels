@@ -2,12 +2,12 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const defaultColor2 = "#646467";
 
 const Hippo = (props) => (
-  <svg viewBox="0 0 64 64" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg viewBox="0 0 64 64" className="playerAvatarSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
     <defs>
       <style>{".hippo-2{fill:" + (props.colors[1] ?? defaultColor2) + "}.hippo-3{fill:#2d2d2d}.hippo-4{fill:#d8d9dd}.hippo-5{fill:#434347}"}</style>
     </defs>

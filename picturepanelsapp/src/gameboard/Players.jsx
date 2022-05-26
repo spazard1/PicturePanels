@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import Avatar from "../avatars/Avatar";
+
 import "./Players.css";
 
 export default function Players({ players, turnType }) {
@@ -18,7 +20,10 @@ export default function Players({ players, turnType }) {
                 })}
                 style={{ borderColor: players[playerId].color }}
               >
-                {players[playerId].name}
+                <div className="avatarContainer">
+                  <Avatar key={playerId} avatar={players[playerId].avatar} colors={players[playerId].colors}></Avatar>
+                </div>
+                <div className="playerNameContainer">{players[playerId].name}</div>
               </div>
             )
         )}
@@ -35,7 +40,10 @@ export default function Players({ players, turnType }) {
                 })}
                 style={{ borderColor: players[playerId].color }}
               >
-                {players[playerId].name}
+                <div className="avatarContainer">
+                  <Avatar key={playerId} avatar={players[playerId].avatar} colors={players[playerId].colors}></Avatar>
+                </div>
+                <div className="playerNameContainer">{players[playerId].name}</div>
               </div>
             )
         )}

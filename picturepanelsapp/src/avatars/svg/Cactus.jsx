@@ -3,7 +3,7 @@ import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
 import complementaryColors from "complementary-colors";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const Cactus = (props) => {
   let color2;
@@ -16,7 +16,7 @@ const Cactus = (props) => {
   }
 
   return (
-    <svg viewBox="0 0 64 64" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg viewBox="0 0 64 64" className="playerAvatarSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
       <defs>
         <style>
           {".cactus-1,.cactus-4{fill:" +

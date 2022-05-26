@@ -62,22 +62,6 @@ body {
   color: red;
 }
 
-.teamOneDarkColorBackground {
-  background-color: darkblue;
-}
-
-.teamTwoDarkColorBackground {
-  background-color: darkred;
-}
-
-.teamOnePlayerNames div {
-  background-color: darkblue;
-}
-
-.teamTwoPlayerNames div {
-  background-color: darkred;
-}
-
 @keyframes correct {
   0% {
     color: lightgreen;

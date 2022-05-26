@@ -2,11 +2,11 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const Saturn = (props) => {
   return (
-    <svg className="playerDotSvg" viewBox="0 -31.13 159.345 159.345" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg className="playerAvatarSvg" viewBox="0 -31.13 159.345 159.345" xmlns="http://www.w3.org/2000/svg" {...props}>
       <defs>
         <clipPath id="saturna">
           <circle data-name="Ellipse 39" cx={48.548} cy={48.548} r={48.548} transform="translate(566.856 220.497)" fill="none" />

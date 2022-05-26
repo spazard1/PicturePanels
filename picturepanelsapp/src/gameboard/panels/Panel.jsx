@@ -1,8 +1,8 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { GetExitClass } from "../animate/Animate";
-import serverUrl from "../common/ServerUrl";
+import { GetExitClass } from "../../animate/Animate";
+import serverUrl from "../../common/ServerUrl";
 
 import "./Panel.css";
 

@@ -2,12 +2,12 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const defaultColor2 = "#282b24";
 
 const IceCreamStick = (props) => (
-  <svg className="playerDotSvg" viewBox="-8.9 0 32 32" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg className="playerAvatarSvg" viewBox="-8.9 0 32 32" xmlns="http://www.w3.org/2000/svg" {...props}>
     <g data-name="ice cream2">
       <g data-name="Group 178">
         <g data-name="Group 177">

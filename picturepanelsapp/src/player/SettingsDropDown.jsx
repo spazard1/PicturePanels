@@ -11,7 +11,7 @@ const SettingsDropDown = ({
   hideRemainingTime,
   disableVibrate,
   onPlayerNameChange,
-  onPlayerDotChange,
+  onPlayerAvatarChange,
   onTeamChange,
   onToggleHideRemainingTime,
   onToggleVibrate,
@@ -23,7 +23,7 @@ const SettingsDropDown = ({
   return (
     <DropdownButton className="settingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark">
       <Dropdown.Item onClick={onPlayerNameChange}>Change Name/Game</Dropdown.Item>
-      <Dropdown.Item onClick={onPlayerDotChange}>Change Avatar</Dropdown.Item>
+      <Dropdown.Item onClick={onPlayerAvatarChange}>Change Avatar</Dropdown.Item>
       <Dropdown.Item onClick={onTeamChange}>Change Team</Dropdown.Item>
       <Dropdown.Divider />
       <Dropdown.Item onClick={onToggleHideRemainingTime}>Show Remaining Time{hideRemainingTime ? "" : " ✓"}</Dropdown.Item>
@@ -42,7 +42,7 @@ SettingsDropDown.propTypes = {
   hideRemainingTime: PropTypes.string,
   disableVibrate: PropTypes.string,
   onPlayerNameChange: PropTypes.func.isRequired,
-  onPlayerDotChange: PropTypes.func.isRequired,
+  onPlayerAvatarChange: PropTypes.func.isRequired,
   onTeamChange: PropTypes.func.isRequired,
   onToggleHideRemainingTime: PropTypes.func.isRequired,
   onToggleVibrate: PropTypes.func.isRequired,

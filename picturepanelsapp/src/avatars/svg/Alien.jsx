@@ -2,12 +2,12 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const defaultColor2 = "#454749";
 
 const Alien = (props) => (
-  <svg viewBox="-2 -2 68 68" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg viewBox="-2 -2 68 68" className="playerAvatarSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
     <path d="M59.5 30.6C59.5 54.1 32 62 32 62S4.5 54.1 4.5 30.6C4.5 13.1 15.5 2 32 2s27.5 11.1 27.5 28.6z" fill={props.colors[0]} />
     <g fill={props.colors[1] ?? defaultColor2}>
       <path d="M23.4 26.4c4 3.8 5.1 8.9 2.6 11.4-2.5 2.4-7.8 1.3-11.7-2.5-4-3.8-5.1-8.9-2.6-11.4 2.5-2.5 7.7-1.4 11.7 2.5" />

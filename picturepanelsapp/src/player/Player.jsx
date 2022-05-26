@@ -7,7 +7,7 @@ import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import StartGame from "./startGame/StartGame";
 import ChooseTeam from "./startGame/ChooseTeam";
 import JoinGame from "./startGame/JoinGame";
-import ChoosePlayerDot from "./startGame/ChoosePlayerDot";
+import ChoosePlayerAvatar from "./startGame/ChoosePlayerAvatar";
 import ModalMessage from "../common/modal/ModalMessage";
 import MakeGuess from "./makeGuess/MakeGuess";
 import { useModal } from "../common/modal/useModal";
@@ -41,7 +41,7 @@ export default function Player() {
   const [player, setPlayer] = useState();
   const [playerId, setPlayerId] = useState();
   const [teamNumber, setTeamNumber] = useState(0);
-  const [dot, setDot] = useState(localStorage.getItem("playerDot"));
+  const [avatar, setAvatar] = useState(localStorage.getItem("playerAvatar"));
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
@@ -58,13 +58,13 @@ export default function Player() {
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
 
-  const [colors, setColors] = useState();
+  const [colors, setColors] = useState([]);
 
   useEffect(() => {
     let initialColors;
     if (localStorage.getItem("playerColors")) {
       try {
-        initialColors = JSON.parse(localStorage.getItem("playerColor"));
+        initialColors = JSON.parse(localStorage.getItem("playerColors"));
       } catch (e) {
         initialColors = [];
       }
@@ -116,8 +116,8 @@ export default function Player() {
     setPlayer(null);
   };
 
-  const onPlayerDotChange = () => {
-    setDot(null);
+  const onPlayerAvatarChange = () => {
+    setAvatar(null);
     setPlayer(null);
   };
 
@@ -139,10 +139,10 @@ export default function Player() {
     }
   };
 
-  const onDotSelect = (dot) => {
-    setDot(dot);
+  const onAvatarSelect = (avatar) => {
+    setAvatar(avatar);
     localStorage.setItem("playerColors", JSON.stringify(colors));
-    localStorage.setItem("playerDot", dot);
+    localStorage.setItem("playerAvatar", avatar);
   };
 
   const openPanelVoteOnClick = () => {
@@ -220,6 +220,15 @@ export default function Player() {
         return;
       }
       return { ...p, isReady: isReady };
+    });
+  };
+
+  const onSelectedPanels = (selectedPanels) => {
+    setPlayer((p) => {
+      if (!p) {
+        return;
+      }
+      return { ...p, selectedPanels: selectedPanels };
     });
   };
 
@@ -323,7 +332,7 @@ export default function Player() {
   }, []);
 
   useEffect(() => {
-    if (!gameStateId || !gameState || !teamNumber || !dot || player) {
+    if (!gameStateId || !gameState || !teamNumber || !avatar || player) {
       return;
     }
 
@@ -334,7 +343,7 @@ export default function Player() {
         Name: localStorage.getItem("playerName"),
         TeamNumber: teamNumber,
         Colors: colors,
-        Dot: dot,
+        Avatar: avatar,
       },
       (p) => {
         if (p) {
@@ -345,7 +354,7 @@ export default function Player() {
         }
       }
     );
-  }, [gameStateId, gameState, teamNumber, colors, dot, player, setModalMessage]);
+  }, [gameStateId, gameState, teamNumber, colors, avatar, player, setModalMessage]);
 
   useEffect(() => {
     if (!gameState || !gameStateId || !player || queryString) {
@@ -366,11 +375,16 @@ export default function Player() {
 
       {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
 
-      {gameState && !dot && (
-        <ChoosePlayerDot colors={colors} onColorChange={onColorChange} onColorRemove={onColorRemove} onDotSelect={onDotSelect}></ChoosePlayerDot>
+      {gameState && !avatar && (
+        <ChoosePlayerAvatar
+          colors={colors}
+          onColorChange={onColorChange}
+          onColorRemove={onColorRemove}
+          onAvatarSelect={onAvatarSelect}
+        ></ChoosePlayerAvatar>
       )}
 
-      {gameState && dot && teamNumber <= 0 && (
+      {gameState && avatar && teamNumber <= 0 && (
         <ChooseTeam
           gameStateId={gameState.gameStateId}
           teamOneName={gameState.teamOneName}
@@ -419,7 +433,7 @@ export default function Player() {
             hideRemainingTime={hideRemainingTime}
             disableVibrate={disableVibrate}
             onPlayerNameChange={onPlayerNameChange}
-            onPlayerDotChange={onPlayerDotChange}
+            onPlayerAvatarChange={onPlayerAvatarChange}
             onTeamChange={onTeamChange}
             onToggleHideRemainingTime={onToggleHideRemainingTime}
             onToggleVibrate={onToggleVibrate}
@@ -429,10 +443,11 @@ export default function Player() {
             <>
               <PanelButtons
                 gameStateId={gameState.gameStateId}
-                playerId={player.playerId}
+                player={player}
                 revealedPanels={gameState.revealedPanels}
                 roundNumber={gameState.roundNumber}
                 isPaused={gameState.pauseState === "Paused"}
+                onSelectedPanels={onSelectedPanels}
               ></PanelButtons>
               <div>
                 <Button className="panelButtonsVoteButton" variant="primary" size="lg" disabled={isLoading} onClick={openPanelVoteOnClick}>

@@ -3,7 +3,7 @@ import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
 import complementaryColors from "complementary-colors";
-import "./SvgDots.css";
+import "./Avatars.css";
 
 const Muffin = (props) => {
   let color2;
@@ -19,7 +19,7 @@ const Muffin = (props) => {
   }
 
   return (
-    <svg viewBox="0 0 500 500" className="playerDotSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg viewBox="0 0 500 500" className="playerAvatarSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
       <defs>
         <clipPath id="muffin-clip-path">
           <path

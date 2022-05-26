@@ -13,7 +13,7 @@ namespace PicturePanels.Entities
             this.Name = tableEntity.Name;
             this.TeamNumber = tableEntity.TeamNumber;
             this.Colors = tableEntity.Colors;
-            this.Dot = tableEntity.Dot;
+            this.Avatar = tableEntity.Avatar;
         }
 
         public string PlayerId { get; set; }
@@ -24,6 +24,6 @@ namespace PicturePanels.Entities
 
         public List<string> Colors { get; set; }
 
-        public string Dot { get; set; }
+        public string Avatar { get; set; }
     }
 }

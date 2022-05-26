@@ -39,7 +39,7 @@ const JoinGame = ({ isLoading, onJoinGame, cachedGameStateId }) => {
           className="playerTextInput"
           value={formValues.playerName}
           type="text"
-          maxLength="14"
+          maxLength="12"
           autoComplete="off"
           placeholder="your name"
           onChange={onInputChange}
