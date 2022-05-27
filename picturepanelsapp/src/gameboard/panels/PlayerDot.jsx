@@ -1,43 +1,54 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import Avatar from "../../avatars/Avatar";
 
-const PlayerDot = ({ avatar, colors, teamNumber, panelRef, turnType }) => {
+const PlayerDot = ({ avatar, colors, panelRef, isMoved }) => {
   const circleScale = 0.07;
   const divSize = window.innerHeight * circleScale;
-  const hasBeenVisible = useRef(false);
+  const playerDotContainerRef = useRef();
+  const [originalRect, setOriginalRect] = useState();
+  const [panelRect, setPanelRect] = useState();
+  const [style, setStyle] = useState();
+  const isOriginalRectSet = useRef(false);
 
-  let rect;
-  if (panelRef) {
-    hasBeenVisible.current = true;
+  useEffect(() => {
+    if (isOriginalRectSet.current) {
+      return;
+    }
+    setOriginalRect(playerDotContainerRef.current.getBoundingClientRect());
+    isOriginalRectSet.current = true;
+  }, []);
+
+  useEffect(() => {
     const panelRect = panelRef.current.getBoundingClientRect();
-    rect = {
+    setPanelRect({
       x: (panelRect.right - panelRect.left - divSize) * Math.random() + panelRect.left,
       y: (panelRect.bottom - panelRect.top - divSize) * Math.random() + panelRect.top,
-    };
-  } else {
-    if (teamNumber === 1) {
-      rect = { x: 0, y: 0 };
-    } else {
-      rect = { x: screen.width + divSize, y: 0 };
+    });
+  }, [isMoved, divSize, panelRef]);
+
+  useEffect(() => {
+    if (!originalRect && !panelRect) {
+      return;
     }
-  }
+
+    if (!isMoved) {
+      setStyle({ zIndex: Math.ceil(Math.random() * 500) + 100 });
+      return;
+    }
+
+    const x = originalRect.x < panelRect.x ? Math.abs(originalRect.y - panelRect.y) : -(originalRect.x - panelRect.x);
+    const y = originalRect.y < panelRect.y ? Math.abs(originalRect.y - panelRect.y) : -(originalRect.y - panelRect.y);
+
+    setStyle({
+      transform: "translate(" + x + "px, " + y + "px)",
+      zIndex: Math.ceil(Math.random() * 500) + 100,
+    });
+  }, [originalRect, panelRect, isMoved]);
 
   return (
-    <div
-      className={classNames("playerDot", "animate__animated", {
-        animate__fadeIn: turnType === "OpenPanel" && panelRef,
-        animate__fadeOut: turnType !== "OpenPanel" || !panelRef,
-        hidden: !hasBeenVisible.current,
-      })}
-      style={{
-        transform: "translate(" + rect.x + "px, " + rect.y + "px)",
-        width: divSize + "px",
-        height: divSize + "px",
-        zIndex: Math.ceil(Math.random() * 500) + 100,
-      }}
-    >
+    <div ref={playerDotContainerRef} className={classNames("playerDotContainer", { playerDotContainerMoved: isMoved })} style={style}>
       <Avatar avatar={avatar} colors={colors}></Avatar>
     </div>
   );
@@ -58,15 +69,11 @@ const areEqual = (preProps, newProps) => {
     }
   }
 
-  if (preProps.teamNumber !== newProps.teamNumber) {
-    return false;
-  }
-
   if (preProps.panelRef !== newProps.panelRef) {
     return false;
   }
 
-  if (preProps.turnType !== newProps.turnType) {
+  if (preProps.isMoved !== newProps.isMoved) {
     return false;
   }
 
@@ -76,9 +83,8 @@ const areEqual = (preProps, newProps) => {
 PlayerDot.propTypes = {
   avatar: PropTypes.string.isRequired,
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  teamNumber: PropTypes.number.isRequired,
   panelRef: PropTypes.object,
-  turnType: PropTypes.string.isRequired,
+  isMoved: PropTypes.bool,
 };
 
 export default React.memo(PlayerDot, areEqual);

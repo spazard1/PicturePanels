@@ -1,4 +1,36 @@
 /* stylelint-disable selector-class-pattern */
+.allPlayerDotsContainer {
+  position: absolute;
+  top: 8vh;
+  width: 8vw;
+  height: 92vh;
+  font-size: 1.4rem;
+}
+
+.playerDotsContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.playerDotContainer {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  transition: transform 1s;
+}
+
+.teamOnePlayerDotsContainer {
+  left: 0;
+}
+
+.teamTwoPlayerDotsContainer {
+  right: 0;
+}
+
 .playerDot {
   position: absolute;
   top: 0;
@@ -7,12 +39,6 @@
   align-items: center;
   justify-content: center;
   transition: transform 1s;
-}
-
-.playerDot svg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
 }
 
 .playerDot div {

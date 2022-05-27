@@ -10,7 +10,7 @@ export function useSelectedPanels(players, turnType) {
 
       for (const playerId in players) {
         if (!(playerId in newSelectedPanels)) {
-          newSelectedPanels[playerId] = players[playerId].selectedPanels;
+          newSelectedPanels[playerId] = players[playerId].selectedPanels ?? [];
         }
       }
 
