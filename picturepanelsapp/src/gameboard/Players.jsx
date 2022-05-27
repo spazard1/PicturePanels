@@ -14,13 +14,13 @@ export default function Players({ players, turnType }) {
             players[playerId].teamNumber === 1 && (
               <div
                 key={playerId}
-                className={classNames("teamPlayerName", "animate__animated", "animate__infinite", {
+                className={classNames("teamPlayerNameContainer", "animate__animated", "animate__infinite", {
                   animate__pulse: !players[playerId].isReady,
                   teamOnePlayerNameNotReady: !players[playerId].isReady,
                 })}
                 style={{ borderColor: players[playerId].color }}
               >
-                <div className="avatarContainer">
+                <div className="avatarContainer avatarContainerTop">
                   <Avatar key={playerId} avatar={players[playerId].avatar} colors={players[playerId].colors}></Avatar>
                 </div>
                 <div className="playerNameContainer">{players[playerId].name}</div>
@@ -34,13 +34,13 @@ export default function Players({ players, turnType }) {
             players[playerId].teamNumber === 2 && (
               <div
                 key={playerId}
-                className={classNames("teamPlayerName", "animate__animated", "animate__infinite", {
+                className={classNames("teamPlayerNameContainer", "animate__animated", "animate__infinite", {
                   animate__pulse: !players[playerId].isReady,
                   teamTwoPlayerNameNotReady: !players[playerId].isReady,
                 })}
                 style={{ borderColor: players[playerId].color }}
               >
-                <div className="avatarContainer">
+                <div className="avatarContainer avatarContainerTop">
                   <Avatar key={playerId} avatar={players[playerId].avatar} colors={players[playerId].colors}></Avatar>
                 </div>
                 <div className="playerNameContainer">{players[playerId].name}</div>

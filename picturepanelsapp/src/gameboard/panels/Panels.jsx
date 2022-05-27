@@ -118,7 +118,7 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   }, [turnType]);
 
   const resizePanelContainer = () => {
-    if (!panelsRef) {
+    if (!panelsRef.current) {
       return;
     }
 

@@ -254,7 +254,13 @@ export default function Player() {
         isFirstLoad.current = false;
         return;
       }
-      setPlayerReady(false);
+      setPlayer((p) => {
+        if (!p) {
+          return;
+        }
+
+        return { ...p, isReady: false, selectedPanels: [] };
+      });
     }
   }, [turnType]);
 

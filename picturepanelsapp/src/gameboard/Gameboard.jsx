@@ -200,7 +200,9 @@ export default function Gameboard() {
         ></StartGame>
       )}
       {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
+
       <TeamInfos gameState={gameState ?? {}} />
+
       <Players players={players} turnType={gameState ? gameState.turnType : ""}></Players>
       {gameState && gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame" && (
         <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber}></RoundNumber>
