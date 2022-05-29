@@ -29,11 +29,6 @@
   text-align: right;
 }
 
-.avatarContainer {
-  height: 4rem;
-  width: 4rem;
-}
-
 .avatarContainerTop {
   z-index: 1000;
 }

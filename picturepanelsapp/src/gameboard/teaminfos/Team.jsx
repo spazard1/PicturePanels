@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import Countdown from "./Countdown";
-import TeamGuess from "./TeamGuess";
+
 import "./Team.css";
 
 const Team = ({
@@ -15,9 +15,6 @@ const Team = ({
   isPaused,
   turnTime,
   turnTimeRemaining,
-  teamGuessStatus,
-  teamGuess,
-  teamGuessIncorrect,
   turnType,
 }) => {
   const [teamIncorrectGuessesDisplay, setTeamIncorrectGuessesDisplay] = useState();
@@ -61,13 +58,6 @@ const Team = ({
         {teamIncorrectGuessesDisplay > 3 && <>{teamIncorrectGuessesDisplay}⦻</>}
       </div>
       <div className="teamInfoPanelCounts center">{renderPanelCount(teamInnerPanels)}</div>
-      <TeamGuess
-        teamNumber={teamNumber}
-        teamGuessStatus={teamGuessStatus}
-        teamGuess={teamGuess}
-        teamGuessIncorrect={teamGuessIncorrect}
-        turnType={turnType}
-      ></TeamGuess>
     </div>
   );
 };
@@ -82,9 +72,6 @@ Team.propTypes = {
   isPaused: PropTypes.bool.isRequired,
   turnTime: PropTypes.number,
   turnTimeRemaining: PropTypes.number,
-  teamGuessStatus: PropTypes.string,
-  teamGuess: PropTypes.string,
-  teamGuessIncorrect: PropTypes.bool,
   turnType: PropTypes.string,
 };
 

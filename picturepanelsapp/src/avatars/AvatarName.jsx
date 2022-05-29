@@ -1,15 +1,15 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import AllAvatars from "./AllAvatars";
-import "./Avatar.css";
 import classNames from "classnames";
+import Avatar from "./Avatar";
 
-const Avatar = ({ avatar, colors, className }, ref) => {
-  const AvatarHelper = AllAvatars[avatar];
+import "./AvatarName.css";
 
+const AvatarName = ({ avatar, colors, name, className }) => {
   return (
-    <div ref={ref} className={classNames("avatarContainer", className)}>
-      <AvatarHelper colors={colors}></AvatarHelper>
+    <div className={classNames("avatarNameContainer", className)}>
+      <Avatar avatar={avatar} colors={colors} className={className}></Avatar>
+      <div className="nameContainer">{name}</div>
     </div>
   );
 };
@@ -29,6 +29,10 @@ const areEqual = (preProps, newProps) => {
     }
   }
 
+  if (preProps.name != newProps.name) {
+    return false;
+  }
+
   if (preProps.className != newProps.className) {
     return false;
   }
@@ -36,10 +40,11 @@ const areEqual = (preProps, newProps) => {
   return true;
 };
 
-export default React.memo(forwardRef(Avatar), areEqual);
-
-Avatar.propTypes = {
+AvatarName.propTypes = {
   avatar: PropTypes.string.isRequired,
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  name: PropTypes.string,
   className: PropTypes.string,
 };
+
+export default React.memo(AvatarName, areEqual);

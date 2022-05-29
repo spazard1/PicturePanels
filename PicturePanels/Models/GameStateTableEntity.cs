@@ -20,9 +20,7 @@ namespace PicturePanels.Models
 
         public const string TeamGuessStatusPass = "Pass";
         public const string TeamGuessStatusGuess = "Guess";
-        public const string TeamGuessStatusBothSkip = "BothSkip";
         public const string TeamGuessStatusSkip = "Skip";
-        public const string TeamGuessStatusReady = "Ready";
 
         public const string PauseStatePaused = "Paused";
 
@@ -116,6 +114,8 @@ namespace PicturePanels.Models
 
         public string TeamOneGuess { get; set; }
 
+        public string TeamOneGuessId { get; set; }
+
         public bool TeamOneCorrect { get; set; }
 
         public string TeamOneGuessStatus { get; set; }
@@ -129,6 +129,8 @@ namespace PicturePanels.Models
         public int TeamTwoInnerPanels { get; set; }
 
         public string TeamTwoGuess { get; set; }
+
+        public string TeamTwoGuessId { get; set; }
 
         public bool TeamTwoCorrect { get; set; }
 
@@ -405,31 +407,37 @@ namespace PicturePanels.Models
             }
         }
 
-        public void Pass(int teamNumber)
+        public void HandleGuess(TeamGuessTableEntity teamGuess, int teamNumber)
         {
             if (teamNumber == 1)
             {
-                this.TeamOneGuess = string.Empty;
-                this.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                if (teamGuess == null)
+                {
+                    this.TeamOneGuess = string.Empty;
+                    this.TeamOneGuessId = string.Empty;
+                    this.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                }
+                else
+                {
+                    this.TeamOneGuess = teamGuess.Guess;
+                    this.TeamOneGuessId = teamGuess.TeamGuessId;
+                    this.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
+                }
             }
             else
             {
-                this.TeamTwoGuess = string.Empty;
-                this.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
-            }
-        }
-
-        public void Guess(int teamNumber, string guess)
-        {
-            if (teamNumber == 1)
-            {
-                this.TeamOneGuess = guess;
-                this.TeamOneGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
-            }
-            else
-            {
-                this.TeamTwoGuess = guess;
-                this.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
+                if (teamGuess == null)
+                {
+                    this.TeamTwoGuess = string.Empty;
+                    this.TeamTwoGuessId = String.Empty;
+                    this.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusPass;
+                }
+                else
+                {
+                    this.TeamTwoGuess = teamGuess.Guess;
+                    this.TeamTwoGuessId = teamGuess.TeamGuessId;
+                    this.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusGuess;
+                }
             }
         }
 

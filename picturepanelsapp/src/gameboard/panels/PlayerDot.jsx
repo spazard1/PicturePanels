@@ -48,8 +48,8 @@ const PlayerDot = ({ avatar, colors, panelRef, isMoved }) => {
   }, [originalRect, panelRect, isMoved]);
 
   return (
-    <div ref={playerDotContainerRef} className={classNames("playerDotContainer", { playerDotContainerMoved: isMoved })} style={style}>
-      <Avatar avatar={avatar} colors={colors}></Avatar>
+    <div style={style} className={classNames("playerDotContainer", { playerDotContainerMoved: isMoved })}>
+      <Avatar ref={playerDotContainerRef} avatar={avatar} colors={colors} />
     </div>
   );
 };

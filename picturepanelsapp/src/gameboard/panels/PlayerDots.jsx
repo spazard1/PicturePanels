@@ -20,7 +20,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
             players[playerId] &&
             players[playerId].teamNumber === 1 && (
               <div key={playerId} className={classNames("playerDotsContainer", { teamOnePlayerNameNotReady: !players[playerId].isReady })}>
-                <div className="avatarContainer hidden">
+                <div className="hidden">
                   <Avatar avatar={players[playerId].avatar} colors={players[playerId].colors}></Avatar>
                 </div>
                 {panelNumbers.map((panelNumber) => (
@@ -48,7 +48,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
             players[playerId] &&
             players[playerId].teamNumber === 2 && (
               <div key={playerId} className={classNames("playerDotsContainer", { teamTwoPlayerNameNotReady: !players[playerId].isReady })}>
-                <div className="avatarContainer hidden">
+                <div className="hidden">
                   <Avatar avatar={players[playerId].avatar} colors={players[playerId].colors}></Avatar>
                 </div>
                 {panelNumbers.map((panelNumber) => (

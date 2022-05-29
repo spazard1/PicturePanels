@@ -60,11 +60,6 @@ namespace PicturePanels.Entities
                 this.TeamOneGuess = tableEntity.TeamOneGuess;
                 this.TeamTwoGuess = tableEntity.TeamTwoGuess;
             }
-            else
-            {
-                this.TeamOneGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamOneGuessStatus) ? GameStateTableEntity.TeamGuessStatusReady : string.Empty;
-                this.TeamTwoGuessStatus = !string.IsNullOrWhiteSpace(tableEntity.TeamTwoGuessStatus) ? GameStateTableEntity.TeamGuessStatusReady : string.Empty;
-            }
         }
 
         public string GameStateId { get; set; }
