@@ -23,9 +23,6 @@ function TeamInfos({ gameState }) {
           turnType={gameState.turnType}
           turnTime={gameState.turnTime}
           turnTimeRemaining={gameState.turnTimeRemaining}
-          teamGuessStatus={gameState.teamOneGuessStatus}
-          teamGuess={gameState.teamOneGuess}
-          teamGuessIncorrect={!gameState.teamOneCorrect}
         />
         <ScoreBoard
           teamTurn={gameState.teamTurn}
@@ -48,9 +45,6 @@ function TeamInfos({ gameState }) {
           turnType={gameState.turnType}
           turnTime={gameState.turnTime}
           turnTimeRemaining={gameState.turnTimeRemaining}
-          teamGuessStatus={gameState.teamTwoGuessStatus}
-          teamGuess={gameState.teamTwoGuess}
-          teamGuessIncorrect={!gameState.teamTwoCorrect}
         />
       </div>
     </>

@@ -1,0 +1,40 @@
+/* stylelint-disable selector-class-pattern */
+.teamGuess {
+  position: fixed;
+  box-sizing: border-box;
+  padding: 3px;
+  width: 60vw;
+  height: 20vh;
+  font-weight: 500;
+  font-size: 4vh;
+  line-height: normal;
+  z-index: 100;
+  text-align: center;
+}
+
+.teamGuessTeamOne {
+  top: 25vh;
+  left: 8vw;
+}
+
+.teamGuessTeamTwo {
+  bottom: 25vh;
+  right: 8vw;
+}
+
+.teamGuessIncorrect {
+  text-decoration-color: rgba(255 0 0 / 70%);
+  text-decoration-line: line-through;
+  text-decoration-thickness: 5px;
+}
+
+.votingPlayersContainer,
+.notVotingPlayersContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.votingPlayerContainer {
+  width: 5rem;
+  height: 5rem;
+}

@@ -16,15 +16,21 @@ namespace PicturePanels.Controllers
     {
         private readonly TeamGuessTableStorage teamGuessTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
+        private readonly GameStateTableStorage gameStateTableStorage;
         private readonly TeamGuessesService teamGuessesService;
+        private readonly GameStateService gameStateService;
 
         public TeamGuessesController(TeamGuessTableStorage teamGuessTableStorage,
             PlayerTableStorage playerTableStorage,
-            TeamGuessesService teamGuessesService)
+            GameStateTableStorage gameStateTableStorage,
+            TeamGuessesService teamGuessesService,
+            GameStateService gameStateService)
         {
             this.teamGuessTableStorage = teamGuessTableStorage;
             this.playerTableStorage = playerTableStorage;
+            this.gameStateTableStorage = gameStateTableStorage;
             this.teamGuessesService = teamGuessesService;
+            this.gameStateService = gameStateService;
         }
 
         [HttpGet("{gameStateId}/{playerId}")]
@@ -39,6 +45,21 @@ namespace PicturePanels.Controllers
             var teamGuessEntities = await this.teamGuessesService.GetTeamGuessesAsync(gameStateId, player.TeamNumber);
 
             return Json(teamGuessEntities);
+        }
+
+        [HttpGet("{gameStateId}/votingPlayers")]
+        public async Task<IActionResult> GetVotingPlayersAsync(string gameStateId)
+        {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
+            var votingPlayers = await this.gameStateService.GetVotingPlayersAsync(gameState);
+
+            return Json(votingPlayers);
         }
 
         /*

@@ -23,6 +23,7 @@ import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import { useWinningTeam } from "../common/useWinningTeam";
 import classNames from "classnames";
+import TeamGuesses from "./TeamGuesses";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -178,8 +179,8 @@ export default function Gameboard() {
 
   return (
     <>
-      <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
-      <SignalRConnectionStatus></SignalRConnectionStatus>
+      <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose} />
+      <SignalRConnectionStatus />
 
       {gameState && (
         <ToastContainer position={"middle-center"}>
@@ -189,7 +190,7 @@ export default function Gameboard() {
         </ToastContainer>
       )}
 
-      {gameState && <SettingsDropDown gameStateId={gameState.gameStateId} pauseState={gameState.pauseState}></SettingsDropDown>}
+      {gameState && <SettingsDropDown gameStateId={gameState.gameStateId} pauseState={gameState.pauseState} />}
       {startGameState !== "Playing" && (
         <StartGame
           startGameState={startGameState}
@@ -203,9 +204,22 @@ export default function Gameboard() {
 
       <TeamInfos gameState={gameState ?? {}} />
 
-      <Players players={players} turnType={gameState ? gameState.turnType : ""}></Players>
+      {gameState && (
+        <TeamGuesses
+          gameStateId={gameState.gameStateId}
+          teamOneGuess={gameState.teamOneGuess}
+          teamOneGuessStatus={gameState.teamOneGuessStatus}
+          teamOneGuessIncorrect={gameState.teamOneGuessIncorrect}
+          teamTwoGuess={gameState.teamTwoGuess}
+          teamTwoGuessStatus={gameState.teamTwoGuessStatus}
+          teamTwoGuessIncorrect={gameState.teamTwoGuessIncorrect}
+          turnType={gameState.turnType}
+        />
+      )}
+
+      <Players players={players} turnType={gameState ? gameState.turnType : ""} />
       {gameState && gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame" && (
-        <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber}></RoundNumber>
+        <RoundNumber roundNumber={gameState.roundNumber} finalRoundNumber={gameState.finalRoundNumber} />
       )}
 
       <Panels

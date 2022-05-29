@@ -41,7 +41,7 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
   }, [isVisible]);
 
   useEffect(() => {
-    if (!gameStateId || !playerId) {
+    if (!gameStateId || !playerId || !connectionId) {
       return;
     }
 

@@ -401,65 +401,6 @@ namespace PicturePanels.Controllers
             return Json(new GameStateEntity(gameState));
         }
 
-        [HttpPut("{id}/teamPass/{teamNumber:int}")]
-        [RequireAdmin]
-        public async Task<IActionResult> PutTeamPassAsync(string id, int teamNumber)
-        {
-            var gameState = await this.gameStateTableStorage.GetAsync(id);
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-
-            gameState = await this.gameStateService.PassAsync(gameState, teamNumber);
-            //await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
-
-            return Json(new GameStateEntity(gameState));
-        }
-
-        [HttpPut("{id}/teamCorrect/{teamNumber:int}")]
-        [RequireAdmin]
-        public async Task<IActionResult> PutTeamCorrectAsync(string id, int teamNumber)
-        {
-            var gameState = await this.gameStateTableStorage.GetAsync(id);
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-
-            var gameRoundEntity = await this.gameRoundTableStorage.GetAsync(id, gameState.RoundNumber);
-            if (gameRoundEntity == null)
-            {
-                return StatusCode(404);
-            }
-
-            var imageEntity = await this.imageTableStorage.GetAsync(gameRoundEntity.ImageId);
-            if (imageEntity == null)
-            {
-                return StatusCode(404);
-            }
-
-            gameState = await this.gameStateService.GuessAsync(gameState, teamNumber, imageEntity.Name);
-            //await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
-
-            return Json(new GameStateEntity(gameState));
-        }
-
-        [HttpPut("{id}/teamIncorrect/{teamNumber:int}")]
-        [RequireAdmin]
-        public async Task<IActionResult> PutTeamIncorrectAsync(string id, int teamNumber)
-        {
-            var gameState = await this.gameStateTableStorage.GetAsync(id);
-            if (gameState == null)
-            {
-                return StatusCode(404);
-            }
-            gameState = await this.gameStateService.GuessAsync(gameState, teamNumber, "incorrect");
-            //await this.gameStateService.ExitMakeGuessIfNeededAsync(gameState);
-
-            return Json(new GameStateEntity(gameState));
-        }
-
         [HttpPut("{id}/endRound")]
         [RequireAdmin]
         public async Task<IActionResult> PutEndRoundAsync(string id)
