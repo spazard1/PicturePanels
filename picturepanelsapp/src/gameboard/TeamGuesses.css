@@ -1,23 +1,31 @@
+/* stylelint-disable selector-pseudo-element-colon-notation */
+/* stylelint-disable custom-property-pattern */
 /* stylelint-disable selector-class-pattern */
 .teamGuess {
   position: fixed;
   box-sizing: border-box;
   padding: 3px;
   width: 60vw;
-  height: 20vh;
+  height: 10vh;
   font-weight: 500;
-  font-size: 4vh;
   line-height: normal;
   z-index: 100;
   text-align: center;
+  overflow: hidden;
+  font-size: 6vh;
+  border: 10px solid;
+  border-image-slice: 1;
+  border-width: 5px;
 }
 
 .teamGuessTeamOne {
   top: 25vh;
   left: 8vw;
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
 }
 
 .teamGuessTeamTwo {
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
   bottom: 25vh;
   right: 8vw;
 }
@@ -32,9 +40,32 @@
 .notVotingPlayersContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .votingPlayerContainer {
-  width: 5rem;
-  height: 5rem;
+  width: 6vh;
+  height: 6vh;
 }
+
+/*
+.animate-gradient-border {
+  --angle: 0deg;
+
+  border: 10px solid;
+  border-image: linear-gradient(var(--angle), #12c2e9, #c471ed, #f64f59) 1;
+  animation: 5s rotate linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+*/

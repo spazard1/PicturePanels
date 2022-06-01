@@ -47,8 +47,8 @@ namespace PicturePanels.Controllers
             return Json(teamGuessEntities);
         }
 
-        [HttpGet("{gameStateId}/votingPlayers")]
-        public async Task<IActionResult> GetVotingPlayersAsync(string gameStateId)
+        [HttpGet("{gameStateId}/correctGuessPlayers")]
+        public async Task<IActionResult> GetCorrectGuessPlayersAsync(string gameStateId)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
 
@@ -57,9 +57,9 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            var votingPlayers = await this.gameStateService.GetVotingPlayersAsync(gameState);
+            var correctGuessPlayers = await this.gameStateService.GetCorrectGuessPlayersAsync(gameState);
 
-            return Json(votingPlayers);
+            return Json(correctGuessPlayers);
         }
 
         /*

@@ -13,7 +13,7 @@ import StartGame from "./StartGame";
 import Welcome from "./Welcome";
 import SettingsDropDown from "./SettingsDropDown";
 import getGameState from "../common/getGameState";
-import postGameState from "../common/postGameState";
+import postGameState from "./postGameState";
 import RoundNumber from "./RoundNumber";
 import EndGame from "./EndGame";
 import ModalMessage from "../common/modal/ModalMessage";
@@ -209,10 +209,10 @@ export default function Gameboard() {
           gameStateId={gameState.gameStateId}
           teamOneGuess={gameState.teamOneGuess}
           teamOneGuessStatus={gameState.teamOneGuessStatus}
-          teamOneGuessIncorrect={gameState.teamOneGuessIncorrect}
+          teamOneCorrect={gameState.TeamOneCorrect}
           teamTwoGuess={gameState.teamTwoGuess}
           teamTwoGuessStatus={gameState.teamTwoGuessStatus}
-          teamTwoGuessIncorrect={gameState.teamTwoGuessIncorrect}
+          teamTwoCorrect={gameState.TeamTwoCorrect}
           turnType={gameState.turnType}
         />
       )}

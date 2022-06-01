@@ -1,43 +1,14 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { useSignalR } from "../signalr/useSignalR";
-import Avatar from "../avatars/Avatar";
-import getVotingPlayers from "./getVotingPlayers";
 
 import "./TeamGuesses.css";
 
-const TeamGuesses = ({
-  gameStateId,
-  teamOneGuess,
-  teamOneGuessStatus,
-  teamOneGuessIncorrect,
-  teamTwoGuess,
-  teamTwoGuessStatus,
-  teamTwoGuessIncorrect,
-  turnType,
-}) => {
+const TeamGuesses = ({ teamOneGuess, teamOneGuessStatus, teamOneCorrect, teamTwoGuess, teamTwoGuessStatus, teamTwoCorrect, turnType }) => {
   const [teamGuessesVisible, setTeamGuessesVisible] = useState(false);
   const [hasTeamGuessBeenVisible, setHasTeamGuessBeenVisible] = useState(false);
   const [teamOneGuessIncorrectDisplay, setTeamOneGuessIncorrectDisplay] = useState(false);
   const [teamTwoGuessIncorrectDisplay, setTeamTwoGuessIncorrectDisplay] = useState(false);
-  const [votingPlayers, setVotingPlayers] = useState({});
-
-  const connectionId = useSignalR("VotingPlayers", (vp) => {
-    setVotingPlayers(vp);
-  });
-
-  useEffect(() => {
-    if (!gameStateId || !connectionId) {
-      return;
-    }
-
-    getVotingPlayers(gameStateId, (vp) => {
-      if (vp) {
-        setVotingPlayers(vp);
-      }
-    });
-  }, [gameStateId, connectionId]);
 
   useEffect(() => {
     if (turnType !== "GuessesMade") {
@@ -55,17 +26,17 @@ const TeamGuesses = ({
     if (teamOneGuessStatus === "Guess") {
       setTeamOneGuessIncorrectDisplay(false);
       setTimeout(() => {
-        setTeamOneGuessIncorrectDisplay(teamOneGuessIncorrect);
+        setTeamOneGuessIncorrectDisplay(!teamOneCorrect);
       }, 8000);
     }
 
     if (teamTwoGuessStatus === "Guess") {
       setTeamOneGuessIncorrectDisplay(false);
       setTimeout(() => {
-        setTeamTwoGuessIncorrectDisplay(teamTwoGuessIncorrect);
+        setTeamTwoGuessIncorrectDisplay(!teamTwoCorrect);
       }, 8000);
     }
-  }, [teamOneGuessStatus, teamOneGuessIncorrect, teamTwoGuessStatus, teamTwoGuessIncorrect, turnType]);
+  }, [teamOneGuessStatus, teamOneCorrect, teamTwoGuessStatus, teamTwoCorrect, turnType]);
 
   useEffect(() => {
     if (teamGuessesVisible) {
@@ -83,17 +54,7 @@ const TeamGuesses = ({
           teamGuessIncorrect: teamOneGuessIncorrectDisplay,
         })}
       >
-        <div>{teamOneGuessStatus === "Pass" || teamOneGuessStatus === "Skip" ? "(team passed)" : teamOneGuess}</div>
-        <div className="votingPlayersContainer">
-          {votingPlayers.teamOneVotingPlayers?.map((player) => (
-            <Avatar key={player.playerId} avatar={player.avatar} colors={player.colors} />
-          ))}
-        </div>
-        <div className="notVotingPlayersContainer">
-          {votingPlayers.teamOneNotVotingPlayers?.map((player) => (
-            <Avatar key={player.playerId} avatar={player.avatar} colors={player.colors} />
-          ))}
-        </div>
+        {teamOneGuessStatus === "Pass" || teamOneGuessStatus === "Skip" ? "(team passed)" : teamOneGuess}
       </div>
       <div
         className={classNames("teamGuess", "animate__animated", "teamTwoBox", "teamGuessTeamTwo", {
@@ -103,17 +64,7 @@ const TeamGuesses = ({
           teamGuessIncorrect: teamTwoGuessIncorrectDisplay,
         })}
       >
-        <div>{teamTwoGuessStatus === "Pass" || teamTwoGuessStatus === "Skip" ? "(team passed)" : teamTwoGuess}</div>
-        <div className="votingPlayersContainer">
-          {votingPlayers.teamTwoVotingPlayers?.map((player) => (
-            <Avatar key={player.playerId} avatar={player.avatar} colors={player.colors} />
-          ))}
-        </div>
-        <div className="notVotingPlayersContainer">
-          {votingPlayers.teamTwoNotVotingPlayers?.map((player) => (
-            <Avatar key={player.playerId} avatar={player.avatar} colors={player.colors} />
-          ))}
-        </div>
+        {teamTwoGuessStatus === "Pass" || teamTwoGuessStatus === "Skip" ? "(team passed)" : teamTwoGuess}
       </div>
     </>
   );
@@ -122,12 +73,11 @@ const TeamGuesses = ({
 export default TeamGuesses;
 
 TeamGuesses.propTypes = {
-  gameStateId: PropTypes.string,
   teamOneGuess: PropTypes.string,
   teamOneGuessStatus: PropTypes.string,
-  teamOneGuessIncorrect: PropTypes.string,
+  teamOneCorrect: PropTypes.string,
   teamTwoGuess: PropTypes.string,
   teamTwoGuessStatus: PropTypes.string,
-  teamTwoGuessIncorrect: PropTypes.string,
+  teamTwoCorrect: PropTypes.string,
   turnType: PropTypes.string,
 };

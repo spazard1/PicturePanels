@@ -16,12 +16,6 @@ body.gameboard::-webkit-scrollbar {
   text-align: center;
 }
 
-.loginContainer {
-  margin-top: 6vh;
-  font-size: 2.5vh;
-  width: 60%;
-}
-
 .loginMessage {
   margin-top: 2.5vh;
 }

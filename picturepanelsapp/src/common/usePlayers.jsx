@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
-import getPlayers from "./getPlayers";
 
 export function usePlayers(gameStateId, turnType, teamTurn) {
   const [players, setPlayers] = useState({});
 
-  const connectionId = useSignalR("Players", (players) => {
+  useSignalR("Players", (players) => {
     const newPlayers = players.reduce((aggregate, value) => ({ ...aggregate, [value.playerId]: value }), {});
 
+    setPlayers(newPlayers);
+    /*
     setPlayers((ps) => {
       for (const playerId in newPlayers) {
         newPlayers[playerId].isReady = ps[playerId].isReady;
@@ -15,6 +16,7 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
 
       return newPlayers;
     });
+    */
   });
 
   useSignalR("Player", (player) => {
@@ -32,18 +34,6 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
       return newPlayers;
     });
   });
-
-  useEffect(() => {
-    if (!gameStateId) {
-      return;
-    }
-
-    getPlayers(gameStateId, (players) => {
-      const newPlayers = players.reduce((aggregate, value) => ({ ...aggregate, [value.playerId]: value }), {});
-
-      setPlayers(newPlayers);
-    });
-  }, [gameStateId, connectionId]);
 
   useEffect(() => {
     setPlayers((ps) => {
