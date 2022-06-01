@@ -73,14 +73,16 @@
   justify-content: center;
 }
 
-.playerAvatar {
+.avatarChoice {
   width: 24%;
+  height: 4rem;
   cursor: pointer;
   border: 3px solid black;
   box-sizing: border-box;
+  text-align: center;
 }
 
-.playerAvatarSelected {
+.selectedAvatar {
   border: 3px solid white;
 }
 

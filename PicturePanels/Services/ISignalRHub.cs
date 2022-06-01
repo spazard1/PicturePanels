@@ -17,7 +17,7 @@ namespace PicturePanels.Services
 
         Task TeamGuesses(List<TeamGuessEntity> teamGuessEntities);
 
-        Task VotingPlayers(VotingPlayersEntity votingPlayersEntity);
+        Task CorrectGuessPlayers(CorrectGuessPlayersEntity correctGuessPlayersEntity);
 
         Task Player(PlayerEntity entity, bool isNew);
 

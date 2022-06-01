@@ -1,4 +1,4 @@
-import serverUrl from "./ServerUrl";
+import serverUrl from "../common/ServerUrl";
 
 export default function postGameState(gameOptions, callback) {
   fetch(serverUrl + "api/gameState/", {

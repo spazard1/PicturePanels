@@ -43,16 +43,6 @@ body.player #root {
   font-size: 1.4rem;
 }
 
-.modal-header {
-  color: black;
-  font-size: 1.4rem;
-}
-
-.bootbox-body {
-  color: black;
-  font-size: 1rem;
-}
-
 @media only screen and (min-width: 1000px) {
   .playerSettingsButton {
     right: 25vw;

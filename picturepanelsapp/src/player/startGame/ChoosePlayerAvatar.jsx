@@ -90,7 +90,7 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
             return (
               <div
                 key={avatarName}
-                className={classNames("playerAvatar", { playerAvatarSelected: avatarName === selectedAvatar })}
+                className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
                 onClick={() => setSelectedAvatar(avatarName)}
               >
                 <Avatar avatar={avatarName} colors={colors}></Avatar>
