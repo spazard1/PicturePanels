@@ -49,15 +49,15 @@ body.player #root {
   }
 
   body.player #root {
-    width: 50vw;
+    width: 40vw;
   }
 
   .playerBanner {
-    width: 50vw;
+    width: 40vw;
   }
 
   .turnStatusMessage {
-    width: 50vw;
+    width: 40vw;
   }
 
   .chat img {

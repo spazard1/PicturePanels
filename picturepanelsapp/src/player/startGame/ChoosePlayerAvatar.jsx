@@ -88,12 +88,12 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
         <div className="playerAvatars">
           {shuffledAvatarsRef.current.map((avatarName) => {
             return (
-              <div
-                key={avatarName}
-                className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
-                onClick={() => setSelectedAvatar(avatarName)}
-              >
-                <Avatar avatar={avatarName} colors={colors}></Avatar>
+              <div key={avatarName} onClick={() => setSelectedAvatar(avatarName)}>
+                <Avatar
+                  avatar={avatarName}
+                  colors={colors}
+                  className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
+                ></Avatar>
               </div>
             );
           })}
