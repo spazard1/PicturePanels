@@ -49,7 +49,8 @@ namespace PicturePanels.Models
 
         public const int MaxOpenPanels = 8;
 
-        public const int MaxRounds = 10;
+        public const int DefaultRounds = 10;
+        public const int DefaultShortGameRounds = 6;
 
         public const string DefaultTheme = "default";
 

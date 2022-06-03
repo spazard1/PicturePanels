@@ -26,7 +26,8 @@ import { useWinningTeam } from "../common/useWinningTeam";
 import { useLocalStorageState } from "../common/useLocalStorageState";
 import VoteGuess from "./voteGuess/VoteGuess";
 import putPlayerResume from "./putPlayerResume";
-import colorConvert from "color-convert";
+import Color from "color";
+//import { throttle } from "throttle-debounce";
 
 import "./Player.css";
 import "animate.css";
@@ -71,19 +72,30 @@ export default function Player() {
     } else {
       initialColors = [];
     }
-    setColors(initialColors);
+
+    setColors(initialColors.map((ic) => Color(ic)));
   }, []);
 
-  const onColorChange = useCallback((c, index) => {
+  const throttledColorChange = useCallback((c, index) => {
+    //throttle(100, (c, index) => {
+
     c.v = Math.max(35, c.v);
-    const hex = "#" + colorConvert.hsv.hex([c.h, c.s, c.v]);
+    const color = Color(c);
 
     setColors((cs) => {
       const newColors = [...cs];
-      newColors[index] = hex;
+      newColors[index] = color;
       return newColors;
     });
+    //}),
   }, []);
+
+  const onColorChange = useCallback(
+    (c, index) => {
+      throttledColorChange(c, index);
+    },
+    [throttledColorChange]
+  );
 
   const onColorRemove = useCallback(() => {
     setColors((cs) => {
@@ -141,7 +153,7 @@ export default function Player() {
 
   const onAvatarSelect = (avatar) => {
     setAvatar(avatar);
-    localStorage.setItem("playerColors", JSON.stringify(colors));
+    localStorage.setItem("playerColors", JSON.stringify(colors.map((c) => c.hex())));
     localStorage.setItem("playerAvatar", avatar);
   };
 
@@ -178,7 +190,7 @@ export default function Player() {
       setPlayer(resumeGameRef.current.player);
       setTeamNumber(resumeGameRef.current.player.teamNumber);
       if (resumeGameRef.current.player.colors) {
-        setColors(resumeGameRef.current.player.colors);
+        setColors(resumeGameRef.current.player.colors.map((c) => Color(c)));
       }
       setIsResuming(false);
       putPlayerResume(resumeGameRef.current.player.gameStateId, resumeGameRef.current.player.playerId);
@@ -348,7 +360,7 @@ export default function Player() {
         PlayerId: localStorage.getItem("playerId"),
         Name: localStorage.getItem("playerName"),
         TeamNumber: teamNumber,
-        Colors: colors,
+        Colors: colors.map((c) => c.hex()),
         Avatar: avatar,
       },
       (p) => {

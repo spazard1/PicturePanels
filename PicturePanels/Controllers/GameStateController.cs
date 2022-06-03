@@ -79,13 +79,13 @@ namespace PicturePanels.Controllers
             gameState.CreatedBy = HttpContext.Items[SecurityProvider.UserIdKey].ToString();
             gameState.TeamOneName = entity.TeamOneName;
             gameState.TeamTwoName = entity.TeamTwoName;
-            gameState.OpenPanelTime = entity.OpenPanelTime ?? GameStateTableEntity.DefaultOpenPanelTime;
-            gameState.GuessTime = entity.GuessTime ?? GameStateTableEntity.DefaultMakeGuessTime;
-            gameState.VoteGuessTime = entity.VoteGuessTime ?? GameStateTableEntity.DefaultVoteGuessTime;
-            gameState.WrongGuessPenalty = entity.WrongGuessPenalty ?? GameStateTableEntity.DefaultWrongGuessPenalty;
+            gameState.OpenPanelTime = entity.ExtendedTimers ? GameStateTableEntity.DefaultOpenPanelTime * 2 : GameStateTableEntity.DefaultOpenPanelTime;
+            gameState.GuessTime = entity.ExtendedTimers ? GameStateTableEntity.DefaultMakeGuessTime * 2 : GameStateTableEntity.DefaultMakeGuessTime;
+            gameState.VoteGuessTime = entity.ExtendedTimers ? GameStateTableEntity.DefaultVoteGuessTime * 2 : GameStateTableEntity.DefaultVoteGuessTime;
+            gameState.WrongGuessPenalty = GameStateTableEntity.DefaultWrongGuessPenalty;
             gameState.Tags = entity.Tags?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             gameState.ExcludedTags = entity.ExcludedTags?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-            gameState.FinalRoundNumber = entity.FinalRoundNumber ?? GameStateTableEntity.MaxRounds;
+            gameState.FinalRoundNumber = entity.ShortGame ? GameStateTableEntity.DefaultShortGameRounds : GameStateTableEntity.DefaultRounds;
             gameState.TeamOneInnerPanels = gameState.FinalRoundNumber / 2;
             gameState.TeamTwoInnerPanels = gameState.FinalRoundNumber / 2;
 

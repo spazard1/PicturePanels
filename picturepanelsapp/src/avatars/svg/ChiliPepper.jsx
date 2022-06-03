@@ -33,7 +33,7 @@ const ChiliPepper = (props) => (
 );
 
 ChiliPepper.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(ChiliPepper);

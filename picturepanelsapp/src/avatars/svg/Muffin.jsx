@@ -2,7 +2,6 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import complementaryColors from "complementary-colors";
 import "./Avatars.css";
 
 const Muffin = (props) => {
@@ -12,10 +11,8 @@ const Muffin = (props) => {
     color2 = "#be9981";
     color3 = "#fedcc6";
   } else {
-    const originalColor = new complementaryColors(props.colors[1]);
     color2 = props.colors[1];
-    const analogous = originalColor.analogous();
-    color3 = "rgb(" + analogous[1].r + " " + analogous[1].g + " " + analogous[1].b + ")";
+    color3 = props.colors[1].rotate(20);
   }
 
   return (
@@ -152,7 +149,7 @@ const Muffin = (props) => {
 };
 
 Muffin.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Muffin);

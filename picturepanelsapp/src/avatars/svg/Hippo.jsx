@@ -34,7 +34,7 @@ const Hippo = (props) => (
 );
 
 Hippo.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Hippo);

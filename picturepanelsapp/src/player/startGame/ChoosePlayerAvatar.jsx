@@ -8,7 +8,8 @@ import classNames from "classnames";
 import shuffleSeed from "shuffle-seed";
 import { useLocalStorageState } from "../../common/useLocalStorageState";
 import { v4 as uuidv4 } from "uuid";
-import dice64 from "./dice-64.png";
+import Color from "color";
+import dice64 from "./../../common/images/dice-64.png";
 import "./ChoosePlayerAvatar.css";
 
 const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSelect }) => {
@@ -28,7 +29,7 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
   };
 
   const getNewColor = () => {
-    return "#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0");
+    return Color("#" + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0"));
   };
 
   const onRandomizeColors = () => {
@@ -77,7 +78,7 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
           </div>
           <div ref={colorPickerContainerRef} className="twoColorModeContainer">
             <div>Two Color Mode</div>
-            <Form.Check type="switch" id="custom-switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
+            <Form.Check type="switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
             <div className="swapColorsButtonContainer">
               <Button onClick={onSwapColors} disabled={colors && colors.length < 2}>
                 Swap Colors
@@ -111,7 +112,7 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
 export default ChoosePlayerAvatar;
 
 ChoosePlayerAvatar.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string),
+  colors: PropTypes.arrayOf(PropTypes.object),
   onColorChange: PropTypes.func.isRequired,
   onColorRemove: PropTypes.func.isRequired,
   onAvatarSelect: PropTypes.func.isRequired,

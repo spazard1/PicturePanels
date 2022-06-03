@@ -1,0 +1,17 @@
+/* stylelint-disable selector-class-pattern */
+.joinGameText {
+  margin-bottom: 2vh;
+}
+
+.joinGameButtons {
+  display: flex;
+  width: 50%;
+  justify-content: space-around;
+}
+
+.joinGameStateIdInput {
+  margin-bottom: 5vh;
+  font-size: 4vh;
+  width: 10vw;
+  text-align: center;
+}

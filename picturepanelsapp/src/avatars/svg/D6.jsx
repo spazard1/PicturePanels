@@ -26,7 +26,7 @@ const D6 = (props) => (
 );
 
 D6.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(D6);

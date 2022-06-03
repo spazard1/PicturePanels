@@ -2,15 +2,12 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import complementaryColors from "complementary-colors";
 import "./Avatars.css";
 
 const Cactus = (props) => {
   let color2;
   if (props.colors.length === 1) {
-    const originalColor = new complementaryColors(props.colors[0]);
-    const analogous = originalColor.complementary();
-    color2 = "rgb(" + analogous[1].r + " " + analogous[1].g + " " + analogous[1].b + ")";
+    color2 = props.colors[0].rotate(180);
   } else {
     color2 = props.colors[1];
   }
@@ -77,7 +74,7 @@ const Cactus = (props) => {
 };
 
 Cactus.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Cactus);

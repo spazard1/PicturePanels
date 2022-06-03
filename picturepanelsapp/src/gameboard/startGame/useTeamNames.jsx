@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import getTeamNames from "../common/getTeamNames";
+import getTeamNames from "../../common/getTeamNames";
 
 export function useTeamNames() {
   const [teamNames, setTeamNames] = useState();

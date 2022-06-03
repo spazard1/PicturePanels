@@ -2,33 +2,29 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import complementaryColors from "complementary-colors";
 import "./Avatars.css";
 
 const Ring = (props) => {
-  let color2;
-  let color3;
-  let color4;
+  let innerStone;
+  let outerStone;
+  let stoneSeparator;
   if (props.colors.length === 1) {
-    color2 = "#c2185b";
-    color3 = "#ad1457";
-    color4 = "#ec407a";
+    innerStone = "#c2185b";
+    outerStone = "#ad1457";
+    stoneSeparator = "#ec407a";
   } else {
-    const originalColor = new complementaryColors(props.colors[1]);
-    color2 = props.colors[1];
-    const analogous = originalColor.analogous();
-    color3 = "rgb(" + analogous[1].r + " " + analogous[1].g + " " + analogous[1].b + ")";
-    color4 = "rgb(" + analogous[2].r + " " + analogous[2].g + " " + analogous[2].b + ")";
+    innerStone = props.colors[1];
+    outerStone = props.colors[1].rotate(-30);
+    stoneSeparator = props.colors[1].rotate(30);
   }
 
-  const outerColorAnalogous = new complementaryColors(props.colors[0]).analogous();
-  const outerColor = "rgb(" + outerColorAnalogous[1].r + " " + outerColorAnalogous[1].g + " " + outerColorAnalogous[1].b + ")";
+  const outerRing = props.colors[0].rotate(30);
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlSpace="preserve"
-      viewBox="0 0 2048 2048"
+      viewBox="60 60 1950 1950"
       className="playerAvatarSvg"
       style={{
         shapeRendering: "geometricPrecision",
@@ -40,13 +36,13 @@ const Ring = (props) => {
       {...props}
     >
       <defs>
-        <style>{".fil4{fill:" + color3 + "}.fil5{fill:" + color4 + "}"}</style>
+        <style>{".fil4{fill:" + outerStone + "}.fil5{fill:" + stoneSeparator + "}"}</style>
       </defs>
       <g>
         <path
           d="M1278 451c133 51 247 142 328 259 80 117 123 255 123 398 0 187-74 366-206 498-133 133-311 206-498 206s-366-74-498-206c-133-133-206-311-206-498 0-142 43-280 123-398 80-117 195-208 328-259l56-22 14 58c10 42 33 79 67 105 34 27 75 41 118 41s84-14 118-41c33-27 57-64 67-105l14-58 56 22zm-37 139c-46 76-111 113-179 124-110 17-208-45-265-122-200 104-366 283-373 517-2 80 14 160 45 233 31 71 76 136 131 191 113 113 265 176 425 176s312-63 425-176 178-264 176-424c-2-127-47-246-129-343-60-71-164-146-254-175z"
           style={{
-            fill: outerColor,
+            fill: outerRing,
           }}
         />
         <path
@@ -66,7 +62,7 @@ const Ring = (props) => {
         <path
           d="M843 285c53-27 122-29 181-29s128 3 181 29c64 32 83 66 89 109 3 20 3 43 4 68l-273 83-273-83c-3-69 5-133 92-177z"
           style={{
-            fill: color2,
+            fill: innerStone,
           }}
         />
         <path
@@ -86,7 +82,7 @@ const Ring = (props) => {
 };
 
 Ring.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Ring);
