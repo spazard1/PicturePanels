@@ -10,5 +10,8 @@ export default function getGameState(gameStateId, callback) {
     })
     .then((responseJson) => {
       callback(responseJson);
+    })
+    .catch(() => {
+      callback(false);
     });
 }

@@ -3,26 +3,62 @@ import JoinGame from "./JoinGame";
 import CreateGame from "./CreateGame";
 import PropTypes from "prop-types";
 import { Button } from "react-bootstrap";
-import ModalLogin from "../common/modal/ModalLogin";
-import ModalMessage from "../common/modal/ModalMessage";
-import getUser from "../user/getUser";
-import putLogin from "../user/putLogin";
-import UserContext from "../user/UserContext";
+import ModalLogin from "../../common/modal/ModalLogin";
+import ModalMessage from "../../common/modal/ModalMessage";
+import getUser from "../../user/getUser";
+import putLogin from "../../user/putLogin";
+import UserContext from "../../user/UserContext";
+import getGameState from "../../common/getGameState";
+import postGameState from "./postGameState";
 
 import "./StartGame.css";
 
-const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoinGame, onCancel }) => {
+const StartGame = ({ onStartGame }) => {
   const { user, setUser } = useContext(UserContext);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isLoadingGame, setIsLoadingGame] = useState(false);
+  const [startGameState, setStartGameState] = useState("");
   const [showModalLogin, setShowModalLogin] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+
+  const onCreateGame = (gameOptions) => {
+    setIsLoadingGame(true);
+
+    postGameState(gameOptions, (gs) => {
+      setIsLoadingGame(false);
+
+      if (gs) {
+        onStartGame(gs);
+      } else {
+        setModalMessage("There was a problem creating the game. Please try again later.");
+      }
+    });
+  };
+
+  const onJoinGame = (gameStateId) => {
+    setIsLoadingGame(true);
+
+    getGameState(gameStateId, (gs) => {
+      setIsLoadingGame(false);
+
+      if (gs) {
+        onStartGame(gs);
+      } else {
+        setModalMessage("Did not find a game with that code. Check the game code and try again.");
+      }
+    });
+  };
+
+  const onCancel = () => {
+    setStartGameState("");
+  };
 
   const onModalLoginClose = () => {
     setShowModalLogin(false);
   };
 
   const onModalMessageClose = () => {
-    setShowModalLogin(false);
+    setModalMessage("");
   };
 
   const onLogout = () => {
@@ -47,7 +83,7 @@ const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoi
   useEffect(() => {
     if (localStorage.getItem("userToken")) {
       getUser((user) => {
-        setIsLoading(false);
+        setIsLoadingUser(false);
 
         if (!user) {
           localStorage.removeItem("userToken");
@@ -57,7 +93,7 @@ const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoi
         setUser(user);
       });
     } else {
-      setIsLoading(false);
+      setIsLoadingUser(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -75,7 +111,7 @@ const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoi
                 variant="light"
                 className="startGameButton"
                 onClick={() => {
-                  onStartGameStateChange("Create");
+                  setStartGameState("Create");
                 }}
               >
                 Create New Game
@@ -86,14 +122,14 @@ const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoi
                 variant="light"
                 className="startGameButton"
                 onClick={() => {
-                  onStartGameStateChange("Join");
+                  setStartGameState("Join");
                 }}
               >
                 Join Existing Game
               </Button>
             </div>
 
-            {!isLoading && (
+            {!isLoadingUser && (
               <div className="loginContainer center">
                 {!user && (
                   <>
@@ -126,8 +162,8 @@ const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoi
             )}
           </>
         )}
-        {startGameState === "Join" && <JoinGame onCancel={onCancel} onJoinGame={onJoinGame}></JoinGame>}
-        {startGameState === "Create" && <CreateGame onCancel={onCancel} onCreateGame={onCreateGame}></CreateGame>}
+        {startGameState === "Join" && <JoinGame isLoadingGame={isLoadingGame} onCancel={onCancel} onJoinGame={onJoinGame} />}
+        {startGameState === "Create" && <CreateGame isLoadingGame={isLoadingGame} onCancel={onCancel} onCreateGame={onCreateGame} />}
       </div>
     </>
   );
@@ -136,9 +172,5 @@ const StartGame = ({ startGameState, onStartGameStateChange, onCreateGame, onJoi
 export default StartGame;
 
 StartGame.propTypes = {
-  startGameState: PropTypes.string.isRequired,
-  onStartGameStateChange: PropTypes.func.isRequired,
-  onCreateGame: PropTypes.func.isRequired,
-  onJoinGame: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
+  onStartGame: PropTypes.func.isRequired,
 };

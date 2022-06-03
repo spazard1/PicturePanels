@@ -1,0 +1,64 @@
+/* stylelint-disable selector-class-pattern */
+.createGameText {
+  margin-bottom: 2vh;
+}
+
+.createGameInput {
+  text-align: center;
+}
+
+.createGameTeamNamesContainer {
+  margin-bottom: 3vh;
+}
+
+.createGameTeamName {
+  width: 24vw;
+  margin: 0 1vw;
+}
+
+.teamNameRefresh {
+  display: inline-block;
+  cursor: pointer;
+  width: 3rem;
+  height: 3rem;
+}
+
+.teamNameRefresh img {
+  width: 100%;
+  height: 100%;
+}
+
+.createGameTagsMessage {
+  font-size: 2vh;
+}
+
+.createGameTagsInputContainer {
+  display: inline-block;
+  width: 25vw;
+  margin-bottom: 4vh;
+}
+
+.createGameToggleOptions {
+  margin-bottom: 5vh;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  width: 60%;
+}
+
+.createGameToggleContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.createGameButtons {
+  display: flex;
+  width: 50%;
+  justify-content: space-around;
+}
+
+.createGameButton {
+  width: 12vw;
+  font-size: 3vh;
+}

@@ -23,7 +23,7 @@ const ColorPicker = ({ startingColors, colors, onColorChange, onColorRemove, col
           },
         },
       ],
-      colors: startingColors,
+      colors: startingColors.map((sc) => sc.hex()),
       width: colorPickerContainerRef.current.getBoundingClientRect().width,
       // layoutDirection: "horizontal",
       borderWidth: 2,
@@ -53,7 +53,7 @@ const ColorPicker = ({ startingColors, colors, onColorChange, onColorRemove, col
     } else if (colorPickerRef.current.colors.length > startingColors.length) {
       colorPickerRef.current.removeColor(1);
     }
-    colorPickerRef.current.setColors(startingColors);
+    colorPickerRef.current.setColors(startingColors.map((sc) => sc.hex()));
   }, [colorPickerRef, startingColors]);
 
   useEffect(() => {
@@ -74,8 +74,8 @@ const ColorPicker = ({ startingColors, colors, onColorChange, onColorRemove, col
 export default ColorPicker;
 
 ColorPicker.propTypes = {
-  startingColors: PropTypes.arrayOf(PropTypes.string),
-  colors: PropTypes.arrayOf(PropTypes.string),
+  startingColors: PropTypes.arrayOf(PropTypes.object),
+  colors: PropTypes.arrayOf(PropTypes.object),
   onColorChange: PropTypes.func.isRequired,
   onColorRemove: PropTypes.func.isRequired,
   colorPickerContainerRef: PropTypes.object.isRequired,

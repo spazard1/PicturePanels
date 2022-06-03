@@ -40,6 +40,6 @@ export default React.memo(forwardRef(Avatar), areEqual);
 
 Avatar.propTypes = {
   avatar: PropTypes.string.isRequired,
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
   className: PropTypes.string,
 };

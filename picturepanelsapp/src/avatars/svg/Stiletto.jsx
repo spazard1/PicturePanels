@@ -2,17 +2,14 @@
 import * as React from "react";
 import { memo } from "react";
 import PropTypes from "prop-types";
-import complementaryColors from "complementary-colors";
 import "./Avatars.css";
 
 const Stiletto = (props) => {
-  let color2;
+  let outerShoe;
   if (props.colors.length === 1) {
-    const originalColor = new complementaryColors(props.colors[0]);
-    const analogous = originalColor.triad();
-    color2 = "rgb(" + analogous[1].r + " " + analogous[1].g + " " + analogous[1].b + ")";
+    outerShoe = props.colors[0].rotate(120);
   } else {
-    color2 = props.colors[1];
+    outerShoe = props.colors[1];
   }
 
   return (
@@ -31,7 +28,7 @@ const Stiletto = (props) => {
       {...props}
     >
       <defs>
-        <style>{".fil1{fill:" + color2 + ";fill-rule:nonzero}"}</style>
+        <style>{".fil1{fill:" + outerShoe + ";fill-rule:nonzero}"}</style>
       </defs>
       <g>
         <path
@@ -52,7 +49,7 @@ const Stiletto = (props) => {
         <path
           d="M1080 830c77-186 126-332 241-432 26-19 55-36 86-48 103-38 217-68 255-70 64-3-81 66-88 69-102 45-247 118-369 343-90 166-107 432-302 595-30 25-82 44-119 37-60-12-2-51 26-68 115-52 191-236 270-426z"
           style={{
-            fill: color2,
+            fill: outerShoe,
             fillRule: "nonzero",
           }}
         />
@@ -69,7 +66,7 @@ const Stiletto = (props) => {
 };
 
 Stiletto.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Stiletto);

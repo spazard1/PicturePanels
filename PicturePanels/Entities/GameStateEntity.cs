@@ -19,10 +19,6 @@ namespace PicturePanels.Entities
             this.Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
             this.ExcludedTags = string.Join(",", tableEntity.ExcludedTags ?? new List<string>());
             this.Theme = tableEntity.Theme;
-            this.OpenPanelTime = tableEntity.OpenPanelTime;
-            this.GuessTime = tableEntity.GuessTime;
-            this.VoteGuessTime = tableEntity.VoteGuessTime;
-            this.WrongGuessPenalty = tableEntity.WrongGuessPenalty;
             this.RoundNumber = tableEntity.RoundNumber;
             this.FinalRoundNumber = tableEntity.FinalRoundNumber;
             this.TeamTurn = tableEntity.TeamTurn;
@@ -70,22 +66,13 @@ namespace PicturePanels.Entities
 
         public string Theme { get; set; }
 
-        [Range(0, 120)]
-        public int? OpenPanelTime { get; set; }
+        public bool ExtendedTimers { get; set; }
 
-        [Range(0, 180)]
-        public int? GuessTime { get; set; }
-
-        [Range(0, 60)]
-        public int? VoteGuessTime { get; set; }
-
-        [Range(-2, 0)]
-        public int? WrongGuessPenalty { get; set; }
+        public bool ShortGame { get; set; }
 
         public int? RoundNumber { get; set; }
 
-        [Range(4, 10)]
-        public int? FinalRoundNumber { get; set; }
+        public int? FinalRoundNumber { get; internal set; }
 
         public int? TeamTurn { get; set; }
 

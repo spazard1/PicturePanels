@@ -9,15 +9,11 @@ import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import FadedBox from "./FadedBox";
 import { getImageEntity } from "./getImageEntity";
 import { useGameboardPing } from "./useGameboardPing";
-import StartGame from "./StartGame";
+import StartGame from "./startGame/StartGame";
 import Welcome from "./Welcome";
 import SettingsDropDown from "./SettingsDropDown";
-import getGameState from "../common/getGameState";
-import postGameState from "./postGameState";
 import RoundNumber from "./RoundNumber";
 import EndGame from "./EndGame";
-import ModalMessage from "../common/modal/ModalMessage";
-import { useModal } from "../common/modal/useModal";
 import SignalRConnectionStatus from "../signalr/SignalRConnectionStatus";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
@@ -32,7 +28,6 @@ import "../animate/animate.css";
 export default function Gameboard() {
   useBodyClass("gameboard");
 
-  const [startGameState, setStartGameState] = useState("");
   const [roundNumberAnimateDisplay, setRoundNumberAnimateDisplay] = useState(false);
   const [roundNumberAnimateDisplayText, setRoundNumberAnimateDisplayText] = useState();
   const [gameStateIdDisplay, setGameStateIdDisplay] = useState(false);
@@ -42,38 +37,13 @@ export default function Gameboard() {
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const roundNumberRef = useRef();
-  const [modalMessage, setModalMessage, onModalClose] = useModal();
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
   const { winningTeam } = useWinningTeam(gameState);
 
-  const onStartGameStateChange = (startGameState) => {
-    setStartGameState(startGameState);
-  };
-
-  const onCancel = () => {
-    setStartGameState("");
-  };
-
-  const onCreateGame = (gameOptions) => {
-    postGameState(gameOptions, (gs) => {
-      if (gs) {
-        setGameState(gs);
-      } else {
-        setModalMessage("There was a problem creating the game. Please try again later.");
-      }
-    });
-  };
-
-  const onJoinGame = (gameStateId) => {
-    getGameState(gameStateId, (gs) => {
-      if (gs) {
-        setGameState(gs);
-      } else {
-        setModalMessage("Did not find a game with that code. Check the game code and try again.");
-      }
-    });
+  const onStartGame = (gameState) => {
+    setGameState(gameState);
   };
 
   const { queryString, setQueryString } = useSignalRConnection();
@@ -101,8 +71,6 @@ export default function Gameboard() {
     if (!gameState) {
       return;
     }
-
-    setStartGameState("Playing");
 
     if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
       setGameStateIdDisplay(true);
@@ -179,8 +147,9 @@ export default function Gameboard() {
 
   return (
     <>
-      <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose} />
       <SignalRConnectionStatus />
+
+      {!gameState && <StartGame onStartGame={onStartGame} />}
 
       {gameState && (
         <ToastContainer position={"middle-center"}>
@@ -191,15 +160,7 @@ export default function Gameboard() {
       )}
 
       {gameState && <SettingsDropDown gameStateId={gameState.gameStateId} pauseState={gameState.pauseState} />}
-      {startGameState !== "Playing" && (
-        <StartGame
-          startGameState={startGameState}
-          onStartGameStateChange={onStartGameStateChange}
-          onCreateGame={onCreateGame}
-          onJoinGame={onJoinGame}
-          onCancel={onCancel}
-        ></StartGame>
-      )}
+
       {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
 
       <TeamInfos gameState={gameState ?? {}} />

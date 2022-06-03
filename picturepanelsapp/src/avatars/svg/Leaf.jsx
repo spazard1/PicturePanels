@@ -45,7 +45,7 @@ const Leaf = (props) => (
 );
 
 Leaf.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Leaf);

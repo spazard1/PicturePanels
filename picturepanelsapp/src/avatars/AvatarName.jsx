@@ -42,7 +42,7 @@ const areEqual = (preProps, newProps) => {
 
 AvatarName.propTypes = {
   avatar: PropTypes.string.isRequired,
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
   name: PropTypes.string,
   className: PropTypes.string,
 };

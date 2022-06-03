@@ -33,7 +33,7 @@ const Eagle = (props) => (
 );
 
 Eagle.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 const Memo = memo(Eagle);

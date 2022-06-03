@@ -82,7 +82,7 @@ const areEqual = (preProps, newProps) => {
 
 PlayerDot.propTypes = {
   avatar: PropTypes.string.isRequired,
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colors: PropTypes.arrayOf(PropTypes.object).isRequired,
   panelRef: PropTypes.object,
   isMoved: PropTypes.bool,
 };
