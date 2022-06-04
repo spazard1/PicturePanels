@@ -9,12 +9,14 @@ import shuffleSeed from "shuffle-seed";
 import { useLocalStorageState } from "../../common/useLocalStorageState";
 import { v4 as uuidv4 } from "uuid";
 import Color from "color";
-import dice64 from "./../../common/images/dice-64.png";
+import dice64 from "./../../common/randomize/dice-64.png";
+import { useSpinAnimation } from "../../common/randomize/useSpinAnimation";
+
 import "./ChoosePlayerAvatar.css";
 
 const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSelect }) => {
+  const [spinAnimation, setSpinAnimation] = useSpinAnimation();
   const [selectedAvatar, setSelectedAvatar] = useState(localStorage.getItem("playerAvatar"));
-  const [randomizeSpin, setRandomizeSpin] = useState(false);
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());
   const colorPickerContainerRef = useRef();
@@ -33,10 +35,7 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
   };
 
   const onRandomizeColors = () => {
-    setRandomizeSpin(true);
-    setTimeout(() => {
-      setRandomizeSpin(false);
-    }, 250);
+    setSpinAnimation(true);
 
     if (colors.length === 1) {
       setStartingColors([getNewColor()]);
@@ -65,7 +64,7 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
         <div className="choosePlayerAvatarLabel">Choose your avatar</div>
         <div className="colorOptionsContainer">
           <div className="colorPickerContainer">
-            <div className={classNames("randomizeContainer", { randomizeContainerSpin: randomizeSpin })} onClick={onRandomizeColors}>
+            <div className={classNames("randomizeContainer", { spinAnimation: spinAnimation })} onClick={onRandomizeColors}>
               <img src={dice64} alt="randomize"></img>
             </div>
             <ColorPicker

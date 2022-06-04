@@ -1,5 +1,4 @@
 /* stylelint-disable selector-class-pattern */
-
 .choosePlayerAvatarContainer {
   display: flex;
   flex-direction: column;
@@ -38,11 +37,6 @@
   height: 2rem;
 }
 
-.randomizeContainerSpin {
-  transform: rotate(360deg);
-  transition: transform 0.25s linear;
-}
-
 .randomizeContainer img {
   height: 100%;
   width: 100%;
@@ -65,7 +59,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 95%;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   margin-left: auto;

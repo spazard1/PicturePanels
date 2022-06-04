@@ -1,0 +1,5 @@
+/* stylelint-disable selector-class-pattern */
+.spinAnimation {
+  transform: rotate(360deg);
+  transition: transform 0.25s linear;
+}
