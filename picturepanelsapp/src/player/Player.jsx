@@ -55,11 +55,10 @@ export default function Player() {
   const [teamNameToast, setTeamNameToast] = useState("");
   const { isWinner } = useWinningTeam(gameState, teamNumber);
   const isFirstLoad = useRef(true);
+  const [colors, setColors] = useState([]);
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
-
-  const [colors, setColors] = useState([]);
 
   useEffect(() => {
     let initialColors;
