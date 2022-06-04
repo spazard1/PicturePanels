@@ -1,5 +1,4 @@
 /* stylelint-disable selector-class-pattern */
-
 .choosePlayerAvatarContainer {
   display: flex;
   flex-direction: column;
@@ -60,7 +59,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 95%;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   margin-left: auto;
