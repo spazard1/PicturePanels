@@ -109,23 +109,23 @@ const StartGame = ({ onStartGame }) => {
             <div>
               <Button
                 variant="light"
-                className="startGameButton"
+                className="startGameButton startGameCreateButton"
                 onClick={() => {
                   setStartGameState("Create");
                 }}
               >
-                Create New Game
+                Create Game
               </Button>
             </div>
             <div>
               <Button
                 variant="light"
-                className="startGameButton"
+                className="startGameButton startGameJoinButton"
                 onClick={() => {
                   setStartGameState("Join");
                 }}
               >
-                Join Existing Game
+                Join Game
               </Button>
             </div>
 
@@ -160,6 +160,7 @@ const StartGame = ({ onStartGame }) => {
                 )}
               </div>
             )}
+            {isLoadingUser && <div>Loading...</div>}
           </>
         )}
         {startGameState === "Join" && <JoinGame isLoadingGame={isLoadingGame} onCancel={onCancel} onJoinGame={onJoinGame} />}

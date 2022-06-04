@@ -18,12 +18,20 @@
 }
 
 .startGameButton {
-  width: 20vw;
-  margin-bottom: 3vh;
+  width: 12vw;
   font-size: 3vh;
 }
 
 .loginContainer {
   font-size: 2.5vh;
   width: 60%;
+  margin-bottom: 3vh;
+}
+
+.startGameCreateButton {
+  margin-bottom: 4vh;
+}
+
+.startGameJoinButton {
+  margin-bottom: 5vh;
 }

@@ -38,11 +38,6 @@
   height: 2rem;
 }
 
-.randomizeContainerSpin {
-  transform: rotate(360deg);
-  transition: transform 0.25s linear;
-}
-
 .randomizeContainer img {
   height: 100%;
   width: 100%;

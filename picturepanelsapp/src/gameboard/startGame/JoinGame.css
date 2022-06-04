@@ -7,10 +7,11 @@
   display: flex;
   width: 50%;
   justify-content: space-around;
+  margin-bottom: 3vh;
 }
 
 .joinGameStateIdInput {
-  margin-bottom: 5vh;
+  margin-bottom: 4vh;
   font-size: 4vh;
   width: 10vw;
   text-align: center;
