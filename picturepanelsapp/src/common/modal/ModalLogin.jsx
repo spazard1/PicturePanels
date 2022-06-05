@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
@@ -7,7 +7,7 @@ import "./Modal.css";
 
 const ModalLogin = ({ showModal, onLogin, onModalClose }) => {
   const [formValues, setFormValues] = useState({
-    userName: localStorage.getItem("username") ?? "",
+    userName: localStorage.getItem("userName") ?? "",
     password: "",
   });
 
@@ -23,6 +23,15 @@ const ModalLogin = ({ showModal, onLogin, onModalClose }) => {
     onModalClose();
   };
 
+  useEffect(() => {
+    if (!showModal) {
+      setFormValues({
+        userName: localStorage.getItem("userName") ?? "",
+        password: "",
+      });
+    }
+  }, [showModal]);
+
   return (
     <Modal show={showModal} onHide={onModalCloseHelper}>
       <Modal.Header>Login to Picture Panels</Modal.Header>
@@ -36,7 +45,7 @@ const ModalLogin = ({ showModal, onLogin, onModalClose }) => {
             placeholder="username"
             autoComplete="off"
             onChange={onInputChange}
-            autoFocus
+            autoFocus={!formValues.userName}
           />
         </div>
         <br />
@@ -50,6 +59,7 @@ const ModalLogin = ({ showModal, onLogin, onModalClose }) => {
             value={formValues.password}
             autoComplete="off"
             onChange={onInputChange}
+            autoFocus={!!formValues.userName}
           />
         </div>
       </Modal.Body>
