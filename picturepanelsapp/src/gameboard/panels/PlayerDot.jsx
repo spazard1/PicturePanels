@@ -38,7 +38,7 @@ const PlayerDot = ({ avatar, colors, panelRef, isMoved }) => {
       return;
     }
 
-    const x = originalRect.x < panelRect.x ? Math.abs(originalRect.y - panelRect.y) : -(originalRect.x - panelRect.x);
+    const x = originalRect.x < panelRect.x ? Math.abs(originalRect.x - panelRect.x) : -(originalRect.x - panelRect.x);
     const y = originalRect.y < panelRect.y ? Math.abs(originalRect.y - panelRect.y) : -(originalRect.y - panelRect.y);
 
     setStyle({

@@ -33,7 +33,7 @@ const ChooseTeam = ({ gameStateId, teamOneName, teamTwoName, onTeamNumberSelect 
 
   return (
     <>
-      <div className="chooseTeamLabel">Choose your team!</div>
+      <div className="chooseTeamLabel">Choose your team</div>
       <div className="chooseTeamNames">
         <div className="chooseSmallestTeamContainer">
           <Button className={"chooseTeamNameButton"} variant="info" disabled={isLoading} onClick={chooseSmallestTeamOnClick}>
