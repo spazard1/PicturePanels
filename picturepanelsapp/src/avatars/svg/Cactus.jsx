@@ -7,7 +7,7 @@ import "./Avatars.css";
 const Cactus = (props) => {
   let color2;
   if (props.colors.length === 1) {
-    color2 = props.colors[0].rotate(180);
+    color2 = props.colors[0]?.rotate(180);
   } else {
     color2 = props.colors[1];
   }

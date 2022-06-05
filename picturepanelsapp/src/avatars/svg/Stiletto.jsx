@@ -7,7 +7,7 @@ import "./Avatars.css";
 const Stiletto = (props) => {
   let outerShoe;
   if (props.colors.length === 1) {
-    outerShoe = props.colors[0].rotate(120);
+    outerShoe = props.colors[0]?.rotate(120);
   } else {
     outerShoe = props.colors[1];
   }

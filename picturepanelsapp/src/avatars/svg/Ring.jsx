@@ -8,7 +8,7 @@ const Ring = (props) => {
   let innerStone;
   let outerStone;
   let stoneSeparator;
-  if (props.colors.length === 1) {
+  if (props.colors.length <= 1) {
     innerStone = "#c2185b";
     outerStone = "#ad1457";
     stoneSeparator = "#ec407a";
@@ -18,7 +18,7 @@ const Ring = (props) => {
     stoneSeparator = props.colors[1].rotate(30);
   }
 
-  const outerRing = props.colors[0].rotate(30);
+  const outerRing = props.colors[0]?.rotate(30);
 
   return (
     <svg

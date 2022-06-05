@@ -8,7 +8,7 @@ const Elephant = (props) => (
   <svg viewBox="0 0 64 64" className="playerAvatarSvg" xmlns="http://www.w3.org/2000/svg" {...props}>
     <defs>
       <style>
-        {".elephant-1{fill:#2d2d2d}.elephant-3{fill:" + props.colors[0].darken(0.2) + "}.elephant-4{fill:" + (props.colors[1] ?? "#d8d9dd") + "}"}
+        {".elephant-1{fill:#2d2d2d}.elephant-3{fill:" + props.colors[0]?.darken(0.2) + "}.elephant-4{fill:" + (props.colors[1] ?? "#d8d9dd") + "}"}
       </style>
     </defs>
     <title />
