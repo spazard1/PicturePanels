@@ -13,15 +13,23 @@ import Donut from "./svg/Donut";
 import Eagle from "./svg/Eagle";
 import Eggplant from "./svg/Eggplant";
 import Elephant from "./svg/Elephant";
+import Fish from "./svg/Fish";
 import Flask from "./svg/Flask";
 import Hat from "./svg/Hat";
 import Hippo from "./svg/Hippo";
+import Horse from "./svg/Horse";
 import IceCreamStick from "./svg/IceCreamStick";
 import Leaf from "./svg/Leaf";
+import Magnet from "./svg/Magnet";
 import Muffin from "./svg/Muffin";
+import Palm from "./svg/Palm";
+import Peacock from "./svg/Peacock";
 import Ring from "./svg/Ring";
 import Robot from "./svg/Robot";
+import Rocket from "./svg/Rocket";
 import Saturn from "./svg/Saturn";
+import Snail from "./svg/Snail";
+import Star from "./svg/Star";
 import Stiletto from "./svg/Stiletto";
 import Tree from "./svg/Tree";
 import Tulip from "./svg/Tulip";
@@ -43,15 +51,23 @@ const AllAvatars = {
   eagle: Eagle,
   eggplant: Eggplant,
   elephant: Elephant,
+  fish: Fish,
   flask: Flask,
   hat: Hat,
   hippo: Hippo,
+  horse: Horse,
   iceCreamStick: IceCreamStick,
   leaf: Leaf,
+  magnet: Magnet,
   muffin: Muffin,
+  palm: Palm,
+  peacock: Peacock,
   ring: Ring,
   robot: Robot,
+  rocket: Rocket,
   saturn: Saturn,
+  snail: Snail,
+  star: Star,
   stiletto: Stiletto,
   tree: Tree,
   tulip: Tulip,

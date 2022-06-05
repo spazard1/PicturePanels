@@ -19,7 +19,7 @@ const Flask = (props) => (
       d="M19.006 2.266S32.36 6.948 33.778 7.404c3.725 1.199 2.184 5.224-.385 4.582-5.083-1.271-14.387-4.068-15.415-4.068s1.028-5.652 1.028-5.652z"
     />
     <path fill={props.colors[1] ? props.colors[1].lighten(0.25) : "#67757F"} d="M29 23a1 1 0 0 1-1 1H3a1 1 0 1 1 0-2h25a1 1 0 0 1 1 1z" />
-    <ellipse fill={props.colors[0].lighten(0.2)} cx={15.41} cy={16.139} rx={11.818} ry={1.629} />
+    <ellipse fill={props.colors[0]?.lighten(0.2)} cx={15.41} cy={16.139} rx={11.818} ry={1.629} />
     <ellipse transform="rotate(-74.365 34.047 9.981)" fill="#AAB8C2" cx={34.047} cy={9.982} rx={1.341} ry={0.974} />
   </svg>
 );

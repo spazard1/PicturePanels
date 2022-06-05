@@ -31,7 +31,7 @@ const Tulip = (props) => (
     <path
       d="m15.5 7.327 6-3.462V10.5c0 .113-.001.174-.007.285L15.5 7.327z"
       style={{
-        fill: props.colors[0].rotate(45),
+        fill: props.colors[0]?.rotate(45),
       }}
     />
     <path

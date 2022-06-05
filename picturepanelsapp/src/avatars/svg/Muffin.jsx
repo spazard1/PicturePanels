@@ -7,7 +7,7 @@ import "./Avatars.css";
 const Muffin = (props) => {
   let color2;
   let color3;
-  if (props.colors.length === 1) {
+  if (props.colors.length <= 1) {
     color2 = "#be9981";
     color3 = "#fedcc6";
   } else {

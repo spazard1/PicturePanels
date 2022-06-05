@@ -22,7 +22,7 @@ const Hat = (props) => (
     <path
       d="M1703 1212c70 62 102 120 84 168-24 64-134 85-294 66-318-37-787-210-1053-389-133-90-204-177-180-241 18-49 85-73 184-73 336 24 999 239 1258 469z"
       style={{
-        fill: props.colors[0].darken(0.1),
+        fill: props.colors[0]?.darken(0.1),
         fillRule: "nonzero",
       }}
     />
