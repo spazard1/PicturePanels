@@ -33,5 +33,9 @@
 }
 
 .startGameJoinButton {
-  margin-bottom: 5vh;
+  margin-bottom: 8vh;
+}
+
+.newUser {
+  font-size: 1.75rem;
 }

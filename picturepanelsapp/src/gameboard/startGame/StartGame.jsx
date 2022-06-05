@@ -16,6 +16,7 @@ import "./StartGame.css";
 const StartGame = ({ onStartGame }) => {
   const { user, setUser } = useContext(UserContext);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
   const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [startGameState, setStartGameState] = useState("");
   const [showModalLogin, setShowModalLogin] = useState(false);
@@ -68,8 +69,13 @@ const StartGame = ({ onStartGame }) => {
 
   const onLogin = (userInfo) => {
     setShowModalLogin(false);
+    setIsLoadingLogin(true);
+
+    localStorage.setItem("userName", userInfo.userName);
 
     putLogin(userInfo, (response) => {
+      setIsLoadingLogin(false);
+
       if (!response) {
         setModalMessage("Failed to login. Check your username/password and try again.");
         return;
@@ -137,11 +143,12 @@ const StartGame = ({ onStartGame }) => {
                       <Button
                         variant="light"
                         className="startGameButton"
+                        disabled={isLoadingLogin}
                         onClick={() => {
                           setShowModalLogin(true);
                         }}
                       >
-                        Login
+                        {isLoadingLogin ? "Logging in..." : "Login"}
                       </Button>
                     </div>
                     <div className="center loginMessage">When you are logged in, you will not see images that you have already played.</div>
