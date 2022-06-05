@@ -17,6 +17,7 @@ import "./ChoosePlayerAvatar.css";
 const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSelect }) => {
   const [spinAnimation, setSpinAnimation] = useSpinAnimation();
   const [selectedAvatar, setSelectedAvatar] = useState(localStorage.getItem("playerAvatar"));
+  const selectedAvatarRef = useRef();
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());
   const colorPickerContainerRef = useRef();
@@ -58,6 +59,12 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
     }
   }, [colors]);
 
+  useEffect(() => {
+    if (selectedAvatarRef.current) {
+      selectedAvatarRef.current.scrollIntoView({ block: "center" });
+    }
+  }, []);
+
   return (
     <>
       <div className="choosePlayerAvatarContainer">
@@ -86,17 +93,15 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
           </div>
         </div>
         <div className="playerAvatars">
-          {shuffledAvatarsRef.current.map((avatarName) => {
-            return (
-              <div key={avatarName} onClick={() => setSelectedAvatar(avatarName)}>
-                <Avatar
-                  avatar={avatarName}
-                  colors={colors}
-                  className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
-                ></Avatar>
-              </div>
-            );
-          })}
+          {shuffledAvatarsRef.current.map((avatarName) => (
+            <div key={avatarName} ref={avatarName === selectedAvatar ? selectedAvatarRef : null} onClick={() => setSelectedAvatar(avatarName)}>
+              <Avatar
+                avatar={avatarName}
+                colors={colors}
+                className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
+              ></Avatar>
+            </div>
+          ))}
         </div>
         <div className="playerAvatarNextButton">
           <Button onClick={avatarSelectOnClick} disabled={!selectedAvatar}>

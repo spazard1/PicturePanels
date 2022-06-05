@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import AvatarName from "../avatars/AvatarName";
-
+import Color from "color";
 import "./Players.css";
 
 export default function Players({ players, turnType }) {
@@ -15,7 +15,7 @@ export default function Players({ players, turnType }) {
               <AvatarName
                 key={playerId}
                 avatar={players[playerId].avatar}
-                colors={players[playerId].colors}
+                colors={players[playerId].colors.map((c) => Color(c))}
                 name={players[playerId].name}
                 className={classNames("teamPlayerNameContainer", "animate__animated", "animate__infinite", {
                   animate__pulse: !players[playerId].isReady,
@@ -32,7 +32,7 @@ export default function Players({ players, turnType }) {
               <AvatarName
                 key={playerId}
                 avatar={players[playerId].avatar}
-                colors={players[playerId].colors}
+                colors={players[playerId].colors.map((c) => Color(c))}
                 name={players[playerId].name}
                 className={classNames("teamPlayerNameContainer", "animate__animated", "animate__infinite", {
                   animate__pulse: !players[playerId].isReady,
