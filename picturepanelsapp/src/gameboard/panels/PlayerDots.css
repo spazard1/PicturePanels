@@ -7,6 +7,10 @@
   font-size: 1.4rem;
 }
 
+.playerNameContainer {
+  overflow: hidden;
+}
+
 .playerDotsContainer {
   position: relative;
   display: flex;

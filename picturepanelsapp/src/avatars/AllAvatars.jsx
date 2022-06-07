@@ -4,6 +4,7 @@ import Balloons from "./svg/Balloons";
 import Bee from "./svg/Bee";
 import Bulb from "./svg/Bulb";
 import Bunny from "./svg/Bunny";
+import Butterfly from "./svg/Butterfly";
 import Cactus from "./svg/Cactus";
 import Cheers from "./svg/Cheers";
 import ChiliPepper from "./svg/ChiliPepper";
@@ -15,7 +16,9 @@ import Eggplant from "./svg/Eggplant";
 import Elephant from "./svg/Elephant";
 import Fish from "./svg/Fish";
 import Flask from "./svg/Flask";
+import Frog from "./svg/Frog";
 import Hat from "./svg/Hat";
+import Hedgehog from "./svg/Hedgehog";
 import Hippo from "./svg/Hippo";
 import Horse from "./svg/Horse";
 import IceCreamStick from "./svg/IceCreamStick";
@@ -33,6 +36,7 @@ import Star from "./svg/Star";
 import Stiletto from "./svg/Stiletto";
 import Tree from "./svg/Tree";
 import Tulip from "./svg/Tulip";
+import Turtle from "./svg/Turtle";
 import Wolf from "./svg/Wolf";
 
 const AllAvatars = {
@@ -42,6 +46,7 @@ const AllAvatars = {
   bee: Bee,
   bunny: Bunny,
   bulb: Bulb,
+  butterfly: Butterfly,
   cactus: Cactus,
   cheers: Cheers,
   chiliPepper: ChiliPepper,
@@ -53,7 +58,9 @@ const AllAvatars = {
   elephant: Elephant,
   fish: Fish,
   flask: Flask,
+  frog: Frog,
   hat: Hat,
+  hedgehog: Hedgehog,
   hippo: Hippo,
   horse: Horse,
   iceCreamStick: IceCreamStick,
@@ -71,6 +78,7 @@ const AllAvatars = {
   stiletto: Stiletto,
   tree: Tree,
   tulip: Tulip,
+  turtle: Turtle,
   wolf: Wolf,
 };
 
