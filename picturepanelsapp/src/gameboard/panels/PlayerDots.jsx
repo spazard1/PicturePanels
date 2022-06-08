@@ -16,7 +16,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
   return (
     <>
       <div className={classNames("allPlayerDotsContainer", "teamOnePlayerDotsContainer")}>
-        {Object.keys(players).map(
+        {Object.keys(players)?.map(
           (playerId) =>
             players[playerId] &&
             players[playerId].teamNumber === 1 && (
@@ -52,7 +52,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
         )}
       </div>
       <div className={classNames("allPlayerDotsContainer", "teamTwoPlayerDotsContainer")}>
-        {Object.keys(players).map(
+        {Object.keys(players)?.map(
           (playerId) =>
             players[playerId] &&
             players[playerId].teamNumber === 2 && (
