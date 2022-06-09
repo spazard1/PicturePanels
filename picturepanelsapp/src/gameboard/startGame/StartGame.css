@@ -26,6 +26,8 @@
   font-size: 2.5vh;
   width: 60%;
   margin-bottom: 3vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .startGameCreateButton {
@@ -36,6 +38,11 @@
   margin-bottom: 8vh;
 }
 
-.newUser {
-  font-size: 1.75rem;
+.loginMessage {
+  margin-bottom: 1vh;
+}
+
+.startGameButtonsContainer {
+  display: flex;
+  justify-content: space-evenly;
 }
