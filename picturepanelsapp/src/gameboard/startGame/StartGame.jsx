@@ -139,7 +139,11 @@ const StartGame = ({ onStartGame }) => {
               <div className="loginContainer center">
                 {!user && (
                   <>
-                    <div>
+                    <div className="center loginMessage">When you are logged in, you will not see images that you have already played.</div>
+                    <div className="startGameButtonsContainer">
+                      <Button variant="light" className="startGameButton" disabled={isLoadingLogin}>
+                        Create User
+                      </Button>
                       <Button
                         variant="light"
                         className="startGameButton"
@@ -151,8 +155,6 @@ const StartGame = ({ onStartGame }) => {
                         {isLoadingLogin ? "Logging in..." : "Login"}
                       </Button>
                     </div>
-                    <div className="center loginMessage">When you are logged in, you will not see images that you have already played.</div>
-                    <a href="newuser">Create a new user</a>
                   </>
                 )}
                 {user && (
