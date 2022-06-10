@@ -12,14 +12,18 @@ import getGameState from "../../common/getGameState";
 import postGameState from "./postGameState";
 
 import "./StartGame.css";
+import ModalNewUser from "../../common/modal/ModalNewUser";
+import postUser from "../../user/postUser";
 
 const StartGame = ({ onStartGame }) => {
   const { user, setUser } = useContext(UserContext);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [startGameState, setStartGameState] = useState("");
   const [showModalLogin, setShowModalLogin] = useState(false);
+  const [showModalNewUser, setShowModalNewUser] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
   const onCreateGame = (gameOptions) => {
@@ -58,6 +62,10 @@ const StartGame = ({ onStartGame }) => {
     setShowModalLogin(false);
   };
 
+  const onModalNewUserClose = () => {
+    setShowModalNewUser(false);
+  };
+
   const onModalMessageClose = () => {
     setModalMessage("");
   };
@@ -65,6 +73,28 @@ const StartGame = ({ onStartGame }) => {
   const onLogout = () => {
     setUser();
     localStorage.removeItem("userToken");
+  };
+
+  const onNewUser = (userInfo) => {
+    setShowModalNewUser(false);
+    setIsCreatingUser(true);
+
+    postUser(userInfo, (response) => {
+      setIsCreatingUser(false);
+
+      if (response === 409) {
+        // conflict
+        setModalMessage("That username already exists. Please choose another.");
+        return;
+      }
+
+      if (!response) {
+        setModalMessage("Failed to create user. Please try again later.");
+        return;
+      }
+
+      setModalMessage("User is created. You can now login in.");
+    });
   };
 
   const onLogin = (userInfo) => {
@@ -107,6 +137,7 @@ const StartGame = ({ onStartGame }) => {
   return (
     <>
       <ModalLogin showModal={showModalLogin} onLogin={onLogin} onModalClose={onModalLoginClose} />
+      <ModalNewUser showModal={showModalNewUser} onNewUser={onNewUser} onModalClose={onModalNewUserClose} />
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalMessageClose} />
       <div className="startGameContainer">
         {startGameState === "" && (
@@ -141,13 +172,20 @@ const StartGame = ({ onStartGame }) => {
                   <>
                     <div className="center loginMessage">When you are logged in, you will not see images that you have already played.</div>
                     <div className="startGameButtonsContainer">
-                      <Button variant="light" className="startGameButton" disabled={isLoadingLogin}>
-                        Create User
+                      <Button
+                        variant="light"
+                        className="startGameButton"
+                        disabled={isLoadingLogin || isCreatingUser}
+                        onClick={() => {
+                          setShowModalNewUser(true);
+                        }}
+                      >
+                        {isCreatingUser ? "Creating..." : "Create User"}
                       </Button>
                       <Button
                         variant="light"
                         className="startGameButton"
-                        disabled={isLoadingLogin}
+                        disabled={isLoadingLogin || isCreatingUser}
                         onClick={() => {
                           setShowModalLogin(true);
                         }}
