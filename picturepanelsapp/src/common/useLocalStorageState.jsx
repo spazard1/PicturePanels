@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function useLocalStorageState(keyName, initialValue) {
-  const [state, setState] = useState(localStorage.getItem(keyName));
+  const [state, setState] = useState(localStorage.getItem(keyName) ?? initialValue);
 
   useEffect(() => {
     if (!keyName) {

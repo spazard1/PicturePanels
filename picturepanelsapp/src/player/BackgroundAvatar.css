@@ -1,0 +1,8 @@
+/* stylelint-disable selector-class-pattern */
+.backgroundAvatar {
+  position: fixed;
+  left: 5vmin;
+  width: 90vmin;
+  height: 90vmin;
+  opacity: 0.9;
+}

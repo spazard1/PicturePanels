@@ -32,6 +32,7 @@ import Color from "color";
 import "./Player.css";
 import "animate.css";
 import "../animate/animate.css";
+import BackgroundAvatar from "./BackgroundAvatar";
 
 export default function Player() {
   useBodyClass("player");
@@ -412,6 +413,8 @@ export default function Player() {
 
       {gameState && teamNumber > 0 && player && (
         <div className="playingContainer">
+          <BackgroundAvatar avatar={player.avatar} colors={player.colors}></BackgroundAvatar>
+
           {gameState.turnType === "Welcome" && (
             <StartGame
               gameStateId={gameState.gameStateId}
