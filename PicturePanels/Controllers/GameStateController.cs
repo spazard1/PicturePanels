@@ -18,7 +18,6 @@ namespace PicturePanels.Controllers
     public class GameStateController : Controller
     {
         private readonly GameStateTableStorage gameStateTableStorage;
-        private readonly ImageTableStorage imageTableStorage;
         private readonly PlayerTableStorage playerTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly ThemeTableStorage themeTableStorage;
@@ -27,7 +26,6 @@ namespace PicturePanels.Controllers
         private readonly GameStateQRCodeGenerator gameStateQRCodeGenerator;
 
         public GameStateController(GameStateTableStorage gameStateTableStorage,
-            ImageTableStorage imageTableStorage,
             PlayerTableStorage playerTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
             ThemeTableStorage themeTableStorage,
@@ -36,7 +34,6 @@ namespace PicturePanels.Controllers
             GameStateQRCodeGenerator gameStateQRCodeGenerator)
         {
             this.gameStateTableStorage = gameStateTableStorage;
-            this.imageTableStorage = imageTableStorage;
             this.playerTableStorage = playerTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
             this.themeTableStorage = themeTableStorage;

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
+import Color from "color";
 
 export function usePlayers(gameStateId, turnType, teamTurn) {
   const [players, setPlayers] = useState({});
 
   useSignalR("Players", (players) => {
     const newPlayers = players.reduce((aggregate, value) => ({ ...aggregate, [value.playerId]: value }), {});
+
+    for (const playerId in newPlayers) {
+      newPlayers[playerId].colors = newPlayers[playerId].colors.map((c) => Color(c));
+    }
 
     setPlayers(newPlayers);
     /*
@@ -20,6 +25,7 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
   });
 
   useSignalR("Player", (player) => {
+    player.colors = player.colors.map((c) => Color(c));
     setPlayers((ps) => {
       return { ...ps, [player.playerId]: player };
     });
