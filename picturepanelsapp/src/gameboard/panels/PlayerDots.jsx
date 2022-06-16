@@ -1,18 +1,14 @@
 import React from "react";
-import { useSelectedPanels } from "../../common/useSelectedPanels";
 import PlayerDot from "./PlayerDot";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import Avatar from "../../avatars/Avatar";
-import Color from "color";
 
 import "./PlayerDots.css";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
 export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
-  const { selectedPanels } = useSelectedPanels(players, turnType);
-
   return (
     <>
       <div className={classNames("allPlayerDotsContainer", "teamOnePlayerDotsContainer")}>
@@ -23,7 +19,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
               <div key={playerId} className={classNames("playerDotsContainer", { teamOnePlayerNameNotReady: !players[playerId].isReady })}>
                 <Avatar
                   avatar={players[playerId].avatar}
-                  colors={players[playerId].colors.map((c) => Color(c))}
+                  colors={players[playerId].colors}
                   className={classNames("animate__animated", "animate__infinite", { animate__pulse: !players[playerId].isReady })}
                 ></Avatar>
                 {panelNumbers.map((panelNumber) => (
@@ -35,8 +31,8 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                     isMoved={
                       turnType === "OpenPanel" &&
                       players[playerId].teamNumber === teamTurn &&
-                      selectedPanels[playerId] &&
-                      selectedPanels[playerId].indexOf(panelNumber) >= 0
+                      players[playerId].selectedPanels &&
+                      players[playerId].selectedPanels.indexOf(panelNumber) >= 0
                     }
                   />
                 ))}
@@ -60,7 +56,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                 <div className="hidden">
                   <Avatar
                     avatar={players[playerId].avatar}
-                    colors={players[playerId].colors.map((c) => Color(c))}
+                    colors={players[playerId].colors}
                     className={classNames("animate__animated", "animate__infinite", { animate__pulse: !players[playerId].isReady })}
                   ></Avatar>
                 </div>
@@ -73,8 +69,8 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                     isMoved={
                       turnType === "OpenPanel" &&
                       players[playerId].teamNumber === teamTurn &&
-                      selectedPanels[playerId] &&
-                      selectedPanels[playerId].indexOf(panelNumber) >= 0
+                      players[playerId].selectedPanels &&
+                      players[playerId].selectedPanels.indexOf(panelNumber) >= 0
                     }
                   />
                 ))}

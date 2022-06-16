@@ -5,9 +5,9 @@ import Avatar from "./Avatar";
 
 import "./AvatarName.css";
 
-const AvatarName = ({ avatar, colors, name, className }) => {
+const AvatarName = ({ avatar, colors, name, className, horizontal = false }) => {
   return (
-    <div className={classNames("avatarNameContainer", className)}>
+    <div className={classNames("avatarNameContainer", { avatarNameHorizontal: horizontal })}>
       <Avatar avatar={avatar} colors={colors} className={className}></Avatar>
       <div className="nameContainer">{name}</div>
     </div>
@@ -45,6 +45,7 @@ AvatarName.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.object).isRequired,
   name: PropTypes.string,
   className: PropTypes.string,
+  horizontal: PropTypes.bool,
 };
 
 export default React.memo(AvatarName, areEqual);

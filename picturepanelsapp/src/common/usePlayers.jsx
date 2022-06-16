@@ -1,25 +1,22 @@
 import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
+import Color from "color";
 
-export function usePlayers(gameStateId, turnType, teamTurn) {
+export function usePlayers(turnType, teamTurn) {
   const [players, setPlayers] = useState({});
 
   useSignalR("Players", (players) => {
     const newPlayers = players.reduce((aggregate, value) => ({ ...aggregate, [value.playerId]: value }), {});
 
-    setPlayers(newPlayers);
-    /*
-    setPlayers((ps) => {
-      for (const playerId in newPlayers) {
-        newPlayers[playerId].isReady = ps[playerId].isReady;
-      }
+    for (const playerId in newPlayers) {
+      newPlayers[playerId].colors = newPlayers[playerId].colors.map((c) => Color(c));
+    }
 
-      return newPlayers;
-    });
-    */
+    setPlayers(newPlayers);
   });
 
   useSignalR("Player", (player) => {
+    player.colors = player.colors.map((c) => Color(c));
     setPlayers((ps) => {
       return { ...ps, [player.playerId]: player };
     });
@@ -35,6 +32,16 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
     });
   });
 
+  useSignalR("SelectPanels", (player) => {
+    setPlayers((ps) => {
+      const newPlayers = { ...ps };
+      if (player.playerId in newPlayers) {
+        newPlayers[player.playerId].selectedPanels = player.selectedPanels ?? [];
+      }
+      return newPlayers;
+    });
+  });
+
   useEffect(() => {
     setPlayers((ps) => {
       const newPlayers = { ...ps };
@@ -43,6 +50,7 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
         if (turnType === "OpenPanel") {
           if (newPlayers[playerId].teamNumber === teamTurn) {
             newPlayers[playerId].isReady = false;
+            newPlayers[playerId].selectedPanels = [];
           } else {
             newPlayers[playerId].isReady = true;
           }
