@@ -4,7 +4,6 @@ import PlayerDot from "./PlayerDot";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import Avatar from "../../avatars/Avatar";
-import Color from "color";
 
 import "./PlayerDots.css";
 
@@ -23,7 +22,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
               <div key={playerId} className={classNames("playerDotsContainer", { teamOnePlayerNameNotReady: !players[playerId].isReady })}>
                 <Avatar
                   avatar={players[playerId].avatar}
-                  colors={players[playerId].colors.map((c) => Color(c))}
+                  colors={players[playerId].colors}
                   className={classNames("animate__animated", "animate__infinite", { animate__pulse: !players[playerId].isReady })}
                 ></Avatar>
                 {panelNumbers.map((panelNumber) => (
@@ -60,7 +59,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                 <div className="hidden">
                   <Avatar
                     avatar={players[playerId].avatar}
-                    colors={players[playerId].colors.map((c) => Color(c))}
+                    colors={players[playerId].colors}
                     className={classNames("animate__animated", "animate__infinite", { animate__pulse: !players[playerId].isReady })}
                   ></Avatar>
                 </div>
