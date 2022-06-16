@@ -1,5 +1,4 @@
 import React from "react";
-import { useSelectedPanels } from "../../common/useSelectedPanels";
 import PlayerDot from "./PlayerDot";
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -10,8 +9,6 @@ import "./PlayerDots.css";
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
 export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
-  const { selectedPanels } = useSelectedPanels(players, turnType);
-
   return (
     <>
       <div className={classNames("allPlayerDotsContainer", "teamOnePlayerDotsContainer")}>
@@ -34,8 +31,8 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                     isMoved={
                       turnType === "OpenPanel" &&
                       players[playerId].teamNumber === teamTurn &&
-                      selectedPanels[playerId] &&
-                      selectedPanels[playerId].indexOf(panelNumber) >= 0
+                      players[playerId].selectedPanels &&
+                      players[playerId].selectedPanels.indexOf(panelNumber) >= 0
                     }
                   />
                 ))}
@@ -72,8 +69,8 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                     isMoved={
                       turnType === "OpenPanel" &&
                       players[playerId].teamNumber === teamTurn &&
-                      selectedPanels[playerId] &&
-                      selectedPanels[playerId].indexOf(panelNumber) >= 0
+                      players[playerId].selectedPanels &&
+                      players[playerId].selectedPanels.indexOf(panelNumber) >= 0
                     }
                   />
                 ))}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 import Color from "color";
 
-export function usePlayers(gameStateId, turnType, teamTurn) {
+export function usePlayers(turnType, teamTurn) {
   const [players, setPlayers] = useState({});
 
   useSignalR("Players", (players) => {
@@ -13,15 +13,6 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
     }
 
     setPlayers(newPlayers);
-    /*
-    setPlayers((ps) => {
-      for (const playerId in newPlayers) {
-        newPlayers[playerId].isReady = ps[playerId].isReady;
-      }
-
-      return newPlayers;
-    });
-    */
   });
 
   useSignalR("Player", (player) => {
@@ -41,6 +32,16 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
     });
   });
 
+  useSignalR("SelectPanels", (player) => {
+    setPlayers((ps) => {
+      const newPlayers = { ...ps };
+      if (player.playerId in newPlayers) {
+        newPlayers[player.playerId].selectedPanels = player.selectedPanels ?? [];
+      }
+      return newPlayers;
+    });
+  });
+
   useEffect(() => {
     setPlayers((ps) => {
       const newPlayers = { ...ps };
@@ -49,6 +50,7 @@ export function usePlayers(gameStateId, turnType, teamTurn) {
         if (turnType === "OpenPanel") {
           if (newPlayers[playerId].teamNumber === teamTurn) {
             newPlayers[playerId].isReady = false;
+            newPlayers[playerId].selectedPanels = [];
           } else {
             newPlayers[playerId].isReady = true;
           }

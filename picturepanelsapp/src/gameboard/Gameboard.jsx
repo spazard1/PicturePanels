@@ -3,7 +3,6 @@ import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./panels/Panels";
 import TeamInfos from "./teaminfos/TeamInfos";
-//import Players from "./Players";
 import { useGameState } from "../common/useGameState";
 import { useSignalRConnection } from "../signalr/useSignalRConnection";
 import FadedBox from "./FadedBox";
@@ -47,7 +46,7 @@ export default function Gameboard() {
   };
 
   const { queryString, setQueryString } = useSignalRConnection();
-  const { players } = usePlayers(gameStateId, turnType, teamTurn);
+  const { players } = usePlayers(turnType, teamTurn);
   useGameboardPing(gameStateId);
 
   useEffect(() => {
