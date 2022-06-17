@@ -1,6 +1,9 @@
 /* stylelint-disable selector-class-pattern */
 .allPlayerDotsContainer {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   top: 8vh;
   width: 8vw;
   height: 92vh;
@@ -9,6 +12,7 @@
 
 .playerNameContainer {
   overflow: hidden;
+  line-height: normal;
 }
 
 .playerDotsContainer {

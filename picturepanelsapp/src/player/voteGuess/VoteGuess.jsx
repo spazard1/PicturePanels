@@ -74,7 +74,10 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
           <div className="teamGuessesContainer">
             {teamGuesses.map((teamGuess) => (
               <Button key={teamGuess.teamGuessId} className="teamGuessButton" onClick={() => onClickVoteGuess(teamGuess.teamGuessId)}>
-                <div className="teamGuessConfidence">{Math.round(teamGuess.confidence)}%</div>
+                <div
+                  className={"teamGuessConfidence " + ("teamGuessConfidence" + Math.round(teamGuess.confidence / 10))}
+                  style={{ height: Math.max(5, Math.round(teamGuess.confidence / 5) * 5) + "%" }}
+                />
                 <div className="teamGuessContainer">
                   <div className="teamGuessText">{teamGuess.guess}</div>
                   <div className="teamGuessPlayers">
@@ -90,6 +93,10 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
                     ))}
                   </div>
                 </div>
+                <div
+                  className={"teamGuessConfidence " + ("teamGuessConfidence" + Math.round(teamGuess.confidence / 10))}
+                  style={{ height: Math.max(5, Math.round(teamGuess.confidence / 5) * 5) + "%" }}
+                />
               </Button>
             ))}
             <Button className="teamGuessPass" variant="secondary" onClick={() => onClickVoteGuess("Pass")}>

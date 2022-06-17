@@ -277,6 +277,7 @@ namespace PicturePanels.Services
 
             await this.playerTableStorage.ResetPlayersAsync(gameState);
             await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).OpenPanel();
             await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
 
             return gameState;

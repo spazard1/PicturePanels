@@ -30,7 +30,9 @@ namespace PicturePanels.Models
 
         public List<string> OpenPanelSounds { get; set; }
 
-        public List<string> TeamReadySounds { get; set; }
+        public List<string> PlayerReadySounds { get; set; }
+
+        public List<string> BothTeamsPassSounds { get; set; }
 
         public List<string> CorrectSounds { get; set; }
 
@@ -62,9 +64,14 @@ namespace PicturePanels.Models
                 this.OpenPanelSounds = properties[nameof(this.OpenPanelSounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
 
-            if (properties.ContainsKey(nameof(this.TeamReadySounds)))
+            if (properties.ContainsKey(nameof(this.PlayerReadySounds)))
             {
-                this.TeamReadySounds = properties[nameof(this.TeamReadySounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.PlayerReadySounds = properties[nameof(this.PlayerReadySounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
+            if (properties.ContainsKey(nameof(this.BothTeamsPassSounds)))
+            {
+                this.BothTeamsPassSounds = properties[nameof(this.BothTeamsPassSounds)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
             }
 
             if (properties.ContainsKey(nameof(this.CorrectSounds)))
@@ -107,9 +114,14 @@ namespace PicturePanels.Models
                 result[nameof(this.OpenPanelSounds)] = new EntityProperty(string.Join(",", this.OpenPanelSounds));
             }
 
-            if (this.TeamReadySounds != null)
+            if (this.PlayerReadySounds != null)
             {
-                result[nameof(this.TeamReadySounds)] = new EntityProperty(string.Join(",", this.TeamReadySounds));
+                result[nameof(this.PlayerReadySounds)] = new EntityProperty(string.Join(",", this.PlayerReadySounds));
+            }
+
+            if (this.BothTeamsPassSounds != null)
+            {
+                result[nameof(this.BothTeamsPassSounds)] = new EntityProperty(string.Join(",", this.BothTeamsPassSounds));
             }
 
             if (this.CorrectSounds != null)

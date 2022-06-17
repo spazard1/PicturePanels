@@ -46,7 +46,8 @@ namespace PicturePanels.Controllers
             theme.PlayerJoinSounds = new List<string>() { "default/playerJoin.mp3" };
             theme.TurnStartSounds = new List<string>() { "default/turnStart.wav" };
             theme.CountdownSounds = new List<string>() { "default/countdown.wav" };
-            theme.TeamReadySounds = new List<string>() { "default/teamReady.mp3" };
+            theme.PlayerReadySounds = new List<string>() { "default/playerReady.mp3" };
+            theme.BothTeamsPassSounds = new List<string>() { "default/bothTeamsPass.wav" };
             theme.OpenPanelSounds = new List<string>() { "default/openPanel.mp3" };
             theme.CorrectSounds = new List<string>() { "default/correct.wav" };
             theme.IncorrectSounds = new List<string>() { "default/incorrect.wav" };
@@ -60,7 +61,8 @@ namespace PicturePanels.Controllers
             theme.PlayerJoinSounds = new List<string>() { "default/playerJoin.mp3" };
             theme.TurnStartSounds = new List<string>() { "default/turnStart.wav" };
             theme.CountdownSounds = new List<string>() { "christmas/jingle-bells.wav" };
-            theme.TeamReadySounds = new List<string>() { "default/teamReady.mp3" };
+            theme.PlayerReadySounds = new List<string>() { "default/playerReady.mp3" };
+            theme.BothTeamsPassSounds = new List<string>() { "default/bothTeamsPass.wav" };
             theme.OpenPanelSounds = new List<string>() { "default/openPanel.mp3" };
             theme.CorrectSounds = new List<string>() { 
                 "christmas/grinch-welcome-christmas.mp3",
@@ -100,7 +102,8 @@ namespace PicturePanels.Controllers
             theme.PlayerJoinSounds = new List<string>() { "guysweekend/wow.mp3" };
             theme.TurnStartSounds = new List<string>() { "default/turnStart.wav" };
             theme.CountdownSounds = new List<string>() { "default/countdown.wav" };
-            theme.TeamReadySounds = new List<string>() { "default/teamReady.mp3" };
+            theme.PlayerReadySounds = new List<string>() { "default/playerReady.mp3" };
+            theme.BothTeamsPassSounds = new List<string>() { "default/bothTeamsPass.wav" };
             theme.OpenPanelSounds = new List<string>() { "default/openPanel.mp3" };
             theme.CorrectSounds = new List<string>() { 
                 "guysweekend/and-when-you-pop-the-top-the-panties-drop.mp3",

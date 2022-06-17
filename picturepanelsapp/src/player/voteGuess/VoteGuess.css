@@ -12,27 +12,79 @@
 }
 
 .teamGuessButton {
-  position: relative;
   display: flex;
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 85%;
 }
 
 .teamGuessContainer {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 90%;
   margin-left: auto;
   margin-right: auto;
 }
 
 .teamGuessConfidence {
-  position: absolute;
-  left: 0.5rem;
-  font-size: 2rem;
+  width: 0.6rem;
+  align-self: flex-end;
+}
+
+.teamGuessConfidence10 {
+  background: rgb(96 214 43);
+  background: linear-gradient(211deg, rgba(96 214 43 100%) 0% rgba(0 255 16 100%) 100%);
+}
+
+.teamGuessConfidence9 {
+  background: rgb(124 214 43);
+  background: linear-gradient(211deg, rgba(124 214 43 100%) 0% rgba(70 255 0 100%) 100%);
+}
+
+.teamGuessConfidence8 {
+  background: rgb(147 213 37);
+  background: linear-gradient(233deg, rgba(147 213 37 100%) 0% rgba(199 255 0 100%) 100%);
+}
+
+.teamGuessConfidence7 {
+  background: rgb(177 213 37);
+  background: linear-gradient(233deg, rgba(177 213 37 100%) 0% rgba(199 255 0 100%) 100%);
+}
+
+.teamGuessConfidence6 {
+  background: rgb(209 201 34);
+  background: linear-gradient(233deg, rgba(209 201 34 100%) 0% rgba(199 255 0 100%) 100%);
+}
+
+.teamGuessConfidence5 {
+  background: rgb(209 201 34);
+  background: linear-gradient(233deg, rgba(209 201 34 100%) 0% rgba(250 255 0 100%) 100%);
+}
+
+.teamGuessConfidence4 {
+  background: rgb(182 193 43);
+  background: linear-gradient(300deg, rgba(182 193 43 100%) 0% rgba(255 234 0 100%) 100%);
+}
+
+.teamGuessConfidence3 {
+  background: rgb(193 161 43);
+  background: linear-gradient(300deg, rgba(193 161 43 100%) 0% rgba(255 196 0 100%) 100%);
+}
+
+.teamGuessConfidence2 {
+  background: rgb(193 161 43);
+  background: linear-gradient(211deg, rgba(193 161 43 100%) 0% rgba(255 166 0 100%) 100%);
+}
+
+.teamGuessConfidence1 {
+  background: rgb(193 95 43);
+  background: linear-gradient(211deg, rgba(193 95 43 100%) 0% rgba(255 46 0 100%) 100%);
+}
+
+.teamGuessConfidence0 {
+  background: rgb(193 75 43);
+  background: linear-gradient(211deg, rgba(193 75 43 100%) 0% rgba(255 0 0 100%) 100%);
 }
 
 .teamGuessText {
@@ -48,9 +100,9 @@
 }
 
 .voteGuessPlayerName {
-  font-size: 1rem;
-  height: 1rem;
-  width: 1rem;
+  font-size: 0.75rem;
+  height: 0.75rem;
+  width: 0.75rem;
 }
 
 .teamGuessPass {
@@ -58,7 +110,7 @@
   margin-top: 2rem;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 85%;
 }
 
 .voteGuessMessage {

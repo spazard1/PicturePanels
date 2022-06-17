@@ -3,69 +3,69 @@
 /* stylelint-disable selector-class-pattern */
 .teamGuess {
   position: fixed;
-  box-sizing: border-box;
-  padding: 3px;
-  width: 60vw;
-  height: 10vh;
+  padding: 0 3px 7px;
+  width: 50vw;
   font-weight: 500;
-  line-height: normal;
   z-index: 100;
   text-align: center;
   overflow: hidden;
   font-size: 6vh;
-  border: 10px solid;
+  border: 6px solid;
   border-image-slice: 1;
-  border-width: 5px;
+  box-sizing: border-box;
 }
 
 .teamGuessTeamOne {
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
   top: 25vh;
   left: 8vw;
-  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
 }
 
 .teamGuessTeamTwo {
   border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
-  bottom: 25vh;
+  top: 65vh;
   right: 8vw;
 }
 
+.teamGuessCorrect {
+  border-image-source: linear-gradient(to right, #4c0, #0f2);
+}
+
 .teamGuessIncorrect {
-  text-decoration-color: rgba(255 0 0 / 70%);
+  text-decoration-color: rgba(255 0 0 / 75%);
   text-decoration-line: line-through;
   text-decoration-thickness: 1rem;
 }
 
-.votingPlayersContainer,
-.notVotingPlayersContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.teamGuessCorrectTeamOne {
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
+  top: 8vh;
+  width: 23vw;
+  font-size: 3vh;
+  left: 10vw;
 }
 
-.votingPlayerContainer {
-  width: 6vh;
-  height: 6vh;
+.teamGuessCorrectTeamTwo {
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
+  top: 8vh;
+  right: 10vw;
+  width: 23vw;
+  font-size: 3vh;
 }
 
-/*
-.animate-gradient-border {
-  --angle: 0deg;
-
-  border: 10px solid;
-  border-image: linear-gradient(var(--angle), #12c2e9, #c471ed, #f64f59) 1;
-  animation: 5s rotate linear infinite;
+.bothTeamsPass {
+  position: absolute;
+  text-align: center;
+  padding: 1rem 4rem;
+  white-space: nowrap;
+  font-size: 7vh;
+  width: 36vw;
+  top: 40vh;
+  left: 32vw;
+  z-index: 100;
+  background: rgb(30 30 30);
+  border: 6px solid;
+  border-image-slice: 1;
+  box-sizing: border-box;
+  border-image-source: linear-gradient(to right, #4e4e4e, #373737);
 }
-
-@keyframes rotate {
-  to {
-    --angle: 360deg;
-  }
-}
-
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-*/
