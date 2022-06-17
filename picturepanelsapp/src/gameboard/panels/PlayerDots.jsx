@@ -16,12 +16,14 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
           (playerId) =>
             players[playerId] &&
             players[playerId].teamNumber === 1 && (
-              <div key={playerId} className={classNames("playerDotsContainer", { teamOnePlayerNameNotReady: !players[playerId].isReady })}>
+              <div key={playerId} className={classNames("playerDotsContainer")}>
                 <Avatar
                   avatar={players[playerId].avatar}
                   colors={players[playerId].colors}
-                  className={classNames("animate__animated", "animate__infinite", { animate__pulse: !players[playerId].isReady })}
-                ></Avatar>
+                  className={classNames("animate__animated", "animate__infinite", {
+                    animate__pulse: !players[playerId].isReady && turnType !== "Welcome",
+                  })}
+                />
                 {panelNumbers.map((panelNumber) => (
                   <PlayerDot
                     key={playerId + panelNumber}
@@ -38,7 +40,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                 ))}
                 <div
                   className={classNames("playerNameContainer", "animate__animated", "animate__infinite", {
-                    animate__pulse: !players[playerId].isReady,
+                    animate__pulse: !players[playerId].isReady && turnType !== "Welcome",
                   })}
                 >
                   {players[playerId].name}
@@ -52,14 +54,14 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
           (playerId) =>
             players[playerId] &&
             players[playerId].teamNumber === 2 && (
-              <div key={playerId} className={classNames("playerDotsContainer", { teamTwoPlayerNameNotReady: !players[playerId].isReady })}>
-                <div className="hidden">
-                  <Avatar
-                    avatar={players[playerId].avatar}
-                    colors={players[playerId].colors}
-                    className={classNames("animate__animated", "animate__infinite", { animate__pulse: !players[playerId].isReady })}
-                  ></Avatar>
-                </div>
+              <div key={playerId} className={classNames("playerDotsContainer")}>
+                <Avatar
+                  avatar={players[playerId].avatar}
+                  colors={players[playerId].colors}
+                  className={classNames("animate__animated", "animate__infinite", {
+                    animate__pulse: !players[playerId].isReady && turnType !== "Welcome",
+                  })}
+                />
                 {panelNumbers.map((panelNumber) => (
                   <PlayerDot
                     key={playerId + panelNumber}
@@ -76,7 +78,7 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
                 ))}
                 <div
                   className={classNames("playerNameContainer", "animate__animated", "animate__infinite", {
-                    animate__pulse: !players[playerId].isReady,
+                    animate__pulse: !players[playerId].isReady && turnType !== "Welcome",
                   })}
                 >
                   {players[playerId].name}

@@ -21,6 +21,8 @@ import classNames from "classnames";
 import TeamGuesses from "./TeamGuesses";
 import { useLocalStorageState } from "../common/useLocalStorageState";
 import { useThemeSounds } from "./useThemeSounds";
+import { useSignalR } from "../signalr/useSignalR";
+import useTimeRemaining from "../common/useTimeRemaining";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -37,6 +39,8 @@ export default function Gameboard() {
   const [uploadedByDisplayText, setUploadedByDisplayText] = useState();
   const [answerDisplay, setAnswerDisplay] = useState(false);
   const [answerDisplayText, setAnswerDisplayText] = useState();
+  const [timeRemainingDisplay, setTimeRemainingDisplay] = useState(false);
+  const [timeRemainingDisplayText, setTimeRemainingDisplayText] = useState();
   const roundNumberRef = useRef();
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
@@ -50,22 +54,29 @@ export default function Gameboard() {
 
   const {
     playPlayerJoinSound,
-    //playTurnStartSound,
-    //playCountdownSound,
-    //playOpenPanelSound,
-    //playTeamReadySound,
-    //playCorrectSound,
-    //playIncorrectSound,
-    //playEndGameSound
+    playTurnStartSound,
+    playCountdownSound,
+    playOpenPanelSound,
+    //playPlayerReadySound,
+    playBothTeamsPassSound,
+    playCorrectSound,
+    playIncorrectSound,
+    playEndGameSound,
   } = useThemeSounds(gameStateId, volume);
 
   const onStartGame = (gameState) => {
     setGameState(gameState);
   };
 
+  const timeRemaining = useTimeRemaining(gameState?.pauseState === "Paused", gameState?.turnTime, gameState?.turnTimeRemaining, 1);
+
   const { queryString, setQueryString } = useSignalRConnection();
   const { players } = usePlayers(turnType, teamTurn, playPlayerJoinSound);
   useGameboardPing(gameStateId);
+
+  useSignalR("OpenPanel", () => {
+    playOpenPanelSound();
+  });
 
   useEffect(() => {
     if (!gameState || queryString) {
@@ -145,6 +156,14 @@ export default function Gameboard() {
   }, [gameState]);
 
   useEffect(() => {
+    if (turnType === "OpenPanel") {
+      playTurnStartSound();
+    } else if (turnType === "EndGame") {
+      playEndGameSound();
+    }
+  }, [turnType, playTurnStartSound, playEndGameSound]);
+
+  useEffect(() => {
     if (!gameState) {
       return;
     }
@@ -162,6 +181,44 @@ export default function Gameboard() {
     }, 7000);
   }, [gameState]);
 
+  useEffect(() => {
+    if (!gameState) {
+      return;
+    }
+
+    if (gameState.turnType === "Welcome" && timeRemaining?.millisecondsRemaining > 0) {
+      setTimeRemainingDisplay(true);
+      setTimeRemainingDisplayText(
+        "Game starts in: " + (timeRemaining?.millisecondsRemaining ? Math.ceil(timeRemaining?.millisecondsRemaining / 1000) : "--")
+      );
+
+      playCountdownSound();
+      return;
+    }
+
+    if (gameState.turnType === "EndRound" || (gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect))) {
+      if (!timeRemaining?.millisecondsRemaining || timeRemaining?.millisecondsRemaining > 10000) {
+        setTimeRemainingDisplay(false);
+        return;
+      }
+      setTimeRemainingDisplay(true);
+
+      if (gameState.roundNumber === gameState.finalRoundNumber) {
+        setTimeRemainingDisplayText(
+          "Game ends in: " + (timeRemaining?.millisecondsRemaining ? Math.floor(timeRemaining?.millisecondsRemaining / 1000) : "--")
+        );
+      } else {
+        setTimeRemainingDisplayText(
+          "Next round in: " + (timeRemaining?.millisecondsRemaining ? Math.floor(timeRemaining?.millisecondsRemaining / 1000) : "--")
+        );
+      }
+
+      return;
+    }
+
+    setTimeRemainingDisplay(false);
+  }, [timeRemaining, gameState, playCountdownSound]);
+
   return (
     <>
       <SignalRConnectionStatus />
@@ -178,7 +235,7 @@ export default function Gameboard() {
 
       <SettingsDropDown gameStateId={gameState?.gameStateId} pauseState={gameState?.pauseState} volume={volume} onChangeVolume={onChangeVolume} />
 
-      {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
+      {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameState?.gameStateId}></Welcome>}
 
       <TeamInfos gameState={gameState ?? {}} />
 
@@ -187,11 +244,14 @@ export default function Gameboard() {
           gameStateId={gameState.gameStateId}
           teamOneGuess={gameState.teamOneGuess}
           teamOneGuessStatus={gameState.teamOneGuessStatus}
-          teamOneCorrect={gameState.TeamOneCorrect}
+          teamOneCorrect={gameState.teamOneCorrect}
           teamTwoGuess={gameState.teamTwoGuess}
           teamTwoGuessStatus={gameState.teamTwoGuessStatus}
-          teamTwoCorrect={gameState.TeamTwoCorrect}
+          teamTwoCorrect={gameState.teamTwoCorrect}
           turnType={gameState.turnType}
+          playCorrectSound={playCorrectSound}
+          playIncorrectSound={playIncorrectSound}
+          playBothTeamsPassSound={playBothTeamsPassSound}
         />
       )}
 
@@ -210,6 +270,16 @@ export default function Gameboard() {
       />
 
       {gameState && gameState.turnType === "EndGame" && <EndGame gameStateId={gameState.gameStateId} winningTeamName={winningTeam}></EndGame>}
+
+      <FadedBox
+        displayState={timeRemainingDisplay}
+        className="remainingTurnTimeFadedBox"
+        entranceClassNames="animate__backInUp"
+        exitClassNames="animate__backOutDown"
+      >
+        {timeRemainingDisplayText}
+      </FadedBox>
+
       <FadedBox
         displayState={roundNumberAnimateDisplay}
         className="roundNumberAnimateFadedBox"

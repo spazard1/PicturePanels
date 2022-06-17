@@ -23,7 +23,7 @@ const ModalNewUser = ({ showModal, onNewUser, onModalClose }) => {
   );
 
   const onModalCloseHelper = () => {
-    setFormValues({ ...formValues, password: "" });
+    setFormValues({ ...formValues, password: "", confirmPassword: "" });
     onModalClose();
   };
 
@@ -103,7 +103,7 @@ const ModalNewUser = ({ showModal, onNewUser, onModalClose }) => {
         <br />
         Display Name:
         <br />
-        {'(this is what is displayed for "uploaded by" when your images are being played)'}
+        {'(this is what is displayed for "Uploaded By" when images you have uploaded are being played)'}
         <div>
           <input
             name="displayName"
@@ -121,7 +121,7 @@ const ModalNewUser = ({ showModal, onNewUser, onModalClose }) => {
           variant="secondary"
           onClick={() => {
             onModalClose();
-            setFormValues({ ...formValues, password: "" });
+            setFormValues({ ...formValues, password: "", confirmPassword: "" });
           }}
         >
           Cancel
@@ -132,7 +132,7 @@ const ModalNewUser = ({ showModal, onNewUser, onModalClose }) => {
             onNewUserClick(formValues);
           }}
         >
-          Login
+          Create User
         </Button>
       </Modal.Footer>
     </Modal>

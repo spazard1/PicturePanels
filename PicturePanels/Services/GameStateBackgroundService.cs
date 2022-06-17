@@ -92,6 +92,10 @@ namespace PicturePanels.Services
             }
 
             gameState = await this.gameStateService.ToNextTurnTypeAsync(gameState);
+            if (gameState == null)
+            {
+                return;
+            }
 
             var activeGameBoard = await this.activeGameBoardTableStorage.GetAsync(gameState.GameStateId);
             if (activeGameBoard == null || activeGameBoard.PingTime.AddSeconds(30) < DateTime.UtcNow)

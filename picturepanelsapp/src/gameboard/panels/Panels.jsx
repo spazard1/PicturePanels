@@ -51,6 +51,10 @@ const Panels = ({ gameStateId, players, revealedPanels, roundNumber, teamTurn, t
   }, [imagesLoaded]);
 
   useEffect(() => {
+    if (roundNumber === 0) {
+      return;
+    }
+
     setImagesLoaded({});
     setAllImagesLoaded(false);
   }, [gameStateId, roundNumber]);

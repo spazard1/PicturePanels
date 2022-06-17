@@ -24,7 +24,8 @@ namespace PicturePanels.Entities
             this.TurnStartSounds = themeTableEntity.TurnStartSounds;
             this.CountdownSounds = themeTableEntity.CountdownSounds;
             this.OpenPanelSounds = themeTableEntity.OpenPanelSounds;
-            this.TeamReadySounds = themeTableEntity.TeamReadySounds;
+            this.PlayerReadySounds = themeTableEntity.PlayerReadySounds;
+            this.BothTeamsPassSounds = themeTableEntity.BothTeamsPassSounds;
             this.CorrectSounds = themeTableEntity.CorrectSounds;
             this.IncorrectSounds = themeTableEntity.IncorrectSounds;
             this.EndGameSounds = themeTableEntity.EndGameSounds;
@@ -42,7 +43,9 @@ namespace PicturePanels.Entities
 
         public List<string> OpenPanelSounds { get; set; }
 
-        public List<string> TeamReadySounds { get; set; }
+        public List<string> PlayerReadySounds { get; set; }
+
+        public List<string> BothTeamsPassSounds { get; set; }
 
         public List<string> CorrectSounds { get; set; }
 

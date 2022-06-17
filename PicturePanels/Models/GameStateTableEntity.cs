@@ -34,7 +34,7 @@ namespace PicturePanels.Models
         public static readonly IEnumerable<string> InnerPanels = new List<string>() { "7", "8", "9", "12", "13", "14" };
         public static readonly IEnumerable<string> AllPanels = OuterPanels.Concat(InnerPanels);
 
-        public const int GuessesMadeTimeBothSkip = 4;
+        public const int GuessesMadeTimeBothSkip = 5;
         public const int GuessesMadeTimeBothPass = 10;
         public const int GuessesMadeTimeIncorrect = 18;
         public const int GuessesMadeTimeCorrect = 30;
@@ -43,7 +43,7 @@ namespace PicturePanels.Models
         public const int DefaultOpenPanelTime = 30;
         public const int DefaultMakeGuessTime = 60;
         public const int DefaultVoteGuessTime = 30;
-        public const int DefaultWrongGuessPenalty = 0;
+        public const int DefaultWrongGuessPenalty = -1;
 
         public const int ResumeTime = 6;
 
@@ -152,11 +152,11 @@ namespace PicturePanels.Models
                 GameStateId = GenerateGameStateId(),
                 TurnType = GameStateTableEntity.TurnTypeWelcome,
                 TurnStartTime = DateTime.UtcNow,
-                TurnNumber = 1,
-                TeamTurn = 1,
+                TurnNumber = 0,
+                TeamTurn = 0,
                 TeamOneName = "Team 1",
                 TeamTwoName = "Team 2",
-                RoundNumber = 1,
+                RoundNumber = 0,
                 TeamOneScore = 0,
                 TeamTwoScore = 0,
                 TeamOneIncorrectGuesses = 0,
@@ -201,10 +201,10 @@ namespace PicturePanels.Models
         {
             this.RoundNumber = 1;
             this.TeamTurn = 1;
+            this.TurnNumber = 1;
             this.RevealedPanels = new List<string>();
             this.ClearGuesses();
             this.NewTurnType(GameStateTableEntity.TurnTypeOpenPanel);
-            this.TurnNumber = 1;
         }
 
         public void NewTurnType(string turnType)

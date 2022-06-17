@@ -29,8 +29,12 @@ export function useThemeSounds(gameStateId, volume) {
     playRandomSound(themeSoundsRef.current.openPanelSounds);
   }, [playRandomSound]);
 
-  const playTeamReadySound = useCallback(() => {
-    playRandomSound(themeSoundsRef.current.teamReadySounds);
+  const playPlayerReadySound = useCallback(() => {
+    playRandomSound(themeSoundsRef.current.playerReadySounds);
+  }, [playRandomSound]);
+
+  const playBothTeamsPassSound = useCallback(() => {
+    playRandomSound(themeSoundsRef.current.bothTeamsPassSounds);
   }, [playRandomSound]);
 
   const playCorrectSound = useCallback(() => {
@@ -87,7 +91,8 @@ export function useThemeSounds(gameStateId, volume) {
     playTurnStartSound,
     playCountdownSound,
     playOpenPanelSound,
-    playTeamReadySound,
+    playPlayerReadySound,
+    playBothTeamsPassSound,
     playCorrectSound,
     playIncorrectSound,
     playEndGameSound,

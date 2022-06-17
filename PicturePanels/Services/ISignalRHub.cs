@@ -13,6 +13,8 @@ namespace PicturePanels.Services
 
         Task GameState(GameStateEntity entity);
 
+        Task OpenPanel();
+
         Task ScoreChange(ScoreChangeEntity entity);
 
         Task TeamGuesses(List<TeamGuessEntity> teamGuessEntities);
