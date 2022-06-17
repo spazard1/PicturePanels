@@ -5,7 +5,7 @@ import { Button } from "react-bootstrap";
 import "./JoinGame.css";
 
 const JoinGame = ({ isLoadingGame, onJoinGame, onCancel }) => {
-  const [gameStateId, setGameStateId] = useState(localStorage.getItem("gameStateId"));
+  const [gameStateId, setGameStateId] = useState(localStorage.getItem("gameStateId") ?? "");
 
   const joinGameOnClick = () => {
     onJoinGame(gameStateId);

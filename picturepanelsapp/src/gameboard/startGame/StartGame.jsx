@@ -14,6 +14,7 @@ import postGameState from "./postGameState";
 import "./StartGame.css";
 import ModalNewUser from "../../common/modal/ModalNewUser";
 import postUser from "../../user/postUser";
+import { useCallback } from "react";
 
 const StartGame = ({ onStartGame }) => {
   const { user, setUser } = useContext(UserContext);
@@ -25,6 +26,13 @@ const StartGame = ({ onStartGame }) => {
   const [showModalLogin, setShowModalLogin] = useState(false);
   const [showModalNewUser, setShowModalNewUser] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+
+  const onClickCreateGame = useCallback(() => {
+    if (!user) {
+      setModalMessage("Remember, if you login before you create a game, images you play will be saved so you don't see them again in future games.");
+    }
+    setStartGameState("Create");
+  }, [user]);
 
   const onCreateGame = (gameOptions) => {
     setIsLoadingGame(true);
@@ -144,13 +152,7 @@ const StartGame = ({ onStartGame }) => {
           <>
             <div className="startGameLabel startGame">Welcome to Picture Panels!</div>
             <div>
-              <Button
-                variant="light"
-                className="startGameButton startGameCreateButton"
-                onClick={() => {
-                  setStartGameState("Create");
-                }}
-              >
+              <Button variant="light" className="startGameButton startGameCreateButton" onClick={onClickCreateGame}>
                 Create Game
               </Button>
             </div>

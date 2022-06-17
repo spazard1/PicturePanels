@@ -20,8 +20,8 @@
 
 .remainingTurnTimeFadedBox {
   font-size: 4vh;
-  bottom: 12vh;
-  right: 10vw;
+  bottom: 1vh;
+  width: 100%;
 }
 
 .uploadedByFadedBox {
