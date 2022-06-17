@@ -19,7 +19,8 @@ import ToastContainer from "react-bootstrap/ToastContainer";
 import { useWinningTeam } from "../common/useWinningTeam";
 import classNames from "classnames";
 import TeamGuesses from "./TeamGuesses";
-// import { useThemeSounds } from "./useThemeSounds";
+import { useLocalStorageState } from "../common/useLocalStorageState";
+import { useThemeSounds } from "./useThemeSounds";
 
 import "./Gameboard.css";
 import "animate.css";
@@ -41,26 +42,29 @@ export default function Gameboard() {
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
   const { winningTeam } = useWinningTeam(gameState);
+  const [volume, setVolume] = useLocalStorageState("volume", 50);
 
-  /*
+  const onChangeVolume = (v) => {
+    setVolume(v);
+  };
+
   const {
-		playPlayerJoinSound,
-		playTurnStartSound,
-		playCountdownSound,
-		playOpenPanelSound,
-		playTeamReadySound,
-		playCorrectSound,
-		playIncorrectSound,
-		playEndGameSound
-	} = useThemeSounds(gameStateId);
-  */
+    playPlayerJoinSound,
+    //playTurnStartSound,
+    //playCountdownSound,
+    //playOpenPanelSound,
+    //playTeamReadySound,
+    //playCorrectSound,
+    //playIncorrectSound,
+    //playEndGameSound
+  } = useThemeSounds(gameStateId, volume);
 
   const onStartGame = (gameState) => {
     setGameState(gameState);
   };
 
   const { queryString, setQueryString } = useSignalRConnection();
-  const { players } = usePlayers(turnType, teamTurn);
+  const { players } = usePlayers(turnType, teamTurn, playPlayerJoinSound);
   useGameboardPing(gameStateId);
 
   useEffect(() => {
@@ -172,7 +176,7 @@ export default function Gameboard() {
         </ToastContainer>
       )}
 
-      <SettingsDropDown gameStateId={gameState?.gameStateId} pauseState={gameState?.pauseState} />
+      <SettingsDropDown gameStateId={gameState?.gameStateId} pauseState={gameState?.pauseState} volume={volume} onChangeVolume={onChangeVolume} />
 
       {gameState && gameState.turnType === "Welcome" && <Welcome gameStateId={gameStateId}></Welcome>}
 

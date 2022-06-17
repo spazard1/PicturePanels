@@ -13,7 +13,6 @@ const TeamGuesses = ({ teamOneGuess, teamOneGuessStatus, teamOneCorrect, teamTwo
   useEffect(() => {
     if (turnType !== "GuessesMade") {
       setTeamGuessesVisible(false);
-
       return;
     }
 

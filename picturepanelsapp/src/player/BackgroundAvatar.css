@@ -1,8 +1,31 @@
 /* stylelint-disable selector-class-pattern */
-.backgroundAvatar {
+.backgroundAvatarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: fixed;
+  top: 7%;
   left: 5vmin;
   width: 90vmin;
   height: 90vmin;
-  opacity: 0.9;
+  opacity: 0.15;
+  user-select: none;
+  z-index: -1;
+}
+
+.backgroundAvatar {
+  width: 75%;
+  height: 75%;
+}
+
+.backgroundAvatarName {
+  font-size: 2rem;
+}
+
+@media only screen and (min-width: 1000px) {
+  .backgroundAvatarContainer {
+    left: 25%;
+    width: 50%;
+    height: 50%;
+  }
 }

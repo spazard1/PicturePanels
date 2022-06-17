@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
+import { Howl, Howler } from "howler";
 import getTheme from "./getTheme";
+import serverUrl from "../common/ServerUrl";
 
-export function useThemeSounds(gameStateId) {
-  const Howl = () => {};
+export function useThemeSounds(gameStateId, volume) {
   const themeSoundsRef = useRef({});
 
   const playRandomSound = useCallback((sounds) => {
@@ -49,7 +50,7 @@ export function useThemeSounds(gameStateId) {
       themeSoundsRef.current[key] = [];
       themeSoundsRef.current[key].push(
         new Howl({
-          src: ["themes/" + sound],
+          src: [serverUrl + "themes/" + sound],
         })
       );
     });
@@ -61,11 +62,25 @@ export function useThemeSounds(gameStateId) {
     }
 
     getTheme(gameStateId, (theme) => {
-      Object.keys(theme).map((key) => {
+      if (!theme) {
+        return;
+      }
+
+      Object.keys(theme).forEach((key) => {
+        if (key.indexOf("Sounds") < 0) {
+          return;
+        }
         prepareHowlSounds(theme, key);
       });
     });
   }, [gameStateId, prepareHowlSounds]);
+
+  useEffect(() => {
+    if (!volume) {
+      return;
+    }
+    Howler.volume(volume / 100);
+  }, [volume]);
 
   return {
     playPlayerJoinSound,

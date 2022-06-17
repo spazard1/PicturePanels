@@ -33,7 +33,7 @@
 .teamGuessIncorrect {
   text-decoration-color: rgba(255 0 0 / 70%);
   text-decoration-line: line-through;
-  text-decoration-thickness: 5px;
+  text-decoration-thickness: 1rem;
 }
 
 .votingPlayersContainer,

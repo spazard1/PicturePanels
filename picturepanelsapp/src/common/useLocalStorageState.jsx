@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 
 export function useLocalStorageState(keyName, initialValue) {
-  const [state, setState] = useState(localStorage.getItem(keyName) ?? initialValue);
+  const [state, setState] = useState(
+    typeof initialValue === "number" ? parseInt(localStorage.getItem(keyName) ?? initialValue) : localStorage.getItem(keyName) ?? initialValue
+  );
 
   useEffect(() => {
     if (!keyName) {

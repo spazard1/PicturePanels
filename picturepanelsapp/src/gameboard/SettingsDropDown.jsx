@@ -2,19 +2,20 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { putTogglePauseGame } from "../common/putTogglePauseGame";
-import { useLocalStorageState } from "../common/useLocalStorageState";
 
 import "./SettingsDropDown.css";
 
-const SettingsDropDown = ({ gameStateId, pauseState }) => {
-  const [volume, setVolume] = useLocalStorageState("volume", 50);
+const SettingsDropDown = ({ gameStateId, pauseState, volume, onChangeVolume }) => {
   const onTogglePauseGame = () => {
     putTogglePauseGame(gameStateId, () => {});
   };
 
   return (
-    <DropdownButton className="settingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark">
-      <Dropdown.Item onClick={onTogglePauseGame}>{pauseState === "Paused" ? "Resume Game" : "Pause Game"}</Dropdown.Item>
+    <DropdownButton className="settingsButton" variant={"secondary"} title="⚙" size="sm" menuVariant="dark" autoClose="outside">
+      <Dropdown.Item onClick={onTogglePauseGame} disabled={!gameStateId}>
+        {pauseState === "Paused" ? "Resume Game" : "Pause Game"}
+      </Dropdown.Item>
+      <Dropdown.Divider />
       <Dropdown.Item>
         <div className="volume-chooser">
           <div className="volume-button">
@@ -22,7 +23,7 @@ const SettingsDropDown = ({ gameStateId, pauseState }) => {
             <span className="volume-value">{volume}</span>
           </div>
           <div>
-            <input className="volume" type="range" min={1} max={100} value={volume} onChange={(e) => setVolume(e.target.value)} />
+            <input className="volume" type="range" min={1} max={100} value={volume} onChange={(e) => onChangeVolume(parseInt(e.target.value))} />
           </div>
         </div>
       </Dropdown.Item>
@@ -35,4 +36,6 @@ export default SettingsDropDown;
 SettingsDropDown.propTypes = {
   gameStateId: PropTypes.string,
   pauseState: PropTypes.string,
+  volume: PropTypes.number,
+  onChangeVolume: PropTypes.func.isRequired,
 };

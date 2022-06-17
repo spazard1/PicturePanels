@@ -55,14 +55,10 @@
 
 @media only screen and (min-width: 1000px) {
   .panelButtons {
-    width: 48vw;
+    width: 100%;
   }
 
   .panelButtonNumber {
-    font-size: 4vw;
-  }
-
-  .panelImages {
-    width: 48vw;
+    font-size: 4rem;
   }
 }

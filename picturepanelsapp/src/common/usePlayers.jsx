@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSignalR } from "../signalr/useSignalR";
 import Color from "color";
 
-export function usePlayers(turnType, teamTurn) {
+export function usePlayers(turnType, teamTurn, playPlayerJoinSound) {
   const [players, setPlayers] = useState({});
 
   useSignalR("Players", (players) => {
@@ -15,11 +15,15 @@ export function usePlayers(turnType, teamTurn) {
     setPlayers(newPlayers);
   });
 
-  useSignalR("Player", (player) => {
+  useSignalR("Player", (player, isNewTeam) => {
     player.colors = player.colors.map((c) => Color(c));
     setPlayers((ps) => {
       return { ...ps, [player.playerId]: player };
     });
+
+    if (isNewTeam) {
+      playPlayerJoinSound();
+    }
   });
 
   useSignalR("PlayerReady", (playerId) => {
