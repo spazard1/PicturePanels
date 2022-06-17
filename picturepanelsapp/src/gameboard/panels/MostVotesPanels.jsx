@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { useSelectedPanels } from "../../common/useSelectedPanels";
 
 import "./MostVotesPanels.css";
 
@@ -9,7 +8,6 @@ const MaxMostVotesPanels = 3;
 
 export default function MostVotesPanels({ panelRefs, revealedPanels, players, teamTurn, turnType }) {
   const [mostVotesPanelsRects, setMostVotesPanelsRects] = useState([]);
-  const { selectedPanels } = useSelectedPanels(players, turnType);
   const hasBeenVisible = useRef({ 1: false, 2: false, 3: false });
 
   useEffect(() => {
@@ -18,8 +16,8 @@ export default function MostVotesPanels({ panelRefs, revealedPanels, players, te
       panelVotes[i] = 0;
     }
 
-    for (const playerId in selectedPanels) {
-      let playerSelectedPanels = selectedPanels[playerId];
+    for (const playerId in players) {
+      let playerSelectedPanels = players[playerId].selectedPanels ?? [];
 
       if (!players[playerId] || players[playerId].teamNumber !== teamTurn) {
         continue;
@@ -68,7 +66,7 @@ export default function MostVotesPanels({ panelRefs, revealedPanels, players, te
     }
 
     setMostVotesPanelsRects(mostVotesPanelsRects);
-  }, [panelRefs, revealedPanels, players, teamTurn, selectedPanels]);
+  }, [panelRefs, revealedPanels, players, teamTurn]);
 
   return (
     <div className="mostVotesPanels">
