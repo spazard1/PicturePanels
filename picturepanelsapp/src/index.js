@@ -14,7 +14,6 @@ const root = createRoot(container);
 const Player = lazy(() => import("./player/Player"));
 const Gameboard = lazy(() => import("./gameboard/Gameboard"));
 const Upload = lazy(() => import("./upload/Upload"));
-const Admin = lazy(() => import("./admin/Admin"));
 
 root.render(
   <AppWrapper>
@@ -24,7 +23,6 @@ root.render(
           <Route path="/" element={<Player />} />
           <Route path="gameboard" element={<Gameboard />} />
           <Route path="upload" element={<Upload />} />
-          <Route path="admin" element={<Admin />} />
 
           <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
