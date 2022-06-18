@@ -31,9 +31,9 @@ const JoinGame = ({ isLoading, onJoinGame, cachedGameStateId }) => {
 
   return (
     <>
-      <div className="center welcomePlayerMessage">Welcome to Picture Panels!</div>
+      <div className="welcomePlayerMessage">Welcome to Picture Panels!</div>
 
-      <div className="playerTextInputContainer center">
+      <div className="playerTextInputContainer">
         <input
           name="playerName"
           className="playerTextInput"
@@ -63,7 +63,7 @@ const JoinGame = ({ isLoading, onJoinGame, cachedGameStateId }) => {
         </Button>
       </div>
 
-      <div className="startGameHelp center">
+      <div className="startGameHelp">
         Want to start a game?
         <br />
         Go to picturepanels.net/gameboard on a screen that all players can see.

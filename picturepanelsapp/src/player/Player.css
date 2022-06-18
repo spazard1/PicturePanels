@@ -23,7 +23,7 @@ body.player #root {
   margin-right: auto;
 }
 
-.playingContainer {
+.playerContainer {
   position: relative;
   display: flex;
   flex-direction: column;

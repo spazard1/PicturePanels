@@ -387,7 +387,7 @@ export default function Player() {
   }
 
   return (
-    <>
+    <div className="playerContainer">
       <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
@@ -412,7 +412,7 @@ export default function Player() {
       )}
 
       {gameState && teamNumber > 0 && player && (
-        <div className="playingContainer">
+        <>
           <BackgroundAvatar
             name={player.name}
             teamName={teamNumber === 1 ? gameState.teamOneName : gameState.teamTwoName}
@@ -492,8 +492,8 @@ export default function Player() {
             playerId={playerId}
             onVoteGuess={() => setPlayerReady(true)}
           ></VoteGuess>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 }
