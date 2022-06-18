@@ -7,6 +7,7 @@ using PicturePanels.Services;
 using PicturePanels.Services.Authentication;
 using PicturePanels.Services.Storage;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace PicturePanels.Controllers
         private readonly PlayerTableStorage playerTableStorage;
         private readonly GameRoundTableStorage gameRoundTableStorage;
         private readonly ThemeTableStorage themeTableStorage;
+        private readonly ImageTagTableStorage imageTagTableStorage;
         private readonly IHubContext<SignalRHub, ISignalRHub> hubContext;
         private readonly GameStateService gameStateService;
         private readonly GameStateQRCodeGenerator gameStateQRCodeGenerator;
@@ -29,6 +31,7 @@ namespace PicturePanels.Controllers
             PlayerTableStorage playerTableStorage,
             GameRoundTableStorage gameRoundTableStorage,
             ThemeTableStorage themeTableStorage,
+            ImageTagTableStorage imageTagTableStorage,
             IHubContext<SignalRHub, ISignalRHub> hubContext,
             GameStateService gameStateService,
             GameStateQRCodeGenerator gameStateQRCodeGenerator)
@@ -37,6 +40,7 @@ namespace PicturePanels.Controllers
             this.playerTableStorage = playerTableStorage;
             this.gameRoundTableStorage = gameRoundTableStorage;
             this.themeTableStorage = themeTableStorage;
+            this.imageTagTableStorage = imageTagTableStorage;
             this.hubContext = hubContext;
             this.gameStateService = gameStateService;
             this.gameStateQRCodeGenerator = gameStateQRCodeGenerator;
@@ -96,8 +100,18 @@ namespace PicturePanels.Controllers
                 gameState.Theme = GameStateTableEntity.DefaultTheme;
             }
 
+            var imageTags = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
+            var missingTags = gameState.Tags?.Where(tag => !imageTags.ContainsKey(tag));
+            missingTags = missingTags?.Concat(gameState.ExcludedTags?.Where(tag => !imageTags.ContainsKey(tag)) ?? new List<string>());
+
+            if (missingTags?.Any() == true)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new MissingTagsEntity() { MissingTags = missingTags});
+            }
+
             gameState = await this.gameStateTableStorage.InsertAsync(gameState);
-            gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState);
+            gameState = await this.gameStateService.PopulateGameRoundsAsync(gameState, imageTags);
 
             await this.gameStateQRCodeGenerator.GenerateAsync(gameState);
 

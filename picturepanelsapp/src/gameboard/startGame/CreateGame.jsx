@@ -43,7 +43,7 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
   const tagifySettings = {
     originalInputValueFormat: (valuesArr) => valuesArr.map((item) => item.value).join(","),
     maxTags: 6,
-    userInput: false,
+    userInput: true,
     dropdown: {
       maxItems: 30,
       classname: "tags-look",

@@ -1,7 +1,7 @@
 import serverUrl from "../common/ServerUrl";
 
 const getPlayer = (gameStateId, playerId, callback) => {
-  fetch(serverUrl + "api/players/" + gameStateId + "/" + playerId)
+  return fetch(serverUrl + "api/players/" + gameStateId + "/" + playerId)
     .then((response) => {
       if (response.ok) {
         return response.json();

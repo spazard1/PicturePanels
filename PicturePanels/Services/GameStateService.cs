@@ -643,12 +643,10 @@ namespace PicturePanels.Services
 
         private static readonly Random rand = new Random();
 
-        public async Task<GameStateTableEntity> PopulateGameRoundsAsync(GameStateTableEntity gameState)
+        public async Task<GameStateTableEntity> PopulateGameRoundsAsync(GameStateTableEntity gameState, Dictionary<string, ImageTagTableEntity> imageTags)
         {
-            Dictionary<string, ImageTagTableEntity> imageTags;
             if (gameState.Tags?.Any() == true)
             {
-                imageTags = await this.imageTagTableStorage.GetAllTagsDictionaryAsync();
                 foreach (var imageTag in imageTags)
                 {
                     if (!gameState.Tags?.Contains(imageTag.Key) == true || gameState.ExcludedTags?.Contains(imageTag.Key) == true)

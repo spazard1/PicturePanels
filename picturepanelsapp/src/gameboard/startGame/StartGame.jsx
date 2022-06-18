@@ -41,6 +41,10 @@ const StartGame = ({ onStartGame }) => {
       setIsLoadingGame(false);
 
       if (gs) {
+        if (gs.missingTags?.length > 0) {
+          setModalMessage("Could not create the game. The tag(s) '" + gs.missingTags.join(", ") + "' were not found.");
+          return;
+        }
         onStartGame(gs);
       } else {
         setModalMessage("There was a problem creating the game. Please try again later.");
