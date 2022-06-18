@@ -27,7 +27,7 @@ import { useLocalStorageState } from "../common/useLocalStorageState";
 import VoteGuess from "./voteGuess/VoteGuess";
 import putPlayerResume from "./putPlayerResume";
 import Color from "color";
-//import { throttle } from "throttle-debounce";
+import { useQueryString } from "../common/useQueryString";
 
 import "./Player.css";
 import "animate.css";
@@ -60,6 +60,15 @@ export default function Player() {
 
   const { vibrate } = usePlayerVibrate();
   usePlayerPing(gameStateId, player);
+
+  const gc = useQueryString("gc");
+
+  useEffect(() => {
+    if (gc && gc.length === 4) {
+      localStorage.setItem("gameStateId", gc);
+      window.location.href = "https://picturepanels.net/";
+    }
+  }, [gc]);
 
   useEffect(() => {
     let initialColors;

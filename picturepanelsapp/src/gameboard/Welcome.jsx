@@ -8,9 +8,8 @@ const Welcome = ({ gameStateId }) => {
   return (
     <div className="welcomeContainer">
       <div className="welcomeText">
-        Welcome to Picture Panels!
-        <br />
-        To join the game, go to picturepanels.net on your device or scan this QR code.
+        <div>Welcome to Picture Panels!</div>
+        <div>To join the game, go to picturepanels.net on your device or scan this QR code.</div>
       </div>
       <div className="welcomeQRCodeContainer">
         <img className="welcomeQRCodeImg" src={serverUrl + "api/images/gameStateQRCode/" + gameStateId} alt="Welcome QR Code" />

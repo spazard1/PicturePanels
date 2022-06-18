@@ -64,10 +64,8 @@ const JoinGame = ({ isLoading, onJoinGame, cachedGameStateId }) => {
       </div>
 
       <div className="startGameHelp">
-        Want to start a game?
-        <br />
-        Go to picturepanels.net/gameboard on a screen that all players can see.
-        <br />
+        <div>Want to start a game?</div>
+        <div>Go to picturepanels.net/gameboard on a screen that all players can see.</div>
       </div>
     </>
   );

@@ -6,9 +6,10 @@ import "./RoundNumber.css";
 const RoundNumber = ({ roundNumber, finalRoundNumber }) => {
   return (
     <div className="roundNumberCorner center">
-      Round
-      <br />
-      {roundNumber} of {finalRoundNumber}
+      <div>Round</div>
+      <div>
+        {roundNumber} of {finalRoundNumber}
+      </div>
     </div>
   );
 };
