@@ -41,6 +41,11 @@
   margin-bottom: 4vh;
 }
 
+.tags-input {
+  color: black;
+  text-align: left;
+}
+
 .createGameToggleOptions {
   margin-bottom: 4vh;
   margin-left: auto;

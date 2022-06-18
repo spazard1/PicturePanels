@@ -16,7 +16,7 @@ import "./ChoosePlayerAvatar.css";
 
 const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSelect }) => {
   const [spinAnimation, setSpinAnimation] = useSpinAnimation();
-  const [selectedAvatar, setSelectedAvatar] = useState(localStorage.getItem("playerAvatar"));
+  const [selectedAvatar, setSelectedAvatar] = useLocalStorageState("playerAvatar");
   const selectedAvatarRef = useRef();
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());

@@ -10,7 +10,7 @@ export default function postGameState(gameOptions, callback) {
     body: JSON.stringify(gameOptions),
   })
     .then((response) => {
-      if (response.ok) {
+      if (response.ok || response.status === 400) {
         return response.json();
       }
       return false;
