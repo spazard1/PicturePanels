@@ -6,8 +6,10 @@ import Bulb from "./svg/Bulb";
 import Bunny from "./svg/Bunny";
 import Butterfly from "./svg/Butterfly";
 import Cactus from "./svg/Cactus";
+import Candy from "./svg/Candy";
 import Cheers from "./svg/Cheers";
 import ChiliPepper from "./svg/ChiliPepper";
+import Crayon from "./svg/Crayon";
 import D6 from "./svg/D6";
 import Dino from "./svg/Dino";
 import Donut from "./svg/Donut";
@@ -17,6 +19,7 @@ import Elephant from "./svg/Elephant";
 import Fish from "./svg/Fish";
 import Flask from "./svg/Flask";
 import Frog from "./svg/Frog";
+import Hammer from "./svg/Hammer";
 import Hat from "./svg/Hat";
 import Hedgehog from "./svg/Hedgehog";
 import Hippo from "./svg/Hippo";
@@ -30,6 +33,7 @@ import Peacock from "./svg/Peacock";
 import Ring from "./svg/Ring";
 import Robot from "./svg/Robot";
 import Rocket from "./svg/Rocket";
+import Rosette from "./svg/Rosette";
 import Saturn from "./svg/Saturn";
 import Snail from "./svg/Snail";
 import Star from "./svg/Star";
@@ -48,8 +52,10 @@ const AllAvatars = {
   bulb: Bulb,
   butterfly: Butterfly,
   cactus: Cactus,
+  candy: Candy,
   cheers: Cheers,
   chiliPepper: ChiliPepper,
+  crayon: Crayon,
   d6: D6,
   dino: Dino,
   donut: Donut,
@@ -59,6 +65,7 @@ const AllAvatars = {
   fish: Fish,
   flask: Flask,
   frog: Frog,
+  hammer: Hammer,
   hat: Hat,
   hedgehog: Hedgehog,
   hippo: Hippo,
@@ -72,6 +79,7 @@ const AllAvatars = {
   ring: Ring,
   robot: Robot,
   rocket: Rocket,
+  rosette: Rosette,
   saturn: Saturn,
   snail: Snail,
   star: Star,
