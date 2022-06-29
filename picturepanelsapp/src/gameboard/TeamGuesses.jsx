@@ -157,11 +157,12 @@ const TeamGuesses = ({
               className={classNames("correctGuessPlayers correctGuessPlayersTeamOne animate__animated", {
                 hidden: !hasTeamGuessBeenVisible,
                 animate__fadeIn: teamGuessesVisible,
+                "animate__delay-15s": teamGuessesVisible,
                 animate__fadeOut: !teamGuessesVisible,
               })}
             >
               {correctGuessPlayers.teamOnePlayers.map((player) => (
-                <div key={player.playerId} className="animate__animated animate__fadeIn animate__delay-15s">
+                <div key={player.playerId}>
                   <Avatar
                     className={"correctGuessPlayerAvatar"}
                     key={player.playerId}
@@ -178,11 +179,12 @@ const TeamGuesses = ({
               className={classNames("correctGuessPlayers correctGuessPlayersTeamTwo animate__animated", {
                 hidden: !hasTeamGuessBeenVisible,
                 animate__fadeIn: teamGuessesVisible,
+                "animate__delay-15s": teamGuessesVisible,
                 animate__fadeOut: !teamGuessesVisible,
               })}
             >
               {correctGuessPlayers.teamTwoPlayers.map((player) => (
-                <div key={player.playerId} className="animate__animated animate__fadeIn animate__delay-15s">
+                <div key={player.playerId}>
                   <Avatar
                     className={"correctGuessPlayerAvatar"}
                     key={player.playerId}
