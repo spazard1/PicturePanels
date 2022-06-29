@@ -5,7 +5,7 @@ import { Button } from "react-bootstrap";
 import putGuessVote from "./putGuessVote";
 import putReady from "./putReady";
 import { useSignalR } from "../../signalr/useSignalR";
-import AvatarName from "../../avatars/AvatarName";
+import Avatar from "../../avatars/Avatar";
 import Color from "color";
 
 import "./VoteGuess.css";
@@ -82,14 +82,10 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
                   <div className="teamGuessText">{teamGuess.guess}</div>
                   <div className="teamGuessPlayers">
                     {teamGuess.players.map((player) => (
-                      <AvatarName
-                        key={player.playerId}
-                        className="voteGuessPlayerName"
-                        avatar={player.avatar}
-                        colors={player.colors.map((c) => new Color(c))}
-                        name={player.name}
-                        horizontal={true}
-                      />
+                      <div key={player.playerId} className="teamGuessPlayer">
+                        <Avatar className="teamGuessPlayerAvatar" avatar={player.avatar} colors={player.colors.map((c) => new Color(c))} />
+                        <div className="teamGuessPlayerName">{player.name}</div>
+                      </div>
                     ))}
                   </div>
                 </div>

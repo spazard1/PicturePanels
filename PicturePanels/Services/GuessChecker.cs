@@ -55,16 +55,17 @@ namespace PicturePanels.Services
             return maxRatio;
         }
 
-        public static bool IsMatch(string guess, string answer)
+        public static bool IsMatch(string guess1, string guess2)
         {
-            guess = Prepare(guess);
-            Levenshtein lev = new Levenshtein(guess);
+            guess1 = Prepare(guess1);
+            guess2 = Prepare(guess2);
+            Levenshtein lev = new Levenshtein(guess1);
 
-            double totalLength = answer.Length + guess.Length;
+            double totalLength = guess1.Length + guess2.Length;
 #if DEBUG
-            Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(answer)) / totalLength);
+            Debug.WriteLine("Ratio: " + (totalLength - lev.DistanceFrom(guess2)) / totalLength);
 #endif
-            if ((totalLength - lev.DistanceFrom(answer)) / totalLength > CorrectRatio)
+            if ((totalLength - lev.DistanceFrom(guess2)) / totalLength > CorrectRatio)
             {
                 return true;
             }

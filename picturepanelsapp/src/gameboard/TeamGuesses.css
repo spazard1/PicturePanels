@@ -40,7 +40,7 @@
 .teamGuessCorrectTeamOne {
   transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
   top: 8vh;
-  width: 23vw;
+  width: 25vw;
   font-size: 3vh;
   left: 10vw;
 }
@@ -49,16 +49,16 @@
   transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
   top: 8vh;
   right: 10vw;
-  width: 23vw;
+  width: 25vw;
   font-size: 3vh;
 }
 
 .bothTeamsPass {
   position: absolute;
   text-align: center;
-  padding: 1rem 4rem;
+  padding: 1vmax 2vmax;
   white-space: nowrap;
-  font-size: 7vh;
+  font-size: 4vmax;
   width: 36vw;
   top: 40vh;
   left: 32vw;
@@ -68,4 +68,30 @@
   border-image-slice: 1;
   box-sizing: border-box;
   border-image-source: linear-gradient(to right, #4e4e4e, #373737);
+}
+
+.correctGuessPlayers {
+  position: fixed;
+  z-index: 1000;
+  font-size: 3vh;
+  padding: 0.25rem;
+  width: 25vw;
+  top: 20vh;
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.correctGuessPlayerAvatar {
+  height: 4rem;
+  width: 4rem;
+}
+
+.correctGuessPlayersTeamOne {
+  left: 10vw;
+}
+
+.correctGuessPlayersTeamTwo {
+  right: 10vw;
 }

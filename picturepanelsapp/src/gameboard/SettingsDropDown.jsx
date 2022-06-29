@@ -31,7 +31,7 @@ const SettingsDropDown = ({ gameStateId, pauseState, volume, onChangeVolume }) =
   );
 };
 
-export default SettingsDropDown;
+export default React.memo(SettingsDropDown);
 
 SettingsDropDown.propTypes = {
   gameStateId: PropTypes.string,

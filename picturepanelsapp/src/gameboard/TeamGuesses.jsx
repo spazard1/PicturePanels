@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { useSignalR } from "../signalr/useSignalR";
+import { getCorrectGuessPlayers } from "./getCorrectGuessPlayers";
+import Avatar from "../avatars/Avatar";
+import Color from "color";
 
 import "./TeamGuesses.css";
 
 const TeamGuesses = ({
+  gameStateId,
   teamOneGuess,
   teamOneGuessStatus,
   teamOneCorrect,
@@ -24,6 +29,23 @@ const TeamGuesses = ({
   const [teamTwoGuessTextDisplay, setTeamTwoGuessTextDisplay] = useState("");
   const [isTeamGuessCorrect, setIsTeamGuessCorrect] = useState("");
   const [bothTeamsPass, setBothTeamsPass] = useState(false);
+  const [correctGuessPlayers, setCorrectGuessPlayers] = useState();
+
+  const connectionId = useSignalR("CorrectGuessPlayers", (cgp) => {
+    setCorrectGuessPlayers(cgp);
+  });
+
+  useEffect(() => {
+    if (!gameStateId && !connectionId) {
+      return;
+    }
+
+    getCorrectGuessPlayers(gameStateId, (cgp) => {
+      if (cgp) {
+        setCorrectGuessPlayers(cgp);
+      }
+    });
+  }, [gameStateId, connectionId]);
 
   useEffect(() => {
     if (turnType !== "GuessesMade") {
@@ -129,6 +151,49 @@ const TeamGuesses = ({
           >
             {teamTwoGuessTextDisplay}
           </div>
+
+          {correctGuessPlayers && correctGuessPlayers.teamOnePlayers && (
+            <div
+              className={classNames("correctGuessPlayers correctGuessPlayersTeamOne animate__animated", {
+                hidden: !hasTeamGuessBeenVisible,
+                animate__fadeIn: teamGuessesVisible,
+                animate__fadeOut: !teamGuessesVisible,
+              })}
+            >
+              {correctGuessPlayers.teamOnePlayers.map((player) => (
+                <div key={player.playerId} className="animate__animated animate__fadeIn animate__delay-15s">
+                  <Avatar
+                    className={"correctGuessPlayerAvatar"}
+                    key={player.playerId}
+                    avatar={player.avatar}
+                    colors={player.colors.map((c) => Color(c))}
+                  />
+                  <div>{player.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          {correctGuessPlayers && correctGuessPlayers.teamTwoPlayers && (
+            <div
+              className={classNames("correctGuessPlayers correctGuessPlayersTeamTwo animate__animated", {
+                hidden: !hasTeamGuessBeenVisible,
+                animate__fadeIn: teamGuessesVisible,
+                animate__fadeOut: !teamGuessesVisible,
+              })}
+            >
+              {correctGuessPlayers.teamTwoPlayers.map((player) => (
+                <div key={player.playerId} className="animate__animated animate__fadeIn animate__delay-15s">
+                  <Avatar
+                    className={"correctGuessPlayerAvatar"}
+                    key={player.playerId}
+                    avatar={player.avatar}
+                    colors={player.colors.map((c) => Color(c))}
+                  />
+                  <div>{player.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </>
@@ -138,6 +203,7 @@ const TeamGuesses = ({
 export default TeamGuesses;
 
 TeamGuesses.propTypes = {
+  gameStateId: PropTypes.string,
   teamOneGuess: PropTypes.string,
   teamOneGuessStatus: PropTypes.string,
   teamOneCorrect: PropTypes.bool,

@@ -14,9 +14,9 @@ import { useSpinAnimation } from "../../common/randomize/useSpinAnimation";
 
 import "./ChoosePlayerAvatar.css";
 
-const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSelect }) => {
+const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorRemove, onAvatarSelect }) => {
   const [spinAnimation, setSpinAnimation] = useSpinAnimation();
-  const [selectedAvatar, setSelectedAvatar] = useLocalStorageState("playerAvatar");
+  const [selectedAvatar, setSelectedAvatar] = useState();
   const selectedAvatarRef = useRef();
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());
@@ -54,6 +54,14 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
   };
 
   useEffect(() => {
+    if (!avatar) {
+      return;
+    }
+
+    setSelectedAvatar(avatar);
+  }, [avatar]);
+
+  useEffect(() => {
     if (colors.length === 0) {
       setStartingColors([getNewColor()]);
     }
@@ -63,7 +71,11 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
     if (selectedAvatarRef.current) {
       selectedAvatarRef.current.scrollIntoView({ block: "center" });
     }
-  }, []);
+  }, [avatar]);
+
+  if (!gameState || avatar) {
+    return null;
+  }
 
   return (
     <>
@@ -116,6 +128,8 @@ const ChoosePlayerAvatar = ({ colors, onColorChange, onColorRemove, onAvatarSele
 export default ChoosePlayerAvatar;
 
 ChoosePlayerAvatar.propTypes = {
+  gameState: PropTypes.object,
+  avatar: PropTypes.string,
   colors: PropTypes.arrayOf(PropTypes.object),
   onColorChange: PropTypes.func.isRequired,
   onColorRemove: PropTypes.func.isRequired,

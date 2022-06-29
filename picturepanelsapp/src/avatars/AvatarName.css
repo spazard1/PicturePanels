@@ -13,5 +13,6 @@
 }
 
 .nameContainer {
-  overflow: hidden;
+  overflow-x: hidden;
+  white-space: nowrap;
 }

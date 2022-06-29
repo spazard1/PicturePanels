@@ -78,4 +78,4 @@ ScoreBoard.propTypes = {
   turnType: PropTypes.string,
 };
 
-export default ScoreBoard;
+export default React.memo(ScoreBoard);
