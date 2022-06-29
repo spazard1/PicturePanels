@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import "./FadedBox.css";
 
-export default function FadedBox({ children, displayState, className, entranceClassNames, exitClassNames }) {
+const FadedBox = ({ children, displayState, className, entranceClassNames, exitClassNames }) => {
   return (
     <>
       {children && (
@@ -18,7 +18,9 @@ export default function FadedBox({ children, displayState, className, entranceCl
       )}
     </>
   );
-}
+};
+
+export default React.memo(FadedBox);
 
 FadedBox.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),

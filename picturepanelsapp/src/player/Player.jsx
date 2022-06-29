@@ -111,7 +111,6 @@ export default function Player() {
       setAvatar(null);
       setColors([]);
       localStorage.removeItem("playerId");
-      localStorage.removeItem("playerAvatar");
     }
 
     getGameState(gameOptions.gameStateId.toUpperCase(), (gs) => {
@@ -191,7 +190,6 @@ export default function Player() {
         .then(() => {
           if (resumeGameRef.current.gameState && resumeGameRef.current.gameState.turnType === "EndGame") {
             localStorage.removeItem("gameStateId");
-            localStorage.removeItem("playerAvatar");
             setCachedGameStateId("");
             return;
           }
@@ -400,14 +398,14 @@ export default function Player() {
 
       {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
 
-      {gameState && !avatar && (
-        <ChoosePlayerAvatar
-          colors={colors}
-          onColorChange={onColorChange}
-          onColorRemove={onColorRemove}
-          onAvatarSelect={onAvatarSelect}
-        ></ChoosePlayerAvatar>
-      )}
+      <ChoosePlayerAvatar
+        gameState={gameState}
+        avatar={avatar}
+        colors={colors}
+        onColorChange={onColorChange}
+        onColorRemove={onColorRemove}
+        onAvatarSelect={onAvatarSelect}
+      ></ChoosePlayerAvatar>
 
       {gameState && avatar && teamNumber <= 0 && (
         <ChooseTeam

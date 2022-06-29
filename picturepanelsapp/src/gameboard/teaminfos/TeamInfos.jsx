@@ -55,4 +55,4 @@ TeamInfos.propTypes = {
   gameState: PropTypes.object.isRequired,
 };
 
-export default TeamInfos;
+export default React.memo(TeamInfos);

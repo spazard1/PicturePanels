@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./panels/Panels";
@@ -48,9 +48,12 @@ export default function Gameboard() {
   const { winningTeam } = useWinningTeam(gameState);
   const [volume, setVolume] = useLocalStorageState("volume", 50);
 
-  const onChangeVolume = (v) => {
-    setVolume(v);
-  };
+  const onChangeVolume = useCallback(
+    (v) => {
+      setVolume(v);
+    },
+    [setVolume]
+  );
 
   const {
     playPlayerJoinSound,
@@ -123,11 +126,7 @@ export default function Gameboard() {
       return;
     }
 
-    if (
-      gameState.roundNumber === roundNumberRef.current &&
-      gameState.turnType !== "EndRound" &&
-      !(gameState.turnType === "GuessesMade" && (gameState.teamOneCorrect || gameState.teamTwoCorrect))
-    ) {
+    if (gameState.turnType !== "EndRound") {
       setAnswerDisplay(false);
       return;
     }
