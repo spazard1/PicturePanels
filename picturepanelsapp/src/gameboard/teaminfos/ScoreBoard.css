@@ -22,12 +22,14 @@
 
 .teamScore {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   flex: 1;
   vertical-align: middle;
   text-align: center;
   font-size: 5.5vh;
-  line-height: 5.5vh;
   height: 7vh;
   width: 100%;
 }

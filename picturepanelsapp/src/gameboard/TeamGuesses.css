@@ -40,7 +40,7 @@
 .teamGuessCorrectTeamOne {
   transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
   top: 8vh;
-  width: 25vw;
+  width: 24vw;
   font-size: 3vh;
   left: 10vw;
 }
@@ -49,7 +49,7 @@
   transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
   top: 8vh;
   right: 10vw;
-  width: 25vw;
+  width: 24vw;
   font-size: 3vh;
 }
 

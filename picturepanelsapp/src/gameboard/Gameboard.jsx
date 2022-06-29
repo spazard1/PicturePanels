@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import { usePlayers } from "../common/usePlayers";
 import Panels from "./panels/Panels";
@@ -41,7 +41,7 @@ export default function Gameboard() {
   const [answerDisplayText, setAnswerDisplayText] = useState();
   const [timeRemainingDisplay, setTimeRemainingDisplay] = useState(false);
   const [timeRemainingDisplayText, setTimeRemainingDisplayText] = useState();
-  const roundNumberRef = useRef();
+  const [roundNumber, setRoundNumber] = useState();
   const { gameState, gameStateId, setGameState } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
@@ -96,7 +96,16 @@ export default function Gameboard() {
 
     setTurnType(gameState.turnType);
     setTeamTurn(gameState.teamTurn);
+    setRoundNumber(gameState.roundNumber);
   }, [gameState]);
+
+  useEffect(() => {
+    if (turnType === "OpenPanel") {
+      playTurnStartSound();
+    } else if (turnType === "EndGame") {
+      playEndGameSound();
+    }
+  }, [turnType, playTurnStartSound, playEndGameSound]);
 
   useEffect(() => {
     if (!gameState) {
@@ -116,72 +125,73 @@ export default function Gameboard() {
   }, [gameState]);
 
   useEffect(() => {
-    if (!gameState) {
+    if (!turnType || !gameStateId) {
       return;
     }
 
-    if (gameState.turnType === "Welcome" || gameState.turnType === "EndGame") {
-      setUploadedByDisplay(false);
+    if (turnType !== "EndRound") {
       setAnswerDisplay(false);
       return;
     }
 
-    if (gameState.turnType !== "EndRound") {
-      setAnswerDisplay(false);
-      return;
-    }
-
-    getImageEntity(gameState.gameStateId, (imageEntity) => {
-      if (!imageEntity) {
-        setUploadedByDisplay(false);
+    getImageEntity(gameStateId, (imageEntity) => {
+      if (!imageEntity || !imageEntity.name) {
         setAnswerDisplay(false);
         return;
       }
 
-      if (imageEntity.uploadedBy) {
-        setUploadedByDisplay(true);
-        setUploadedByDisplayText("Uploaded by: " + imageEntity.uploadedBy);
-      } else {
-        setUploadedByDisplay(false);
-      }
-
-      if (imageEntity.name) {
-        setAnswerDisplayText(imageEntity.name);
-        setAnswerDisplay(true);
-      } else {
-        setAnswerDisplay(false);
-      }
+      setAnswerDisplay(true);
+      setAnswerDisplayText(imageEntity.name);
     });
-  }, [gameState]);
+  }, [turnType, gameStateId]);
 
   useEffect(() => {
-    if (turnType === "OpenPanel") {
-      playTurnStartSound();
-    } else if (turnType === "EndGame") {
-      playEndGameSound();
-    }
-  }, [turnType, playTurnStartSound, playEndGameSound]);
-
-  useEffect(() => {
-    if (!gameState) {
+    if (!roundNumber || !gameStateId) {
       return;
     }
 
-    if (gameState.roundNumber === roundNumberRef.current || gameState.turnType !== "OpenPanel" || gameState.revealedPanels.length > 0) {
+    getImageEntity(gameStateId, (imageEntity) => {
+      if (!imageEntity || !imageEntity.uploadedBy) {
+        setUploadedByDisplay(false);
+        return;
+      }
+
+      setUploadedByDisplay(true);
+      setUploadedByDisplayText("Uploaded by: " + imageEntity.uploadedBy);
+    });
+  }, [roundNumber, gameStateId]);
+
+  useEffect(() => {
+    if (!turnType) {
       return;
     }
 
-    roundNumberRef.current = gameState.roundNumber;
-    setRoundNumberAnimateDisplayText("Round " + gameState.roundNumber);
+    if (turnType === "Welcome" || turnType === "EndGame") {
+      setUploadedByDisplay(false);
+      return;
+    }
+  }, [turnType]);
+
+  useEffect(() => {
+    if (!roundNumber) {
+      return;
+    }
+
+    setRoundNumberAnimateDisplayText("Round " + roundNumber);
 
     setRoundNumberAnimateDisplay(true);
     setTimeout(() => {
       setRoundNumberAnimateDisplay(false);
     }, 7000);
-  }, [gameState]);
+  }, [roundNumber]);
 
   useEffect(() => {
     if (!gameState) {
+      return;
+    }
+
+    if (gameState.pauseState === "Paused") {
+      setTimeRemainingDisplay(false);
       return;
     }
 
