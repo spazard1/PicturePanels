@@ -10,12 +10,13 @@ import { useLocalStorageState } from "../../common/useLocalStorageState";
 import { v4 as uuidv4 } from "uuid";
 import Color from "color";
 import dice64 from "./../../common/randomize/dice-64.png";
-import { useSpinAnimation } from "../../common/randomize/useSpinAnimation";
+import { useClassAnimation } from "../../common/classAnimation/useClassAnimation";
 
 import "./ChoosePlayerAvatar.css";
 
 const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorRemove, onAvatarSelect }) => {
-  const [spinAnimation, setSpinAnimation] = useSpinAnimation();
+  const [spinAnimation, setSpinAnimation] = useClassAnimation(250);
+  const [flipAnimation, setFlipAnimation] = useClassAnimation(300);
   const [selectedAvatar, setSelectedAvatar] = useState();
   const selectedAvatarRef = useRef();
   const [startingColors, setStartingColors] = useState(colors);
@@ -28,6 +29,7 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
   };
 
   const onSwapColors = () => {
+    setFlipAnimation(true);
     setStartingColors([colors[1], colors[0]]);
   };
 
@@ -82,10 +84,17 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
       <div className="choosePlayerAvatarContainer">
         <div className="choosePlayerAvatarLabel">Choose your avatar</div>
         <div className="colorOptionsContainer">
-          <div className="colorPickerContainer">
+          <div className="randomizeSwapContainer">
             <div className={classNames("randomizeContainer", { spinAnimation: spinAnimation })} onClick={onRandomizeColors}>
               <img src={dice64} alt="randomize"></img>
             </div>
+            {colors?.length > 1 && (
+              <div className={classNames("swapContainer flipAnimation", { flipAnimationFlipped: flipAnimation })} onClick={onSwapColors}>
+                ⇄
+              </div>
+            )}
+          </div>
+          <div className="colorPickerContainer">
             <ColorPicker
               startingColors={startingColors}
               colors={colors}
@@ -95,13 +104,8 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
             ></ColorPicker>
           </div>
           <div ref={colorPickerContainerRef} className="twoColorModeContainer">
-            <div>Two Color Mode</div>
+            <div>Two Colors</div>
             <Form.Check type="switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
-            <div className="swapColorsButtonContainer">
-              <Button onClick={onSwapColors} disabled={colors && colors.length < 2}>
-                Swap Colors
-              </Button>
-            </div>
           </div>
         </div>
         <div className="playerAvatars">

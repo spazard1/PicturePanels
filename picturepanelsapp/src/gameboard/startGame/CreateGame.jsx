@@ -6,7 +6,7 @@ import { useQueryString } from "../../common/useQueryString";
 import { useTeamNames } from "./useTeamNames";
 import { Button, Form } from "react-bootstrap";
 import dice64 from "./../../common/randomize/dice-64.png";
-import { useSpinAnimation } from "../../common/randomize/useSpinAnimation";
+import { useClassAnimation } from "../../common/classAnimation/useClassAnimation";
 import classNames from "classnames";
 
 import "@yaireo/tagify/dist/tagify.css";
@@ -15,7 +15,7 @@ import "../../common/Tagify.css";
 import "./CreateGame.css";
 
 const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
-  const [spinAnimation, setSpinAnimation] = useSpinAnimation();
+  const [spinAnimation, setSpinAnimation] = useClassAnimation(250);
   const { teamNames, refreshTeamNames } = useTeamNames(setSpinAnimation);
 
   const { tags } = useTags();
