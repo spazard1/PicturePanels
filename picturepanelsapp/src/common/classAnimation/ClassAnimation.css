@@ -3,3 +3,12 @@
   transform: rotate(360deg);
   transition: transform 0.25s linear;
 }
+
+.flipAnimation {
+  transition: 0.3s;
+  transform-style: preserve-3d;
+}
+
+.flipAnimationFlipped {
+  transform: rotateY(180deg);
+}

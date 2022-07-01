@@ -13,10 +13,18 @@
 }
 
 .colorOptionsContainer {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1.25rem;
   margin-bottom: 1rem;
+}
+
+.randomizeSwapContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .IroWheel {
@@ -25,12 +33,10 @@
 
 .colorPickerContainer {
   position: relative;
-  padding-left: 2rem;
 }
 
 .randomizeContainer {
   cursor: pointer;
-  position: absolute;
   top: 0;
   left: 0;
   width: 2rem;
@@ -42,8 +48,14 @@
   width: 100%;
 }
 
+.swapContainer {
+  user-select: none;
+  cursor: pointer;
+  left: 0;
+  font-size: 2rem;
+}
+
 .twoColorModeContainer {
-  margin-left: 1rem;
   font-size: 1.25rem;
 }
 
