@@ -5,7 +5,7 @@ import { useTags } from "../../common/useTags";
 import { useQueryString } from "../../common/useQueryString";
 import { useTeamNames } from "./useTeamNames";
 import { Button, Form } from "react-bootstrap";
-import dice64 from "./../../common/randomize/dice-64.png";
+import dice64 from "./../../common/classAnimation/dice-64.png";
 import { useClassAnimation } from "../../common/classAnimation/useClassAnimation";
 import classNames from "classnames";
 

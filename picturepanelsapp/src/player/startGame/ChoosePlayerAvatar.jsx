@@ -9,7 +9,7 @@ import shuffleSeed from "shuffle-seed";
 import { useLocalStorageState } from "../../common/useLocalStorageState";
 import { v4 as uuidv4 } from "uuid";
 import Color from "color";
-import dice64 from "./../../common/randomize/dice-64.png";
+import dice64 from "./../../common/classAnimation/dice-64.png";
 import { useClassAnimation } from "../../common/classAnimation/useClassAnimation";
 
 import "./ChoosePlayerAvatar.css";
