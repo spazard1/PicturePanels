@@ -1,30 +1,41 @@
 /* stylelint-disable selector-pseudo-element-colon-notation */
 /* stylelint-disable custom-property-pattern */
 /* stylelint-disable selector-class-pattern */
-.teamGuess {
+.teamGuessContainer {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
   position: fixed;
-  padding: 0 3px 7px;
-  width: 50vw;
-  font-weight: 500;
-  z-index: 100;
-  text-align: center;
-  overflow: hidden;
-  font-size: 6vh;
   border: 6px solid;
   border-image-slice: 1;
-  box-sizing: border-box;
+  z-index: 1000;
+  width: 50vw;
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
 }
 
-.teamGuessTeamOne {
+.teamOneGuessContainer {
   border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
   top: 25vh;
   left: 8vw;
 }
 
-.teamGuessTeamTwo {
+.teamOneGuessContainerCorrect {
+  top: 8vh;
+  width: 24vw;
+  left: 10vw;
+}
+
+.teamTwoGuessContainer {
   border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
   top: 65vh;
   right: 8vw;
+}
+
+.teamGuess {
+  font-weight: 500;
+  text-align: center;
+  font-size: 6vh;
+  transition: font-size 1s;
 }
 
 .teamGuessCorrect {
@@ -37,12 +48,8 @@
   text-decoration-thickness: 1rem;
 }
 
-.teamGuessCorrectTeamOne {
-  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
-  top: 8vh;
-  width: 24vw;
+.teamGuessIsCorrect {
   font-size: 3vh;
-  left: 10vw;
 }
 
 .teamGuessCorrectTeamTwo {
@@ -71,12 +78,7 @@
 }
 
 .correctGuessPlayers {
-  position: fixed;
-  z-index: 1000;
   font-size: 3vh;
-  padding: 0.25rem;
-  width: 25vw;
-  top: 20vh;
   display: flex;
   gap: 0.25rem;
   flex-wrap: wrap;
@@ -86,12 +88,4 @@
 .correctGuessPlayerAvatar {
   height: 4rem;
   width: 4rem;
-}
-
-.correctGuessPlayersTeamOne {
-  left: 10vw;
-}
-
-.correctGuessPlayersTeamTwo {
-  right: 10vw;
 }

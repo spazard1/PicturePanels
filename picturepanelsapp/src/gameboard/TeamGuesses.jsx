@@ -30,6 +30,7 @@ const TeamGuesses = ({
   const [isTeamGuessCorrect, setIsTeamGuessCorrect] = useState("");
   const [bothTeamsPass, setBothTeamsPass] = useState(false);
   const [correctGuessPlayers, setCorrectGuessPlayers] = useState();
+  const [correctGuessPlayersVisible, setCorrectGuessPlayersVisible] = useState(false);
 
   const connectionId = useSignalR("CorrectGuessPlayers", (cgp) => {
     setCorrectGuessPlayers(cgp);
@@ -83,6 +84,10 @@ const TeamGuesses = ({
       setIsTeamGuessCorrect(teamOneCorrect || teamTwoCorrect);
       if (teamOneCorrect || teamTwoCorrect) {
         playCorrectSound();
+
+        setTimeout(() => {
+          setCorrectGuessPlayersVisible(true);
+        }, 6000);
       } else if (teamOneGuessStatus === "Guess" || teamTwoGuessStatus === "Guess") {
         playIncorrectSound();
       }
@@ -122,80 +127,85 @@ const TeamGuesses = ({
       {!bothTeamsPass && (
         <>
           <div
-            className={classNames("teamGuess", "animate__animated", "teamOneBox", "teamGuessTeamOne", {
-              hidden: !hasTeamGuessBeenVisible,
-              animate__slideInLeft: teamGuessesVisible && teamOneGuessCorrectDisplay === "",
-              animate__slideOutLeft: !teamGuessesVisible,
-              teamGuessCorrect: teamOneGuessCorrectDisplay === "Correct",
-              teamGuessIncorrect: teamOneGuessCorrectDisplay === "Incorrect",
-              animate__pulse: teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__delay-1s": teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__repeat-5": teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              teamGuessCorrectTeamOne: isTeamGuessCorrect,
+            className={classNames("teamGuessContainer teamOneGuessContainer", {
+              teamOneGuessContainerCorrect: isTeamGuessCorrect,
             })}
           >
-            {teamOneGuessTextDisplay}
-          </div>
-          <div
-            className={classNames("teamGuess", "animate__animated", "teamTwoBox", "teamGuessTeamTwo", {
-              hidden: !hasTeamGuessBeenVisible,
-              animate__slideInRight: teamGuessesVisible && teamTwoGuessCorrectDisplay === "",
-              animate__slideOutRight: !teamGuessesVisible,
-              teamGuessCorrect: teamTwoGuessCorrectDisplay === "Correct",
-              teamGuessIncorrect: teamTwoGuessCorrectDisplay === "Incorrect",
-              animate__pulse: teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__delay-1s": teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__repeat-5": teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              teamGuessCorrectTeamTwo: isTeamGuessCorrect,
-            })}
-          >
-            {teamTwoGuessTextDisplay}
+            <div
+              className={classNames("teamGuess", "animate__animated", "teamGuessTeamOne teamOneBox", {
+                hidden: !hasTeamGuessBeenVisible,
+                animate__slideInLeft: teamGuessesVisible && teamOneGuessCorrectDisplay === "",
+                animate__slideOutLeft: !teamGuessesVisible,
+                teamGuessCorrect: teamOneGuessCorrectDisplay === "Correct",
+                teamGuessIncorrect: teamOneGuessCorrectDisplay === "Incorrect",
+                animate__pulse: teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
+                "animate__delay-1s": teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
+                "animate__repeat-5": teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
+                teamGuessIsCorrect: isTeamGuessCorrect,
+              })}
+            >
+              {teamOneGuessTextDisplay}
+            </div>
+            {correctGuessPlayers && correctGuessPlayers.teamOnePlayers && correctGuessPlayersVisible && (
+              <div
+                className={classNames("correctGuessPlayers teamOneBox animate__animated animate__fadeIn", {
+                  animate__fadeOut: !teamGuessesVisible,
+                })}
+              >
+                {correctGuessPlayers.teamOnePlayers.map((player) => (
+                  <div key={player.playerId}>
+                    <Avatar
+                      className={"correctGuessPlayerAvatar"}
+                      key={player.playerId}
+                      avatar={player.avatar}
+                      colors={player.colors.map((c) => Color(c))}
+                    />
+                    <div>{player.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {correctGuessPlayers && correctGuessPlayers.teamOnePlayers && (
+          <div className="teamGuessContainer teamTwoGuessContainer teamTwoBox">
             <div
-              className={classNames("correctGuessPlayers correctGuessPlayersTeamOne animate__animated", {
+              className={classNames("teamGuess", "animate__animated", "teamGuessTeamTwo", {
                 hidden: !hasTeamGuessBeenVisible,
-                animate__fadeIn: teamGuessesVisible,
-                "animate__delay-15s": teamGuessesVisible,
-                animate__fadeOut: !teamGuessesVisible,
+                animate__slideInRight: teamGuessesVisible && teamTwoGuessCorrectDisplay === "",
+                animate__slideOutRight: !teamGuessesVisible,
+                teamGuessCorrect: teamTwoGuessCorrectDisplay === "Correct",
+                teamGuessIncorrect: teamTwoGuessCorrectDisplay === "Incorrect",
+                animate__pulse: teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
+                "animate__delay-1s": teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
+                "animate__repeat-5": teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
+                teamGuessIsCorrect: isTeamGuessCorrect,
               })}
             >
-              {correctGuessPlayers.teamOnePlayers.map((player) => (
-                <div key={player.playerId}>
-                  <Avatar
-                    className={"correctGuessPlayerAvatar"}
-                    key={player.playerId}
-                    avatar={player.avatar}
-                    colors={player.colors.map((c) => Color(c))}
-                  />
-                  <div>{player.name}</div>
-                </div>
-              ))}
+              {teamTwoGuessTextDisplay}
             </div>
-          )}
-          {correctGuessPlayers && correctGuessPlayers.teamTwoPlayers && (
-            <div
-              className={classNames("correctGuessPlayers correctGuessPlayersTeamTwo animate__animated", {
-                hidden: !hasTeamGuessBeenVisible,
-                animate__fadeIn: teamGuessesVisible,
-                "animate__delay-15s": teamGuessesVisible,
-                animate__fadeOut: !teamGuessesVisible,
-              })}
-            >
-              {correctGuessPlayers.teamTwoPlayers.map((player) => (
-                <div key={player.playerId}>
-                  <Avatar
-                    className={"correctGuessPlayerAvatar"}
-                    key={player.playerId}
-                    avatar={player.avatar}
-                    colors={player.colors.map((c) => Color(c))}
-                  />
-                  <div>{player.name}</div>
-                </div>
-              ))}
-            </div>
-          )}
+            {correctGuessPlayers && correctGuessPlayers.teamTwoPlayers && (
+              <div
+                className={classNames("correctGuessPlayers animate__animated", {
+                  hidden: !hasTeamGuessBeenVisible,
+                  animate__fadeIn: teamGuessesVisible,
+                  "animate__delay-15s": teamGuessesVisible,
+                  animate__fadeOut: !teamGuessesVisible,
+                })}
+              >
+                {correctGuessPlayers.teamTwoPlayers.map((player) => (
+                  <div key={player.playerId}>
+                    <Avatar
+                      className={"correctGuessPlayerAvatar"}
+                      key={player.playerId}
+                      avatar={player.avatar}
+                      colors={player.colors.map((c) => Color(c))}
+                    />
+                    <div>{player.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
     </>
