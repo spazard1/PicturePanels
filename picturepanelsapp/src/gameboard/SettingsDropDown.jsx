@@ -40,13 +40,7 @@ const SettingsDropDown = ({ gameStateId, pauseState, volume, onChangeVolume }) =
 
   return (
     <Dropdown autoClose={false} show={dropdownVisible} onSelect={setCloseInterval} className="gameBoardSettingsDropdown">
-      <Dropdown.Toggle
-        size="sm"
-        variant={"secondary"}
-        id="dropdown-basic"
-        className="gameBoardSettingsDropdownButton"
-        onClick={() => setDropDownVisible((ddv) => !ddv)}
-      >
+      <Dropdown.Toggle size="sm" variant={"secondary"} className="gameBoardSettingsDropdownButton" onClick={() => setDropDownVisible((ddv) => !ddv)}>
         ⚙
       </Dropdown.Toggle>
 
