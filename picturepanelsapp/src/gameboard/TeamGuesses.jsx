@@ -7,6 +7,7 @@ import Avatar from "../avatars/Avatar";
 import Color from "color";
 
 import "./TeamGuesses.css";
+import { useContainerClassAnimation } from "../common/useContainerClassAnimation";
 
 const TeamGuesses = ({
   gameStateId,
@@ -21,14 +22,18 @@ const TeamGuesses = ({
   playIncorrectSound,
   playBothTeamsPassSound,
 }) => {
-  const [teamGuessesVisible, setTeamGuessesVisible] = useState(false);
-  const [hasTeamGuessBeenVisible, setHasTeamGuessBeenVisible] = useState(false);
+  const [teamOneGuessVisibleClassName, setTeamOneGuessVisible] = useContainerClassAnimation("animate__slideInLeft", "animate__slideOutLeft");
+  const [teamTwoGuessVisibleClassName, setTeamTwoGuessVisible] = useContainerClassAnimation("animate__slideInRight", "animate__slideOutRight");
+
+  const [teamOnePlayersVisibleClassName, setTeamOnePlayersVisible] = useContainerClassAnimation("animate__fadeInUp", "hidden");
+  const [teamTwoPlayersVisibleClassName, setTeamTwoPlayersVisible] = useContainerClassAnimation("animate__fadeInUp", "hidden");
+  const [bothTeamsPassVisibleClassName, setBothTeamsPassVisible] = useContainerClassAnimation("animate__zoomIn", "animate__zoomOut");
+
   const [teamOneGuessCorrectDisplay, setTeamOneGuessCorrectDisplay] = useState("");
   const [teamTwoGuessCorrectDisplay, setTeamTwoGuessCorrectDisplay] = useState("");
   const [teamOneGuessTextDisplay, setTeamOneGuessTextDisplay] = useState("");
   const [teamTwoGuessTextDisplay, setTeamTwoGuessTextDisplay] = useState("");
   const [isTeamGuessCorrect, setIsTeamGuessCorrect] = useState("");
-  const [bothTeamsPass, setBothTeamsPass] = useState(false);
   const [correctGuessPlayers, setCorrectGuessPlayers] = useState();
 
   const connectionId = useSignalR("CorrectGuessPlayers", (cgp) => {
@@ -49,7 +54,18 @@ const TeamGuesses = ({
 
   useEffect(() => {
     if (turnType !== "GuessesMade") {
-      setTeamGuessesVisible(false);
+      setTeamOneGuessVisible(false);
+      setTeamTwoGuessVisible(false);
+      setTeamOnePlayersVisible(false);
+      setTeamTwoPlayersVisible(false);
+      setBothTeamsPassVisible(false);
+
+      setTimeout(() => {
+        setIsTeamGuessCorrect(false);
+        setTeamOneGuessCorrectDisplay("");
+        setTeamTwoGuessCorrectDisplay("");
+      }, 2000);
+
       return;
     }
 
@@ -65,17 +81,21 @@ const TeamGuesses = ({
       setTeamTwoGuessTextDisplay(teamTwoGuess);
     }
 
-    setTeamGuessesVisible(true);
     setIsTeamGuessCorrect(false);
     setTeamOneGuessCorrectDisplay("");
     setTeamTwoGuessCorrectDisplay("");
 
     if ((teamOneGuessStatus === "Pass" || teamOneGuessStatus === "Skip") && (teamTwoGuessStatus === "Pass" || teamTwoGuessStatus === "Skip")) {
       playBothTeamsPassSound();
-      setBothTeamsPass(true);
+      setBothTeamsPassVisible(true);
+      setTeamOneGuessVisible(false);
+      setTeamTwoGuessVisible(false);
       return;
     }
-    setBothTeamsPass(false);
+
+    setBothTeamsPassVisible(false);
+    setTeamOneGuessVisible(true);
+    setTeamTwoGuessVisible(true);
 
     setTimeout(() => {
       setTeamOneGuessCorrectDisplay(teamOneCorrect ? "Correct" : teamOneGuessStatus === "Guess" ? "Incorrect" : "");
@@ -83,6 +103,11 @@ const TeamGuesses = ({
       setIsTeamGuessCorrect(teamOneCorrect || teamTwoCorrect);
       if (teamOneCorrect || teamTwoCorrect) {
         playCorrectSound();
+
+        setTimeout(() => {
+          setTeamOnePlayersVisible(true);
+          setTeamTwoPlayersVisible(true);
+        }, 11000);
       } else if (teamOneGuessStatus === "Guess" || teamTwoGuessStatus === "Guess") {
         playIncorrectSound();
       }
@@ -98,69 +123,36 @@ const TeamGuesses = ({
     playCorrectSound,
     playIncorrectSound,
     playBothTeamsPassSound,
+    setTeamOneGuessVisible,
+    setTeamTwoGuessVisible,
+    setBothTeamsPassVisible,
+    setTeamOnePlayersVisible,
+    setTeamTwoPlayersVisible,
   ]);
-
-  useEffect(() => {
-    if (teamGuessesVisible) {
-      setHasTeamGuessBeenVisible(true);
-    }
-  }, [teamGuessesVisible]);
 
   return (
     <>
-      {bothTeamsPass && (
+      <div className={classNames("bothTeamsPass", "animate__animated", bothTeamsPassVisibleClassName)}>Both Teams Pass</div>
+      <>
         <div
-          className={classNames("bothTeamsPass", "animate__animated", {
-            hidden: !hasTeamGuessBeenVisible,
-            animate__zoomIn: teamGuessesVisible,
-            animate__zoomOut: !teamGuessesVisible,
+          className={classNames("teamGuessContainer teamOneGuessContainer animate__animated", teamOneGuessVisibleClassName, {
+            teamOneGuessContainerCorrect: isTeamGuessCorrect,
           })}
         >
-          Both Teams Pass
-        </div>
-      )}
-      {!bothTeamsPass && (
-        <>
           <div
-            className={classNames("teamGuess", "animate__animated", "teamOneBox", "teamGuessTeamOne", {
-              hidden: !hasTeamGuessBeenVisible,
-              animate__slideInLeft: teamGuessesVisible && teamOneGuessCorrectDisplay === "",
-              animate__slideOutLeft: !teamGuessesVisible,
+            className={classNames("teamOneBox", "teamGuess", "teamGuessTeamOne", "animate__animated", {
               teamGuessCorrect: teamOneGuessCorrectDisplay === "Correct",
               teamGuessIncorrect: teamOneGuessCorrectDisplay === "Incorrect",
-              animate__pulse: teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__delay-1s": teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__repeat-5": teamOneGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              teamGuessCorrectTeamOne: isTeamGuessCorrect,
+              animate__pulse: teamOneGuessCorrectDisplay === "Correct",
+              "animate__delay-1s": teamOneGuessCorrectDisplay === "Correct",
+              "animate__repeat-5": teamOneGuessCorrectDisplay === "Correct",
+              teamGuessIsCorrect: isTeamGuessCorrect,
             })}
           >
             {teamOneGuessTextDisplay}
           </div>
-          <div
-            className={classNames("teamGuess", "animate__animated", "teamTwoBox", "teamGuessTeamTwo", {
-              hidden: !hasTeamGuessBeenVisible,
-              animate__slideInRight: teamGuessesVisible && teamTwoGuessCorrectDisplay === "",
-              animate__slideOutRight: !teamGuessesVisible,
-              teamGuessCorrect: teamTwoGuessCorrectDisplay === "Correct",
-              teamGuessIncorrect: teamTwoGuessCorrectDisplay === "Incorrect",
-              animate__pulse: teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__delay-1s": teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              "animate__repeat-5": teamTwoGuessCorrectDisplay === "Correct" && teamGuessesVisible,
-              teamGuessCorrectTeamTwo: isTeamGuessCorrect,
-            })}
-          >
-            {teamTwoGuessTextDisplay}
-          </div>
-
-          {correctGuessPlayers && correctGuessPlayers.teamOnePlayers && (
-            <div
-              className={classNames("correctGuessPlayers correctGuessPlayersTeamOne animate__animated", {
-                hidden: !hasTeamGuessBeenVisible,
-                animate__fadeIn: teamGuessesVisible,
-                "animate__delay-15s": teamGuessesVisible,
-                animate__fadeOut: !teamGuessesVisible,
-              })}
-            >
+          {correctGuessPlayers?.teamOnePlayers && correctGuessPlayers?.teamOnePlayers?.length > 0 && (
+            <div className={classNames("correctGuessPlayers teamOneBox animate__animated", teamOnePlayersVisibleClassName)}>
               {correctGuessPlayers.teamOnePlayers.map((player) => (
                 <div key={player.playerId}>
                   <Avatar
@@ -169,20 +161,32 @@ const TeamGuesses = ({
                     avatar={player.avatar}
                     colors={player.colors.map((c) => Color(c))}
                   />
-                  <div>{player.name}</div>
+                  <div className="correctGuessPlayerName">{player.name}</div>
                 </div>
               ))}
             </div>
           )}
-          {correctGuessPlayers && correctGuessPlayers.teamTwoPlayers && (
-            <div
-              className={classNames("correctGuessPlayers correctGuessPlayersTeamTwo animate__animated", {
-                hidden: !hasTeamGuessBeenVisible,
-                animate__fadeIn: teamGuessesVisible,
-                "animate__delay-15s": teamGuessesVisible,
-                animate__fadeOut: !teamGuessesVisible,
-              })}
-            >
+        </div>
+
+        <div
+          className={classNames("teamGuessContainer teamTwoGuessContainer animate__animated", teamTwoGuessVisibleClassName, {
+            teamTwoGuessContainerCorrect: isTeamGuessCorrect,
+          })}
+        >
+          <div
+            className={classNames("teamTwoBox", "teamGuess", "teamGuessTeamTwo", "animate__animated", {
+              teamGuessCorrect: teamTwoGuessCorrectDisplay === "Correct",
+              teamGuessIncorrect: teamTwoGuessCorrectDisplay === "Incorrect",
+              animate__pulse: teamTwoGuessCorrectDisplay === "Correct",
+              "animate__delay-1s": teamTwoGuessCorrectDisplay === "Correct",
+              "animate__repeat-5": teamTwoGuessCorrectDisplay === "Correct",
+              teamGuessIsCorrect: isTeamGuessCorrect,
+            })}
+          >
+            {teamTwoGuessTextDisplay}
+          </div>
+          {correctGuessPlayers?.teamTwoPlayers && correctGuessPlayers?.teamTwoPlayers?.length > 0 && (
+            <div className={classNames("correctGuessPlayers teamTwoBox animate__animated", teamTwoPlayersVisibleClassName)}>
               {correctGuessPlayers.teamTwoPlayers.map((player) => (
                 <div key={player.playerId}>
                   <Avatar
@@ -191,13 +195,13 @@ const TeamGuesses = ({
                     avatar={player.avatar}
                     colors={player.colors.map((c) => Color(c))}
                   />
-                  <div>{player.name}</div>
+                  <div className="correctGuessPlayerName">{player.name}</div>
                 </div>
               ))}
             </div>
           )}
-        </>
-      )}
+        </div>
+      </>
     </>
   );
 };

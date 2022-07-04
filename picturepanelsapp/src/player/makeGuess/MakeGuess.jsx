@@ -10,6 +10,7 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
   const [confidence, setConfidence] = useState(50);
   const [confidenceMessage, setConfidenceMessage] = useState("");
   const [guessSubmit, setGuessSubmit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onInputChange = useCallback((event) => {
     setGuess(event.target.value);
@@ -20,7 +21,9 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
   };
 
   const sendGuessOnClick = () => {
+    setIsLoading(true);
     putGuess(gameStateId, playerId, guess, confidence, (result) => {
+      setIsLoading(false);
       if (result) {
         onSaveGuess(guess);
       }
@@ -28,7 +31,9 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
   };
 
   const passOnClick = () => {
+    setIsLoading(true);
     putGuess(gameStateId, playerId, "Pass", -1, (result) => {
+      setIsLoading(false);
       if (result) {
         onSaveGuess();
       }
@@ -75,10 +80,10 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
             />
           </div>
           <div className="makeGuessButtonContainer">
-            <Button className="makeGuessButton" variant="secondary" onClick={passOnClick}>
+            <Button className="makeGuessButton" variant="secondary" disabled={isLoading} onClick={passOnClick}>
               Pass
             </Button>
-            <Button className="makeGuessButton" disabled={!guess} onClick={guessOnClick}>
+            <Button className="makeGuessButton" disabled={!guess || isLoading} onClick={guessOnClick}>
               Guess
             </Button>
           </div>
@@ -86,7 +91,7 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
           <div>
             {previousGuesses.map((previousGuess) => (
               <div key={previousGuess}>
-                <Button className="previousGuessButton" variant="info" onClick={() => previousGuessOnClick(previousGuess)}>
+                <Button className="previousGuessButton" variant="info" disabled={isLoading} onClick={() => previousGuessOnClick(previousGuess)}>
                   {previousGuess}
                 </Button>
               </div>
@@ -105,10 +110,15 @@ const MakeGuess = ({ gameStateId, playerId, previousGuesses, onSaveGuess }) => {
           <Form.Range className="confidenceRange" min={1} max={100} value={confidence} onChange={(e) => setConfidence(e.target.value)}></Form.Range>
           <div className="confidenceMessageLabel">{confidenceMessage}</div>
           <div className="confidenceButtonsContainer">
-            <Button className="confidenceButton confidenceButtonCancel" variant="secondary" onClick={() => setGuessSubmit(false)}>
+            <Button
+              className="confidenceButton confidenceButtonCancel"
+              variant="secondary"
+              disabled={isLoading}
+              onClick={() => setGuessSubmit(false)}
+            >
               Cancel
             </Button>
-            <Button className="confidenceButton" variant="success" onClick={() => sendGuessOnClick()}>
+            <Button className="confidenceButton" variant="success" disabled={isLoading} onClick={() => sendGuessOnClick()}>
               Send Guess
             </Button>
           </div>

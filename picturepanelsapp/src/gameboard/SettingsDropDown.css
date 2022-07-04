@@ -1,8 +1,11 @@
 /* stylelint-disable property-no-vendor-prefix */
 /* stylelint-disable selector-class-pattern */
-.settingsButton {
+.gameBoardSettingsDropdown {
+  z-index: 2000;
+}
+
+.gameBoardSettingsDropdownButton {
   position: fixed;
   top: 5px;
   right: 0;
-  z-index: 1000;
 }

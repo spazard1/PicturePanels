@@ -217,8 +217,6 @@ export default function Player() {
       tryResumeGame(localStorage.getItem("gameStateId"), localStorage.getItem("playerId"));
     } else {
       setIsResuming(false);
-      localStorage.removeItem("gameStateId");
-      localStorage.removeItem("playerId");
     }
   }, [tryResumeGame]);
 

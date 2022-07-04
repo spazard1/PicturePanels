@@ -59,7 +59,8 @@ namespace PicturePanels.Services
 
             await foreach (var player in players)
             {
-                if (player.TeamNumber != teamNumber || !player.IsReady || player.Confidence <= 0)
+                if (player.TeamNumber != teamNumber || !player.IsReady ||
+                       player.Confidence <= 0 || string.IsNullOrWhiteSpace(player.Guess))
                 {
                     continue;
                 }

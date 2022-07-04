@@ -1,30 +1,55 @@
 /* stylelint-disable selector-pseudo-element-colon-notation */
 /* stylelint-disable custom-property-pattern */
 /* stylelint-disable selector-class-pattern */
-.teamGuess {
-  position: fixed;
-  padding: 0 3px 7px;
-  width: 50vw;
-  font-weight: 500;
-  z-index: 100;
-  text-align: center;
-  overflow: hidden;
-  font-size: 6vh;
-  border: 6px solid;
-  border-image-slice: 1;
+.teamGuessContainer {
+  display: flex;
+  gap: 1vh;
+  flex-direction: column;
   box-sizing: border-box;
+  position: fixed;
+  z-index: 1000;
+  width: 50vw;
 }
 
-.teamGuessTeamOne {
-  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
+.teamOneGuessContainer {
   top: 25vh;
   left: 8vw;
 }
 
-.teamGuessTeamTwo {
-  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
+.teamOneGuessContainerCorrect {
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s, text-decoration-thickness 1s;
+  top: 8vh;
+  width: 24vw;
+  left: 10vw;
+}
+
+.teamTwoGuessContainer {
   top: 65vh;
   right: 8vw;
+}
+
+.teamTwoGuessContainerCorrect {
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s, text-decoration-thickness 1s;
+  top: 8vh;
+  width: 24vw;
+  right: 10vw;
+}
+
+.teamGuess {
+  font-weight: 500;
+  text-align: center;
+  font-size: 6vh;
+  transition: font-size 1s;
+  border: 6px solid;
+  border-image-slice: 1;
+}
+
+.teamGuessTeamOne {
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
+}
+
+.teamGuessTeamTwo {
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
 }
 
 .teamGuessCorrect {
@@ -37,20 +62,9 @@
   text-decoration-thickness: 1rem;
 }
 
-.teamGuessCorrectTeamOne {
-  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
-  top: 8vh;
-  width: 24vw;
+.teamGuessIsCorrect {
   font-size: 3vh;
-  left: 10vw;
-}
-
-.teamGuessCorrectTeamTwo {
-  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s;
-  top: 8vh;
-  right: 10vw;
-  width: 24vw;
-  font-size: 3vh;
+  text-decoration-thickness: 0.5rem;
 }
 
 .bothTeamsPass {
@@ -71,12 +85,7 @@
 }
 
 .correctGuessPlayers {
-  position: fixed;
-  z-index: 1000;
   font-size: 3vh;
-  padding: 0.25rem;
-  width: 25vw;
-  top: 20vh;
   display: flex;
   gap: 0.25rem;
   flex-wrap: wrap;
@@ -88,10 +97,6 @@
   width: 4rem;
 }
 
-.correctGuessPlayersTeamOne {
-  left: 10vw;
-}
-
-.correctGuessPlayersTeamTwo {
-  right: 10vw;
+.correctGuessPlayerName {
+  line-height: normal;
 }

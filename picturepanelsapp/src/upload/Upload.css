@@ -1,5 +1,24 @@
-﻿body.upload {
+﻿/* stylelint-disable selector-class-pattern */
+/* stylelint-disable selector-id-pattern */
+html,
+body {
   overflow-x: hidden !important;
+  height: 100% !important;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: dodgerblue;
+}
+
+a:visited {
+  color: dodgerblue;
+}
+
+#mainDiv {
+  height: 100%;
+  width: 100%;
 }
 
 input {
@@ -31,7 +50,7 @@ input {
 }
 
 .uploadInputPanel {
-  padding: 1vh 0.5vw 1vh 0.5vw;
+  padding: 1vh 0.5vw;
   width: 100%;
   font-size: 1.3em;
   box-sizing: border-box;
@@ -88,7 +107,7 @@ input {
 }
 
 .uploadButton {
-  padding: 1px 4px 1px 4px;
+  padding: 1px 4px;
   margin-left: 0.5vw;
   margin-right: 0.5vw;
   background-color: deepskyblue;
@@ -99,7 +118,7 @@ input {
 
 .aspectRatioButton {
   font-size: 0.9em;
-  padding: 1px 6px 1px 6px;
+  padding: 1px 6px;
   margin-left: 0.5vw;
   margin-right: 0.5vw;
   background-color: deepskyblue;

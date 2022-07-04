@@ -16,7 +16,7 @@ import "./ChoosePlayerAvatar.css";
 
 const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorRemove, onAvatarSelect }) => {
   const [spinAnimation, setSpinAnimation] = useClassAnimation(250);
-  const [flipAnimation, setFlipAnimation] = useClassAnimation(300);
+  const [flipAnimation, setFlipAnimation] = useClassAnimation(200);
   const [selectedAvatar, setSelectedAvatar] = useState();
   const selectedAvatarRef = useRef();
   const [startingColors, setStartingColors] = useState(colors);

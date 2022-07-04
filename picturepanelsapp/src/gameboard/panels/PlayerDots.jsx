@@ -2,9 +2,9 @@ import React from "react";
 import PlayerDot from "./PlayerDot";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import Avatar from "../../avatars/Avatar";
 
 import "./PlayerDots.css";
-import Avatar from "../../avatars/Avatar";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 
@@ -55,6 +55,13 @@ export default function PlayerDots({ panelRefs, players, teamTurn, turnType }) {
             players[playerId] &&
             players[playerId].teamNumber === 2 && (
               <div key={playerId} className={classNames("playerDotsContainer")}>
+                <Avatar
+                  className={classNames("playerDotSpacingAvatar", "animate__animated", "animate__infinite", {
+                    animate__pulse: !players[playerId].isReady && turnType !== "Welcome",
+                  })}
+                  avatar={players[playerId].avatar}
+                  colors={players[playerId].colors}
+                />
                 {panelNumbers.map((panelNumber) => (
                   <PlayerDot
                     key={playerId + panelNumber}
