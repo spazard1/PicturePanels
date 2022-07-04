@@ -13,9 +13,13 @@ import "./VoteGuess.css";
 const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
   const [teamGuesses, setTeamGuesses] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onClickOk = () => {
+    setIsLoading(true);
     putReady(gameStateId, playerId, (result) => {
+      setIsLoading(false);
+
       if (result) {
         onVoteGuess();
       }
@@ -23,7 +27,9 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
   };
 
   const onClickVoteGuess = (teamGuessId) => {
+    setIsLoading(true);
     putGuessVote(gameStateId, playerId, teamGuessId, (result) => {
+      setIsLoading(false);
       if (result) {
         onVoteGuess();
       }
@@ -62,7 +68,7 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
         <>
           <div className="voteGuessMessage">No one from your team entered a guess. Wait for the other team to vote for their guess.</div>
           <div>
-            <Button className="teamGuessOk" variant="info" onClick={() => onClickOk("Pass")}>
+            <Button className="teamGuessOk" variant="info" disabled={isLoading} onClick={() => onClickOk("Pass")}>
               OK!
             </Button>
           </div>
@@ -73,7 +79,12 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
           <div className="playerLabel voteGuessLabel">Vote for a guess</div>
           <div className="teamGuessesContainer">
             {teamGuesses.map((teamGuess) => (
-              <Button key={teamGuess.teamGuessId} className="teamGuessButton" onClick={() => onClickVoteGuess(teamGuess.teamGuessId)}>
+              <Button
+                key={teamGuess.teamGuessId}
+                className="teamGuessButton"
+                disabled={isLoading}
+                onClick={() => onClickVoteGuess(teamGuess.teamGuessId)}
+              >
                 <div
                   className={"teamGuessConfidence " + ("teamGuessConfidence" + Math.round(teamGuess.confidence / 10))}
                   style={{ height: Math.max(5, Math.round(teamGuess.confidence / 5) * 5) + "%" }}
@@ -95,7 +106,7 @@ const VoteGuess = ({ isVisible, gameStateId, playerId, onVoteGuess }) => {
                 />
               </Button>
             ))}
-            <Button className="teamGuessPass" variant="secondary" onClick={() => onClickVoteGuess("Pass")}>
+            <Button className="teamGuessPass" variant="secondary" disabled={isLoading} onClick={() => onClickVoteGuess("Pass")}>
               Pass
             </Button>
           </div>

@@ -11,16 +11,13 @@
   width: 50vw;
 }
 
-.teamGuessContainerCorrect {
-  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s text-decoration-thickness 1s;
-}
-
 .teamOneGuessContainer {
   top: 25vh;
   left: 8vw;
 }
 
 .teamOneGuessContainerCorrect {
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s, text-decoration-thickness 1s;
   top: 8vh;
   width: 24vw;
   left: 10vw;
@@ -32,6 +29,7 @@
 }
 
 .teamTwoGuessContainerCorrect {
+  transition: font-size 1s, top 1s, left 1s, right 1s, width 1s, text-decoration-thickness 1s;
   top: 8vh;
   width: 24vw;
   right: 10vw;

@@ -426,6 +426,8 @@ namespace PicturePanels.Services
                 gr.TeamTwoScore += gameState.GetTeamScoreChange(2);
             });
 
+            await this.playerTableStorage.ResetPlayersAsync(gameState);
+
             var correctGuessPlayersEntity = await GetCorrectGuessPlayersAsync(gameState);
             await hubContext.Clients.Group(SignalRHub.GameBoardGroup(gameState.GameStateId)).CorrectGuessPlayers(correctGuessPlayersEntity);
 

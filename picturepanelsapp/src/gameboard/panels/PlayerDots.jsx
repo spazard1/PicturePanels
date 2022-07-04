@@ -2,9 +2,9 @@ import React from "react";
 import PlayerDot from "./PlayerDot";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import Avatar from "../../avatars/Avatar";
 
 import "./PlayerDots.css";
-import Avatar from "../../avatars/Avatar";
 
 const panelNumbers = [...Array(20).keys()].map((panelNumber) => panelNumber + 1 + "");
 

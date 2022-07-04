@@ -136,7 +136,6 @@ const TeamGuesses = ({
       <>
         <div
           className={classNames("teamGuessContainer teamOneGuessContainer animate__animated", teamOneGuessVisibleClassName, {
-            teamGuessContainerCorrect: isTeamGuessCorrect,
             teamOneGuessContainerCorrect: isTeamGuessCorrect,
           })}
         >
@@ -171,7 +170,6 @@ const TeamGuesses = ({
 
         <div
           className={classNames("teamGuessContainer teamTwoGuessContainer animate__animated", teamTwoGuessVisibleClassName, {
-            teamGuessContainerCorrect: isTeamGuessCorrect,
             teamTwoGuessContainerCorrect: isTeamGuessCorrect,
           })}
         >

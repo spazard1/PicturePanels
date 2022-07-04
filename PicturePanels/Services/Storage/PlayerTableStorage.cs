@@ -47,8 +47,7 @@ namespace PicturePanels.Services.Storage
 
         public async Task ResetPlayersAsync(GameStateTableEntity gameState)
         {
-            if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade ||
-                gameState.TurnType == GameStateTableEntity.TurnTypeEndRound ||
+            if (gameState.TurnType == GameStateTableEntity.TurnTypeEndRound ||
                 gameState.TurnType == GameStateTableEntity.TurnTypeEndGame)
             {
                 return;
@@ -63,7 +62,11 @@ namespace PicturePanels.Services.Storage
                     batchOperation = new TableBatchOperation();
                 }
 
-                if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ||
+                if (gameState.TurnType == GameStateTableEntity.TurnTypeGuessesMade)
+                {
+                    playerModel.IsReady = true;
+                }
+                else if (gameState.TurnType == GameStateTableEntity.TurnTypeMakeGuess ||
                     gameState.TurnType == GameStateTableEntity.TurnTypeVoteGuess)
                 {
                     playerModel.IsReady = false;
