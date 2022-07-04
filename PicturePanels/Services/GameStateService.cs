@@ -375,10 +375,16 @@ namespace PicturePanels.Services
                     gs.TeamTwoGuessStatus = string.Empty;
                     gs.NewTurnType(GameStateTableEntity.TurnTypeVoteGuess);
                 }
-                else
+                else if (teamTwoTask.Result == 0)
                 {
                     gs.TeamOneGuessStatus = string.Empty;
                     gs.TeamTwoGuessStatus = GameStateTableEntity.TeamGuessStatusSkip;
+                    gs.NewTurnType(GameStateTableEntity.TurnTypeVoteGuess);
+                }
+                else
+                {
+                    gs.TeamOneGuessStatus = string.Empty;
+                    gs.TeamTwoGuessStatus = string.Empty;
                     gs.NewTurnType(GameStateTableEntity.TurnTypeVoteGuess);
                 }
             });
@@ -461,7 +467,7 @@ namespace PicturePanels.Services
 
             await foreach (var p in this.playerTableStorage.GetActivePlayersAsync(gameState.GameStateId, teamNumber))
             {
-                if (!string.IsNullOrEmpty(p.GuessVoteId))
+                if (p.IsReady && !string.IsNullOrEmpty(p.GuessVoteId))
                 {
                     if (!voteCounts.TryAdd(p.GuessVoteId, 1))
                     {
