@@ -166,36 +166,3 @@ input {
   object-fit: contain;
   max-width: 40%;
 }
-
-@media only screen and (min-width: 1000px) {
-  #mainDiv {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .uploadInputPanel {
-    padding-top: 1vh;
-    flex: 3;
-  }
-
-  .imageContainer {
-    height: 80vh;
-    flex: 7;
-  }
-
-  .helpMessageContainer {
-    height: 99vh;
-    flex: 7;
-  }
-
-  .croppedImageInfo {
-    position: absolute;
-    top: 0;
-    right: 5%;
-    width: 60%;
-  }
-
-  .imageUrlDiv {
-    margin-bottom: 5vh;
-  }
-}

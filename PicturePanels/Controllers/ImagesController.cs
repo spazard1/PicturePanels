@@ -217,15 +217,13 @@ namespace PicturePanels.Controllers
             }
 
             var uploadedByImages = this.imageUploadedByTableStorage.GetAllFromPartitionAsync(userId);
-
-            var images = await uploadedByImages.Select(image => new ImageIdNameEntity(image)).ToListAsync();
-
+            var imageModels = await this.imageTableStorage.PopulateImageDetails(uploadedByImages).Select(image => new ImageEntity(image)).ToListAsync();
             userTableEntity = await this.userTableStorage.GetOrSaveQueryStringAsync(userTableEntity);
 
-            return Json(new ImageIdNameListEntity()
+            return Json(new ImageListEntity()
             {
                 QueryString = userTableEntity.QueryString,
-                ImageIds = images
+                Images = imageModels
             });
         }
 

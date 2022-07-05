@@ -1,0 +1,12 @@
+/* stylelint-disable selector-class-pattern */
+.uploadLoginMessage {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.uploadLoginButtonsContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
