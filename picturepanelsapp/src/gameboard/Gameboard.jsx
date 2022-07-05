@@ -96,7 +96,9 @@ export default function Gameboard() {
 
     setTurnType(gameState.turnType);
     setTeamTurn(gameState.teamTurn);
-    setRoundNumber(gameState.roundNumber);
+    if (gameState.turnType !== "Welcome" && gameState.turnType !== "EndGame") {
+      setRoundNumber(gameState.roundNumber);
+    }
   }, [gameState]);
 
   useEffect(() => {

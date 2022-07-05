@@ -1,0 +1,17 @@
+/* stylelint-disable selector-class-pattern */
+.thumbnailsContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.thumbnailContainer {
+  margin-bottom: 2vh;
+  width: 20%;
+  box-sizing: border-box;
+}
+
+.thumbnail {
+  object-fit: contain;
+  object-position: top;
+  width: 100%;
+}
