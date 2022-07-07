@@ -7,6 +7,8 @@ import "./ChooseImage.css";
 export default function ChooseImage({ onImageChosen }) {
   const [loadingMessage, setLoadingMessage] = useState();
 
+  console.log(loadingMessage);
+
   const onPasteUrl = (event) => {
     var pastedUrl = (event.clipboardData || window.clipboardData).getData("text");
 
@@ -80,29 +82,28 @@ export default function ChooseImage({ onImageChosen }) {
 
   return (
     <>
-      <div>{loadingMessage}</div>
-      <div className="chooseImagePanel">
-        <div className="uploadInstructions inputPanelElement">
-          Choose an image from your computer or paste an image or URL. Images must be at least 1000px wide, so choose images that are large or high
-          resolution.
-          <br />
-          <a
-            target="_blank"
-            href="https://www.google.com/search?q=sound%20of%20music%20movie&
-										tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731"
-            rel="noreferrer"
-          >
-            {"Example 'Large' image search"}
-          </a>
-        </div>
-        <div className="imageFileDiv inputPanelElement">
+      <div className="chooseImageInstructions">
+        {"Choose an image from your computer or paste an image or URL. Images must be at least 1000px wide, so choose images that are large" +
+          " or high resolution. "}
+        <a
+          target="_blank"
+          href="https://www.google.com/search?q=sound%20of%20music%20movie&
+                  tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731"
+          rel="noreferrer"
+        >
+          {"Example 'Large' image search"}
+        </a>
+      </div>
+
+      <div className="chooseImageContainer">
+        <div className="chooseImageFile">
           <input id="imageFile" type="file" className="imageFile hidden" accept="image/*" onChange={onFileSelection} />
-          <label htmlFor="imageFile" className="uploadButton">
+          <label htmlFor="imageFile" className="chooseImageButton">
             Image from computer
           </label>{" "}
-          or
         </div>
-        <div className="imageUrlDiv inputPanelElement">
+        <div>or</div>
+        <div className="chooseImageUrl">
           <input type="text" className="imageUrl" autoComplete="off" placeholder="paste an image or url" onPaste={onPasteUrl} />
         </div>
       </div>

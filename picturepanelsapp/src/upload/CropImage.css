@@ -1,4 +1,30 @@
 /* stylelint-disable selector-class-pattern */
 .cropperInstructions {
   font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1vh;
+}
+
+.cropperContainer {
+  width: 100%;
+  height: 80vh;
+}
+
+.croppedImageInfoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 1vh;
+}
+
+.aspectRatioContainer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.aspectRatioButton {
+  padding: 0.1rem;
 }

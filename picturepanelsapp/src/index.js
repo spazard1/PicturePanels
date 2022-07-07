@@ -18,7 +18,7 @@ const Upload = lazy(() => import("./upload/Upload"));
 root.render(
   <AppWrapper>
     <BrowserRouter>
-      <Suspense fallback={<div></div>}>
+      <Suspense fallback={<div className="loadingScreen">Loading Picture Panels...</div>}>
         <Routes>
           <Route path="/" element={<Player />} />
           <Route path="gameboard" element={<Gameboard />} />
