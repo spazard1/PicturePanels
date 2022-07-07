@@ -21,30 +21,30 @@ export default function Upload() {
     setUploadStep("CropImage");
   }, []);
 
+  const onError = useCallback((message) => {
+    if (!message) {
+      return;
+    }
+    console.error(message);
+  }, []);
+
   return (
-    <>
-      <div className="helpMessageContainer center">
-        <div className="helpMessage">Welcome to the Picture Panels upload page!</div>
-        <div className="thumbnailsContainer"></div>
+    <div className="uploadContainer">
+      <div className="uploadSidePanel">
+        <div className="uploadTitle">Welcome to the Picture Panels upload page!</div>
+
+        {!user && <UploadUserLogin />}
       </div>
-
-      {!user && <UploadUserLogin />}
-
-      {user && (
-        <>
-          {uploadStep === "ChooseImage" && <ChooseImage onImageChosen={onImageChosen} />}
-          {uploadStep === "CropImage" && <CropImage imageUrl={imageUrl} />}
-          {uploadStep === "SetImageInfo" && <SetImageInfo imageUrl={imageUrl} />}
-          <UserThumbnails />
-        </>
-      )}
-
-      <div className="imageContainer center" draggable="false"></div>
-
-      <div className="loading hidden">
-        <div className="loadingMessage">Uploading image...</div>
-        <img src="img/loading.gif" />
+      <div className="uploadMainPanel">
+        {user && (
+          <>
+            {uploadStep === "ChooseImage" && <ChooseImage onImageChosen={onImageChosen} />}
+            {uploadStep === "CropImage" && <CropImage imageUrl={imageUrl} onError={onError} />}
+            {uploadStep === "SetImageInfo" && <SetImageInfo imageUrl={imageUrl} />}
+            <UserThumbnails />
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 }
