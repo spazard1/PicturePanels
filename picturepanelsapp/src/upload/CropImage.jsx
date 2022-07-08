@@ -7,14 +7,19 @@ import { Button } from "react-bootstrap";
 import "cropperjs/dist/cropper.css";
 import "./CropImage.css";
 
-export default function CropImage({ imageUrl, onError }) {
+export default function CropImage({ imageUrl, onCroppedImage }) {
   const cropperRef = useRef();
   const cropperContainerRef = useRef();
   const [imageDetails, setImageDetails] = useState();
+  const [imageError, setImageError] = useState();
 
   const setRatio = useCallback((ratio) => {
     cropperRef.current?.setAspectRatio(ratio);
   }, []);
+
+  const onClickCroppedImage = useCallback(() => {
+    onCroppedImage(cropperRef.current.getData(true));
+  }, [onCroppedImage]);
 
   useEffect(() => {
     Cropper.setDefaults({
@@ -46,17 +51,17 @@ export default function CropImage({ imageUrl, onError }) {
     //document.getElementById("imageHeight").innerHTML = imageHeight;
 
     if (imageDetails.detail.width < 1000) {
-      onError("Image width must be at least 1000 pixels. The cropped image is " + (1000 - imageWidth) + " pixels too small.");
+      setImageError("The cropped image is " + (1000 - imageWidth) + " pixels too small.");
     } else if (aspectRatio > 1.85) {
-      onError("Aspect Ratio must be less than 1.85. The cropped image is too wide.");
+      setImageError("Aspect Ratio must be less than 1.85. The cropped image is too wide.");
       document.getElementById("uploadActionButton").disabled = "disabled";
     } else if (aspectRatio < 1.3) {
-      onError("Aspect Ratio must be greater than 1.3. The cropped image is too square.");
+      setImageError("Aspect Ratio must be greater than 1.3. The cropped image is too square.");
       document.getElementById("uploadActionButton").disabled = "disabled";
     } else {
-      onError();
+      setImageError();
     }
-  }, [imageDetails, onError]);
+  }, [imageDetails]);
 
   useEffect(() => {
     if (!imageUrl) {
@@ -78,28 +83,37 @@ export default function CropImage({ imageUrl, onError }) {
 
   return (
     <>
-      <div className="cropperInstructions">
-        Select either 16x9 or 4x3 aspect ratio, then crop the image if needed.
-        <br />
-        For most images it is best to use 16x9.
-      </div>
-
-      <div className="croppedImageInfoContainer">
-        <div className="croppedImageSizeContainer">
-          Cropped Image Size: {Math.round(imageDetails?.detail?.width)} x {Math.round(imageDetails?.detail?.height)}
-        </div>
-        <div className="aspectRatioContainer">
-          <div>Aspect Ratio:</div>
-          <Button className="aspectRatioButton" onClick={() => setRatio(16 / 9)}>
-            16x9
-          </Button>
-          <Button className="aspectRatioButton" onClick={() => setRatio(4 / 3)}>
-            4x3
-          </Button>
-        </div>
-      </div>
+      {imageDetails?.detail && (
+        <>
+          <div className="croppedImageInfoContainer">
+            <>
+              {imageError && <div className="imageError">{imageError}</div>}
+              {!imageError && (
+                <div className="croppedImageSizeContainer">
+                  Cropped Image Size: {Math.round(imageDetails?.detail?.width)} x {Math.round(imageDetails?.detail?.height)}
+                </div>
+              )}
+              <div className="aspectRatioContainer">
+                <div>Aspect Ratio:</div>
+                <Button className="aspectRatioButton" onClick={() => setRatio(16 / 9)}>
+                  16x9
+                </Button>
+                <Button className="aspectRatioButton" onClick={() => setRatio(4 / 3)}>
+                  4x3
+                </Button>
+              </div>
+            </>
+          </div>
+          <div className="cropperButtons">
+            <Button className="cropperButton">Start Over</Button>
+            <Button className="cropperButton" disabled={imageError} onClick={onClickCroppedImage}>
+              Next
+            </Button>
+          </div>
+        </>
+      )}
       <div className="cropperContainer">
-        <img src={imageUrl} ref={cropperContainerRef} />
+        <img className="cropperImage" src={imageUrl} ref={cropperContainerRef} />
       </div>
     </>
   );
@@ -107,5 +121,5 @@ export default function CropImage({ imageUrl, onError }) {
 
 CropImage.propTypes = {
   imageUrl: PropTypes.string.isRequired,
-  onError: PropTypes.func.isRequired,
+  onCroppedImage: PropTypes.func.isRequired,
 };
