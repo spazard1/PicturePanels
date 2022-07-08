@@ -1,24 +1,44 @@
 import React, { useCallback, useContext, useState } from "react";
 import UserContext from "../user/UserContext";
 import { useBodyClass } from "../common/useBodyClass";
-import UploadUserLogin from "./UploadUserLogin";
 import ChooseImage from "./ChooseImage";
 import CropImage from "./CropImage";
 import SetImageInfo from "./SetImageInfo";
-import UserThumbnails from "./UserThumbnails";
+import postImage from "./postImage";
+import ModalConfirm from "../common/modal/ModalConfirm";
+import { useModal } from "../common/modal/useModal";
 
 import "./Upload.css";
-import postImage from "./postImage";
 
 export default function Upload() {
   const { user } = useContext(UserContext);
   const [uploadStep, setUploadStep] = useState("ChooseImage");
   const [imageUrl, setImageUrl] = useState();
   const [imageId, setImageId] = useState();
+  const [modalConfirmMessage, setModalConfirmMessage, onModalConfirmClose] = useModal();
 
   useBodyClass("upload");
 
+  const onStartOver = useCallback(() => {
+    setModalConfirmMessage("Are you sure you want to start over?");
+  }, [setModalConfirmMessage]);
+
+  const onModalConfirmResponse = useCallback(
+    (response) => {
+      if (response) {
+        setImageId();
+        setImageUrl();
+        setUploadStep("ChooseImage");
+      }
+
+      setModalConfirmMessage("");
+    },
+    [setModalConfirmMessage]
+  );
+
   const onImageChosen = useCallback((imageDetails) => {
+    console.log(imageDetails);
+
     setImageUrl(imageDetails.url);
     setImageId(imageDetails.imageId);
     setUploadStep("CropImage");
@@ -35,33 +55,23 @@ export default function Upload() {
     [imageId]
   );
 
-  const onImageInfo = useCallback((imageInfo) => {
+  const onSaveImage = useCallback((imageInfo) => {
     console.log(imageInfo);
   }, []);
 
   return (
-    <div className="uploadContainer">
-      <div className="uploadSidePanel">
-        <div className="uploadTitle">Welcome to the Picture Panels upload page!</div>
+    <>
+      <ModalConfirm modalMessage={modalConfirmMessage} onModalResponse={onModalConfirmResponse} onModalClose={onModalConfirmClose}></ModalConfirm>
 
-        {<UploadUserLogin />}
-
-        <div className="uploadStepInstructions">
-          {uploadStep === "ChooseImage" && "Step 1 of 3: Choose an image from your computer or paste an image or URL."}
-          {uploadStep === "CropImage" && "Step 2 of 3: Crop the image. Select either 16x9 or 4x3 aspect ratio, then crop the image if needed."}
-          {uploadStep === "SetImageInfo" && "Step 3 of 3: Enter image details."}
-        </div>
-      </div>
-      <div className="uploadMainPanel">
+      <div className="uploadContainer">
         {user && (
           <>
             {uploadStep === "ChooseImage" && <ChooseImage onImageChosen={onImageChosen} />}
-            {uploadStep === "CropImage" && <CropImage imageUrl={imageUrl} onCroppedImage={onCroppedImage} />}
-            {uploadStep === "SetImageInfo" && <SetImageInfo onImageInfo={onImageInfo} />}
-            {uploadStep === "ChooseImage" && <UserThumbnails />}
+            {uploadStep === "CropImage" && <CropImage imageUrl={imageUrl} onStartOver={onStartOver} onCroppedImage={onCroppedImage} />}
+            {uploadStep === "SetImageInfo" && <SetImageInfo imageId={imageId} onStartOver={onStartOver} onSaveImage={onSaveImage} />}
           </>
         )}
       </div>
-    </div>
+    </>
   );
 }

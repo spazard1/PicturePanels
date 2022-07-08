@@ -1,30 +1,27 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Cropper from "cropperjs";
-import { useEffect } from "react";
 import { Button } from "react-bootstrap";
+import UploadUserLogin from "./UploadUserLogin";
 
 import "cropperjs/dist/cropper.css";
 import "./CropImage.css";
 
-export default function CropImage({ imageUrl, onCroppedImage }) {
+export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
   const cropperRef = useRef();
   const cropperContainerRef = useRef();
   const [imageDetails, setImageDetails] = useState();
   const [imageError, setImageError] = useState();
-
-  const setRatio = useCallback((ratio) => {
-    cropperRef.current?.setAspectRatio(ratio);
-  }, []);
-
-  const onClickCroppedImage = useCallback(() => {
-    onCroppedImage(cropperRef.current.getData(true));
-  }, [onCroppedImage]);
+  const [aspectRatio, setAspectRatio] = useState(16 / 9);
 
   useEffect(() => {
+    if (aspectRatio <= 0) {
+      return;
+    }
+
     Cropper.setDefaults({
       viewMode: 0,
-      initialAspectRatio: 16 / 9,
+      initialAspectRatio: aspectRatio,
       guides: false,
       highlight: false,
       dragMode: "move",
@@ -33,7 +30,18 @@ export default function CropImage({ imageUrl, onCroppedImage }) {
       movable: false,
       rotatable: false,
     });
-  }, []);
+  }, [aspectRatio]);
+
+  useEffect(() => {
+    if (aspectRatio <= 0) {
+      return;
+    }
+    cropperRef.current?.setAspectRatio(aspectRatio);
+  }, [aspectRatio]);
+
+  const onClickCroppedImage = useCallback(() => {
+    onCroppedImage(cropperRef.current.getData(true));
+  }, [onCroppedImage]);
 
   useEffect(() => {
     if (!imageDetails?.detail) {
@@ -83,37 +91,51 @@ export default function CropImage({ imageUrl, onCroppedImage }) {
 
   return (
     <>
-      {imageDetails?.detail && (
-        <>
-          <div className="croppedImageInfoContainer">
-            <>
-              {imageError && <div className="imageError">{imageError}</div>}
-              {!imageError && (
-                <div className="croppedImageSizeContainer">
-                  Cropped Image Size: {Math.round(imageDetails?.detail?.width)} x {Math.round(imageDetails?.detail?.height)}
+      <div className="uploadSidePanel">
+        <div className="uploadTitle">Welcome to the Picture Panels upload page!</div>
+
+        {<UploadUserLogin />}
+
+        <div className="uploadStepInstructions">
+          Step 2 of 3: Crop the image. Select either 16x9 or 4x3 aspect ratio, then crop the image if needed.
+        </div>
+
+        <div className="cropperButtons">
+          <Button variant="light" className="cropperButton" onClick={onStartOver}>
+            Start Over
+          </Button>
+          <Button variant="info" className="cropperButton" disabled={imageError} onClick={onClickCroppedImage}>
+            Done Cropping
+          </Button>
+        </div>
+      </div>
+      <div className="uploadMainPanel">
+        {imageDetails?.detail && (
+          <>
+            <div className="croppedImageInfoContainer">
+              <>
+                {imageError && <div className="imageError">{imageError}</div>}
+                {!imageError && (
+                  <div className="croppedImageSizeContainer">
+                    Cropped Image Size: {Math.round(imageDetails?.detail?.width)} x {Math.round(imageDetails?.detail?.height)}
+                  </div>
+                )}
+                <div className="aspectRatioContainer">
+                  <div>Aspect Ratio:</div>
+                  <Button className="aspectRatioButton" variant={aspectRatio === 16 / 9 ? "info" : "light"} onClick={() => setAspectRatio(16 / 9)}>
+                    16x9
+                  </Button>
+                  <Button className="aspectRatioButton" variant={aspectRatio === 4 / 3 ? "info" : "light"} onClick={() => setAspectRatio(4 / 3)}>
+                    4x3
+                  </Button>
                 </div>
-              )}
-              <div className="aspectRatioContainer">
-                <div>Aspect Ratio:</div>
-                <Button className="aspectRatioButton" onClick={() => setRatio(16 / 9)}>
-                  16x9
-                </Button>
-                <Button className="aspectRatioButton" onClick={() => setRatio(4 / 3)}>
-                  4x3
-                </Button>
-              </div>
-            </>
-          </div>
-          <div className="cropperButtons">
-            <Button className="cropperButton">Start Over</Button>
-            <Button className="cropperButton" disabled={imageError} onClick={onClickCroppedImage}>
-              Next
-            </Button>
-          </div>
-        </>
-      )}
-      <div className="cropperContainer">
-        <img className="cropperImage" src={imageUrl} ref={cropperContainerRef} />
+              </>
+            </div>
+          </>
+        )}
+        <div className="cropperContainer">
+          <img className="cropperImage" src={imageUrl} ref={cropperContainerRef} />
+        </div>
       </div>
     </>
   );
@@ -121,5 +143,6 @@ export default function CropImage({ imageUrl, onCroppedImage }) {
 
 CropImage.propTypes = {
   imageUrl: PropTypes.string.isRequired,
+  onStartOver: PropTypes.func.isRequired,
   onCroppedImage: PropTypes.func.isRequired,
 };
