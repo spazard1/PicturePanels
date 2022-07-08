@@ -70,8 +70,7 @@ export default function ChooseImage({ onImageChosen }) {
         return response.json();
       })
       .then(async (responseJson) => {
-        // setupCropper(responseJson.url);
-        onImageChosen(responseJson.url);
+        onImageChosen(responseJson);
         return responseJson;
       })
       .catch(function (error) {
@@ -83,8 +82,7 @@ export default function ChooseImage({ onImageChosen }) {
   return (
     <>
       <div className="chooseImageInstructions">
-        {"Choose an image from your computer or paste an image or URL. Images must be at least 1000px wide, so choose images that are large" +
-          " or high resolution. "}
+        {"Images must be at least 1000px wide, so choose images that are large or high resolution. "}
         <a
           target="_blank"
           href="https://www.google.com/search?q=sound%20of%20music%20movie&

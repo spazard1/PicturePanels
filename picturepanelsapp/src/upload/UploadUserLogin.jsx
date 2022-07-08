@@ -9,7 +9,7 @@ const UploadUserLogin = () => {
 
   return (
     <>
-      <div className="loginContainer center">
+      <div className="uploadLoginContainer center">
         {!user && (
           <>
             <div className="center uploadLoginMessage">You must be logged in to upload images.</div>

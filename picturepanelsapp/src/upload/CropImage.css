@@ -2,7 +2,7 @@
 .cropperInstructions {
   font-size: 1.5rem;
   text-align: center;
-  margin-bottom: 1vh;
+  height: 12vh;
 }
 
 .cropperContainer {
@@ -10,12 +10,16 @@
   height: 80vh;
 }
 
+.cropperImage {
+  display: none;
+}
+
 .croppedImageInfoContainer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2.5rem;
-  margin-bottom: 1vh;
+  font-size: 1.5rem;
 }
 
 .aspectRatioContainer {
@@ -27,4 +31,21 @@
 
 .aspectRatioButton {
   padding: 0.1rem;
+}
+
+.cropperButtons {
+  height: 8vh;
+  display: flex;
+  gap: 1vw;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.cropperButton {
+  font-size: 1.25rem;
+}
+
+.imageError {
+  color: lightcoral;
 }
