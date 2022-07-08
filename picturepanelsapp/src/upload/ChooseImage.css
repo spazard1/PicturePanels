@@ -1,7 +1,8 @@
 /* stylelint-disable selector-class-pattern */
 .chooseImageContainer {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 2vh;
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;

@@ -1,0 +1,9 @@
+/* stylelint-disable selector-class-pattern */
+.uploadImagePreviewContainer {
+  width: 100%;
+  margin-top: 5vh;
+}
+
+.uploadImagePreview {
+  width: 100%;
+}

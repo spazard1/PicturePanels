@@ -1,6 +1,6 @@
 /* stylelint-disable selector-class-pattern */
 .uploadLoginMessage {
-  margin-bottom: 1vh;
+  margin-bottom: 2vh;
   font-size: 1.5rem;
 }
 
@@ -12,5 +12,5 @@
 }
 
 .uploadLoginContainer {
-  margin-bottom: 1vh;
+  margin-bottom: 2vh;
 }

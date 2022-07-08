@@ -1,11 +1,21 @@
 import React from "react";
-//import ServerUrl from "../common/ServerUrl";
-// import PropTypes from "prop-types";
+import { Button } from "react-bootstrap";
+import PropTypes from "prop-types";
+import UploadUserLogin from "./UploadUserLogin";
+import serverUrl from "../common/ServerUrl";
 
-export default function SetImageInfo() {
+import "./SetImageInfo.css";
+
+export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
   return (
     <>
-      <div className="uploadInputPanel">
+      <div className="uploadSidePanel">
+        <div className="uploadTitle">Welcome to the Picture Panels upload page!</div>
+
+        {<UploadUserLogin />}
+
+        <div className="uploadStepInstructions">Step 3 of 3: Enter the image details.</div>
+
         <div className="imageInfoPanel">
           <div className="inputPanelElement">
             Image Name: <span data-toggle="tooltip" title="This is the name displayed when an image is solved."></span>
@@ -49,9 +59,27 @@ export default function SetImageInfo() {
           <input type="button" className="uploadButton" value="Start Over" />
           <input type="button" className="uploadButton" value="Action" />
         </div>
+
+        <div className="cropperButtons">
+          <Button variant="light" className="cropperButton" onClick={onStartOver}>
+            Start Over
+          </Button>
+          <Button variant="info" className="cropperButton" onClick={onSaveImage}>
+            SaveImage
+          </Button>
+        </div>
+      </div>
+      <div className="uploadMainPanel">
+        <div className="uploadImagePreviewContainer">
+          <img className="uploadImagePreview" src={serverUrl + "api/images/" + imageId} />
+        </div>
       </div>
     </>
   );
 }
 
-SetImageInfo.propTypes = {};
+SetImageInfo.propTypes = {
+  imageId: PropTypes.string.isRequired,
+  onStartOver: PropTypes.func.isRequired,
+  onSaveImage: PropTypes.func.isRequired,
+};
