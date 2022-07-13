@@ -1,17 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function useQueryString(key) {
-  const [queryString, setQueryString] = useState("");
-
-  useEffect(() => {
-    if (!key) {
-      return;
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-
-    setQueryString(urlParams.get(key));
-  }, [key]);
+  const urlParams = new URLSearchParams(window.location.search);
+  const [queryString] = useState(urlParams.get(key));
 
   return queryString;
 }
