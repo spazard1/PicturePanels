@@ -11,7 +11,7 @@ import "@yaireo/tagify/dist/tagify.css";
 import "../common/Tagify.css";
 import "./SetImageInfo.css";
 
-export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
+export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveImage }) {
   const { tags } = useTags();
   const defaultTags = useQueryString("tags");
 
@@ -36,8 +36,6 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
 
   const onInputChange = useCallback(
     (event) => {
-      console.log(formValues);
-
       const targetName = event.target.name.split("_");
       if (targetName.length > 1) {
         const keyName = targetName[0];
@@ -76,7 +74,7 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
           <div className="imageInputContainer imageNameContainer">
             Image Name: <span data-toggle="tooltip" title="This is the name displayed when an image is solved."></span>
             <br />
-            <input name="name" value={formValues.name} onChange={onInputChange} type="text" autoComplete="off" maxLength="100" />
+            <input name="name" value={formValues.name} onChange={onInputChange} type="text" autoComplete="off" maxLength="100" disabled={isLoading} />
           </div>
 
           <div className="imageInputContainer otherNamesLabel">
@@ -99,6 +97,7 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
                   type="text"
                   autoComplete="off"
                   maxLength="100"
+                  disabled={isLoading}
                 />
               </div>
               <div>
@@ -109,6 +108,7 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
                   type="text"
                   autoComplete="off"
                   maxLength="100"
+                  disabled={isLoading}
                 />
               </div>
               <div>
@@ -119,6 +119,7 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
                   type="text"
                   autoComplete="off"
                   maxLength="100"
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -136,16 +137,17 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
               className="uploadTagsInput"
               defaultValue={defaultTags}
               whitelist={tags}
+              disabled={isLoading}
               onChange={(e) => onTagsChange("tags", e)}
             />
           </div>
         </div>
 
         <div className="cropperButtons">
-          <Button variant="light" className="cropperButton" onClick={onStartOver}>
+          <Button variant="light" className="cropperButton" onClick={onStartOver} disabled={isLoading}>
             Start Over
           </Button>
-          <Button variant="info" className="cropperButton" onClick={onClickSaveImage}>
+          <Button variant="info" className="cropperButton" onClick={onClickSaveImage} disabled={isLoading}>
             Save Image
           </Button>
         </div>
@@ -160,6 +162,7 @@ export default function SetImageInfo({ imageId, onStartOver, onSaveImage }) {
 }
 
 SetImageInfo.propTypes = {
+  isLoading: PropTypes.bool,
   imageId: PropTypes.string.isRequired,
   onStartOver: PropTypes.func.isRequired,
   onSaveImage: PropTypes.func.isRequired,

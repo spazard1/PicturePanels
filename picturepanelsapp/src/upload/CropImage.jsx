@@ -7,7 +7,7 @@ import UploadUserLogin from "./UploadUserLogin";
 import "cropperjs/dist/cropper.css";
 import "./CropImage.css";
 
-export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
+export default function CropImage({ isLoading, imageUrl, onReadyToCrop, onStartOver, onCroppedImage }) {
   const cropperRef = useRef();
   const cropperContainerRef = useRef();
   const [imageDetails, setImageDetails] = useState();
@@ -40,6 +40,7 @@ export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
   }, [aspectRatio]);
 
   const onClickCroppedImage = useCallback(() => {
+    cropperRef.current.disable();
     onCroppedImage(cropperRef.current.getData(true));
   }, [onCroppedImage]);
 
@@ -47,8 +48,6 @@ export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
     if (!imageDetails?.detail) {
       return;
     }
-
-    console.log(imageDetails?.detail);
 
     var aspectRatio = (imageDetails.detail.width / imageDetails.detail.height).toFixed(2);
 
@@ -86,8 +85,11 @@ export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
       crop(event) {
         setImageDetails(event);
       },
+      ready() {
+        onReadyToCrop();
+      },
     });
-  }, [imageUrl]);
+  }, [imageUrl, onReadyToCrop]);
 
   return (
     <>
@@ -101,10 +103,10 @@ export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
         </div>
 
         <div className="cropperButtons">
-          <Button variant="light" className="cropperButton" onClick={onStartOver}>
+          <Button variant="light" className="cropperButton" onClick={onStartOver} disabled={isLoading}>
             Start Over
           </Button>
-          <Button variant="info" className="cropperButton" disabled={imageError} onClick={onClickCroppedImage}>
+          <Button variant="info" className="cropperButton" onClick={onClickCroppedImage} disabled={imageError || isLoading}>
             Done Cropping
           </Button>
         </div>
@@ -122,10 +124,20 @@ export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
                 )}
                 <div className="aspectRatioContainer">
                   <div>Aspect Ratio:</div>
-                  <Button className="aspectRatioButton" variant={aspectRatio === 16 / 9 ? "info" : "light"} onClick={() => setAspectRatio(16 / 9)}>
+                  <Button
+                    className="aspectRatioButton"
+                    variant={aspectRatio === 16 / 9 ? "info" : "light"}
+                    onClick={() => setAspectRatio(16 / 9)}
+                    disabled={isLoading}
+                  >
                     16x9
                   </Button>
-                  <Button className="aspectRatioButton" variant={aspectRatio === 4 / 3 ? "info" : "light"} onClick={() => setAspectRatio(4 / 3)}>
+                  <Button
+                    className="aspectRatioButton"
+                    variant={aspectRatio === 4 / 3 ? "info" : "light"}
+                    onClick={() => setAspectRatio(4 / 3)}
+                    disabled={isLoading}
+                  >
                     4x3
                   </Button>
                 </div>
@@ -142,7 +154,9 @@ export default function CropImage({ imageUrl, onStartOver, onCroppedImage }) {
 }
 
 CropImage.propTypes = {
+  isLoading: PropTypes.bool,
   imageUrl: PropTypes.string.isRequired,
+  onReadyToCrop: PropTypes.func.isRequired,
   onStartOver: PropTypes.func.isRequired,
   onCroppedImage: PropTypes.func.isRequired,
 };
