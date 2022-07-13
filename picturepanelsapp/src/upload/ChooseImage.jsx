@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ServerUrl from "../common/ServerUrl";
 import PropTypes from "prop-types";
 import UploadUserLogin from "./UploadUserLogin";
@@ -6,16 +6,11 @@ import UserThumbnails from "./UserThumbnails";
 
 import "./ChooseImage.css";
 
-export default function ChooseImage({ onImageChosen }) {
-  const [loadingMessage, setLoadingMessage] = useState();
-
-  console.log(loadingMessage);
-
+export default function ChooseImage({ isLoading, onImageChosen }) {
   const onPasteUrl = (event) => {
     var pastedUrl = (event.clipboardData || window.clipboardData).getData("text");
 
     if (pastedUrl) {
-      setLoadingMessage("Loading from URL...");
       uploadTemporaryUrl(pastedUrl);
       return;
     }
@@ -24,7 +19,6 @@ export default function ChooseImage({ onImageChosen }) {
     for (let index in items) {
       var item = items[index];
       if (item.kind === "file") {
-        setLoadingMessage("Loading from pasted image...");
         uploadTemporaryBlobAsync(item.getAsFile());
       }
     }
@@ -34,7 +28,6 @@ export default function ChooseImage({ onImageChosen }) {
     var input = document.getElementById("imageFile");
 
     if (input.files && input.files[0]) {
-      setLoadingMessage("Loading from file...");
       uploadTemporaryBlobAsync(input.files[0]);
     }
   };
@@ -75,8 +68,7 @@ export default function ChooseImage({ onImageChosen }) {
         onImageChosen(responseJson);
         return responseJson;
       })
-      .catch(function (error) {
-        setLoadingMessage(error);
+      .catch(function () {
         return null;
       });
   }
@@ -92,13 +84,20 @@ export default function ChooseImage({ onImageChosen }) {
 
         <div className="chooseImageContainer">
           <div className="chooseImageFile">
-            <input id="imageFile" type="file" className="imageFile hidden" accept="image/*" onChange={onFileSelection} />
-            <label htmlFor="imageFile" className="chooseImageButton">
+            <input id="imageFile" type="file" className="imageFile hidden" accept="image/*" onChange={onFileSelection} disabled={isLoading} />
+            <label htmlFor="imageFile" className="chooseImageButton" disabled={isLoading}>
               Image from computer
             </label>{" "}
           </div>
           <div className="chooseImageUrl">
-            <input type="text" className="imageUrl" autoComplete="off" placeholder="paste an image or url" onPaste={onPasteUrl} />
+            <input
+              type="text"
+              className="imageUrl"
+              autoComplete="off"
+              placeholder="paste an image or url"
+              onPaste={onPasteUrl}
+              disabled={isLoading}
+            />
           </div>
         </div>
       </div>
@@ -122,5 +121,6 @@ export default function ChooseImage({ onImageChosen }) {
 }
 
 ChooseImage.propTypes = {
+  isLoading: PropTypes.bool,
   onImageChosen: PropTypes.func.isRequired,
 };
