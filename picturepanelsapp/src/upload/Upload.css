@@ -2,6 +2,7 @@
 /* stylelint-disable selector-id-pattern */
 .uploadContainer {
   display: flex;
+  gap: 1vw;
 }
 
 .uploadSidePanel {
@@ -10,7 +11,7 @@
 }
 
 .uploadMainPanel {
-  width: 70vw;
+  width: 68vw;
 }
 
 .uploadTitle {
@@ -21,7 +22,7 @@
 }
 
 .uploadStepInstructions {
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin-bottom: 2vh;
   width: 90%;
   text-align: center;

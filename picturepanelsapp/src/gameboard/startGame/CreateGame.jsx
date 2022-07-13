@@ -20,6 +20,7 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
 
   const { tags } = useTags();
   const defaultTags = useQueryString("tags");
+  console.log(defaultTags);
   const theme = useQueryString("theme");
 
   const [formValues, setFormValues] = useState({
@@ -27,7 +28,6 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
     teamTwoName: "",
     extendedTimers: false,
     shortGame: false,
-    includedTags: defaultTags,
     theme: theme,
   });
 

@@ -9,6 +9,8 @@ import ModalConfirm from "../common/modal/ModalConfirm";
 import { useModal } from "../common/modal/useModal";
 
 import "./Upload.css";
+import UploadUserLogin from "./UploadUserLogin";
+import putImage from "./putImage";
 
 export default function Upload() {
   const { user } = useContext(UserContext);
@@ -55,15 +57,23 @@ export default function Upload() {
     [imageId]
   );
 
-  const onSaveImage = useCallback((imageInfo) => {
-    console.log(imageInfo);
-  }, []);
+  const onSaveImage = useCallback(
+    (imageInfo) => {
+      putImage(imageInfo, imageId, (ie) => {
+        if (ie) {
+          console.log("done", ie);
+        }
+      });
+    },
+    [imageId]
+  );
 
   return (
     <>
       <ModalConfirm modalMessage={modalConfirmMessage} onModalResponse={onModalConfirmResponse} onModalClose={onModalConfirmClose}></ModalConfirm>
 
       <div className="uploadContainer">
+        {!user && <UploadUserLogin />}
         {user && (
           <>
             {uploadStep === "ChooseImage" && <ChooseImage onImageChosen={onImageChosen} />}

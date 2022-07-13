@@ -7,3 +7,45 @@
 .uploadImagePreview {
   width: 100%;
 }
+
+.imageInfoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1vh;
+}
+
+.imageInputContainer {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.imageNameContainer {
+  margin-bottom: 3vh;
+}
+
+.otherNamesLabel {
+  font-size: 1.25rem;
+  width: 75%;
+}
+
+.otherNamesInputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+  font-size: 1.5rem;
+  margin-bottom: 3vh;
+}
+
+.tagsInputContainer {
+  margin-bottom: 3vh;
+  width: 70%;
+}
+
+.uploadTagsInput {
+  color: black;
+  background-color: white;
+  text-align: left;
+  width: 100%;
+}
