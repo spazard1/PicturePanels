@@ -7,6 +7,7 @@ using PicturePanels.Services.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PicturePanels.Controllers
@@ -45,6 +46,13 @@ namespace PicturePanels.Controllers
             return Json(await allPlayers.Select(playerModel => new PlayerEntity(playerModel)).ToListAsync());
         }
 
+        [HttpGet("{gameStateId}/avatars")]
+        public IActionResult GetAvatars(string gameStateId)
+        {
+            var allPlayers = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+            return Json(new AvatarsEntity(allPlayers));
+        }
+
         [HttpGet("{gameStateId}/{playerId}")]
         public async Task<IActionResult> GetAsync(string gameStateId, string playerId)
         {
@@ -66,41 +74,76 @@ namespace PicturePanels.Controllers
         [HttpPut("{gameStateId}")]
         public async Task<IActionResult> PutAsync(string gameStateId, [FromBody] PlayerEntity entity)
         {
+            var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+            if (gameState == null)
+            {
+                return StatusCode(404);
+            }
+
             var playerModel = await this.playerTableStorage.GetAsync(gameStateId, entity.PlayerId ?? string.Empty);
+            IAsyncEnumerable<PlayerTableEntity> players = null;
 
             if (playerModel == null)
             {
+                players = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+                var newPlayerName = GetPlayerName(entity.Name.ToLower());
+
+                if (await players.AnyAsync(p => p.Name?.ToLower() == newPlayerName))
+                {
+                    return Conflict("name");
+                }
+
                 playerModel = new PlayerTableEntity()
                 {
                     GameStateId = gameStateId,
                     PlayerId = Guid.NewGuid().ToString(),
                     Name = GetPlayerName(entity.Name),
-                    TeamNumber = entity.TeamNumber,
-                    Colors = entity.Colors,
-                    Avatar = entity.Avatar,
                     LastPingTime = DateTime.UtcNow,
                     SelectedPanels = new List<string>(),
                     PreviousGuesses = new List<string>(),
-                    IsReady = false
+                    IsReady = false,
                 };
                 await this.playerTableStorage.InsertAsync(playerModel);
-
-                await this.signalRHelper.PlayerAsync(playerModel, true);
             }
             else
             {
-                var gameState = await this.gameStateTableStorage.GetAsync(gameStateId);
+                players = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+                var newPlayerName = GetPlayerName(entity.Name.ToLower());
 
-                var newTeam = playerModel.TeamNumber != entity.TeamNumber;
+                if (await players.Where(p => p.PlayerId != entity.PlayerId).AnyAsync(p => p.Name?.ToLower() == newPlayerName))
+                {
+                    return Conflict("name");
+                }
+
+                if (!string.IsNullOrWhiteSpace(entity.Avatar))
+                {
+                    if (await players.Where(p => p.PlayerId != entity.PlayerId).AnyAsync(p =>p.Avatar?.ToLower() == entity.Avatar?.ToLower()))
+                    {
+                        return Conflict("avatar");
+                    }
+                }
+
+                var newTeam = playerModel.TeamNumber != entity.TeamNumber && entity.TeamNumber > 0;
                 var previousLastPingTime = playerModel.LastPingTime;
                 var previousTeamNumber = playerModel.TeamNumber;
+
                 playerModel = await this.playerTableStorage.ReplaceAsync(playerModel, (pm) =>
                 {
                     pm.Name = GetPlayerName(entity.Name);
-                    pm.TeamNumber = entity.TeamNumber;
-                    pm.Colors = entity.Colors;
-                    pm.Avatar = entity.Avatar;
                     pm.LastPingTime = DateTime.UtcNow;
+
+                    if (entity.Colors.Any())
+                    {
+                        pm.Colors = entity.Colors;
+                    }
+                    if (entity.TeamNumber > 0)
+                    {
+                        pm.TeamNumber = entity.TeamNumber;
+                    }
+                    if (!string.IsNullOrWhiteSpace(entity.Avatar))
+                    {
+                        pm.Avatar = entity.Avatar;
+                    }
                     if (newTeam)
                     {
                         pm.Guess = string.Empty;
@@ -111,12 +154,21 @@ namespace PicturePanels.Controllers
                     pm.IsReady = GetPlayerReady(gameState, playerModel, previousTeamNumber, entity.TeamNumber);
                 });
 
-                if (newTeam)
+                if (!string.IsNullOrWhiteSpace(playerModel.Name) && !string.IsNullOrWhiteSpace(playerModel.Avatar) && playerModel.TeamNumber > 0)
                 {
-                    await this.signalRHelper.SwitchTeamGroupsAsync(playerModel);
+                    if (newTeam)
+                    {
+                        await this.signalRHelper.SwitchTeamGroupsAsync(playerModel);
+                    }
+
+                    await this.signalRHelper.PlayerAsync(playerModel, newTeam);
                 }
 
-                await this.signalRHelper.PlayerAsync(playerModel, newTeam);
+                if (!string.IsNullOrWhiteSpace(playerModel.Avatar))
+                {
+                    players = this.playerTableStorage.GetActivePlayersAsync(gameStateId);
+                    await this.signalRHelper.AvatarsAsync(gameStateId, new AvatarsEntity(players));
+                }
             }
 
             return Json(new PlayerEntity(playerModel));

@@ -12,7 +12,7 @@ const putPlayer = (gameStateId, playerOptions, callback) => {
       if (response.ok) {
         return response.json();
       }
-      return false;
+      return response;
     })
     .then((responseJson) => {
       callback(responseJson);

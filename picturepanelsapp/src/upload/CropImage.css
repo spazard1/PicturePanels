@@ -35,19 +35,6 @@
   padding: 0.1rem;
 }
 
-.cropperButtons {
-  height: 8vh;
-  display: flex;
-  gap: 1vw;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-}
-
-.cropperButton {
-  font-size: 1.25rem;
-}
-
 .imageError {
   color: lightcoral;
 }

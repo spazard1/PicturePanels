@@ -73,6 +73,11 @@ namespace PicturePanels.Services
             return gameStateId + "_gameboard";
         }
 
+        public static string PlayerGroup(string gameStateId)
+        {
+            return gameStateId + "_player";
+        }
+
         public static string AllGroup(string gameStateId)
         {
             return gameStateId + "_all";
@@ -191,6 +196,7 @@ namespace PicturePanels.Services
         private async Task AddPlayerToGroupsAsync(PlayerTableEntity playerModel)
         {
             await this.Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.AllGroup(playerModel.GameStateId));
+            await this.Groups.AddToGroupAsync(Context.ConnectionId, SignalRHub.PlayerGroup(playerModel.GameStateId));
 
             if (playerModel.IsAdmin)
             {

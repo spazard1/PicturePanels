@@ -96,10 +96,13 @@ input:focus {
 input::placeholder,
 textarea::placeholder {
   text-transform: lowercase;
-  font-style: italic;
+  color: black;
+  opacity: 0.5;
 }
 
 input:focus::placeholder,
 textarea:focus::placeholder {
-  color: transparent;
+  text-transform: lowercase;
+  color: black;
+  opacity: 0.5;
 }

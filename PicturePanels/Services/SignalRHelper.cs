@@ -35,7 +35,12 @@ namespace PicturePanels.Services
         public async Task PlayerAsync(PlayerTableEntity playerModel, bool isNew)
         {
             await hubContext.Clients.Group(SignalRHub.GameBoardGroup(playerModel.GameStateId)).Player(new PlayerEntity(playerModel), isNew);
-            await hubContext.Clients.Group(playerModel.SignalRTeamGroupName).Player(new PlayerEntity(playerModel), isNew);
+            //await hubContext.Clients.Group(playerModel.SignalRTeamGroupName).Player(new PlayerEntity(playerModel), isNew);
+        }
+
+        public async Task AvatarsAsync(string gameStateId, AvatarsEntity avatarsEntity)
+        {
+            await hubContext.Clients.Group(SignalRHub.PlayerGroup(gameStateId)).Avatars(avatarsEntity);
         }
 
         public async Task ChatAsync(ChatEntity chatEntity)

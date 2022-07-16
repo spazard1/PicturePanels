@@ -9,6 +9,8 @@ namespace PicturePanels.Services
     {
         Task Init();
 
+        Task Avatars(AvatarsEntity entity);
+
         Task Players(List<PlayerEntity> entities);
 
         Task GameState(GameStateEntity entity);

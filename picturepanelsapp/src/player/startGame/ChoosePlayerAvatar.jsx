@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "./ColorPicker";
 import Avatar from "../../avatars/Avatar";
@@ -11,13 +11,16 @@ import { v4 as uuidv4 } from "uuid";
 import Color from "color";
 import dice64 from "./../../common/classAnimation/dice-64.png";
 import { useClassAnimation } from "../../common/classAnimation/useClassAnimation";
+import getAvatars from "./getAvatars";
+import { useSignalR } from "../../signalr/useSignalR";
 
 import "./ChoosePlayerAvatar.css";
 
-const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorRemove, onAvatarSelect }) => {
+const ChoosePlayerAvatar = ({ gameStateId, playerId, avatar, colors, onColorChange, onColorRemove, onAvatarSelect }) => {
   const [spinAnimation, setSpinAnimation] = useClassAnimation(250);
   const [flipAnimation, setFlipAnimation] = useClassAnimation(200);
-  const [selectedAvatar, setSelectedAvatar] = useState();
+  const [selectedAvatar, setSelectedAvatar] = useState(avatar);
+  const [selectedAvatars, setSelectedAvatars] = useState([]);
   const selectedAvatarRef = useRef();
   const [startingColors, setStartingColors] = useState(colors);
   const [seed] = useLocalStorageState("seed", uuidv4());
@@ -55,13 +58,22 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
     }
   };
 
-  useEffect(() => {
-    if (!avatar) {
-      return;
-    }
+  const onClickAvatar = useCallback(
+    (avatar) => {
+      if (selectedAvatars?.find((selectedAvatar) => selectedAvatar.avatar === avatar && selectedAvatar.playerId !== playerId)) {
+        return;
+      }
 
-    setSelectedAvatar(avatar);
-  }, [avatar]);
+      setSelectedAvatar(avatar);
+    },
+    [selectedAvatars, playerId]
+  );
+
+  useEffect(() => {
+    if (selectedAvatars?.find((sa) => sa.avatar === selectedAvatar && sa.playerId !== playerId)) {
+      setSelectedAvatar();
+    }
+  }, [selectedAvatars, selectedAvatar, playerId]);
 
   useEffect(() => {
     if (colors.length === 0) {
@@ -75,9 +87,21 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
     }
   }, [avatar]);
 
-  if (!gameState || avatar) {
-    return null;
-  }
+  useSignalR("Avatars", (sa) => {
+    setSelectedAvatars(sa.avatars);
+  });
+
+  useEffect(() => {
+    if (!gameStateId) {
+      return;
+    }
+
+    getAvatars(gameStateId, (sa) => {
+      if (sa) {
+        setSelectedAvatars(sa.avatars);
+      }
+    });
+  }, [gameStateId]);
 
   return (
     <>
@@ -108,16 +132,25 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
             <Form.Check type="switch" checked={colors && colors.length > 1} onChange={onColorCountChange} />
           </div>
         </div>
+
         <div className="playerAvatars">
-          {shuffledAvatarsRef.current.map((avatarName) => (
-            <div key={avatarName} ref={avatarName === selectedAvatar ? selectedAvatarRef : null} onClick={() => setSelectedAvatar(avatarName)}>
-              <Avatar
-                avatar={avatarName}
-                colors={colors}
-                className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
-              ></Avatar>
-            </div>
-          ))}
+          {shuffledAvatarsRef.current.map((avatarName) => {
+            let isDisabled = selectedAvatars?.find((selectedAvatar) => selectedAvatar.avatar === avatarName && selectedAvatar.playerId !== playerId);
+            return (
+              <div
+                key={avatarName}
+                ref={avatarName === selectedAvatar ? selectedAvatarRef : null}
+                className={classNames({ disabledAvatar: isDisabled })}
+                onClick={() => onClickAvatar(avatarName)}
+              >
+                <Avatar
+                  avatar={avatarName}
+                  colors={isDisabled ? [Color("#333")] : colors}
+                  className={classNames("avatarChoice", { selectedAvatar: avatarName === selectedAvatar })}
+                ></Avatar>
+              </div>
+            );
+          })}
         </div>
         <div className="playerAvatarNextButton">
           <Button onClick={avatarSelectOnClick} disabled={!selectedAvatar}>
@@ -132,7 +165,8 @@ const ChoosePlayerAvatar = ({ gameState, avatar, colors, onColorChange, onColorR
 export default ChoosePlayerAvatar;
 
 ChoosePlayerAvatar.propTypes = {
-  gameState: PropTypes.object,
+  gameStateId: PropTypes.string,
+  playerId: PropTypes.string,
   avatar: PropTypes.string,
   colors: PropTypes.arrayOf(PropTypes.object),
   onColorChange: PropTypes.func.isRequired,
