@@ -11,8 +11,9 @@
 .chooseImageInstructions {
   width: 60%;
   text-align: center;
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   margin: 2vh auto;
+  margin-bottom: 3vh;
 }
 
 .chooseImageButton {
@@ -21,8 +22,15 @@
   border: 3px solid dodgerblue;
   border-radius: 3px;
   cursor: pointer;
+  user-select: none;
 }
 
 .imageFile {
   position: absolute;
+}
+
+.imageFile:disabled + label {
+  background-color: grey;
+  border: 3px solid #444;
+  cursor: unset;
 }

@@ -4,12 +4,15 @@ import { useBodyClass } from "../common/useBodyClass";
 import ChooseImage from "./ChooseImage";
 import CropImage from "./CropImage";
 import SetImageInfo from "./SetImageInfo";
+import FinishedImage from "./FinishedImage";
 import postImage from "./postImage";
 import ModalConfirm from "../common/modal/ModalConfirm";
+import ModalMessage from "../common/modal/ModalMessage";
 import { useModal } from "../common/modal/useModal";
 import UploadUserLogin from "./UploadUserLogin";
 import putImage from "./putImage";
 import { Toast, ToastContainer } from "react-bootstrap";
+import postUploadTemporary from "./postUploadTemporary";
 
 import "./Upload.css";
 
@@ -18,7 +21,9 @@ export default function Upload() {
   const [uploadStep, setUploadStep] = useState("ChooseImage");
   const [imageUrl, setImageUrl] = useState();
   const [imageId, setImageId] = useState();
+  const [imageDetails, setImageDetails] = useState();
   const [loadingMessage, setLoadingMessage] = useState();
+  const [modalMessage, setModalMessage] = useState("");
   const [modalConfirmMessage, setModalConfirmMessage, onModalConfirmClose] = useModal();
 
   useBodyClass("upload");
@@ -32,6 +37,7 @@ export default function Upload() {
       if (response) {
         setImageId();
         setImageUrl();
+        setImageDetails();
         setUploadStep("ChooseImage");
       }
 
@@ -40,11 +46,27 @@ export default function Upload() {
     [setModalConfirmMessage]
   );
 
-  const onImageChosen = useCallback((imageDetails) => {
-    setImageUrl(imageDetails.url);
-    setImageId(imageDetails.imageId);
-    setUploadStep("CropImage");
-    setLoadingMessage("Loading image...");
+  const onStartOverAfterFinished = useCallback(() => {
+    setImageId();
+    setImageUrl();
+    setImageDetails();
+    setUploadStep("ChooseImage");
+  }, []);
+
+  const onImageChosen = useCallback((toUpload) => {
+    setLoadingMessage("Uploading image...");
+
+    postUploadTemporary(toUpload, (imageDetails) => {
+      setLoadingMessage();
+
+      if (imageDetails) {
+        setImageUrl(imageDetails.url);
+        setImageId(imageDetails.imageId);
+        setUploadStep("CropImage");
+      } else {
+        setModalMessage("Could not load an image from that source.");
+      }
+    });
   }, []);
 
   const onReadyToCrop = useCallback(() => {
@@ -60,6 +82,8 @@ export default function Upload() {
 
         if (ie) {
           setUploadStep("SetImageInfo");
+        } else {
+          setModalMessage("Failed to crop the image. Try starting over.");
         }
       });
     },
@@ -70,22 +94,37 @@ export default function Upload() {
     (imageInfo) => {
       setLoadingMessage("Saving image details...");
 
-      putImage(imageInfo, imageId, (ie) => {
+      putImage(imageInfo, imageId, (ids) => {
         setLoadingMessage();
-        if (ie) {
-          console.log("done", ie);
+        if (ids) {
+          setImageDetails(ids);
+          setUploadStep("FinishedImage");
+        } else {
+          setModalMessage("Failed to save the image. Try starting over.");
         }
       });
     },
     [imageId]
   );
 
+  const onModalMessageClose = useCallback(() => {
+    setModalMessage("");
+  }, []);
+
   return (
     <>
       <ModalConfirm modalMessage={modalConfirmMessage} onModalResponse={onModalConfirmResponse} onModalClose={onModalConfirmClose}></ModalConfirm>
+      <ModalMessage modalMessage={modalMessage} onModalClose={onModalMessageClose} />
+
       <ToastContainer position={"middle-center"}>
-        <Toast show={!!loadingMessage} bg="info">
-          {loadingMessage}
+        <Toast className="uploadLoadingToast" show={!!loadingMessage} bg="info">
+          <div>{loadingMessage}</div>
+          <div className="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </Toast>
       </ToastContainer>
 
@@ -106,6 +145,7 @@ export default function Upload() {
             {uploadStep === "SetImageInfo" && (
               <SetImageInfo isLoading={!!loadingMessage} imageId={imageId} onStartOver={onStartOver} onSaveImage={onSaveImage} />
             )}
+            {uploadStep === "FinishedImage" && <FinishedImage imageDetails={imageDetails} onStartOver={onStartOverAfterFinished} />}
           </>
         )}
       </div>

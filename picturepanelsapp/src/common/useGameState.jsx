@@ -40,5 +40,5 @@ export function useGameState() {
     });
   }, [gameStateId, connectionId]);
 
-  return { gameState, gameStateId, setGameState };
+  return { gameState, gameStateId, setGameState, setGameStateId };
 }

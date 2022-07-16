@@ -465,7 +465,7 @@ namespace PicturePanels.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound, "Did not find image with specified id");
             }
 
-            if (imageTableEntity.UploadComplete)
+            if (imageTableEntity.UploadComplete && imageTableEntity.UploadCompleteTime?.AddHours(1) < DateTime.UtcNow)
             {
                 return StatusCode((int)HttpStatusCode.Forbidden, "Images that have been finished uploading can no longer be seen.");
             }

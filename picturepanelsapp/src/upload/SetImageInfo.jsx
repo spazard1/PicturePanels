@@ -25,6 +25,7 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
     originalInputValueFormat: (valuesArr) => valuesArr.map((item) => item.value).join(","),
     maxTags: 6,
     userInput: true,
+    placeholder: "tags",
     dropdown: {
       maxItems: 30,
       classname: "tags-look",
@@ -71,27 +72,35 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
         <div className="uploadStepInstructions">Step 3 of 3: Enter the image details.</div>
 
         <div className="imageInfoContainer">
-          <div className="imageInputContainer imageNameContainer">
-            Image Name: <span data-toggle="tooltip" title="This is the name displayed when an image is solved."></span>
-            <br />
-            <input name="name" value={formValues.name} onChange={onInputChange} type="text" autoComplete="off" maxLength="100" disabled={isLoading} />
+          <div className="imageInputContainer instructionLabel">
+            The name of the image is the answer that is accepted as correct and will be displayed when it is solved.
           </div>
 
-          <div className="imageInputContainer otherNamesLabel">
-            Often there will be more than one answer for an image. The image name and these other names will all be accepted as correct answers.
+          <div className="imageInputContainer imageNameContainer">
+            <input
+              name="name"
+              value={formValues.name}
+              placeholder="image name"
+              onChange={onInputChange}
+              type="text"
+              autoComplete="off"
+              maxLength="100"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="imageInputContainer instructionLabel">
+            Often there will be more than one answer for an image. These other names will also be accepted as correct answers.
+            {" For example, for an image from 'Star Wars: The Empire Strikes Back', "}
+            {"other names would include 'Star Wars: Episode 5' and 'The Empire Strikes Back.'"}
           </div>
 
           <div className="imageInputContainer">
-            Other Names:{" "}
-            <span
-              data-toggle="tooltip"
-              title="For example, for an image from 'Star Wars: The Empire Strikes Back', 
-						other names would include 'Star Wars: Episode 5' and 'The Empire Strikes Back.'"
-            ></span>
             <div className="otherNamesInputContainer">
               <div>
                 <input
                   name="alternativeNames_0"
+                  placeholder="other name 1"
                   value={formValues.alternativeNames[0]}
                   onChange={onInputChange}
                   type="text"
@@ -103,6 +112,7 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
               <div>
                 <input
                   name="alternativeNames_1"
+                  placeholder="other name 2"
                   value={formValues.alternativeNames[1]}
                   onChange={onInputChange}
                   type="text"
@@ -114,6 +124,7 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
               <div>
                 <input
                   name="alternativeNames_2"
+                  placeholder="other name 3"
                   value={formValues.alternativeNames[2]}
                   onChange={onInputChange}
                   type="text"
@@ -125,12 +136,13 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
             </div>
           </div>
 
+          <div className="imageInputContainer instructionLabel">
+            Tags allow images to be filtered when creating games, to customize which types of images will be in the game.
+            <br />
+            {"At a minimum, it's good to tag your image with it's year, genres(s), and rating."}
+          </div>
+
           <div className="imageInputContainer tagsInputContainer">
-            Tags:{" "}
-            <span
-              data-toggle="tooltip"
-              title="Tags allow images to be filtered when creating games, to customize which types of images will be in the game."
-            ></span>
             <Tags
               name="tags"
               settings={tagifySettings}
@@ -143,12 +155,12 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
           </div>
         </div>
 
-        <div className="cropperButtons">
-          <Button variant="light" className="cropperButton" onClick={onStartOver} disabled={isLoading}>
+        <div className="uploadButtonsContainer">
+          <Button variant="light" className="uploadButton" onClick={onStartOver} disabled={isLoading}>
             Start Over
           </Button>
-          <Button variant="info" className="cropperButton" onClick={onClickSaveImage} disabled={isLoading}>
-            Save Image
+          <Button variant="info" className="uploadButton" onClick={onClickSaveImage} disabled={isLoading || formValues?.name.length < 2}>
+            Save Image Details
           </Button>
         </div>
       </div>

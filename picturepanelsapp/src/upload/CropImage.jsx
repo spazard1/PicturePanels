@@ -98,16 +98,14 @@ export default function CropImage({ isLoading, imageUrl, onReadyToCrop, onStartO
 
         {<UploadUserLogin />}
 
-        <div className="uploadStepInstructions">
-          Step 2 of 3: Crop the image. Select either 16x9 or 4x3 aspect ratio, then crop the image if needed.
-        </div>
+        <div className="uploadStepInstructions">Step 2 of 3: Select either 16x9 or 4x3 aspect ratio, then adjust the crop area if needed.</div>
 
-        <div className="cropperButtons">
-          <Button variant="light" className="cropperButton" onClick={onStartOver} disabled={isLoading}>
+        <div className="uploadButtonsContainer">
+          <Button variant="light" className="uploadButton" onClick={onStartOver} disabled={isLoading}>
             Start Over
           </Button>
-          <Button variant="info" className="cropperButton" onClick={onClickCroppedImage} disabled={imageError || isLoading}>
-            Done Cropping
+          <Button variant="info" className="uploadButton" onClick={onClickCroppedImage} disabled={imageError || isLoading}>
+            Crop Image
           </Button>
         </div>
       </div>

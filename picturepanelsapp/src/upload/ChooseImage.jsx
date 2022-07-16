@@ -1,5 +1,4 @@
 import React from "react";
-import ServerUrl from "../common/ServerUrl";
 import PropTypes from "prop-types";
 import UploadUserLogin from "./UploadUserLogin";
 import UserThumbnails from "./UserThumbnails";
@@ -11,7 +10,7 @@ export default function ChooseImage({ isLoading, onImageChosen }) {
     var pastedUrl = (event.clipboardData || window.clipboardData).getData("text");
 
     if (pastedUrl) {
-      uploadTemporaryUrl(pastedUrl);
+      onImageChosen(pastedUrl);
       return;
     }
 
@@ -19,7 +18,7 @@ export default function ChooseImage({ isLoading, onImageChosen }) {
     for (let index in items) {
       var item = items[index];
       if (item.kind === "file") {
-        uploadTemporaryBlobAsync(item.getAsFile());
+        onImageChosen(item.getAsFile());
       }
     }
   };
@@ -28,50 +27,9 @@ export default function ChooseImage({ isLoading, onImageChosen }) {
     var input = document.getElementById("imageFile");
 
     if (input.files && input.files[0]) {
-      uploadTemporaryBlobAsync(input.files[0]);
+      onImageChosen(input.files[0]);
     }
   };
-
-  const uploadTemporaryUrl = (uploadUrl) => {
-    fetch(ServerUrl + "api/images/uploadTemporaryUrl", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("userToken"),
-      },
-      body: JSON.stringify({
-        url: uploadUrl,
-      }),
-    }).then(handleUploadTemporary);
-  };
-
-  const uploadTemporaryBlobAsync = (blob) => {
-    fetch(ServerUrl + "api/images/uploadTemporaryBlob", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("userToken"),
-      },
-      body: blob,
-    }).then(handleUploadTemporary);
-  };
-
-  function handleUploadTemporary(response) {
-    Promise.resolve()
-      .then(async () => {
-        if (!response.ok) {
-          throw new Error(await response.text());
-        }
-        return response.json();
-      })
-      .then((responseJson) => {
-        onImageChosen(responseJson);
-        return responseJson;
-      })
-      .catch(function () {
-        return null;
-      });
-  }
 
   return (
     <>
@@ -81,6 +39,19 @@ export default function ChooseImage({ isLoading, onImageChosen }) {
         {<UploadUserLogin />}
 
         <div className="uploadStepInstructions">Step 1 of 3: Choose an image from your computer or paste an image or URL.</div>
+
+        <div className="chooseImageInstructions">
+          {"Images must be at least 1000px wide, so choose images that are large or high resolution. "}
+          <br />
+          <a
+            target="_blank"
+            href="https://www.google.com/search?q=sound%20of%20music%20movie&
+                  tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731"
+            rel="noreferrer"
+          >
+            {"Example 'Large' image search"}
+          </a>
+        </div>
 
         <div className="chooseImageContainer">
           <div className="chooseImageFile">
@@ -102,18 +73,6 @@ export default function ChooseImage({ isLoading, onImageChosen }) {
         </div>
       </div>
       <div className="uploadMainPanel">
-        <div className="chooseImageInstructions">
-          {"Images must be at least 1000px wide, so choose images that are large or high resolution. "}
-          <a
-            target="_blank"
-            href="https://www.google.com/search?q=sound%20of%20music%20movie&
-                  tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731"
-            rel="noreferrer"
-          >
-            {"Example 'Large' image search"}
-          </a>
-        </div>
-
         <UserThumbnails />
       </div>
     </>

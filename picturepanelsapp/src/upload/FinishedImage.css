@@ -1,0 +1,35 @@
+/* stylelint-disable selector-class-pattern */
+.finishedImageName {
+  font-size: 4rem;
+}
+
+.finishedImageAlternativeNames {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.finishedImageAlternativeName {
+  font-size: 2rem;
+  text-align: center;
+  line-height: normal;
+}
+
+.finishedImageTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5vw;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2vh;
+}
+
+.finishedImageTag {
+  font-size: 1.5rem;
+  background-color: grey;
+  padding: 0.5vmin;
+  border: 0.5rem solid #444;
+  box-sizing: border-box;
+  border-radius: 10px;
+}

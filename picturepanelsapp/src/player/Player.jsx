@@ -41,10 +41,10 @@ export default function Player() {
   const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
-  const [playerId, setPlayerId] = useState();
+  const [shouldSavePlayer, setShouldSavePlayer] = useState(false);
+  const [playerName, setPlayerName] = useLocalStorageState("playerName");
   const [teamNumber, setTeamNumber] = useState(0);
-  const [avatar, setAvatar] = useState();
-  const { gameState, gameStateId, setGameState } = useGameState();
+  const { gameState, gameStateId, setGameState, setGameStateId } = useGameState();
   const [turnType, setTurnType] = useState();
   const [teamTurn, setTeamTurn] = useState();
   const [roundNumber, setRoundNumber] = useState();
@@ -52,14 +52,14 @@ export default function Player() {
   const [hideRemainingTime, setHideRemainingTime] = useLocalStorageState("hideRemainingTime");
   const [disableVibrate, setDisableVibrate] = useLocalStorageState("disableVibrate");
   const [innerPanelCountNotify, setInnerPanelCountNotify] = useLocalStorageState("innerPanelCountNotify");
-  const [cachedGameStateId, setCachedGameStateId] = useState(localStorage.getItem("gameStateId"));
+  const [cachedGameStateId, setCachedGameStateId] = useLocalStorageState("gameStateId");
   const [teamNameToast, setTeamNameToast] = useState("");
-  const { isWinner } = useWinningTeam(gameState, teamNumber);
+  const { isWinner } = useWinningTeam(gameState, player);
   const isFirstLoad = useRef(true);
   const [colors, setColors] = useState([]);
 
   const { vibrate } = usePlayerVibrate();
-  usePlayerPing(gameStateId, player);
+  usePlayerPing(gameState?.gameStateId, player);
 
   const gc = useQueryString("gc");
 
@@ -69,6 +69,57 @@ export default function Player() {
       window.location.href = "https://picturepanels.net/";
     }
   }, [gc]);
+
+  const savePlayer = useCallback(() => {
+    putPlayer(
+      gameStateId,
+      {
+        PlayerId: localStorage.getItem("playerId"),
+        Name: playerName,
+        TeamNumber: player?.teamNumber,
+        Colors: colors?.map((c) => c.hex()),
+        Avatar: player?.avatar,
+      },
+      async (p) => {
+        if (p.status === 404) {
+          setModalMessage("Could not find the game to join. Check your game code and try again.");
+          return;
+        }
+
+        if (p.status === 409) {
+          // conflict
+          let responseText = await p.text();
+          if (responseText === "name") {
+            setModalMessage("Another player is already using that name. Enter a different name.");
+            setPlayer();
+          } else if (responseText === "avatar") {
+            setModalMessage("Another player is already using that avatar. Choose a different avatar.");
+            const newPlayer = { ...player };
+            delete newPlayer["avatar"];
+            setPlayer(newPlayer);
+          }
+          return;
+        }
+
+        if (p) {
+          setPlayer(p);
+          localStorage.setItem("playerId", p.playerId);
+        } else {
+          setModalMessage("Could not join the game. Refresh the page and try again.");
+          setPlayer();
+        }
+      }
+    );
+  }, [player, playerName, colors, gameStateId, setModalMessage]);
+
+  useEffect(() => {
+    if (!shouldSavePlayer) {
+      return;
+    }
+    setShouldSavePlayer(false);
+
+    savePlayer();
+  }, [shouldSavePlayer, savePlayer]);
 
   const throttledColorChange = useCallback((c, index) => {
     //throttle(100, (c, index) => {
@@ -97,66 +148,78 @@ export default function Player() {
     });
   }, []);
 
-  const onJoinGame = (gameOptions) => {
-    if (gameOptions.gameStateId.length < 4) {
-      setModalMessage("Did not find a game with that code. Check the game code and try again.");
+  const onPlayerNameChange = useCallback(() => {
+    setPlayer();
+    setGameState();
+  }, [setGameState]);
+
+  const onPlayerAvatarChange = useCallback(() => {
+    const newPlayer = { ...player };
+    delete newPlayer["avatar"];
+    setPlayer(newPlayer);
+  }, [player]);
+
+  const onTeamChange = useCallback(() => {
+    const newPlayer = { ...player };
+    newPlayer.teamNumber = 0;
+    setPlayer(newPlayer);
+  }, [player]);
+
+  const onJoinGame = useCallback(
+    (gameOptions) => {
+      setPlayerName(gameOptions.playerName);
+
+      if (gameOptions.gameStateId.length < 4) {
+        setModalMessage("Did not find a game with that code. Check the game code and try again.");
+        return;
+      }
+
+      if (gameOptions.gameStateId !== gameStateId) {
+        setPlayer();
+        setColors([]);
+      }
+
+      setCachedGameStateId(gameOptions.gameStateId.toUpperCase());
+      setGameStateId(gameOptions.gameStateId.toUpperCase());
+
+      setShouldSavePlayer(true);
+    },
+    [gameStateId, setCachedGameStateId, setGameStateId, setModalMessage, setPlayerName]
+  );
+
+  const onAvatarSelect = useCallback(
+    (avatar) => {
+      const newPlayer = { ...player };
+      newPlayer.avatar = avatar;
+      setPlayer(newPlayer);
+      setShouldSavePlayer(true);
+    },
+    [player]
+  );
+
+  const onTeamNumberSelect = useCallback(
+    (teamNumber) => {
+      const newPlayer = { ...player };
+      newPlayer.teamNumber = teamNumber;
+      setPlayer(newPlayer);
+      setShouldSavePlayer(true);
+    },
+    [player]
+  );
+
+  const teamNumberToastRef = useRef(0);
+  useEffect(() => {
+    if (!gameState || teamNumber === teamNumberToastRef.current) {
       return;
     }
 
-    setIsLoading(true);
-
-    if (gameOptions.gameStateId !== gameStateId) {
-      setPlayer(null);
-      setTeamNumber(0);
-      setAvatar(null);
-      setColors([]);
-      localStorage.removeItem("playerId");
-    }
-
-    getGameState(gameOptions.gameStateId.toUpperCase(), (gs) => {
-      setIsLoading(false);
-      if (gs) {
-        setGameState(gs);
-        setCachedGameStateId(gs.gameStateId);
-      } else {
-        setModalMessage("Did not find a game with that code. Check the game code and try again.");
-      }
-    });
-
-    localStorage.setItem("playerName", gameOptions.playerName);
-  };
-
-  const onPlayerNameChange = () => {
-    setGameState(null);
-    setPlayer(null);
-  };
-
-  const onPlayerAvatarChange = () => {
-    setAvatar(null);
-    setPlayer(null);
-  };
-
-  const onTeamChange = () => {
-    setTeamNumber(0);
-    setPlayer(null);
-  };
-
-  const onTeamNumberSelect = (teamNumber) => {
-    if (!teamNumber) {
-      setModalMessage("Could not join the game. Refresh the page and try again.");
+    if (teamNumber === 1) {
+      setTeamNameToast("You have joined " + gameState.teamOneName);
     } else {
-      setTeamNumber(teamNumber);
-      if (teamNumber === 1) {
-        setTeamNameToast("You have joined " + gameState.teamOneName);
-      } else {
-        setTeamNameToast("You have joined " + gameState.teamTwoName);
-      }
+      setTeamNameToast("You have joined " + gameState.teamTwoName);
     }
-  };
-
-  const onAvatarSelect = (avatar) => {
-    setAvatar(avatar);
-  };
+    teamNumberToastRef.current = teamNumber;
+  }, [teamNumber, gameState]);
 
   const openPanelVoteOnClick = () => {
     if (isLoading) {
@@ -164,7 +227,7 @@ export default function Player() {
     }
 
     setIsLoading(true);
-    putPlayerOpenPanelVote(gameStateId, player.playerId, (p) => {
+    putPlayerOpenPanelVote(gameState.gameStateId, player.playerId, (p) => {
       setIsLoading(false);
       if (!p) {
         setModalMessage("Could not send your vote. Refresh the page and try again.");
@@ -197,8 +260,6 @@ export default function Player() {
           if (resumeGameRef.current.player && resumeGameRef.current.gameState) {
             setGameState(resumeGameRef.current.gameState);
             setPlayer(resumeGameRef.current.player);
-            setTeamNumber(resumeGameRef.current.player.teamNumber);
-            setAvatar(resumeGameRef.current.player.avatar);
             if (resumeGameRef.current.player.colors) {
               setColors(resumeGameRef.current.player.colors.map((c) => Color(c)));
             }
@@ -209,7 +270,7 @@ export default function Player() {
           setIsResuming(false);
         });
     },
-    [setGameState]
+    [setGameState, setCachedGameStateId]
   );
 
   useEffect(() => {
@@ -275,12 +336,12 @@ export default function Player() {
     setTeamTurn(gameState.teamTurn);
     setRoundNumber(gameState.roundNumber);
 
-    if (teamNumber === 1) {
+    if (player.teamNumber === 1) {
       setTeamGuessStatus(gameState.teamOneGuessStatus);
     } else {
       setTeamGuessStatus(gameState.teamTwoGuessStatus);
     }
-  }, [gameState, teamNumber]);
+  }, [gameState, player]);
 
   useEffect(() => {
     if (turnType) {
@@ -310,7 +371,7 @@ export default function Player() {
 
   useEffect(() => {
     if (player) {
-      setPlayerId(player.playerId);
+      setTeamNumber(player.teamNumber);
     }
   }, [player]);
 
@@ -329,61 +390,40 @@ export default function Player() {
   }, [vibrate, disableVibrate, teamNumber, turnType, teamTurn, teamGuessStatus]);
 
   useEffect(() => {
-    if (!gameStateId || !gameState) {
+    if (!gameState) {
       return;
     }
 
     if (
-      innerPanelCountNotify !== gameStateId &&
+      innerPanelCountNotify !== gameState.gameStateId &&
       turnType === "OpenPanel" &&
       teamTurn === teamNumber &&
       ((teamNumber === 1 && gameState.teamOneInnerPanels <= 0) || (teamNumber === 2 && gameState.teamTwoInnerPanels <= 0))
     ) {
-      setInnerPanelCountNotify(gameStateId);
+      setInnerPanelCountNotify(gameState.gameStateId);
       setModalMessage("Your team is out of inner panels. From now on, if you open an inner panel, it will cost one point.");
     }
-  }, [setModalMessage, setInnerPanelCountNotify, gameStateId, innerPanelCountNotify, teamNumber, turnType, teamTurn, gameState]);
+  }, [setModalMessage, setInnerPanelCountNotify, innerPanelCountNotify, teamNumber, turnType, teamTurn, gameState]);
 
   useEffect(() => {
-    if (!gameStateId || !gameState || !teamNumber || !avatar || player) {
+    if (!gameState || !player || queryString) {
       return;
     }
 
-    if (isLoading) {
+    setQueryString("gameStateId=" + gameState.gameStateId + "&playerId=" + player.playerId);
+  }, [gameState, queryString, player, setQueryString]);
+
+  useEffect(() => {
+    if (gameState || !player) {
       return;
     }
 
-    setIsLoading(true);
-
-    putPlayer(
-      gameStateId,
-      {
-        PlayerId: localStorage.getItem("playerId"),
-        Name: localStorage.getItem("playerName"),
-        TeamNumber: teamNumber,
-        Colors: colors.map((c) => c.hex()),
-        Avatar: avatar,
-      },
-      (p) => {
-        setIsLoading(false);
-
-        if (p) {
-          setPlayer(p);
-          localStorage.setItem("playerId", p.playerId);
-        } else {
-          setModalMessage("Could not join the game. Refresh the page and try again.");
-        }
+    getGameState(gameStateId, (gs) => {
+      if (gs) {
+        setGameState(gs);
       }
-    );
-  }, [gameStateId, gameState, teamNumber, colors, avatar, player, setModalMessage, isLoading]);
-
-  useEffect(() => {
-    if (!gameState || !gameStateId || !player || queryString) {
-      return;
-    }
-
-    setQueryString("gameStateId=" + gameStateId + "&playerId=" + player.playerId);
-  }, [gameStateId, gameState, queryString, player, setQueryString]);
+    });
+  }, [gameStateId, gameState, player, setGameState]);
 
   if (isResuming) {
     return null;
@@ -396,16 +436,19 @@ export default function Player() {
 
       {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}
 
-      <ChoosePlayerAvatar
-        gameState={gameState}
-        avatar={avatar}
-        colors={colors}
-        onColorChange={onColorChange}
-        onColorRemove={onColorRemove}
-        onAvatarSelect={onAvatarSelect}
-      ></ChoosePlayerAvatar>
+      {gameState && !player?.avatar && (
+        <ChoosePlayerAvatar
+          gameStateId={gameState?.gameStateId}
+          playerId={player?.playerId}
+          avatar={player?.avatar}
+          colors={colors}
+          onColorChange={onColorChange}
+          onColorRemove={onColorRemove}
+          onAvatarSelect={onAvatarSelect}
+        ></ChoosePlayerAvatar>
+      )}
 
-      {gameState && avatar && teamNumber <= 0 && (
+      {gameState && player?.avatar && !player?.teamNumber && (
         <ChooseTeam
           gameStateId={gameState.gameStateId}
           teamOneName={gameState.teamOneName}
@@ -414,7 +457,7 @@ export default function Player() {
         ></ChooseTeam>
       )}
 
-      {gameState && teamNumber > 0 && player && (
+      {gameState && player?.teamNumber > 0 && player?.avatar && (
         <>
           <BackgroundAvatar
             name={player.name}
@@ -486,13 +529,18 @@ export default function Player() {
           )}
 
           {gameState.turnType === "MakeGuess" && !player.isReady && (
-            <MakeGuess gameStateId={gameStateId} playerId={playerId} previousGuesses={player.previousGuesses} onSaveGuess={onSaveGuess}></MakeGuess>
+            <MakeGuess
+              gameStateId={gameState.gameStateId}
+              playerId={player.playerId}
+              previousGuesses={player.previousGuesses}
+              onSaveGuess={onSaveGuess}
+            ></MakeGuess>
           )}
 
           <VoteGuess
             isVisible={gameState.turnType === "VoteGuess" && !player.isReady}
-            gameStateId={gameStateId}
-            playerId={playerId}
+            gameStateId={gameState.gameStateId}
+            playerId={player.playerId}
             onVoteGuess={() => setPlayerReady(true)}
           ></VoteGuess>
         </>
