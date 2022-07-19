@@ -5,13 +5,40 @@
 }
 
 .thumbnailContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 2vh;
   width: 20%;
   box-sizing: border-box;
+  cursor: pointer;
+}
+
+.thumbnailContainerSaving {
+  border: 3px solid pink;
 }
 
 .thumbnail {
   object-fit: contain;
   object-position: top;
   width: 100%;
+}
+
+.thumbnailImageTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5vw;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2vh;
+}
+
+.thumbnailImageTag {
+  font-size: 0.75rem;
+  background-color: grey;
+  padding: 0.2rem;
+  border: 0.1rem solid #444;
+  box-sizing: border-box;
+  border-radius: 5px;
 }

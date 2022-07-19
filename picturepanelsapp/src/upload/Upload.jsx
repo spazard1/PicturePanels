@@ -15,6 +15,8 @@ import { Toast, ToastContainer } from "react-bootstrap";
 import postUploadTemporary from "./postUploadTemporary";
 
 import "./Upload.css";
+import "animate.css";
+import "../animate/animate.css";
 
 export default function Upload() {
   const { user } = useContext(UserContext);

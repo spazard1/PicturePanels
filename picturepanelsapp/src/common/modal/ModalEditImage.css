@@ -1,0 +1,36 @@
+/* stylelint-disable selector-class-pattern */
+.editImageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  font-size: 1.25rem;
+}
+
+.editImageInputContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 90%;
+}
+
+.editImageInputContainer input {
+  width: 100%;
+}
+
+.editOtherNamesInputContainer {
+  gap: 0.5vh;
+}
+
+.editTagsInputContainer {
+  width: 90%;
+  font-size: 1rem;
+}
+
+.editTagsInput {
+  color: black;
+  background-color: white;
+  text-align: left;
+  width: 100%;
+}
