@@ -97,42 +97,36 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
 
           <div className="imageInputContainer">
             <div className="otherNamesInputContainer">
-              <div>
-                <input
-                  name="alternativeNames_0"
-                  placeholder="other name 1"
-                  value={formValues.alternativeNames[0]}
-                  onChange={onInputChange}
-                  type="text"
-                  autoComplete="off"
-                  maxLength="100"
-                  disabled={isLoading}
-                />
-              </div>
-              <div>
-                <input
-                  name="alternativeNames_1"
-                  placeholder="other name 2"
-                  value={formValues.alternativeNames[1]}
-                  onChange={onInputChange}
-                  type="text"
-                  autoComplete="off"
-                  maxLength="100"
-                  disabled={isLoading}
-                />
-              </div>
-              <div>
-                <input
-                  name="alternativeNames_2"
-                  placeholder="other name 3"
-                  value={formValues.alternativeNames[2]}
-                  onChange={onInputChange}
-                  type="text"
-                  autoComplete="off"
-                  maxLength="100"
-                  disabled={isLoading}
-                />
-              </div>
+              <input
+                name="alternativeNames_0"
+                placeholder="other name 1"
+                value={formValues.alternativeNames[0]}
+                onChange={onInputChange}
+                type="text"
+                autoComplete="off"
+                maxLength="100"
+                disabled={isLoading}
+              />
+              <input
+                name="alternativeNames_1"
+                placeholder="other name 2"
+                value={formValues.alternativeNames[1]}
+                onChange={onInputChange}
+                type="text"
+                autoComplete="off"
+                maxLength="100"
+                disabled={isLoading}
+              />
+              <input
+                name="alternativeNames_2"
+                placeholder="other name 3"
+                value={formValues.alternativeNames[2]}
+                onChange={onInputChange}
+                type="text"
+                autoComplete="off"
+                maxLength="100"
+                disabled={isLoading}
+              />
             </div>
           </div>
 
