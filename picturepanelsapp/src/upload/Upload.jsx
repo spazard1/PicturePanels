@@ -96,6 +96,8 @@ export default function Upload() {
     (imageInfo) => {
       setLoadingMessage("Saving image details...");
 
+      console.log(imageInfo);
+
       putImage(imageInfo, imageId, (ids) => {
         setLoadingMessage();
         if (ids) {

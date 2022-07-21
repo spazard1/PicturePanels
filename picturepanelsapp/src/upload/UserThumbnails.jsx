@@ -11,12 +11,12 @@ import { useTags } from "../common/useTags";
 import "./UserThumbnails.css";
 
 const UserThumbnails = () => {
-  const { tags } = useTags();
   const { userToken } = useContext(UserContext);
   const [userImages, setUserImages] = useState([]);
   const [queryString, setQueryString] = useState();
   const [editingImage, setEditingImage] = useState();
   const [savingImageId, setSavingImageId] = useState();
+  const { whitelistTags, tagifySettings, decorateSortOrder } = useTags();
 
   const onClickEditImage = useCallback((userImage) => {
     setEditingImage(userImage);
@@ -63,7 +63,16 @@ const UserThumbnails = () => {
 
   return (
     <>
-      {editingImage && <ModalEditImage tags={tags} imageDetails={editingImage} onEditImage={onEditImage} onModalClose={onModalClose} />}
+      {editingImage && (
+        <ModalEditImage
+          imageDetails={editingImage}
+          onEditImage={onEditImage}
+          onModalClose={onModalClose}
+          whitelistTags={whitelistTags}
+          tagifySettings={tagifySettings}
+          decorateSortOrder={decorateSortOrder}
+        />
+      )}
       <div className="thumbnailsContainer">
         {userImages.map((userImage) => (
           <div
@@ -75,15 +84,12 @@ const UserThumbnails = () => {
           >
             <img className="thumbnail" src={serverUrl + "api/images/thumbnails/" + userImage.id + "?" + queryString} />
             <div>{userImage.name}</div>
-            <div className="thumbnailImageTags">
-              {userImage.tags
-                .split(",")
-                .filter((e) => e)
-                .map((tag) => (
-                  <div className="thumbnailImageTag" key={tag}>
-                    {tag}
-                  </div>
-                ))}
+            <div className="imageTags">
+              {decorateSortOrder(userImage.tags).map((tag) => (
+                <div className="imageTag" key={tag.value} data-sortorder={tag["data-sortorder"]}>
+                  {tag.value}
+                </div>
+              ))}
             </div>
           </div>
         ))}

@@ -48,18 +48,21 @@ namespace PicturePanels.Controllers
         [HttpPut("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserEntity userEntity)
         {
-            var userModel = await this.userTableStorage.GetAsync(userEntity.UserName);
+            var userName = userEntity.UserName?.Trim();
+            var password = userEntity.Password?.Trim();
+
+            var userModel = await this.userTableStorage.GetAsync(userName);
             if (userModel == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            if (this.securityProvider.ValidatePassword(userEntity.Password, userModel.Salt, userModel.Password))
+            if (this.securityProvider.ValidatePassword(password, userModel.Salt, userModel.Password))
             {
                 return Json(new UserTokenEntity()
                 {
                     User = new UserEntity(userModel),
-                    UserToken = this.securityProvider.GetToken(userModel.UserName, userModel.UserId)
+                    UserToken = this.securityProvider.GetToken(userName, userModel.UserId)
                 });
             }
 

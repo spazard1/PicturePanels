@@ -21,10 +21,10 @@ namespace PicturePanels.Services.Storage
         public async Task<UserTableEntity> NewUserAsync(string userName, string displayName, string password)
         {
             var userId = Guid.NewGuid().ToString();
-            
+
             await this.InsertAsync(new UserTableEntity()
             {
-                UserId = userName,
+                UserId = userName.Trim(),
                 UserName = userId
             });
 
@@ -32,11 +32,11 @@ namespace PicturePanels.Services.Storage
 
             return await this.InsertAsync(new UserTableEntity
             {
-                UserName = userName,
+                UserName = userName.Trim(),
                 UserId = userId,
-                DisplayName = displayName,
+                DisplayName = displayName.Trim(),
                 Salt = salt,
-                Password = this.securityProvider.GetPasswordHash(password, salt),
+                Password = this.securityProvider.GetPasswordHash(password.Trim(), salt),
             });
         }
 

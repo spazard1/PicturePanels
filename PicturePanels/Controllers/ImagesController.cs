@@ -128,26 +128,21 @@ namespace PicturePanels.Controllers
             return StatusCode(200);
         }
 
+        
+
         /*
         [HttpGet("populate")]
         public async Task<IActionResult> PopulateAsync()
         {
-            var user = await this.userTableStorage.GetAsync("spazard1");
             await foreach (var imageTableEntity in this.imageTableStorage.GetAllAsync())
             {
-                if (imageTableEntity.Tags?.Contains("guysweekend") == true)
-                {
-                    await this.userPlayedImageTableStorage.InsertOrReplaceAsync(new UserPlayedImageTableEntity()
-                    {
-                        UserId = user.UserId,
-                        ImageId = imageTableEntity.Id
-                    });
-                }
+                _ = this.imageTableStorage.InsertOrReplaceAsync(imageTableEntity);
             }
 
             return StatusCode(200);
         }
         */
+        
     
         /*
         [HttpGet("populate")]
@@ -162,12 +157,12 @@ namespace PicturePanels.Controllers
         }
         */
 
-        [HttpGet("tags")]
-        public async Task<IActionResult> GetAllVisbileTagsAsync()
+        [HttpGet("whitelistTags")]
+        public async Task<IActionResult> GetWhitelistTagsAsync()
         {
             var tags = await this.imageTagTableStorage.GetAllVisbileTags().ToListAsync();
             tags.Sort();
-            return Json(tags.Select((tag) => tag.Tag));
+            return Json(new ImageTagsEntity() { Tags = tags.Select(tag => new ImageTagEntity(tag)) });
         }
 
         [HttpGet("alltags")]

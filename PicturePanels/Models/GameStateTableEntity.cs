@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Azure.Cosmos.Table;
+using Newtonsoft.Json;
 
 namespace PicturePanels.Models
 {
@@ -448,12 +449,12 @@ namespace PicturePanels.Models
 
             if (properties.ContainsKey(nameof(this.RevealedPanels)))
             {
-                this.RevealedPanels = properties[nameof(this.RevealedPanels)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.RevealedPanels = TableEntityExtension.Deserialize(properties[nameof(this.RevealedPanels)].StringValue);
             }
 
             if (properties.ContainsKey(nameof(this.Tags)))
             {
-                this.Tags = properties[nameof(this.Tags)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.Tags = TableEntityExtension.Deserialize(properties[nameof(this.Tags)].StringValue);
             }
         }
 
@@ -471,8 +472,8 @@ namespace PicturePanels.Models
                 this.Tags = new List<string>();
             }
 
-            result[nameof(this.RevealedPanels)] = new EntityProperty(string.Join(",", this.RevealedPanels));
-            result[nameof(this.Tags)] = new EntityProperty(string.Join(",", this.Tags));
+            result[nameof(this.RevealedPanels)] = new EntityProperty(JsonConvert.SerializeObject(this.RevealedPanels));
+            result[nameof(this.Tags)] = new EntityProperty(JsonConvert.SerializeObject(this.Tags));
 
             return result;
         }

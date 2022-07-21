@@ -16,8 +16,8 @@ namespace PicturePanels.Entities
         public GameStateEntity(GameStateTableEntity tableEntity)
         {
             this.GameStateId = tableEntity.GameStateId;
-            this.Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
-            this.ExcludedTags = string.Join(",", tableEntity.ExcludedTags ?? new List<string>());
+            this.Tags = tableEntity.Tags ?? new List<string>();
+            this.ExcludedTags = tableEntity.ExcludedTags ?? new List<string>();
             this.Theme = tableEntity.Theme;
             this.RoundNumber = tableEntity.RoundNumber;
             this.FinalRoundNumber = tableEntity.FinalRoundNumber;
@@ -60,9 +60,9 @@ namespace PicturePanels.Entities
 
         public string GameStateId { get; set; }
 
-        public string Tags { get; set; }
+        public List<string> Tags { get; set; }
 
-        public string ExcludedTags { get; set; }
+        public List<string> ExcludedTags { get; set; }
 
         public string Theme { get; set; }
 

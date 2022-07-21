@@ -84,8 +84,8 @@ namespace PicturePanels.Controllers
             gameState.GuessTime = entity.ExtendedTimers ? GameStateTableEntity.DefaultMakeGuessTime * 2 : GameStateTableEntity.DefaultMakeGuessTime;
             gameState.VoteGuessTime = entity.ExtendedTimers ? GameStateTableEntity.DefaultVoteGuessTime * 2 : GameStateTableEntity.DefaultVoteGuessTime;
             gameState.WrongGuessPenalty = GameStateTableEntity.DefaultWrongGuessPenalty;
-            gameState.Tags = entity.Tags?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-            gameState.ExcludedTags = entity.ExcludedTags?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+            gameState.Tags = entity.Tags;
+            gameState.ExcludedTags = entity.ExcludedTags;
             gameState.FinalRoundNumber = entity.ShortGame ? GameStateTableEntity.DefaultShortGameRounds : GameStateTableEntity.DefaultRounds;
             gameState.TeamOneInnerPanels = gameState.FinalRoundNumber / 2;
             gameState.TeamTwoInnerPanels = gameState.FinalRoundNumber / 2;

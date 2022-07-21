@@ -124,7 +124,7 @@ namespace PicturePanels
                         "https://picturepanels.net",
                         "https://nice-pebble-0e37f8d10.1.azurestaticapps.net"
                     }
-                ));
+                ).SetPreflightMaxAge(TimeSpan.FromHours(1)));
 
             app.UseDefaultFiles();
 

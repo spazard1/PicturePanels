@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Cosmos.Table;
+using Newtonsoft.Json;
 
 namespace PicturePanels.Models
 {
@@ -55,17 +56,17 @@ namespace PicturePanels.Models
 
             if (properties.ContainsKey(nameof(this.AlternativeNames)))
             {
-                this.AlternativeNames = properties[nameof(this.AlternativeNames)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.AlternativeNames = TableEntityExtension.Deserialize(properties[nameof(this.AlternativeNames)].StringValue);
             }
 
             if (properties.ContainsKey(nameof(this.Answers)))
             {
-                this.Answers = properties[nameof(this.Answers)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.Answers = TableEntityExtension.Deserialize(properties[nameof(this.Answers)].StringValue);
             }
 
             if (properties.ContainsKey(nameof(this.Tags)))
             {
-                this.Tags = properties[nameof(this.Tags)].StringValue.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                this.Tags = TableEntityExtension.Deserialize(properties[nameof(this.Tags)].StringValue);
             }
         }
 
@@ -75,17 +76,17 @@ namespace PicturePanels.Models
 
             if (this.AlternativeNames != null)
             {
-                result[nameof(this.AlternativeNames)] = new EntityProperty(string.Join(",", this.AlternativeNames));
+                result[nameof(this.AlternativeNames)] = new EntityProperty(JsonConvert.SerializeObject(this.AlternativeNames));
             }
 
             if (this.Answers != null)
             {
-                result[nameof(this.Answers)] = new EntityProperty(string.Join(",", this.Answers));
+                result[nameof(this.Answers)] = new EntityProperty(JsonConvert.SerializeObject(this.Answers));
             }
 
             if (this.Tags != null)
             {
-                result[nameof(this.Tags)] = new EntityProperty(string.Join(",", this.Tags));
+                result[nameof(this.Tags)] = new EntityProperty(JsonConvert.SerializeObject(this.Tags));
             }
 
             return result;

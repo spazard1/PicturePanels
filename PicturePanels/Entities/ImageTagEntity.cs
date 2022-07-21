@@ -17,9 +17,12 @@ namespace PicturePanels.Entities
         public ImageTagEntity(ImageTagTableEntity tableEntity)
         {
             this.Tag = tableEntity.Tag;
+            this.SortOrder = tableEntity.SortOrder;
         }
 
         public string Tag { get; set; }
+
+        public int SortOrder { get; set; }
 
     }
 }
