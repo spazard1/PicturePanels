@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import UploadUserLogin from "./UploadUserLogin";
 import serverUrl from "../common/ServerUrl";
 import { useTags } from "../common/useTags";
-import { useQueryString } from "../common/useQueryString";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 
 import "@yaireo/tagify/dist/tagify.css";
@@ -12,28 +11,13 @@ import "../common/Tagify.css";
 import "./SetImageInfo.css";
 
 export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveImage }) {
-  const { tags } = useTags();
-  const defaultTags = useQueryString("tags");
+  const { whitelistTags, queryTags, tagifySettings } = useTags();
 
   const [formValues, setFormValues] = useState({
     name: "",
     alternativeNames: ["", "", ""],
-    tags: defaultTags,
+    tags: queryTags,
   });
-
-  const tagifySettings = {
-    originalInputValueFormat: (valuesArr) => valuesArr.map((item) => item.value).join(","),
-    maxTags: 6,
-    userInput: true,
-    placeholder: "tags",
-    dropdown: {
-      maxItems: 30,
-      classname: "tags-look",
-      enabled: 0,
-      closeOnSelect: false,
-      placeAbove: true,
-    },
-  };
 
   const onInputChange = useCallback(
     (event) => {
@@ -54,12 +38,12 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
 
   const onTagsChange = (formName, e) => {
     setFormValues((fv) => {
-      return { ...fv, [formName]: e.detail.value };
+      return { ...fv, [formName]: e.detail.tagify.getCleanValue() };
     });
   };
 
   const onClickSaveImage = useCallback(() => {
-    onSaveImage({ ...formValues, alternativeNames: formValues.alternativeNames.join(",") });
+    onSaveImage({ ...formValues, tags: formValues.tags.map((tag) => tag.value) });
   }, [formValues, onSaveImage]);
 
   return (
@@ -141,8 +125,8 @@ export default function SetImageInfo({ isLoading, imageId, onStartOver, onSaveIm
               name="tags"
               settings={tagifySettings}
               className="uploadTagsInput"
-              defaultValue={defaultTags}
-              whitelist={tags}
+              defaultValue={queryTags}
+              whitelist={whitelistTags}
               disabled={isLoading}
               onChange={(e) => onTagsChange("tags", e)}
             />

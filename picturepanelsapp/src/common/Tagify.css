@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 /* stylelint-disable selector-class-pattern */
 .tags-look .tagify__dropdown__item {
   display: inline-block;
@@ -25,4 +26,74 @@
   width: 80%;
   margin-left: auto;
   margin-right: auto;
+}
+
+.imageTag {
+  color: black;
+  font-size: 0.75rem;
+  background-color: #bbb;
+  padding: 0.2rem;
+  border: 0.1rem solid #888;
+  box-sizing: border-box;
+  border-radius: 5px;
+}
+
+.imageTag[data-sortorder="0"] {
+  background-color: lightsalmon;
+  border: 0.1rem solid salmon;
+}
+
+.tagify__dropdown div[data-sortorder="0"],
+.tagify[data-sortorder="0"] div,
+.tagify__tag[data-sortorder="0"] > div::before {
+  background-color: lightsalmon;
+  box-shadow: unset;
+}
+
+.tagify__dropdown div[data-sortorder="0"]:hover,
+.tagify__tag[data-sortorder="0"]:hover,
+.tagify__tag[data-sortorder="0"]:hover div,
+.tagify__tag[data-sortorder="0"]:hover div::before {
+  background-color: salmon;
+  box-shadow: unset !important;
+}
+
+.imageTag[data-sortorder="10"] {
+  background-color: lightgreen;
+  border: 0.1rem solid limegreen;
+}
+
+.tagify__dropdown div[data-sortorder="10"],
+.tagify[data-sortorder="10"] div,
+.tagify__tag[data-sortorder="10"] > div::before {
+  background-color: lightgreen;
+  box-shadow: unset;
+}
+
+.tagify__dropdown div[data-sortorder="10"]:hover,
+.tagify__tag[data-sortorder="10"]:hover,
+.tagify__tag[data-sortorder="10"]:hover div,
+.tagify__tag[data-sortorder="10"]:hover div::before {
+  background-color: limegreen;
+  box-shadow: unset !important;
+}
+
+.imageTag[data-sortorder="20"] {
+  background-color: lightblue;
+  border: 0.1rem solid skyblue;
+}
+
+.tagify__dropdown div[data-sortorder="20"],
+.tagify[data-sortorder="20"] div,
+.tagify__tag[data-sortorder="20"] > div::before {
+  background-color: lightblue;
+  box-shadow: unset;
+}
+
+.tagify__dropdown div[data-sortorder="20"]:hover,
+.tagify__tag[data-sortorder="20"]:hover,
+.tagify__tag[data-sortorder="20"]:hover div,
+.tagify__tag[data-sortorder="20"]:hover div::before {
+  background-color: skyblue;
+  box-shadow: unset !important;
 }

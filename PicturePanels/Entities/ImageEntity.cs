@@ -19,8 +19,8 @@ namespace PicturePanels.Entities
             Id = tableEntity.Id;
             Name = tableEntity.Name;
             IsHidden = tableEntity.IsHidden;
-            AlternativeNames = string.Join(",", tableEntity.AlternativeNames ?? new List<string>());
-            Tags = string.Join(",", tableEntity.Tags ?? new List<string>());
+            AlternativeNames = tableEntity.AlternativeNames ?? new List<string>();
+            Tags = tableEntity.Tags ?? new List<string>();
             UploadedBy = tableEntity.UploadedBy;
         }
 
@@ -34,9 +34,9 @@ namespace PicturePanels.Entities
 
         public bool IsHidden { get; set; }
 
-        public string AlternativeNames { get; set; }
+        public List<string> AlternativeNames { get; set; }
 
-        public string Tags { get; set; }
+        public List<string> Tags { get; set; }
 
         public string UploadedBy { get; internal set; }
 
@@ -45,8 +45,8 @@ namespace PicturePanels.Entities
         public void CopyProperties(ImageTableEntity tableEntity)
         {
             tableEntity.Name = this.Name;
-            tableEntity.AlternativeNames = this.AlternativeNames?.Split(",").ToList();
-            tableEntity.Tags = this.Tags?.Split(",").ToList();
+            tableEntity.AlternativeNames = this.AlternativeNames;
+            tableEntity.Tags = this.Tags;
             tableEntity.IsHidden = this.IsHidden;
         }
 

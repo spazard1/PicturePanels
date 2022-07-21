@@ -21,7 +21,7 @@ export default function FinishedImage({ imageDetails, onStartOver }) {
 
           {imageDetails.alternativeNames?.length > 0 && (
             <div className="finishedImageAlternativeNames">
-              {imageDetails.alternativeNames.split(",").map((alternativeName) => (
+              {imageDetails.alternativeNames.map((alternativeName) => (
                 <div className="finishedImageAlternativeName" key={alternativeName}>
                   {alternativeName}
                 </div>
@@ -31,7 +31,7 @@ export default function FinishedImage({ imageDetails, onStartOver }) {
 
           {imageDetails.tags?.length > 0 && (
             <div className="finishedImageTags">
-              {imageDetails.tags.split(",").map((tag) => (
+              {imageDetails.tags.map((tag) => (
                 <div className="finishedImageTag" key={tag}>
                   {tag}
                 </div>

@@ -4,38 +4,17 @@ import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 
-import "@yaireo/tagify/dist/tagify.css";
-import "../Tagify.css";
 import "./Modal.css";
 import "./ModalEditImage.css";
 
-const ModalEditImage = ({ tags, imageDetails, onEditImage, onModalClose }) => {
-  const defaultTags = imageDetails.tags;
-
-  const tagifySettings = {
-    originalInputValueFormat: (valuesArr) => valuesArr.map((item) => item.value).join(","),
-    maxTags: 6,
-    userInput: true,
-    placeholder: "tags",
-    dropdown: {
-      maxItems: 30,
-      classname: "tags-look",
-      enabled: 0,
-      closeOnSelect: false,
-      placeAbove: true,
-    },
-  };
-
+const ModalEditImage = ({ imageDetails, onEditImage, onModalClose, whitelistTags, tagifySettings, decorateSortOrder }) => {
+  const imageTags = decorateSortOrder(imageDetails.tags);
   const [errorMessage, setErrorMessage] = useState("");
 
   const [formValues, setFormValues] = useState({
     name: imageDetails.name,
-    alternativeNames: imageDetails.alternativeNames
-      .split(",")
-      .filter((e) => e)
-      .concat(["", "", ""])
-      .slice(0, 3),
-    tags: imageDetails.tags,
+    alternativeNames: imageDetails.alternativeNames.concat(["", "", ""]).slice(0, 3),
+    tags: imageTags,
   });
 
   const onInputChange = useCallback(
@@ -57,7 +36,7 @@ const ModalEditImage = ({ tags, imageDetails, onEditImage, onModalClose }) => {
 
   const onTagsChange = (formName, e) => {
     setFormValues((fv) => {
-      return { ...fv, [formName]: e.detail.value };
+      return { ...fv, [formName]: e.detail.tagify.getCleanValue() };
     });
   };
 
@@ -74,7 +53,7 @@ const ModalEditImage = ({ tags, imageDetails, onEditImage, onModalClose }) => {
       return;
     }
 
-    onEditImage({ ...formValues, alternativeNames: formValues.alternativeNames.join(",") });
+    onEditImage({ ...formValues, tags: formValues.tags.map((tag) => tag.value) });
   };
 
   return (
@@ -130,8 +109,8 @@ const ModalEditImage = ({ tags, imageDetails, onEditImage, onModalClose }) => {
               name="tags"
               settings={tagifySettings}
               className="uploadTagsInput"
-              defaultValue={defaultTags}
-              whitelist={tags}
+              defaultValue={imageTags}
+              whitelist={whitelistTags}
               onChange={(e) => onTagsChange("tags", e)}
             />
           </div>
@@ -163,9 +142,10 @@ const ModalEditImage = ({ tags, imageDetails, onEditImage, onModalClose }) => {
 export default ModalEditImage;
 
 ModalEditImage.propTypes = {
-  tags: PropTypes.arrayOf(PropTypes.string),
-  showModal: PropTypes.bool,
   imageDetails: PropTypes.object,
   onEditImage: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired,
+  whitelistTags: PropTypes.arrayOf(PropTypes.object),
+  tagifySettings: PropTypes.object,
+  decorateSortOrder: PropTypes.func,
 };

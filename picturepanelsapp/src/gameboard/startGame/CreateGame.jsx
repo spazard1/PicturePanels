@@ -17,10 +17,7 @@ import "./CreateGame.css";
 const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
   const [spinAnimation, setSpinAnimation] = useClassAnimation(250);
   const { teamNames, refreshTeamNames } = useTeamNames(setSpinAnimation);
-
-  const { tags } = useTags();
-  const defaultTags = useQueryString("tags");
-  console.log(defaultTags);
+  const { whitelistTags, queryTags, tagifySettings } = useTags();
   const theme = useQueryString("theme");
 
   const [formValues, setFormValues] = useState({
@@ -29,6 +26,8 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
     extendedTimers: false,
     shortGame: false,
     theme: theme,
+    tags: queryTags,
+    excludedTags: [],
   });
 
   useEffect(() => {
@@ -40,21 +39,8 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
     });
   }, [teamNames]);
 
-  const tagifySettings = {
-    originalInputValueFormat: (valuesArr) => valuesArr.map((item) => item.value).join(","),
-    maxTags: 6,
-    userInput: true,
-    dropdown: {
-      maxItems: 30,
-      classname: "tags-look",
-      enabled: 0,
-      closeOnSelect: false,
-      placeAbove: true,
-    },
-  };
-
   const createGameOnClick = () => {
-    onCreateGame(formValues);
+    onCreateGame({ ...formValues, tags: formValues.tags.map((tag) => tag.value), excludedTags: formValues.excludedTags.map((tag) => tag.value) });
   };
 
   const onInputChange = useCallback(
@@ -73,7 +59,7 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
 
   const onTagsChange = (formName, e) => {
     setFormValues((fv) => {
-      return { ...fv, [formName]: e.detail.value };
+      return { ...fv, [formName]: e.detail.tagify.getCleanValue() };
     });
   };
 
@@ -114,8 +100,8 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
           name="tags"
           settings={tagifySettings}
           className="tagsInput"
-          defaultValue={defaultTags}
-          whitelist={tags}
+          defaultValue={queryTags}
+          whitelist={whitelistTags}
           onChange={(e) => onTagsChange("tags", e)}
         />
       </div>
@@ -129,7 +115,7 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
           name="excludedTags"
           settings={tagifySettings}
           className="tagsInput"
-          whitelist={tags}
+          whitelist={whitelistTags}
           onChange={(e) => onTagsChange("excludedTags", e)}
         />
       </div>
