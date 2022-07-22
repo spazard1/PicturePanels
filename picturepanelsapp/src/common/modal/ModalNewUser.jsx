@@ -116,24 +116,26 @@ const ModalNewUser = ({ showModal, onNewUser, onModalClose }) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          className="cancelButton"
-          variant="secondary"
-          onClick={() => {
-            onModalClose();
-            setFormValues({ ...formValues, password: "", confirmPassword: "" });
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => {
-            onNewUserClick(formValues);
-          }}
-        >
-          Create User
-        </Button>
+        <div>
+          <Button
+            className="cancelButton"
+            variant="secondary"
+            onClick={() => {
+              onModalClose();
+              setFormValues({ ...formValues, password: "", confirmPassword: "" });
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              onNewUserClick(formValues);
+            }}
+          >
+            Create User
+          </Button>
+        </div>
       </Modal.Footer>
     </Modal>
   );

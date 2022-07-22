@@ -14,3 +14,8 @@
 .uploadLoginContainer {
   margin-bottom: 2vh;
 }
+
+.uploadUserLoginLoading {
+  margin-top: 2rem;
+  font-size: 2rem;
+}

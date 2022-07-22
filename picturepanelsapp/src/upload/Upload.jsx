@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import UserContext from "../user/UserContext";
 import { useBodyClass } from "../common/useBodyClass";
 import ChooseImage from "./ChooseImage";
@@ -6,13 +6,12 @@ import CropImage from "./CropImage";
 import SetImageInfo from "./SetImageInfo";
 import FinishedImage from "./FinishedImage";
 import postImage from "./postImage";
-import ModalConfirm from "../common/modal/ModalConfirm";
-import ModalMessage from "../common/modal/ModalMessage";
-import { useModal } from "../common/modal/useModal";
+import ModalContext from "../common/modal/ModalContext";
 import UploadUserLogin from "./UploadUserLogin";
 import putImage from "./putImage";
 import { Toast, ToastContainer } from "react-bootstrap";
 import postUploadTemporary from "./postUploadTemporary";
+import LoadingRing from "../common/LoadingRing";
 
 import "./Upload.css";
 import "animate.css";
@@ -25,8 +24,7 @@ export default function Upload() {
   const [imageId, setImageId] = useState();
   const [imageDetails, setImageDetails] = useState();
   const [loadingMessage, setLoadingMessage] = useState();
-  const [modalMessage, setModalMessage] = useState("");
-  const [modalConfirmMessage, setModalConfirmMessage, onModalConfirmClose] = useModal();
+  const { setModalMessage, setModalConfirmMessage, modalConfirmResponse } = useContext(ModalContext);
 
   useBodyClass("upload");
 
@@ -34,19 +32,14 @@ export default function Upload() {
     setModalConfirmMessage("Are you sure you want to start over?");
   }, [setModalConfirmMessage]);
 
-  const onModalConfirmResponse = useCallback(
-    (response) => {
-      if (response) {
-        setImageId();
-        setImageUrl();
-        setImageDetails();
-        setUploadStep("ChooseImage");
-      }
-
-      setModalConfirmMessage("");
-    },
-    [setModalConfirmMessage]
-  );
+  useEffect(() => {
+    if (modalConfirmResponse) {
+      setImageId();
+      setImageUrl();
+      setImageDetails();
+      setUploadStep("ChooseImage");
+    }
+  }, [modalConfirmResponse]);
 
   const onStartOverAfterFinished = useCallback(() => {
     setImageId();
@@ -55,21 +48,24 @@ export default function Upload() {
     setUploadStep("ChooseImage");
   }, []);
 
-  const onImageChosen = useCallback((toUpload) => {
-    setLoadingMessage("Uploading image...");
+  const onImageChosen = useCallback(
+    (toUpload) => {
+      setLoadingMessage("Uploading image...");
 
-    postUploadTemporary(toUpload, (imageDetails) => {
-      setLoadingMessage();
+      postUploadTemporary(toUpload, (imageDetails) => {
+        setLoadingMessage();
 
-      if (imageDetails) {
-        setImageUrl(imageDetails.url);
-        setImageId(imageDetails.imageId);
-        setUploadStep("CropImage");
-      } else {
-        setModalMessage("Could not load an image from that source.");
-      }
-    });
-  }, []);
+        if (imageDetails) {
+          setImageUrl(imageDetails.url);
+          setImageId(imageDetails.imageId);
+          setUploadStep("CropImage");
+        } else {
+          setModalMessage("Could not load an image from that source.");
+        }
+      });
+    },
+    [setModalMessage]
+  );
 
   const onReadyToCrop = useCallback(() => {
     setLoadingMessage();
@@ -89,7 +85,7 @@ export default function Upload() {
         }
       });
     },
-    [imageId]
+    [setModalMessage, imageId]
   );
 
   const onSaveImage = useCallback(
@@ -108,27 +104,14 @@ export default function Upload() {
         }
       });
     },
-    [imageId]
+    [setModalMessage, imageId]
   );
-
-  const onModalMessageClose = useCallback(() => {
-    setModalMessage("");
-  }, []);
 
   return (
     <>
-      <ModalConfirm modalMessage={modalConfirmMessage} onModalResponse={onModalConfirmResponse} onModalClose={onModalConfirmClose}></ModalConfirm>
-      <ModalMessage modalMessage={modalMessage} onModalClose={onModalMessageClose} />
-
       <ToastContainer position={"middle-center"}>
         <Toast className="uploadLoadingToast" show={!!loadingMessage} bg="info">
-          <div>{loadingMessage}</div>
-          <div className="lds-ring">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
+          <LoadingRing message={loadingMessage} />
         </Toast>
       </ToastContainer>
 

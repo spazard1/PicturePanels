@@ -1,5 +1,8 @@
 /* stylelint-disable selector-class-pattern */
 .startGameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 2vh 2vw;
   font-size: 3vh;
   position: absolute;
@@ -25,7 +28,6 @@
 .loginContainer {
   font-size: 2.5vh;
   width: 60%;
-  margin-bottom: 3vh;
   display: flex;
   flex-direction: column;
 }
@@ -35,7 +37,7 @@
 }
 
 .startGameJoinButton {
-  margin-bottom: 8vh;
+  margin-bottom: 6vh;
 }
 
 .loginMessage {

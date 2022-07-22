@@ -7,6 +7,7 @@ import AppWrapper from "./common/AppWrapper";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import "./themes/default/default.css";
+import LoadingMessage from "./common/LoadingMessage";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -18,7 +19,7 @@ const Upload = lazy(() => import("./upload/Upload"));
 root.render(
   <AppWrapper>
     <BrowserRouter>
-      <Suspense fallback={<div className="loadingScreen">Loading Picture Panels...</div>}>
+      <Suspense fallback={<LoadingMessage />}>
         <Routes>
           <Route path="/" element={<Player />} />
           <Route path="gameboard" element={<Gameboard />} />

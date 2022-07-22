@@ -413,7 +413,6 @@ namespace PicturePanels.Controllers
         }
 
         [HttpPut("{id}/endRound")]
-        [RequireAdmin]
         public async Task<IActionResult> PutEndRoundAsync(string id)
         {
             var gameState = await this.gameStateTableStorage.GetAsync(id);
@@ -422,13 +421,7 @@ namespace PicturePanels.Controllers
                 return StatusCode(404);
             }
 
-            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
-            {
-                gs.NewTurnType(GameStateTableEntity.TurnTypeGuessesMade);
-                gs.ClearGuesses();
-            });
-
-            await hubContext.Clients.Group(SignalRHub.AllGroup(id)).GameState(new GameStateEntity(gameState));
+            gameState = await this.gameStateService.EndRoundAsync(gameState);
 
             return Json(new GameStateEntity(gameState));
         }

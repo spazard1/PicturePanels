@@ -45,8 +45,8 @@ export default function ChooseImage({ isLoading, onImageChosen }) {
           <br />
           <a
             target="_blank"
-            href="https://www.google.com/search?q=sound%20of%20music%20movie&
-                  tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAEQpwVqFwoTCPihvqPSz-4CFQAAAAAdAAAAABAC&biw=1519&bih=731"
+            href="https://www.google.com/search?q=sound%20of%20music%20movie
+              &tbm=isch&hl=en&tbs=isz:l&sa=X&ved=0CAIQpwVqFwoTCICKiuK5jfkCFQAAAAAdAAAAABAC&biw=2543&bih=1273"
             rel="noreferrer"
           >
             {"Example 'Large' image search"}

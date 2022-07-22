@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useBodyClass } from "../common/useBodyClass";
 import getGameState from "../common/getGameState";
 import PanelButtons from "./PanelButtons";
@@ -8,9 +8,7 @@ import StartGame from "./startGame/StartGame";
 import ChooseTeam from "./startGame/ChooseTeam";
 import JoinGame from "./startGame/JoinGame";
 import ChoosePlayerAvatar from "./startGame/ChoosePlayerAvatar";
-import ModalMessage from "../common/modal/ModalMessage";
 import MakeGuess from "./makeGuess/MakeGuess";
-import { useModal } from "../common/modal/useModal";
 import putPlayer from "./putPlayer";
 import { usePlayerPing } from "./usePlayerPing";
 import Button from "react-bootstrap/Button";
@@ -29,6 +27,7 @@ import putPlayerResume from "./putPlayerResume";
 import Color from "color";
 import { useQueryString } from "../common/useQueryString";
 import BackgroundAvatar from "./BackgroundAvatar";
+import ModalContext from "../common/modal/ModalContext";
 
 import "./Player.css";
 import "animate.css";
@@ -37,8 +36,8 @@ import "../animate/animate.css";
 export default function Player() {
   useBodyClass("player");
 
+  const { setModalMessage } = useContext(ModalContext);
   const { queryString, setQueryString } = useSignalRConnection();
-  const [modalMessage, setModalMessage, onModalClose] = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const [player, setPlayer] = useState();
   const [shouldSavePlayer, setShouldSavePlayer] = useState(false);
@@ -431,7 +430,6 @@ export default function Player() {
 
   return (
     <div className="playerContainer">
-      <ModalMessage modalMessage={modalMessage} onModalClose={onModalClose}></ModalMessage>
       <SignalRConnectionStatus></SignalRConnectionStatus>
 
       {!gameState && <JoinGame isLoading={isLoading} onJoinGame={onJoinGame} cachedGameStateId={cachedGameStateId}></JoinGame>}

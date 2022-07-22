@@ -93,31 +93,33 @@ const CreateGame = ({ isLoadingGame, onCancel, onCreateGame }) => {
       <div className="createGameTagsMessage">
         All images are included by default. Use included tags if you only want certain categories in your game.
       </div>
-      <div className="createGameTagsInputContainer center">
-        Included Tags:&nbsp;
-        <span data-toggle="tooltip" title="If you want only certain types of images to be included in your game, add those tags here."></span>
-        <Tags
-          name="tags"
-          settings={tagifySettings}
-          className="tagsInput"
-          defaultValue={queryTags}
-          whitelist={whitelistTags}
-          onChange={(e) => onTagsChange("tags", e)}
-        />
-      </div>
-      <div className="createGameTagsInputContainer center">
-        Excluded Tags:&nbsp;
-        <span
-          data-toggle="tooltip"
-          title="Images with these tags will not be included in your game, even if they match one of the included tags."
-        ></span>
-        <Tags
-          name="excludedTags"
-          settings={tagifySettings}
-          className="tagsInput"
-          whitelist={whitelistTags}
-          onChange={(e) => onTagsChange("excludedTags", e)}
-        />
+      <div className="createGameTagsInputContainer">
+        <div className="createGameTagsInput">
+          Included Tags:&nbsp;
+          <span data-toggle="tooltip" title="If you want only certain types of images to be included in your game, add those tags here."></span>
+          <Tags
+            name="tags"
+            settings={tagifySettings}
+            className="tagsInput"
+            defaultValue={queryTags}
+            whitelist={whitelistTags}
+            onChange={(e) => onTagsChange("tags", e)}
+          />
+        </div>
+        <div className="createGameTagsInput">
+          Excluded Tags:&nbsp;
+          <span
+            data-toggle="tooltip"
+            title="Images with these tags will not be included in your game, even if they match one of the included tags."
+          ></span>
+          <Tags
+            name="excludedTags"
+            settings={tagifySettings}
+            className="tagsInput"
+            whitelist={whitelistTags}
+            onChange={(e) => onTagsChange("excludedTags", e)}
+          />
+        </div>
       </div>
       <div className="createGameToggleOptions">
         <div className="createGameToggleContainer">

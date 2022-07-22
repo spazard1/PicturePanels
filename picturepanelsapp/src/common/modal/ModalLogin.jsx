@@ -64,24 +64,26 @@ const ModalLogin = ({ showModal, onLogin, onModalClose }) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          className="cancelButton"
-          variant="secondary"
-          onClick={() => {
-            onModalClose();
-            setFormValues({ ...formValues, password: "" });
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => {
-            onLogin(formValues);
-          }}
-        >
-          Login
-        </Button>
+        <div>
+          <Button
+            className="cancelButton"
+            variant="secondary"
+            onClick={() => {
+              onModalClose();
+              setFormValues({ ...formValues, password: "" });
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              onLogin(formValues);
+            }}
+          >
+            Login
+          </Button>
+        </div>
       </Modal.Footer>
     </Modal>
   );

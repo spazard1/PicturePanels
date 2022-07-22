@@ -3,11 +3,11 @@ import JoinGame from "./JoinGame";
 import CreateGame from "./CreateGame";
 import PropTypes from "prop-types";
 import { Button } from "react-bootstrap";
-import ModalMessage from "../../common/modal/ModalMessage";
 import UserContext from "../../user/UserContext";
 import getGameState from "../../common/getGameState";
 import postGameState from "./postGameState";
 import GameboardUserLogin from "./GameboardUserLogin";
+import ModalContext from "../../common/modal/ModalContext";
 
 import "./StartGame.css";
 
@@ -15,18 +15,14 @@ const StartGame = ({ onStartGame }) => {
   const { user } = useContext(UserContext);
   const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [startGameState, setStartGameState] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
-
-  const onModalMessageClose = () => {
-    setModalMessage("");
-  };
+  const { setModalMessage } = useContext(ModalContext);
 
   const onClickCreateGame = useCallback(() => {
     if (!user) {
       setModalMessage("Remember, if you login before you create a game, images you play will be saved so you don't see them again in future games.");
     }
     setStartGameState("Create");
-  }, [user]);
+  }, [setModalMessage, user]);
 
   const onCreateGame = (gameOptions) => {
     setIsLoadingGame(true);
@@ -66,7 +62,6 @@ const StartGame = ({ onStartGame }) => {
 
   return (
     <>
-      <ModalMessage modalMessage={modalMessage} onModalClose={onModalMessageClose} />
       <div className="startGameContainer">
         {startGameState === "" && (
           <>
@@ -87,9 +82,9 @@ const StartGame = ({ onStartGame }) => {
                 Join Game
               </Button>
             </div>
+            <GameboardUserLogin />
           </>
         )}
-        <GameboardUserLogin />
         {startGameState === "Join" && <JoinGame isLoadingGame={isLoadingGame} onCancel={onCancel} onJoinGame={onJoinGame} />}
         {startGameState === "Create" && <CreateGame isLoadingGame={isLoadingGame} onCancel={onCancel} onCreateGame={onCreateGame} />}
       </div>

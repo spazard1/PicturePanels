@@ -615,6 +615,23 @@ namespace PicturePanels.Services
             return gameState;
         }
 
+        public async Task<GameStateTableEntity> EndRoundAsync(GameStateTableEntity gameState)
+        {
+            await this.SaveRoundCompleteAsync(gameState);
+
+            gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>
+            {
+                gs.NewTurnType(GameStateTableEntity.TurnTypeEndRound);
+            });
+
+            await this.playerTableStorage.ResetPlayersAsync(gameState);
+
+            await hubContext.Clients.Group(SignalRHub.AllGroup(gameState.GameStateId)).GameState(new GameStateEntity(gameState));
+            await this.gameStateQueueService.QueueGameStateChangeAsync(gameState);
+
+            return gameState;
+        }
+
         public async Task<GameStateTableEntity> ExitEndRoundAsync(GameStateTableEntity gameState)
         {
             gameState = await this.gameStateTableStorage.ReplaceAsync(gameState, (gs) =>

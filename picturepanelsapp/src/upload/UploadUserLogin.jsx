@@ -9,8 +9,9 @@ const UploadUserLogin = () => {
 
   return (
     <>
+      {isLoadingLogin && !user && <div className="loadingMessageContainer">Loading Picture Panels Upload...</div>}
       <div className="uploadLoginContainer center">
-        {!user && (
+        {!user && !isLoadingLogin && (
           <>
             <div className="center uploadLoginMessage">You must be logged in to upload images.</div>
             <div className="uploadLoginButtonsContainer">

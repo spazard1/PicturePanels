@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../user/UserContext";
-import ModalMessage from "./modal/ModalMessage";
 import ModalLogin from "./modal/ModalLogin";
 import ModalNewUser from "./modal/ModalNewUser";
 import postUser from "../user/postUser";
 import putLogin from "../user/putLogin";
 import getUser from "../user/getUser";
+import ModalContext from "./modal/ModalContext";
 
 export default function LoginManager({ children }) {
   const [user, setUser] = useState();
   const [userToken, setUserToken] = useState();
-  const [modalMessage, setModalMessage] = useState("");
   const [showModalLogin, setShowModalLogin] = useState(false);
   const [showModalNewUser, setShowModalNewUser] = useState(false);
   const [isLoadingLogin, setIsLoadingLogin] = useState(true);
+  const { setModalMessage } = useContext(ModalContext);
 
   const onModalLoginClose = () => {
     setShowModalLogin(false);
@@ -22,10 +22,6 @@ export default function LoginManager({ children }) {
 
   const onModalNewUserClose = () => {
     setShowModalNewUser(false);
-  };
-
-  const onModalMessageClose = () => {
-    setModalMessage("");
   };
 
   const promptLogin = useCallback(() => {
@@ -103,7 +99,6 @@ export default function LoginManager({ children }) {
 
   return (
     <UserContext.Provider value={{ user, userToken, promptLogin, promptNewUser, logout, isLoadingLogin }}>
-      <ModalMessage modalMessage={modalMessage} onModalClose={onModalMessageClose} />
       <ModalLogin showModal={showModalLogin} onLogin={onLogin} onModalClose={onModalLoginClose} />
       <ModalNewUser showModal={showModalNewUser} onNewUser={onNewUser} onModalClose={onModalNewUserClose} />
       {children}
