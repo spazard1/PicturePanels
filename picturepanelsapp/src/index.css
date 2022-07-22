@@ -10,12 +10,18 @@ body {
   background-color: black;
   margin: 0;
   padding: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-#mainDiv {
-  height: 100%;
+.loadingMessageContainer {
+  position: absolute;
+  top: 3vh;
   width: 100%;
-  padding: 0;
+  text-align: center;
+  font-size: 2rem;
+  background-color: black;
+  color: white;
 }
 
 a {

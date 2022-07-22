@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 const ModalMessage = ({ modalMessage, onModalClose }) => {
   return (
-    <Modal show={modalMessage !== ""} onHide={onModalClose} centered>
+    <Modal show={!!modalMessage} onHide={onModalClose} centered>
       <Modal.Body>{modalMessage}</Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={onModalClose}>

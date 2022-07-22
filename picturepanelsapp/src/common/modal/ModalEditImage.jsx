@@ -117,23 +117,25 @@ const ModalEditImage = ({ imageDetails, onEditImage, onModalClose, whitelistTags
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          className="cancelButton"
-          variant="secondary"
-          onClick={() => {
-            onModalClose();
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => {
-            onClickEditImage(formValues);
-          }}
-        >
-          Save Image
-        </Button>
+        <div>
+          <Button
+            className="cancelButton"
+            variant="secondary"
+            onClick={() => {
+              onModalClose();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              onClickEditImage(formValues);
+            }}
+          >
+            Save Image
+          </Button>
+        </div>
       </Modal.Footer>
     </Modal>
   );

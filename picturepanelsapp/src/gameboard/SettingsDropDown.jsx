@@ -1,14 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { Dropdown } from "react-bootstrap";
 import { putTogglePauseGame } from "../common/putTogglePauseGame";
+import { putEndRound } from "./putEndRound";
+import ModalContext from "../common/modal/ModalContext";
 
 import "./SettingsDropDown.css";
-import { useCallback } from "react";
 
 const SettingsDropDown = ({ gameStateId, pauseState, volume, onChangeVolume }) => {
   const [dropdownVisible, setDropDownVisible] = useState();
   const intervalRef = useRef();
+  const { setModalConfirmMessage, modalConfirmResponse } = useContext(ModalContext);
 
   const setCloseInterval = useCallback(() => {
     clearInterval(intervalRef.current);
@@ -17,10 +19,20 @@ const SettingsDropDown = ({ gameStateId, pauseState, volume, onChangeVolume }) =
     }, 7000);
   }, []);
 
-  const onTogglePauseGame = useCallback(() => {
+  const onClickTogglePauseGame = useCallback(() => {
     setDropDownVisible(false);
     putTogglePauseGame(gameStateId, () => {});
   }, [gameStateId]);
+
+  const onClickEndRound = useCallback(() => {
+    setModalConfirmMessage("Are you sure you want to end the round? ");
+  }, [setModalConfirmMessage]);
+
+  useEffect(() => {
+    if (modalConfirmResponse) {
+      putEndRound(gameStateId, () => {});
+    }
+  }, [gameStateId, modalConfirmResponse]);
 
   const onClickChangeVolume = useCallback(
     (e) => {
@@ -45,8 +57,12 @@ const SettingsDropDown = ({ gameStateId, pauseState, volume, onChangeVolume }) =
       </Dropdown.Toggle>
 
       <Dropdown.Menu variant="dark">
-        <Dropdown.Item href="#" onClick={onTogglePauseGame} disabled={!gameStateId}>
+        <Dropdown.Item href="#" onClick={onClickTogglePauseGame} disabled={!gameStateId}>
           {pauseState === "Paused" ? "Resume Game" : "Pause Game"}
+        </Dropdown.Item>
+        <Dropdown.Divider />
+        <Dropdown.Item href="#" onClick={onClickEndRound} disabled={!gameStateId}>
+          End Round
         </Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item href="#">

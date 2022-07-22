@@ -1,16 +1,17 @@
 import React, { useContext } from "react";
 import UserContext from "../../user/UserContext";
 import { Button } from "react-bootstrap";
+import LoadingRing from "../../common/LoadingRing";
 
 const GameboardUserLogin = () => {
   const { user, promptLogin, promptNewUser, logout, isLoadingLogin } = useContext(UserContext);
 
   return (
     <>
-      <div className="loginContainer center">
-        {!user && (
+      <div className="loginContainer">
+        {!user && !isLoadingLogin && (
           <>
-            <div className="center loginMessage">When you are logged in, you will not see images that you have already played.</div>
+            <div className="loginMessage">When you are logged in, you will not see images that you have already played.</div>
             <div className="startGameButtonsContainer">
               <Button variant="light" className="startGameButton" disabled={isLoadingLogin} onClick={promptNewUser}>
                 Create User
@@ -34,7 +35,7 @@ const GameboardUserLogin = () => {
           </>
         )}
       </div>
-      {isLoadingLogin && !user && <div>Loading...</div>}
+      {isLoadingLogin && !user && <LoadingRing />}
     </>
   );
 };

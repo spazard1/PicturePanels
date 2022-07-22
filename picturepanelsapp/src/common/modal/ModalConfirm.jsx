@@ -7,15 +7,17 @@ import "./Modal.css";
 
 const ModalConfirm = ({ modalMessage, onModalResponse, onModalClose }) => {
   return (
-    <Modal show={modalMessage !== ""} onHide={onModalClose}>
+    <Modal show={!!modalMessage} onHide={onModalClose} centered>
       <Modal.Body>{modalMessage}</Modal.Body>
       <Modal.Footer>
-        <Button className="cancelButton" variant="secondary" onClick={() => onModalResponse(false)}>
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={() => onModalResponse(true)}>
-          OK
-        </Button>
+        <div>
+          <Button className="cancelButton" variant="secondary" onClick={() => onModalResponse(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={() => onModalResponse(true)}>
+            OK
+          </Button>
+        </div>
       </Modal.Footer>
     </Modal>
   );
