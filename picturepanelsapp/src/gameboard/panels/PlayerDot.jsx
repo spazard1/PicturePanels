@@ -34,7 +34,7 @@ const PlayerDot = ({ avatar, colors, panelRef, isMoved }) => {
     }
 
     if (!isMoved) {
-      setStyle({ zIndex: -1 });
+      setStyle({ zIndex: 100 });
       return;
     }
 
