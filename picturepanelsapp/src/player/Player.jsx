@@ -345,7 +345,6 @@ export default function Player() {
   useEffect(() => {
     if (turnType) {
       if (isFirstLoad.current) {
-        isFirstLoad.current = false;
         return;
       }
       setPlayer((p) => {
@@ -359,6 +358,10 @@ export default function Player() {
   }, [turnType]);
 
   useEffect(() => {
+    if (isFirstLoad.current) {
+      return;
+    }
+
     setPlayer((p) => {
       if (!p) {
         return;
@@ -423,6 +426,12 @@ export default function Player() {
       }
     });
   }, [gameStateId, gameState, player, setGameState]);
+
+  useEffect(() => {
+    if (player) {
+      isFirstLoad.current = false;
+    }
+  }, [player]);
 
   if (isResuming) {
     return null;
