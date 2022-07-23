@@ -54,7 +54,7 @@ export default function Player() {
   const [cachedGameStateId, setCachedGameStateId] = useLocalStorageState("gameStateId");
   const [teamNameToast, setTeamNameToast] = useState("");
   const { isWinner } = useWinningTeam(gameState, player);
-  const isFirstLoad = useRef(true);
+  const isFirstLoad = useRef({ turnType: true, roundNumber: true });
   const [colors, setColors] = useState([]);
 
   const { vibrate } = usePlayerVibrate();
@@ -259,6 +259,7 @@ export default function Player() {
           if (resumeGameRef.current.player && resumeGameRef.current.gameState) {
             setGameState(resumeGameRef.current.gameState);
             setPlayer(resumeGameRef.current.player);
+
             if (resumeGameRef.current.player.colors) {
               setColors(resumeGameRef.current.player.colors.map((c) => Color(c)));
             }
@@ -343,22 +344,31 @@ export default function Player() {
   }, [gameState, player]);
 
   useEffect(() => {
-    if (turnType) {
-      if (isFirstLoad.current) {
+    if (!turnType) {
+      return;
+    }
+
+    if (isFirstLoad.current.turnType) {
+      isFirstLoad.current.turnType = false;
+      return;
+    }
+
+    setPlayer((p) => {
+      if (!p) {
         return;
       }
-      setPlayer((p) => {
-        if (!p) {
-          return;
-        }
 
-        return { ...p, isReady: false, selectedPanels: [] };
-      });
-    }
+      return { ...p, isReady: false, selectedPanels: [] };
+    });
   }, [turnType]);
 
   useEffect(() => {
-    if (isFirstLoad.current) {
+    if (!roundNumber) {
+      return;
+    }
+
+    if (isFirstLoad.current.roundNumber) {
+      isFirstLoad.current.roundNumber = false;
       return;
     }
 
@@ -372,13 +382,13 @@ export default function Player() {
   }, [roundNumber]);
 
   useEffect(() => {
-    if (player) {
+    if (player && player.teamNumber) {
       setTeamNumber(player.teamNumber);
     }
   }, [player]);
 
   useEffect(() => {
-    if (disableVibrate) {
+    if (disableVibrate || !teamNumber) {
       return;
     }
 
@@ -426,12 +436,6 @@ export default function Player() {
       }
     });
   }, [gameStateId, gameState, player, setGameState]);
-
-  useEffect(() => {
-    if (player) {
-      isFirstLoad.current = false;
-    }
-  }, [player]);
 
   if (isResuming) {
     return null;
